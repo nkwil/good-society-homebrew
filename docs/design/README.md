@@ -24,7 +24,7 @@ docs/design/
 ├── 12-item-sheets.md               ← all five item sheets + inner-conflict box grid (Locked)
 ├── 13-persona-switcher.md          ← in-sheet picker + popover + editor modal (Locked)
 ├── 14-family-sheet.md              ← Family actor sheet + crest medallion (Locked)
-├── 15-welcome-panel.md             ← first-load modal with three starting paths (Locked)
+├── 15-welcome-panel.md             ← (Cut from scope 2026-05-06; design preserved in the doc)
 ├── 16-npc-sheet.md                 ← NPC actor sheet + promote-to-Connection flow (Locked)
 ├── 17-token-hover-card.md          ← canvas hover card for Major/Connection/NPC (Locked)
 ├── 18-condition-picker.md          ← reputation threshold modal (Locked)

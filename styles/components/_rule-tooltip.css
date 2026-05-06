@@ -1,0 +1,142 @@
+/* Rule Tooltip — hover-triggered rule explanations on section headers.
+ * House-styled throughout — tooltips are system-level, never character-themed.
+ * Per docs/design/20-rule-tooltips.md.
+ *
+ * Two concerns live here:
+ *   1. The '?' glyph — ::after pseudo on .gs-section-header[data-tooltip-key].
+ *   2. The floating .gs-rule-tooltip panel created imperatively by rule-tooltip.js.
+ */
+
+/* ── ? glyph ──────────────────────────────────────────────────────────────── */
+
+/* position:relative anchors the ::after glyph. Only applied when the element
+ * is a section header — avoids adding it to arbitrary data-tooltip-key nodes. */
+.gs-section-header[data-tooltip-key] {
+  position: relative;
+}
+
+.gs-section-header[data-tooltip-key]::after {
+  content: '?';
+  position: absolute;
+  top: 0;
+  right: -14px;
+
+  font-size: 8px;
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  font-feature-settings: normal;
+  color: var(--gs-accent-3, #C9A55C);
+  line-height: 1;
+
+  /* Don't intercept hover — the header element is the target, not the glyph. */
+  pointer-events: none;
+}
+
+/* Suppress everything when the user has turned tooltips off. */
+body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
+  display: none;
+}
+
+/* ── Tooltip container ────────────────────────────────────────────────────── */
+
+.gs-rule-tooltip {
+  position: fixed;
+  z-index: 10000;
+
+  width: 290px;
+  max-height: 240px;
+  overflow-y: auto;
+
+  padding: 12px 14px;
+  background: var(--gs-paper, #EFE6D2);
+  border: 0.5px solid var(--gs-accent-2, #708060);
+  border-radius: 8px;
+  /* Subtle lift against the busy sheet background.
+   * WCAG: shadow doesn't affect text contrast — safe. */
+  box-shadow: 0 2px 8px rgba(20, 12, 14, 0.25);
+
+  /* The pointer can enter the tooltip; rule-tooltip.js cancels hide on enter. */
+  pointer-events: auto;
+}
+
+/* Arrow — pointing down (tooltip is above the header). */
+.gs-rule-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 16px;
+
+  width: 12px;
+  height: 7px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: var(--gs-paper, #EFE6D2);
+  /* Border on the two slanted sides — clip-path clips the border too, so we
+   * simulate it with a slightly larger outlined pseudo (below). */
+}
+
+/* Arrow border layer — rendered behind the fill. */
+.gs-rule-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 15px;
+
+  width: 14px;
+  height: 8px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: var(--gs-accent-2, #708060);
+}
+
+/* Flip arrow to top when tooltip renders below the header. */
+.gs-rule-tooltip--below::before {
+  bottom: auto;
+  top: -8px;
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+}
+
+.gs-rule-tooltip--below::after {
+  bottom: auto;
+  top: -7px;
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+}
+
+/* ── Content ──────────────────────────────────────────────────────────────── */
+
+.gs-rule-tooltip__title {
+  font-family: var(--gs-display, 'Lora', Georgia, serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gs-brand, #2A3A2D);
+  line-height: 1.25;
+  margin: 0 0 5px;
+}
+
+.gs-rule-tooltip__body {
+  font-family: var(--gs-italic, 'Crimson Text', Georgia, serif);
+  font-style: italic;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--gs-ink, #3D2F26);
+  margin: 0;
+}
+
+/* No bottom margin when there's no page ref following. */
+.gs-rule-tooltip__body + .gs-rule-tooltip__pageref {
+  margin-top: 6px;
+}
+
+.gs-rule-tooltip__pageref {
+  padding-top: 6px;
+  border-top: 0.5px solid var(--gs-accent-2, #708060);
+
+  font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
+  font-size: 10px;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2, #708060);
+  margin: 0;
+}

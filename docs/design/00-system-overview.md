@@ -20,7 +20,7 @@ If a design choice and a mechanical choice conflict, surface the conflict and re
 | **Implementing the theme system** | `decisions.md`, then `02-theme-architecture.md`, then `23-primitives-batch.md` |
 | **Trying to understand "why does X look like Y"** | `decisions.md` (design principle), then the doc for X |
 | **Reviewing design for cohesion or conflicts** | This doc's "Architectural pillars" section, then the relevant doc |
-| **Authoring content (tooltips, sample world, motto)** | `20-rule-tooltips.md` for tooltip catalog; the per-actor docs for example content |
+| **Authoring content (tooltips, motto)** | `20-rule-tooltips.md` for tooltip catalog; the per-actor docs for example content |
 
 ## Architectural pillars
 
@@ -243,7 +243,7 @@ All design docs in numerical order. Each line: number + name + status + one-line
 | 12 | item-sheets.md | Locked | Five item sheets in one batch; Inner Conflict box grid primitive |
 | 13 | persona-switcher.md | Locked | In-sheet picker, switcher popover, full editor; switching pipeline UI |
 | 14 | family-sheet.md | Locked | House-styled actor sheet with crest medallion and member list |
-| 15 | welcome-panel.md | Locked | First-load modal with three onboarding paths |
+| 15 | welcome-panel.md | **Cut (2026-05-06)** | Originally a first-load modal with three onboarding paths. Removed when the bundled sample world was cut from scope. Design preserved in the doc. |
 | 16 | npc-sheet.md | Locked | NPC sheet as deltas from Connection; promote-to-Connection workflow |
 | 17 | token-hover-card.md | Locked | Canvas-anchored hover card for all actor types |
 | 18 | condition-picker.md | Locked | Threshold-triggered modal for picking Reputation Conditions |
@@ -275,7 +275,6 @@ All design docs in numerical order. Each line: number + name + status + one-line
 | Reputation flow end-to-end | `04-character-sheet.md` → `12-item-sheets.md` → `18-condition-picker.md` → `11-upkeep-wizard.md` |
 | The persona system | CLAUDE.md §11 (data) + `13-persona-switcher.md` (UI) |
 | GM-only utilities | `19-gm-tools.md` + `22-bulk-permissions-panel.md` |
-| First-load experience | `15-welcome-panel.md` |
 | Edge cases for shared editing | `21-edit-conflict-warning.md` |
 | End-of-session archival | `24-session-log.md` |
 
@@ -364,10 +363,11 @@ After Phase D, all four actor types have working sheets across all twelve themes
 ### Phase I — Polish
 
 26. Persona switcher UI (`13-persona-switcher.md`) — though pieces appear earlier.
-27. Welcome Panel (`15-welcome-panel.md`).
-28. Condition Picker modal (`18-condition-picker.md`).
-29. Upkeep Wizard (`11-upkeep-wizard.md`).
-30. In-Sheet Rule Tooltips (`20-rule-tooltips.md`) + content authoring in `lang/en.json`.
+27. Condition Picker modal (`18-condition-picker.md`).
+28. Upkeep Wizard (`11-upkeep-wizard.md`).
+29. In-Sheet Rule Tooltips (`20-rule-tooltips.md`) + content authoring in `lang/en.json`.
+
+> Welcome Panel was cut from scope on 2026-05-06 (was item 27). See `15-welcome-panel.md` for the preserved design.
 
 ### Phase J — Robustness + retrospective
 
@@ -420,8 +420,6 @@ All open questions from individual docs in one list, deduplicated and grouped by
 ### Polish surfaces
 
 - Should the Upkeep Wizard be opt-out per-user? Yes via `upkeepWizardEnabled` setting (`11-upkeep-wizard.md`).
-- Should the Welcome Panel autoplay sample music? No (`15-welcome-panel.md`).
-- Should Welcome Panel offer a tutorial walkthrough mode? Defer to v1.1 (`15-welcome-panel.md`).
 - Should the tooltip system support pinning open? Defer to v1.1 (`20-rule-tooltips.md`).
 
 ### Robustness
@@ -462,7 +460,7 @@ These patterns appear across multiple docs. When implementing, build the pattern
 | Section header with `?` glyph | Every sheet section | Auto-applied via CSS pseudo-element on `[data-tooltip-key]` |
 | GM pill | NPC sheet, Family sheet GM Notes, Reveal Control, NPC Quick-Create, NPC Organizer, Bulk Permissions Panel, Session Log | Single `.gs-gm-pill` primitive |
 | Phase progression markers (dots + connectors + current pill) | Cycle Phase HUD, Upkeep Wizard step indicator | Shared `_phase-marker.css` primitive |
-| Dot fleuron title frame | Welcome Panel | Could extract for future title-page surfaces |
+| ~~Dot fleuron title frame~~ | ~~Welcome Panel~~ | Orphaned: Welcome Panel cut 2026-05-06; primitive retained for future title-page surfaces |
 | Soft-paper card with left-edge accent stripe | Reputation Criteria card, impression cards, condition cards, completed conflicts, Backstory Action source reference, conflict warning toast | `.gs-card--accent` variant |
 | 5-pip resolve track | Major sheet strip, Connection sheet, Dashboard rows, Dock rows | Single `_resolve-track.css` primitive |
 | Crest medallion (gold ring + forest field + monogram) | Family sheet | Could extract for future emblem needs |
@@ -472,8 +470,8 @@ These patterns appear across multiple docs. When implementing, build the pattern
 When the design is fully implemented and you're moving to content authoring:
 
 - [ ] Tooltip catalog in `lang/en.json` (~50 keys) — `20-rule-tooltips.md`
-- [ ] Sample World compendium content (Cloudcandle and Willowood families, Majors, Connections, sample inner conflicts) — referenced by `15-welcome-panel.md`, content spec deferred
 - [ ] Canonical Reputation Conditions (positive and negative) in `packs/conditions/` — referenced by `18-condition-picker.md`
+- [ ] Archetype Inner Conflicts in `packs/inner-conflicts/` (Family vs. Business, Duty vs. Desire, etc.) — drag-targets for player setup
 - [ ] Generic NPC portrait silhouettes in `assets/portraits/generic/` — referenced by `19-gm-tools.md`
 - [ ] Page references for tooltips pointing at the rulebook
 - [ ] Localization fallbacks for any non-English locale support

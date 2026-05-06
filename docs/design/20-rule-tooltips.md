@@ -265,7 +265,6 @@ This is the master list of every section header in the system that carries (or s
 
 | Tooltip key | Surface | Body | Page ref |
 |---|---|---|---|
-| `welcomePanel` | (welcome panel options) | Each option starts your campaign differently. Sample World imports a pre-built Swan's Crossing; Blank gives you empty folders; Quick-Start opens the rules. | (no page ref) |
 | `revealControl` | REVEAL CONTROL | Flip a field's visibility for one or more characters. Reveals are logged and broadcast — choose deliberately. | (no page ref) |
 | `npcOrganizer` | SCENE TOKENS | Connection and NPC tokens currently placed on this scene. Click to focus the camera; right-click for actions. | (no page ref) |
 
@@ -300,7 +299,7 @@ Mobile/tablet users don't hover. **Tentative answer: tap the `?` glyph to show t
 ### Long tooltip body
 The tooltip's max-height is 240px (about 8 lines). Longer content scrolls inside the tooltip. But the design ideal is to keep all bodies under 3 sentences, so scrolling should be rare.
 
-### Tooltips inside modals (Upkeep Wizard, Welcome Panel, etc.)
+### Tooltips inside modals (Upkeep Wizard, Condition Picker, etc.)
 Modals can have section headers too. The tooltip system works inside modals — same `data-tooltip-key` attribute, same render behavior. The tooltip simply renders at a higher z-index than the modal backdrop.
 
 ## Implementation notes for Claude Code

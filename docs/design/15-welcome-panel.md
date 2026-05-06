@@ -1,8 +1,16 @@
 # 15 — Welcome Panel
 
-**Status:** Locked — full first-load modal specified; visual proof rendered
+> **STATUS: REMOVED FROM SCOPE (2026-05-06)**
+>
+> The Welcome Panel was cut when the bundled sample world was cut from scope. With no Sample World card to feature, the remaining two cards (Blank Campaign and Quick-Start Guide) didn't carry their weight as a first-load modal — opening to a "do nothing" or "open a journal" choice mostly delays the user.
+>
+> This file is preserved for the design thinking it captures (the title-page typography, the dot-fleuron title frame, the suppression behavior, accessibility notes) in case the panel returns to scope later. The plan reference (`PLAN.md` §12.6) and component inventory (`03-component-inventory.md` #18) have been updated to reflect the cut.
+>
+> **Original status (now stale):** Locked — full first-load modal specified; visual proof rendered
+
 **Date opened:** 2026-05-05
-**Covers inventory entry:** #18 Welcome Panel
+**Date cut:** 2026-05-06
+**Covers inventory entry:** #18 Welcome Panel (cut)
 
 ## Goal
 

@@ -20,7 +20,7 @@ All three surfaces share these:
 
 - **House-styled.** No theme wrapping at the surface level. (Some surfaces — like the Reveal Control popover for a specific actor — do show the actor's theme accents in places, but the chrome stays house.)
 - **GM pill in headers.** Same `var(--gs-accent-1)` (terracotta) bg + paper-color pill from the NPC sheet (`16-npc-sheet.md`). 10px Crimson Text, "GM" label, padding 1×7px, border-radius 3px. Always next to or before the section eyebrow.
-- **Utility tone, not ceremony.** These are tools, not story moments. The visual register is restrained: small modals, inline forms, no flourishes. The Welcome Panel's dot-fleuron treatment isn't appropriate here.
+- **Utility tone, not ceremony.** These are tools, not story moments. The visual register is restrained: small modals, inline forms, no flourishes. Title-page ornaments (dot-fleurons, ornamented dividers) aren't appropriate here — those belong to ceremonial surfaces, not GM utilities.
 - **Confirmations before consequential actions.** Reveals are confirmed; NPC drops show a "creates a token + actor" preview line so the GM knows what's happening; Organizer right-click actions confirm destructive operations.
 - **Compact action buttons.** `var(--gs-brand)` filled for primary action, outlined `var(--gs-accent-2)` for secondary/cancel. 12px Lora, 5×14px padding, 4px corner radius.
 

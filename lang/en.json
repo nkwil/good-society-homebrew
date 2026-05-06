@@ -225,15 +225,145 @@
     },
 
     "tooltips": {
-      "familyMotto": { "body": "The family's sworn declaration — read aloud at formal toasts and printed on the crest." },
-      "familyOrigin": { "body": "The family's social standing: heir (established local nobility), new arrival (recently titled or relocated), or foreign (outsider lineage)." },
-      "heirStatus": { "body": "Whether the family has a named heir, and in what form. Affects reputation conditions in some scenarios." },
-      "uniqueNegativeRepCriteria": { "body": "The standard by which this family's members are judged. Shown read-only on every member Major's Public tab." },
-      "familyNotes": { "body": "GM-only history, internal politics, and secrets the players don't know." },
-      "memberMajors": { "body": "Major Characters linked to this family. Set a Major's familyId field to add them here." },
-      "npcDescription": { "body": "Bio, role, and backstory for this NPC. Longer prose goes here; the Hover Summary is the one-line version for the canvas." },
-      "publicTags": { "body": "Short tags visible on the canvas hover card and in the NPC Organizer. Examples: eligible, tradesman, widowed, spy." },
-      "hoverSummary": { "body": "The one or two sentences that appear when a player hovers over this character's token on the canvas." }
+      "reputationCriteria": {
+        "body": "Family-specific judgment the world applies to all members of this house. Set on the Family sheet — read-only here.",
+        "pageRef": "Rulebook · p. 92"
+      },
+      "reputationTags": {
+        "body": "Adjectives the world has begun to associate with this character. Three of one polarity triggers a Reputation Condition.",
+        "pageRef": "Rulebook · p. 89"
+      },
+      "activeConditions": {
+        "body": "Lasting social consequences earned by reputation. Each shapes how the world treats this character until lifted.",
+        "pageRef": "Rulebook · p. 94"
+      },
+      "innerConflict": {
+        "body": "Two opposing pressures. Mark a box on either side as your character acts. Completes at 6 total or 5 on one side.",
+        "pageRef": "Rulebook · p. 98"
+      },
+      "completedConflicts": {
+        "body": "Conflicts this character has resolved. Each grants an Expanded Backstory Action — a tool for shaping the story.",
+        "pageRef": "Rulebook · p. 100"
+      },
+      "desire": {
+        "body": "What this character wants this cycle. Drives Novel Chapter scenes. May change at Upkeep when a desire-arc wraps.",
+        "pageRef": "Rulebook · p. 71"
+      },
+      "notesObjectives": {
+        "body": "Player-authored running notes. What is this character paying attention to? What would they like to accomplish next?"
+      },
+      "connections": {
+        "body": "Other characters this person has formed relationships with. Click any to open their sheet.",
+        "pageRef": "Rulebook · p. 78"
+      },
+      "backstory": {
+        "body": "The character's history. May grow over time as Expanded Backstory Actions reveal new chapters.",
+        "pageRef": "Rulebook · p. 75"
+      },
+      "magicSkills": {
+        "body": "Homebrew abilities tied to family bloodline or training. Casting plays an on-screen effect; some trigger persona changes."
+      },
+      "adventurerSentiment": {
+        "body": "Pure flavor field. How does this character regard adventurers, freelancers, and the questing rabble?"
+      },
+      "connectionDescription": {
+        "body": "This connection's bio and personality. Authored by the GM; share ownership with the linked Major's player when appropriate.",
+        "pageRef": "Rulebook · p. 78"
+      },
+      "impressions": {
+        "body": "What this connection thinks of each Major they've encountered. Shapes how they behave when scenes unfold.",
+        "pageRef": "Rulebook · p. 80"
+      },
+      "linkedMajor": {
+        "body": "The Major character this connection primarily belongs to. Most connections have one; some are shared."
+      },
+      "connectionResolve": {
+        "body": "This connection's smaller resolve track. Default 1 of 5. Used in scenes where they act on their own interests.",
+        "pageRef": "Rulebook · p. 81"
+      },
+      "personas": {
+        "body": "Alternate identities. Each carries its own name, portrait, and visibility overrides. Switch via the picker."
+      },
+      "familyMotto": {
+        "body": "The family's sworn declaration — read aloud at formal toasts and printed on the crest."
+      },
+      "familyOrigin": {
+        "body": "The family's social standing: heir (established local nobility), new arrival (recently titled or relocated), or foreign (outsider lineage).",
+        "pageRef": "Rulebook · p. 67"
+      },
+      "heirStatus": {
+        "body": "Whether the family has a named heir, and in what form. Affects reputation conditions in some scenarios."
+      },
+      "uniqueNegativeRepCriteria": {
+        "body": "The standard by which this family's members are judged. Shown read-only on every member Major's Public tab.",
+        "pageRef": "Rulebook · p. 92"
+      },
+      "familyNotes": {
+        "body": "GM-only history, internal politics, and secrets the players don't know."
+      },
+      "memberMajors": {
+        "body": "Major Characters linked to this family. Set a Major's familyId field to add them here."
+      },
+      "npcDescription": {
+        "body": "Bio, role, and backstory for this NPC. Longer prose goes here; the Hover Summary is the one-line version for the canvas."
+      },
+      "publicTags": {
+        "body": "Short tags visible on the canvas hover card and in the NPC Organizer. Examples: eligible, tradesman, widowed, spy."
+      },
+      "hoverSummary": {
+        "body": "The one or two sentences that appear when a player hovers over this character's token on the canvas."
+      },
+      "tagPolarity": {
+        "body": "Positive (▲) for desirable traits, Negative (▼) for risky ones. Three of one polarity triggers a Reputation Condition.",
+        "pageRef": "Rulebook · p. 89"
+      },
+      "tagDescription": {
+        "body": "What this tag means in play. Helps the GM and table understand the tag's narrative weight."
+      },
+      "tagSource": {
+        "body": "Where this tag came from — the scene or moment of play that earned it. Shows in the Upkeep review."
+      },
+      "conditionActive": {
+        "body": "Whether this Reputation Condition is currently in effect. Auto-deactivates if source tag count drops below 3.",
+        "pageRef": "Rulebook · p. 94"
+      },
+      "conditionSourceTags": {
+        "body": "The reputation tags that triggered this condition. Removing one may deactivate the condition.",
+        "pageRef": "Rulebook · p. 94"
+      },
+      "innerConflictLabel": {
+        "body": "The two abstract pressures pulling this character apart — Family vs. Independence, Ambition vs. Love, etc.",
+        "pageRef": "Rulebook · p. 98"
+      },
+      "magicVfxKey": {
+        "body": "The Sequencer/JB2A asset path that plays when this skill is cast. Optional — falls back to a chat card if missing."
+      },
+      "magicHidden": {
+        "body": "Whether this skill is hidden from the Public Info dashboard. Useful for secret abilities."
+      },
+      "magicPersonaSwap": {
+        "body": "Casting this skill also switches the character to the named persona. Used for transformation skills like Alter Self."
+      },
+      "backstorySource": {
+        "body": "The Inner Conflict whose resolution earned this Backstory Action. Read-only — links to the source conflict.",
+        "pageRef": "Rulebook · p. 100"
+      },
+      "backstoryStatus": {
+        "body": "Whether this action has been expanded into play and whether it has been used yet.",
+        "pageRef": "Rulebook · p. 100"
+      },
+      "resolveTrack": {
+        "body": "A character's determination to shape the story. Spend to do something difficult, harm another's interests, or compel them.",
+        "pageRef": "Rulebook · p. 81"
+      },
+      "mtToggle": {
+        "body": "The Major Threshold marker. Spent to introduce or shape large narrative consequences.",
+        "pageRef": "Rulebook · p. 84"
+      },
+      "monologueDot": {
+        "body": "Each cycle, this character may take one Inner Monologue — a scene revealing their true thoughts. Cleared at Upkeep.",
+        "pageRef": "Rulebook · p. 103"
+      }
     },
 
     "chatCard": {
@@ -308,6 +438,10 @@
     },
 
     "settings": {
+      "tooltipsEnabled": {
+        "name": "Show Rule Tooltips",
+        "hint": "Hover any section header (marked with a small ?) to see a paraphrased rule explanation. Disable to hide the ? glyphs and suppress all tooltip hovers."
+      },
       "applyFoundryChrome": {
         "name": "Apply Foundry Chrome Theme",
         "hint": "Re-themes Foundry's surrounding chrome (titlebars, sidebar, chat log, scene navigation, form controls, notifications, player list, hotbar) to match the Good Society house style. Toggles instantly without a page reload."

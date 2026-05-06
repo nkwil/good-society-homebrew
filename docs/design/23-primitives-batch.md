@@ -14,11 +14,11 @@ The primitives are listed in implementation order — each can be built independ
 
 Every primitive in this doc honors:
 
-- **Hairlines, not heavy borders.** All borders are 0.5px (rendering as 1px on standard displays). The only 2px border in the system is on the Welcome Panel's RECOMMENDED option card and on pending-change cells in the Bulk Permissions Panel.
+- **Hairlines, not heavy borders.** All borders are 0.5px (rendering as 1px on standard displays). The only 2px border in the system is on pending-change cells in the Bulk Permissions Panel.
 - **Generous padding.** Even small components have 12-16px internal padding minimum.
 - **Two type weights only.** 400 regular and 500 medium. Never 600+.
 - **Sentence case for prose, small caps for labels.** Section headers and eyebrow labels use small caps with letter-spacing 0.12-0.18em; everything else is sentence case.
-- **One ornament per surface, max.** No nested decorations. The dot fleuron on the Welcome Panel and the family crest on the Family sheet are exceptions because they're title-page moments.
+- **One ornament per surface, max.** No nested decorations. The family crest on the Family sheet is the canonical exception (a title-page moment).
 
 ## 1. Card surface (#33)
 
@@ -49,7 +49,7 @@ A soft-paper rectangular container for grouped content.
 ### Variants
 
 - `.gs-card--accent` — adds a 2.5px left-edge accent stripe in `var(--gs-brand)` (or themed accent). Used for highlighted/owned items (impressions in connection sheet, reputation tags, etc.).
-- `.gs-card--featured` — replaces the 0.5px border with a 2px border in `var(--gs-brand)`. Reserved for "recommended" or "primary" cards in option lists. Used in the Welcome Panel.
+- `.gs-card--featured` — replaces the 0.5px border with a 2px border in `var(--gs-brand)`. Reserved for "recommended" or "primary" cards in option lists. (Originally specced for the Welcome Panel; currently no in-system consumer after that surface was cut, retained as reusable primitive.)
 - `.gs-card--inset` — slightly darker background (`var(--gs-paper)` instead of `var(--gs-paper-warm)`) for cards inside cards, e.g. the inner conflict box grid card inside the Inner Conflict section. Avoids visual collapse.
 
 ### Edge cases
@@ -96,7 +96,7 @@ SECTION HEADER  ?
 
 - The `?` glyph appears automatically on any section header with a `data-tooltip-key` attribute. See `20-rule-tooltips.md` for the full tooltip system.
 - The eyebrow color comes from theme — `var(--gs-brand)` for default sections, but per-context overrides to `var(--gs-accent-2)` for muted sections (e.g. "no-content placeholder" labels).
-- Letter-spacing varies slightly by context: 0.12em for tight contexts (chat cards, hover cards), 0.16em for standard sheets, 0.18em for the most ceremonial contexts (welcome panel, conflict picker).
+- Letter-spacing varies slightly by context: 0.12em for tight contexts (chat cards, hover cards), 0.16em for standard sheets, 0.18em for the most ceremonial contexts (conflict picker, completion ceremony cards).
 
 ### Variants
 
@@ -152,7 +152,7 @@ A 0.5px horizontal rule. Sometimes ornamented with a single centered dot/glyph.
 
 ### Variants
 
-- `.gs-divider--ornamented` — with a centered dot (or other small glyph) flanked by hairlines. Used in the Welcome Panel title frame.
+- `.gs-divider--ornamented` — with a centered dot (or other small glyph) flanked by hairlines. (Originally specced for the Welcome Panel title frame; currently no in-system consumer after that surface was cut, retained as reusable primitive.)
 - `.gs-divider--gold` — uses `var(--gs-accent-3)` (honey-gold) instead of sage. For ceremonial contexts (Inner Conflict completion ceremony, Family sheet's reputation criteria card).
 
 ### Edge cases
@@ -693,7 +693,7 @@ A centered modal panel with backdrop. Used for confirmation dialogs, multi-step 
 
 ### Behavior
 
-- The backdrop opacity defaults to 0.45 (used in Upkeep Wizard, Welcome Panel). Lighter (0.30) for non-blocking modals like the Condition Picker.
+- The backdrop opacity defaults to 0.45 (used in the Upkeep Wizard). Lighter (0.30) for non-blocking modals like the Condition Picker.
 - Click backdrop to close — for non-blocking modals only. Confirmation dialogs require explicit dismissal.
 - Escape key closes the modal — same gating as backdrop click.
 - Drop shadow at `0 4px 16px` (heavier than the token hover card's 2px shadow) gives the modal more lift, signaling "this is more important than the underlying surface."

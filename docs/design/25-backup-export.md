@@ -200,11 +200,9 @@ If 1–6 pass, the backup/export utility is production-ready.
 
 1. **Should there be auto-export on a schedule?** Once a week, save a backup automatically. **Tentative answer: defer to v1.1.** Browser-based scheduled tasks are unreliable in Foundry's iframe context.
 
-2. **Should compendium content (Sample World) be excluded from export by default?** It's already in the system's bundled compendium — re-exporting it is redundant. **Tentative answer: yes, exclude by default with an "include compendium content" checkbox in the confirm dialog.**
+2. **Should there be a partial-export option (e.g. only Majors, only Session Logs)?** **Tentative answer: defer to v1.1.** Full export is the safer default.
 
-3. **Should there be a partial-export option (e.g. only Majors, only Session Logs)?** **Tentative answer: defer to v1.1.** Full export is the safer default.
-
-4. **Should the file be encrypted or password-protected?** **Tentative answer: no.** Standard JSON is simpler and more durable. The "store securely" warning in the confirm is the current safeguard.
+3. **Should the file be encrypted or password-protected?** **Tentative answer: no.** Standard JSON is simpler and more durable. The "store securely" warning in the confirm is the current safeguard.
 
 ## Visual proof
 

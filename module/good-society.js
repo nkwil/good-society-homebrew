@@ -5,6 +5,7 @@
 
 import { register as registerSpeakingAs } from './hooks/speaking-as.js';
 import { renderDock } from './apps/my-characters-dock.js';
+import { initTooltipSystem } from './helpers/rule-tooltip.js';
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
 import { InnerConflictDataModel } from './data-models/inner-conflict.js';
@@ -70,6 +71,18 @@ Hooks.once('init', async function () {
     config: false,
     type: Boolean,
     default: false,
+  });
+
+  game.settings.register('good-society-homebrew', 'tooltipsEnabled', {
+    name: 'GOODSOCIETY.settings.tooltipsEnabled.name',
+    hint: 'GOODSOCIETY.settings.tooltipsEnabled.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: (value) => {
+      document.body.classList.toggle('gs-tooltips-disabled', !value);
+    },
   });
 
   game.settings.register('good-society-homebrew', 'applyFoundryChrome', {
@@ -169,11 +182,17 @@ Hooks.once('init', async function () {
 });
 
 Hooks.once('ready', () => {
-  const enabled = game.settings.get('good-society-homebrew', 'applyFoundryChrome');
-  document.body.classList.toggle('gs-chrome-themed', enabled);
+  const chromeEnabled = game.settings.get('good-society-homebrew', 'applyFoundryChrome');
+  document.body.classList.toggle('gs-chrome-themed', chromeEnabled);
+
+  const tooltipsEnabled = game.settings.get('good-society-homebrew', 'tooltipsEnabled');
+  document.body.classList.toggle('gs-tooltips-disabled', !tooltipsEnabled);
 
   // Open the My Characters Dock if the user owns any actors.
   renderDock();
+
+  // Wire hover-tooltip system for all [data-tooltip-key] elements.
+  initTooltipSystem();
 });
 
 // Re-render the dock whenever owned-actor data changes.

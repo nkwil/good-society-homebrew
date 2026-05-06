@@ -337,7 +337,6 @@ Registered in `Hooks.once("init", ...)` via `game.settings.register("good-societ
 - `defaultMaxResolve` — integer. Default `5`.
 - `defaultStartingResolve` — integer. Default `3`.
 - `homebrewMagicEnabled` — boolean. Default `true`.
-- `welcomePanelDismissed` — boolean. User scope.
 - `tooltipsEnabled` — boolean. Default `true`. User scope. Hides tooltip `?` glyphs and suppresses hover when false (per `docs/design/20-rule-tooltips.md`).
 - `upkeepWizardEnabled` — boolean. Default `true`. User scope. When false, Upkeep advances without opening the per-Major wizard (per `docs/design/11-upkeep-wizard.md`).
 - `organizerPlayerVisible` — boolean. Default `false`. World scope. Whether non-GM users can open the NPC Organizer sidebar (per `docs/design/19-gm-tools.md`).
@@ -755,6 +754,40 @@ Three things you must do that you don't have to do for framed windows:
    tools panel) or detect the chat-sidebar's left edge at construction time
    and place to its left. The dock chose the former for v0.
 
+### Adding a tooltipped surface
+
+Any element with `data-tooltip-key="someKey"` automatically gets:
+- A `?` glyph (via CSS `::after`) that signals the tooltip exists.
+- A hover tooltip populated from `GOODSOCIETY.tooltips.someKey.body` (required) and `GOODSOCIETY.tooltips.someKey.pageRef` (optional).
+
+To add a tooltip to a section header:
+
+1. **Add the attribute to the template** — `data-tooltip-key` must match a key in `lang/en.json`:
+   ```hbs
+   <header class="gs-section-header" data-tooltip-key="mySection">
+     {{localize "GOODSOCIETY.myTab.mySection"}}
+   </header>
+   ```
+
+2. **Add the tooltip body (required) and page ref (optional) to `lang/en.json`**:
+   ```json
+   "tooltips": {
+     "mySection": {
+       "body": "What this section does, in 1–2 plain sentences.",
+       "pageRef": "Rulebook · p. 42"
+     }
+   }
+   ```
+   The `body` key is required — a missing key logs a `console.warn` and renders no tooltip. The `pageRef` key is optional; omit it for homebrew sections with no rulebook anchor.
+
+3. No JS wiring needed — `initTooltipSystem()` in `good-society.js` picks up any `[data-tooltip-key]` element anywhere in the DOM via delegated capture-phase listeners.
+
+4. The tooltip title is derived from the element's `textContent.trim()`. CSS `text-transform` doesn't affect `textContent`, so "REPUTATION TAGS" in the DOM renders as whatever the localized string actually is (e.g. "Reputation Tags" — no conversion needed).
+
+5. The `?` glyph only appears on `.gs-section-header[data-tooltip-key]` — the CSS is scoped to avoid adding it to every tooltip-bearing element (e.g. inputs, buttons).
+
+The `tooltipsEnabled` user setting (default `true`) suppresses both the glyph and the hover. Toggle in System Settings → Good Society.
+
 ### Switching a persona (the trickiest pattern)
 
 ```js
@@ -964,7 +997,7 @@ Discord: Foundry's official Discord, `#system-development` channel.
 - Session B-2 — remaining eleven theme presets
 - Session B-2.5 — Foundry chrome theme (½ day): `styles/foundry-chrome.css`, `applyFoundryChrome` user setting, body-class toggle handler (per `docs/design/28-foundry-chrome-theme.md`)
 - Session B-3 — chat card system (per docs/design/10) — six variants + Speaking-As switcher + Inner Monologue editor flow
-- Session B-4 — custom apps batch — Welcome Panel, Public Info Dashboard, My Characters Dock, Cycle HUD, GM Tools, Token Hover Card, Tooltip system, Bulk Permissions Panel (per docs/design/22)
+- Session B-4 — custom apps batch — Public Info Dashboard, My Characters Dock, Cycle HUD, GM Tools, Token Hover Card, Tooltip system, Bulk Permissions Panel (per docs/design/22). Welcome Panel was previously included; cut from scope on 2026-05-06 (see running log).
 - Session B-5 — Persona switcher + Upkeep Wizard + Condition Picker (per docs/design/13, 11, 18)
 - Session B-6 — robustness + retrospective: Edit Conflict Warning, Session Log, Backup Export, Pending Changes Log section, Token Frame (per docs/design/21, 24, 25, 26, 27)
 
@@ -987,6 +1020,8 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - **B-3 (2026-05-06): Foundry v13 sidebar chain has `pointer-events: none` on every parent.** The `#interface > .ui-right > #sidebar > .sidebar-content > .chat-sidebar` chain all set `pointer-events: none` so the canvas stays interactive in non-UI gaps; individual interactive elements explicitly re-enable. Because `pointer-events` inherits, our injected bar inherited `none` — `getBoundingClientRect()` reported it visible but `elementsFromPoint()` didn't include it and real mouse clicks passed through to the canvas (synthetic `.click()` worked because it bypasses hit-testing). Fixed in `styles/components/_speaking-as.css` with explicit `pointer-events: auto` on `.gs-speaking-as` and `.gs-speaking-as *`. **Anti-pattern logged below.** Any future surface injected into the Foundry sidebar/chrome chain MUST explicitly set `pointer-events: auto` or face the same silent bug.
 - **B-3 (2026-05-06): Speaking-As speaker rewriting via `preCreateChatMessage`.** The switcher UI selecting an actor wasn't enough — Foundry still used the user's default speaker. Hook in `module/hooks/speaking-as.js` rewrites `data.speaker.actor`, `speaker.alias`, and `style: IC` on every non-whisper, non-roll message when an actor is selected. Persona name is used as the alias when a persona is active; the underlying actor stays unchanged so chat-card flags still resolve theme/portrait. The Speaking-As selection takes precedence over Foundry's chat-mode toggle (globe/IC/etc) — picking an actor in the switcher means "I want to speak as this actor," full stop. OOC mode users who want OOC chat should set the switcher to "myself."
 - **B-3 (2026-05-06): Monologue editor JournalEntry creation rebuilt for v10+ pages API.** Old code passed `content` at the entry level (v9-era pattern); v10+ moved content to `pages` and the entry is just a container. Empty entries got created instead of populated ones. Now creates a `pages: [{ type: 'text', text: { content, format: HTML }}]` shape. Page content is wrapped via `themedWrap()` so the actor's theme applies (parchment surface, brand color, persona `chatColor` override). Wraps in `<div class="gs-card gs-monologue-archive">` with section header showing speaker name + cycle.
+- **2026-05-06 — Bundled sample world cut from scope.** No Dixon-and-friends compendium content will ship with the system. Players bring their own characters; the system is a blank shell at install time. Dixon remains an illustrative example throughout the design docs (he motivates magic-visibility, persona-swap, and inner-conflict patterns) but is not a deliverable. Affected docs: `good-society-foundry-system-plan.md` §12.6, §13, Phase 11; `15-welcome-panel.md` (cut); `03-component-inventory.md` row 18; `00-system-overview.md` doc-catalog and authoring checklist.
+- **2026-05-06 — Welcome Panel cut from scope.** Direct consequence of cutting the sample world: with no Sample World card to feature, the remaining two cards (Blank / Quick-Start) didn't justify a first-load modal. Removed from B-4 scope (B-4 now 7 steps, not 8). The `welcomePanelDismissed` user setting is removed from §8. Design preserved in `15-welcome-panel.md` for future reference if it returns.
 
 ---
 
@@ -1025,3 +1060,5 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - ❌ Don't ship a frameless ApplicationV2 (`window: { frame: false }`) without explicit `position: fixed` (or `absolute`) AND `z-index` AND `pointer-events: auto` in CSS. The framing logic that gets stripped by `frame: false` is also what positions the wrapper, manages its z-index, and re-enables pointer-events. Without `position: fixed`, the wrapper is `position: static` and inline `left`/`top` from `setPosition()` or `DEFAULT_OPTIONS.position` have no effect — the wrapper ends up wherever document flow puts it (often inside a flex slot in `<body>` at `x ≠ 0`). Without explicit z-index, it's at `auto` and renders behind anything with z-index > 0 (canvas overlays, player list, sidebar). Worked example + full recipe: §11 "Adding a frameless ApplicationV2 surface" and `module/apps/my-characters-dock.js` + `styles/apps/_dock.css`.
 - ❌ Don't use `_onFirstRender + setPosition()` to set the default position of a frameless ApplicationV2. `setPosition` sometimes only lands a subset of keys when the wrapper is static-positioned with `height: 'auto'` (we observed `left` applying but `top` silently dropping). Put default position in `DEFAULT_OPTIONS.position` directly; merge stored overrides in the constructor. Worked example: `module/apps/my-characters-dock.js` constructor pattern.
 - ❌ Don't anchor a frameless ApplicationV2 to viewport-right (`left: window.innerWidth - width`). Foundry v13's default layout puts the chat sidebar there. The surface will render *visibly correct per CSS* but be hidden behind the chat sidebar's parent stack — confusing during debug because `getBoundingClientRect()` and `getComputedStyle().visibility` both report it as visible. Anchor to the left of the canvas (e.g. `left: 70` to clear the tools panel) for v0 surfaces; detect the chat-sidebar's left edge at construction time if you need to anchor right.
+- ❌ Don't use ApplicationV2 (or v1 Application) for transient overlays like tooltips, context menus, or hover cards. These surfaces have no lifecycle needs — no tab management, no re-render, no Foundry document binding. A plain `document.createElement('div')` appended to `document.body` is correct; ApplicationV2 adds framing logic, window management, and re-render overhead that are all dead weight. Wire the show/hide imperatively from delegated document listeners.
+- ❌ Don't read `element.textContent` and expect it to reflect CSS `text-transform`. `textContent` returns the raw DOM text regardless of CSS. If a section header has `text-transform: uppercase` applied and the localized string is "Reputation Tags", `textContent` returns "Reputation Tags" — the tooltip title is already sentence-case with no conversion. Deriving a display title from `textContent.trim()` is always correct for this pattern.

@@ -486,13 +486,11 @@ Full composer spec in `docs/design/05-epistolary-ui.md` — covers the two-zone 
 
 **NPC organizer per scene.** A sidebar panel listing all Connection and NPC tokens currently placed on the active scene. Click to focus camera on their token. Hover to highlight. Right-click for quick actions (open sheet, change persona, remove). Solves "where did I put the gardener?" on busy ballroom maps.
 
-### 12.6 Onboarding & setup
-
-**Bundled sample world.** A compendium that ships with the system containing: Dixon Ticonderoga Cloudcandle as a fully-built Major (with personas), the Cloudcandle family as a Family actor, his existing Connections (Milo, Alfie, the Dowager Duchess, Pearlinda Von Opaland), a sample ballroom Scene with NPC tokens placed, a couple of Rumour & Scandal cards, sample Inner Conflicts. New users (and you while testing) can load a working game in 30 seconds.
-
-**System welcome panel.** First time the system loads in a world, a friendly walkthrough modal: "Welcome to Good Society. Want to (a) Use the sample world, (b) Start blank, (c) Read the quick-start." Three big buttons, no hand-holding beyond that. Suppressible via a "Don't show again" checkbox saved to user settings.
+### 12.6 In-sheet help
 
 **In-sheet rule tooltips.** Hover any section header on the sheet (Reputation Criteria, Inner Conflict, Resolve Tokens, etc.) → small tooltip with the rule paraphrased in 1-2 sentences plus a page reference to the rulebook. Cuts 90% of "what does this section do" questions for new players. Implementation: a `data-tooltip-key` attribute on each header, content stored in `lang/en.json` for easy editing.
+
+> **Cut from scope (2026-05-06):** Earlier drafts of this section included a *bundled sample world* (Dixon + Cloudcandle family + Connections + a sample ballroom Scene) and a *system welcome panel* with three first-load options (Sample World / Blank / Quick-Start). Both were cut: the project doesn't need shipped sample content, which removed the welcome panel's reason to exist. Dixon remains an illustrative example throughout this document but is not a deliverable.
 
 ### 12.7 Robustness
 
@@ -566,8 +564,7 @@ good-society-homebrew/
 │   └── en.json
 ├── packs/
 │   ├── reputation-conditions/     # canonical conditions from rulebook
-│   ├── inner-conflicts/           # archetype templates (Family vs Business, etc.)
-│   └── sample-characters/         # the Dixon sheet as a starter
+│   └── inner-conflicts/           # archetype templates (Family vs Business, etc.)
 └── assets/
     ├── icons/
     ├── frames/
@@ -625,10 +622,11 @@ Build the persistent UI trinity and GM tools using the `themedWrap` helper from 
 - Public Info dashboard (per `docs/design/07-public-info-dashboard.md`)
 - My Characters dock with Speaking-As switcher (per `docs/design/09-my-characters-dock.md`)
 - Cycle Phase HUD strip (per `docs/design/08-cycle-phase-hud.md`)
-- Welcome Panel (per `docs/design/15-welcome-panel.md`)
 - GM tools: Reveal Control, NPC Quick-Create, NPC Organizer (per `docs/design/19-gm-tools.md`)
 - Token Hover Card (per `docs/design/17-token-hover-card.md`)
 - In-sheet Tooltip system (per `docs/design/20-rule-tooltips.md`)
+
+> Welcome Panel was originally part of Phase 6; cut from scope on 2026-05-06 (see §12.6 and the running log in CLAUDE.md).
 
 **Phase 7 — Chat card system (3–4 days)**
 Six card variants + Speaking-As switcher + Inner Monologue editor flow per `docs/design/10-chat-cards.md`. Centralized helpers in `module/helpers/chat-cards.js`. Templates under `templates/chat-cards/`. The Speaking-As switcher integrates with the My Characters dock's footer.
@@ -653,7 +651,9 @@ A grouped session covering the features that catch problems and create archives:
 - Backup & Export utility (per `docs/design/25-backup-export.md`) — single .json file export with version-checked import.
 - Pending Changes Log section (per `docs/design/26-pending-changes-log.md`) — inline "Since last Upkeep" section on the Major sheet's Public tab. Conditional render based on `pendingChanges.length`.
 - Token Frame canvas rendering (per `docs/design/27-token-frame.md`) — three variants (Major 3px solid + glow, Connection 2px solid, NPC 1px dashed). Uses Foundry's TokenRing API with custom PIXI overlay fallback.
-- Bundled sample world — Dixon, the Cloudcandle family, his existing Connections, a sample ballroom scene. Expanded compendium content (canonical conditions, archetype inner conflicts, sample personas).
+- Expanded compendium content — canonical reputation conditions from the rulebook, archetype inner conflicts (Family vs. Business, Duty vs. Desire, etc.) seeded into the system's bundled packs as drag-targets.
+
+> Bundled sample world (Dixon + Cloudcandle family + Connections + ballroom scene) was originally part of Phase 11; cut from scope on 2026-05-06 (see §12.6 and the running log in CLAUDE.md).
 
 ---
 
@@ -720,7 +720,7 @@ What Claude Code does *not* compress:
 - Visual iteration — getting the sheet to actually feel like the printed paper sheet is dozens of small tweaks the human has to see and judge
 - Foundry-specific debugging — silent sheet-render failures, timing issues with hooks, permission edge cases. Each one is its own small detective puzzle
 - The persona-swap-across-scenes pipeline (Phase 5/8) and the Upkeep wizard (Phase 9) — these are the trickiest parts of the system and will need real iteration regardless of who writes the code
-- Decisions you haven't made yet (open art questions, content authoring for the sample world)
+- Decisions you haven't made yet (open art questions, compendium content authoring)
 
 A pure-human estimate at the same skill level would roughly be 1.5×–2× longer. A pure-AI estimate (no human verification) would be unreliable — Foundry has enough surface area that "looks right" isn't enough; you need to test in-world. So the numbers in §14 are deliberately middle-ground: human-driven, AI-assisted, sanity-checked at every step.
 

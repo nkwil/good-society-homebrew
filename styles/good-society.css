@@ -33,6 +33,9 @@
 /* Speaking-As switcher — chat sidebar component */
 @import './components/_speaking-as.css';
 
+/* Rule tooltip — floating hover panel for [data-tooltip-key] elements */
+@import './components/_rule-tooltip.css';
+
 /* Chat card surfaces — base then per-variant */
 @import './components/_chat-card-base.css';
 @import './components/_chat-card-system.css';

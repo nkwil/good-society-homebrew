@@ -58,7 +58,7 @@ All item sheets are house-styled — items are objects in the world, not voices.
 | 15 | My Characters Dock | Plan §12.1 | Hybrid | Designed | Locked in `09-my-characters-dock.md`. Pinned panel, 290px wide. Header + Major rows + Connections divider + Connection rows + footer with Speaking-As switcher. |
 | 16 | Cycle Phase HUD Strip | Plan §12.2 | House | Designed | Locked in `08-cycle-phase-hud.md`. Thin 40px strip at top of canvas. Cycle counter, six-phase progression track, GM-only Advance Phase button. |
 | 17 | Upkeep Wizard | Plan §12.2 | Hybrid | Designed | Locked in `11-upkeep-wizard.md`. Six-step per-Major modal (welcome → tokens → notes → desire → reputation review → complete). Themed to the active Major. GM Roster View instead of own wizard for GM users. |
-| 18 | Welcome Panel | Plan §12.6 | House | Designed | Locked in `15-welcome-panel.md`. 520px first-load modal, three options (Sample World / Blank / Quick-Start), per-user `welcomePanelDismissed` setting. |
+| 18 | ~~Welcome Panel~~ | ~~Plan §12.6~~ | — | **Cut (2026-05-06)** | Removed from scope when the bundled sample world was cut. Without a Sample World card, the remaining two options didn't justify a first-load modal. Design preserved in `15-welcome-panel.md` for future reference. |
 | 19 | Bulk Permissions Panel | Plan §12.5 | House | Designed | Locked in `22-bulk-permissions-panel.md`. 720px GM-only grid: actors × users with permission level dropdowns. Grouped by actor type (Majors, Connections, NPCs). Pure utility surface, house-styled chrome. |
 | 20 | Reveal Control widget | Plan §12.5 | Hybrid | Designed | Locked in `19-gm-tools.md`. Single-field popover (360px) for per-field visibility flips, plus multi-field bulk form fired from dashboard's "reveal desires" GM action. House chrome with per-actor name accent. |
 | 20a | Condition Picker Modal | Plan §12.3 | Character | Designed | Locked in `18-condition-picker.md`. 520px non-blocking themed modal triggered when 3rd tag of a polarity is added. Sources from bundled + homebrew compendiums. Three close paths: pick / later / no-condition. |
@@ -143,7 +143,7 @@ When this document feeds into actual code work in Claude Code, the recommended o
 10. Public Info dashboard (#14), Cycle HUD (#16), My Characters dock (#15)
 11. Chat cards (#25–32) including monologue and letter flows
 12. Upkeep Wizard (#17) — the highest-impact polish surface
-13. Remaining apps and primitives (Welcome Panel, GM tools, hover cards, tooltips)
+13. Remaining apps and primitives (GM tools, hover cards, tooltips)
 
 This roughly tracks the system plan's phases 1–11.
 
