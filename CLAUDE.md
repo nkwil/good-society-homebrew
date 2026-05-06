@@ -34,7 +34,7 @@ When starting any task on this project:
 
 1. Read this entire file first. Don't skim.
 2. Check the "Locked-in decisions" section (§4) — these are non-negotiable.
-3. Check the "Build phase status" section (§13) for current scope.
+3. Check the "Build phase status" section (§14) for current scope.
 4. Look at the worked examples (§9 and §10) as the canonical pattern. Match them when generating new code.
 5. Apply the conventions in §5 — file naming, code style, import ordering.
 6. When in doubt, prefer matching the boilerplate's style over inventing new patterns.
@@ -159,6 +159,8 @@ bio:
   temperamentGiven: number
   temperamentTaken: number
   portraitUrl: string
+theme: enum                          // see docs/design/decisions.md theme registry
+  ["rose", "roger", "mags", "avril", "dixon", "clayton"]
 personas: array<Persona>             // see §6.5
 activePersonaId: string
 desire: string
@@ -185,9 +187,6 @@ visibility:
   adventurerSentiment: enum["secret", "public", "redacted"]
   notesObjectives: enum["secret", "public", "redacted"]
   innerConflicts: enum["secret", "public", "redacted"]
-chatStyle:
-  color: string                      // hex
-  font: string                       // CSS font-family
 ```
 
 ### 6.2 Connection (`connection`)
@@ -204,6 +203,8 @@ resolve: { current: number, max: number }    // defaults: 1, 5
 sceneInfo:
   hoverSummary: string
   publicTags: array<string>
+theme: enum                          // five connection variants
+  ["connection-green", "connection-purple", "connection-blue", "connection-yellow", "connection-grey"]
 personas: array<Persona>             // optional; same shape as Major's
 activePersonaId: string
 ownership:
@@ -236,6 +237,8 @@ bio:
 sceneInfo:
   hoverSummary: string
   publicTags: array<string>
+theme: enum                          // currently single option; locked-in NPC inherits house
+  ["npc"]
 personas: array<Persona>             // optional
 activePersonaId: string
 ownership:
@@ -255,7 +258,7 @@ tokenImageUrl: string                // canvas token while active
 tokenName: string                    // nameplate
 hoverSummary: string
 publicTags: array<string>
-chatColor: string                    // optional override of actor's chatStyle
+chatColor: string                    // overrides character theme's --gs-brand for this persona's chat cards (hex)
 visibility:                          // each may be "inherit" to defer to actor's flag
   desire: enum["secret", "public", "redacted", "inherit"]
   backstory: enum["secret", "public", "redacted", "inherit"]
@@ -471,6 +474,11 @@ export class MajorCharacterDataModel extends foundry.abstract.TypeDataModel {
         temperamentTaken: new NumberField({ integer: true, initial: 0 }),
         portraitUrl: new StringField({ initial: "" }),
       }),
+      theme: new StringField({
+        required: true,
+        choices: ["rose", "roger", "mags", "avril", "dixon", "clayton"],
+        initial: "clayton",
+      }),
       personas: new ArrayField(new EmbeddedDataField(PersonaModel)),
       activePersonaId: new StringField({ initial: "" }),
       desire: new HTMLField({ initial: "" }),
@@ -507,10 +515,6 @@ export class MajorCharacterDataModel extends foundry.abstract.TypeDataModel {
         adventurerSentiment: new StringField({ choices: ["secret", "public", "redacted"], initial: "public" }),
         notesObjectives: new StringField({ choices: ["secret", "public", "redacted"], initial: "secret" }),
         innerConflicts: new StringField({ choices: ["secret", "public", "redacted"], initial: "secret" }),
-      }),
-      chatStyle: new SchemaField({
-        color: new StringField({ initial: "" }),
-        font: new StringField({ initial: "" }),
       }),
     };
   }
@@ -667,7 +671,98 @@ async function switchPersona(actor, newPersonaId) {
 
 ---
 
-## 12. Reference systems and resources
+## 12. Theming
+
+Visual styling for this system follows the locked design system in `docs/design/`. Key facts Claude Code needs at all times:
+
+### 12.1 Top-level principle
+
+**Antique but clean and legible.** Period type, parchment palette, restrained ornament — but at modern accessibility standards. Eight implementation rules in `docs/design/decisions.md` §"Design principle":
+
+1. Generous whitespace (18–24px padding inside cards)
+2. Hairlines (0.5px), not heavy borders
+3. Period typography at modern sizes (20px+ display, 14px+ body)
+4. One decorative flourish per surface
+5. WCAG AA on all body text (4.5:1 minimum)
+6. No worn/distressed textures
+7. Letterpress-style precision (no shadows, no blur)
+8. Sentence case for prose, small caps for labels
+
+### 12.2 Two-layer theming model
+
+- **House style** — Inkwell & Wildflower. Owns: chrome, item sheets, Family sheets, NPC sheets, system-emitted chat, Cycle HUD, Public Info dashboard frame, GM tools.
+- **Character themes** — twelve presets, applied per-actor. Owns: Major and Connection sheet bodies, in-character chat, letters, monologues, persona-bound surfaces, character-themed entries on shared boards.
+
+Full scope-boundary table in `docs/design/02-theme-architecture.md` §"Scope boundaries". Component-by-component assignments in `docs/design/03-component-inventory.md`.
+
+### 12.3 House palette and type (locked)
+
+CSS variables (full SCSS in `docs/design/decisions.md`):
+
+```css
+:root {
+  --gs-paper:        #EFE6D2;
+  --gs-paper-warm:   #F4ECD8;
+  --gs-ink:          #3D2F26;
+  --gs-brand:        #2A3A2D;
+  --gs-accent-1:     #B85C3F;
+  --gs-accent-2:     #708060;
+  --gs-accent-3:     #C9A55C;
+  --gs-muted:        rgba(112, 128, 96, 0.3);
+  --gs-danger:       #8B2A2A;
+  --gs-positive:     #4A7A4A;
+  --gs-display:      'Lora', 'Palatino', 'Book Antiqua', Georgia, serif;
+  --gs-body:         'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  --gs-ui:           system-ui, 'Helvetica Neue', sans-serif;
+}
+```
+
+### 12.4 Theme registry (locked)
+
+Six Major themes, five Connection variants, one NPC theme. Each is a CSS file under `styles/themes/_theme-{id}.css` defining a `.gs-actor[data-theme="{id}"]` selector. Full per-theme overrides in `docs/design/decisions.md` §"Theme registry".
+
+| ID | Layer | Notes |
+|---|---|---|
+| `rose` | Major | Soft pink. Cormorant Garamond + EB Garamond. |
+| `roger` | Major | Mirror of rose, blue. Twin link via shared accent-3. |
+| `mags` | Major | Dark, lethal. DM Serif Display + Crimson. |
+| `avril` | Major | Candlelight & crimson. Didot + Crimson. |
+| `dixon` | Major | Heraldic red & gold. Cinzel (names only) + Crimson. |
+| `clayton` | Major | Green simple. Shares type with house — palette differs. Default for new Majors. |
+| `connection-green` | Connection | Type matches house. |
+| `connection-purple` | Connection | Type matches house. |
+| `connection-blue` | Connection | Type matches house. |
+| `connection-yellow` | Connection | Type matches house. |
+| `connection-grey` | Connection | Type matches house. |
+| `npc` | NPC | Inherits house. No overrides. |
+
+### 12.5 Portable theme wrapper
+
+For surfaces that aren't bound to a single actor (chat messages, letter cards, themed board entries), wrap rendered content in `.gs-themed[data-theme="<theme-id>"]`. CSS variables resolve inside that wrapper. The same primitive renders correctly for any sender.
+
+```html
+<div class="gs-themed" data-theme="dixon">
+  <!-- letter content -->
+</div>
+```
+
+### 12.6 Font loading
+
+System loads font files for all registered themes at init time using `@fontsource` packages bundled with the system. Fallback stacks ensure missing fonts degrade gracefully. Declared in `system.json`'s `styles` array; loaded by base SCSS `@import` directives.
+
+### 12.7 When adding themed content (recipe)
+
+1. Determine scope from the table in `docs/design/02-theme-architecture.md` and `03-component-inventory.md`. If unsure, ask before coding.
+2. If house-styled: use the root CSS variables directly.
+3. If character-themed and the surface is bound to a sheet (e.g. Major sheet body): the sheet's root carries `.gs-actor[data-theme="..."]`; descendants inherit automatically.
+4. If character-themed and the content travels (chat, letter, board entry): wrap the rendered content in `.gs-themed[data-theme="<theme-id>"]`.
+5. Read the theme id from the actor: `actor.system.theme`. For personas, also resolve `persona.chatColor` and apply it as an inline style override on the chat-card brand.
+6. Honor the eight antique-but-clean rules. If a layout decision violates them, flag it and ask.
+
+---
+
+## 13. Reference systems and resources
 
 When stuck on a Foundry pattern, check these in order:
 
@@ -686,23 +781,23 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 ---
 
-## 13. Build phase status
+## 14. Build phase status
 
-**Currently in:** Phase 0 — Scaffolding (almost done)
+**Currently in:** Phase 1.5 — Theme field backfill (next: Session A.5)
 
 **Done:**
-- Forked Asacolips' Boilerplate
-- Renamed system identity (system.json, package.json, README)
-- Symlinked into Foundry data folder
-- Verified loads in v13 with no console errors
+- Phase 0: fork, rename, verify load
+- Session A: all 10 DataModels defined and registered
 
 **Next:**
-- Rename boilerplate's internal Actor type to `major-character`
-- Begin Phase 1 (DataModel batch — see §17.3 of PLAN.md)
+- Session A.5 — backfill `theme` field on Major/Connection/NPC; remove `chatStyle` storage from Major
+- Session B-0 — CSS architecture (variables, fonts, card primitive, `.gs-themed` wrapper, clayton preset)
+- Session B-1 — sheet templates batch
+- Session B-2 — remaining eleven theme presets
 
 ---
 
-## 14. Open decisions / running log
+## 15. Open decisions / running log
 
 Record decisions made *during* the build here so future sessions don't re-litigate them.
 
@@ -710,7 +805,7 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 
 ---
 
-## 15. Anti-patterns — don't do these
+## 16. Anti-patterns — don't do these
 
 - ❌ Don't mutate `actor.system.x = y` directly. Always `await actor.update(...)`.
 - ❌ Don't use `Application` (v1) — only `ApplicationV2`.
@@ -719,3 +814,6 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - ❌ Don't write tests against Foundry internals. Test pure helpers in `module/helpers/` only; integration testing happens in-world.
 - ❌ Don't store derived state. Compute it in the data model's `prepareDerivedData()` or in a sheet's `_prepareContext()`.
 - ❌ Don't add modules as hard dependencies. Sequencer + JB2A are *recommended*; the system must degrade gracefully if they're missing.
+- ❌ Don't store `chatStyle.color` or `chatStyle.font` on the actor. They're derived from `actor.system.theme` at render time. Hard-coding them anywhere except the theme CSS files defeats the registry.
+- ❌ Don't add new theme presets without an entry in `docs/design/decisions.md` §"Theme registry". Visual decisions live in the design track; code follows the registry, not the other way around.
+- ❌ Don't put `:root` overrides inside a sheet's stylesheet. They leak globally. Scope to `.gs-actor[data-theme="..."]` or `.gs-themed[data-theme="..."]`.

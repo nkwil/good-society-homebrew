@@ -236,7 +236,21 @@ Portrait, name, pronouns, relationship label, impressions list (one per Major), 
 
 ### 6.3 Visual styling
 
-The paper sheet has a recognizable look: cream stationery background, dark red headers and accents, serif body, small caps for section titles, oval portrait frame on a tan side panel. Bake this into `styles/good-society.css` from day one so each new section keeps the period feel. Don't over-engineer it as a theme system unless you want multiple skins.
+Visual styling follows the locked design system. The house style (Inkwell & Wildflower) governs chrome, item sheets, the Family and NPC sheets, the Cycle HUD, the Public Info dashboard frame, and all GM tools. Major Character and Connection sheet bodies adopt the actor's character theme via a `.gs-actor[data-theme="..."]` selector on the sheet root, which rebinds CSS custom properties. The full palette and type tokens are in `docs/design/decisions.md`; the scope-boundary table is in `docs/design/02-theme-architecture.md`.
+
+The eight implementation rules of the antique-but-clean principle (in `decisions.md`) constrain everything: hairlines not heavy borders; generous whitespace; period type at modern sizes; one ornament per surface; WCAG AA on all body text; no distressed textures; letterpress-style precision; sentence case for prose, small caps for labels.
+
+### 6.4 Reference: design system
+
+A full design-system documentation tree lives in `docs/design/`:
+
+- `README.md` — folder orientation
+- `01-mood-exploration.md` — mood directions explored, decision rationale (Closed)
+- `02-theme-architecture.md` — two-layer model, scope boundaries, wrapper mechanism (Locked)
+- `03-component-inventory.md` — 59 components mapped to theme scope and design status
+- `decisions.md` — authoritative locked palette, type tokens, twelve-theme registry, antique-but-clean principle
+
+When implementing visual surfaces, link the relevant design doc in your Claude Code prompt rather than describing the design inline. This keeps the implementation grounded in the locked decisions and prevents drift.
 
 ---
 
@@ -403,7 +417,7 @@ These are features beyond the core mechanical replication of the sheet. Each one
 
 **Persona-aware chat by default.** When you speak as Dixon while his active persona is "Anti-magic Duke," the chat card shows that persona's portrait and name — not his true identity. Magically prevents most accidental fiction-leaks. Pulls portrait/name from `actor.system.personas[activePersonaId]` instead of the actor's base values.
 
-**Per-character chat styling.** Each persona stores an optional `chatColor` and `chatFont`. Chat cards from that persona use those styles. Useful for distinguishing voices at a glance — a heated argument between three of one player's characters reads differently than three identical bubbles.
+**Per-character chat styling.** Chat cards from a character render inside a `.gs-themed[data-theme="<theme-id>"]` wrapper, which locally rebinds the palette to that character's theme. The card's text color comes from the theme's `--gs-brand`; body type from `--gs-body`. Persona overrides apply via Persona.chatColor (overrides only the brand, not the type). System-emitted chat (token spends, phase changes) skips the wrapper and uses house style. See `docs/design/02-theme-architecture.md` for the wrapper mechanism.
 
 ### 12.2 Cycle of play / session flow
 
@@ -439,7 +453,7 @@ Turns Upkeep from "did everyone remember to do the things" into a guided 60-seco
 
 **Bulk permissions panel.** A GM-only `ApplicationV2` window listing all actors in a grid against all users, with permission level dropdowns. Set who-owns-what across the world in one screen instead of 20 per-actor right-click menus. Particularly important since each player owns multiple Majors and Connections.
 
-**Epistolary letter formatter.** During Epistolary phase, GMs and players get a "Send Letter" button (in the dock or chat strip) that opens a composer: sender persona, recipient persona, subject, body, optional handwriting style. Posts a stylized parchment-themed chat card with period-appropriate fonts. Optionally archives to the same folder as the session log.
+**Epistolary letter formatter.** During Epistolary phase, GMs and players get a "Send Letter" button that opens a composer (sender persona, recipient persona, subject, body, optional handwriting style). The composer chrome uses house style; the preview pane and the posted card use the *sender's* full character theme via the `.gs-themed[data-theme="..."]` wrapper. This is the canonical proof-point for portable theming — any sender's letter renders correctly with the same template. Optionally archives the letter to a journal folder dated by cycle.
 
 **NPC quick-create.** Right-click empty canvas → "Create NPC here." Tiny modal: name, role (Innkeeper/Footman/...), portrait (optional, uses generic if none). Drops an NPC actor token at the click location with sensible defaults. For when a player asks "what's the innkeeper's name?" mid-scene and you don't want to break flow.
 
@@ -542,8 +556,17 @@ Roughly in dependency order. Each phase is a usable milestone. Time estimates ar
 **Phase 0 — Scaffolding (½–1 day)**
 Create `system.json`, register one empty Major Character actor type, get the system loading in Foundry v13 with no console errors. Set up Vite, symlinks, and `CLAUDE.md`.
 
-**Phase 1 — Major Character sheet, fillable (2–4 days)**
-Build the Major Character DataModel, the ApplicationV2 sheet with Public/Private/Tokens tabs, all input fields working, period styling. Includes **in-sheet rule tooltips** (§12.6) on every section header. No automation yet — just a digital fillable sheet that looks like the print one.
+**Phase 1 — Major Character sheet, fillable** (split into three sub-sessions; 5–7 days total)
+
+Phase 1a — DataModel batch (Session A) — 1–2 days. ✓ Done.
+
+Phase 1.5 — Theme field backfill (Session A.5) — 30 min. Add `theme` enum to Major/Connection/NPC; remove `chatStyle` storage from Major; verify in Foundry that defaults populate correctly.
+
+Phase 1b — CSS architecture (Session B-0) — 1–2 days. House CSS variables, font loading via `@fontsource`, one card primitive in house style, the `.gs-themed[data-theme="..."]` wrapper mechanism, and one character preset (`clayton`) implemented as full overrides to validate the pipeline. No sheet templates yet.
+
+Phase 1c — Sheet templates batch (Session B-1) — 2–3 days. Build all Handlebars templates (Major, Connection, Family, NPC, item types) consuming the theme tokens and house variables. In-sheet rule tooltips wired. Per-component implementation order follows `docs/design/03-component-inventory.md` §"Implementation order (suggested)".
+
+Phase 1d — Remaining theme presets — 1 day. The other eleven presets implemented. Each is a CSS file with overrides under `.gs-actor[data-theme="..."]`. The `clayton` work in Phase 1b is the template.
 
 **Phase 2 — Item types & token mechanics (2–3 days)**
 Reputation Tag, Reputation Condition, Inner Conflict, Magic/Skill, Backstory Action as item types. Resolve tokens click-to-toggle. MT toggle. Monologue toggle. **Visual reputation meter** (§12.3) on the sheet. Rules tracked but not enforced.
@@ -581,6 +604,8 @@ Sequencer + JB2A integration, VFX firing on cast, Alter Self → persona-swap li
 
 These are the decisions made during planning. Paste this section into `CLAUDE.md` so Claude Code applies them consistently.
 
+> **Visual design decisions** — top-level design principle, theming architecture, house style palette/type, and the twelve-theme registry — live in the parallel design track at `docs/design/decisions.md`. Treat that file as the authoritative record for visual choices; the items below cover system-architecture decisions only. Cross-references are noted where they intersect.
+
 1. **Family is an Actor type, not an Item.** Multiple Majors share a single Family actor, referenced by `familyId`. Family holds the unique negative reputation criteria, motto, crest, and notes. Editing once propagates everywhere.
 2. **Connection actors default to a shared pool** (everyone reads, GM authors). Specific Connections may be promoted to player `OWNER` permissions when they "belong" to a Major. There is also a separate **NPC actor type**, GM-only by default, for ambient cast who aren't formal Connections (innkeepers, footmen, anonymous gentlemen). NPCs can be promoted to Connection later if they become important.
 3. **Visibility is per-field**, not per-sheet. Each sensitive field — Desire, Backstory, Magic, Adventurer Sentiment, Notes & Objectives, Inner Conflicts — has its own `secret | public | redacted` flag. Personas can override Major-level visibility per-identity (e.g., Magic might be `secret` for Dixon-the-Duke and `public` for an alter-ego).
@@ -589,6 +614,8 @@ These are the decisions made during planning. Paste this section into `CLAUDE.md
 6. **Adventurer Sentiment is pure flavor text.** Single `string` field. No mechanics, no extra schema, no compendium content needed.
 7. **Foundry v13 only.** No backwards compatibility with v12 — use `ApplicationV2`, `HandlebarsApplicationMixin`, `TypeDataModel`, the v13 token texture API. Anything tagged "legacy" or v11 in tutorials is irrelevant.
 8. **Personas are first-class.** Each Major (and optionally Connection/NPC) has a list of personas with their own portraits, token images, names, and visibility overrides. Switching persona updates every placed token of that actor across all scenes. See §11.
+9. **Visual design follows the antique-but-clean principle and a two-layer theming model.** House style (Inkwell & Wildflower) owns chrome, item sheets, Family, NPC, system-emitted chat, and the Cycle HUD. Character themes own Major/Connection sheet bodies, in-character chat, letters, monologues, and character-themed entries on shared boards. Twelve theme presets are locked (six Major, five Connection, one NPC). Source of truth: `docs/design/decisions.md` and `docs/design/02-theme-architecture.md`.
+10. **Per-character chat styling is derived from the active theme**, not stored on the actor. The Major actor schema carries a `theme` enum field; chat cards resolve the theme's `--gs-brand` (color) and `--gs-body` (font) at render time. Personas may override the brand color via their existing `chatColor` field.
 
 ---
 
