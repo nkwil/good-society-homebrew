@@ -27,6 +27,15 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     classes: ['good-society', 'sheet', 'actor', 'major-character'],
     position: { width: 720, height: 'auto' },
     window: { contentClasses: ['gs-major-sheet'] },
+    // ApplicationV2 sheets do NOT auto-submit form inputs by default.
+    // Without `form.submitOnChange`, every native input/select on the sheet
+    // (persona <select>, bio chips, name field, etc.) is visual-only — the
+    // user's change never persists to actor.system. Standard ActorSheetV2
+    // pattern is to opt in here.
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    },
     actions: {
       toggleResolvePip: MajorCharacterSheet.#toggleResolvePip,
       toggleMt: MajorCharacterSheet.#toggleMt,
