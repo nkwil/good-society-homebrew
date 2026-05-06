@@ -1,0 +1,71 @@
+<form class="gs-item-sheet__form" autocomplete="off">
+  <header class="gs-item-sheet__header">
+    <div class="gs-item-sheet__header-row">
+      <span class="gs-item-sheet__eyebrow">{{localize "GOODSOCIETY.item.magicSkill.eyebrow"}}</span>
+      <div class="gs-item-sheet__header-flags">
+        {{#if triggersSwap}}
+          <span class="gs-item-sheet__meta" title="{{localize "GOODSOCIETY.private.triggersSwap"}}">
+            {{localize "GOODSOCIETY.private.triggersSwap"}}
+          </span>
+        {{/if}}
+        <button type="button"
+                class="gs-btn-flag{{#if system.hidden}} gs-btn-flag--active{{/if}}"
+                data-action="toggleHidden"
+                title="{{localize "GOODSOCIETY.item.magicSkill.hiddenTitle"}}">
+          {{#if system.hidden}}{{localize "GOODSOCIETY.item.magicSkill.hidden"}}{{else}}{{localize "GOODSOCIETY.item.magicSkill.visible"}}{{/if}}
+        </button>
+      </div>
+    </div>
+    <input class="gs-item-sheet__name"
+           type="text"
+           name="name"
+           value="{{document.name}}"
+           placeholder="{{localize "GOODSOCIETY.item.magicSkill.namePlaceholder"}}" />
+  </header>
+
+  <div class="gs-item-sheet__body">
+
+    {{!-- Description --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.description"}}</span>
+      {{editor system.description target="system.description" button=true editable=true}}
+    </div>
+
+    {{!-- Reference URL --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.referenceUrl"}}</span>
+      <input class="gs-item-sheet__input"
+             type="url"
+             name="system.referenceUrl"
+             value="{{system.referenceUrl}}"
+             placeholder="{{localize "GOODSOCIETY.item.magicSkill.referenceUrlPlaceholder"}}" />
+    </div>
+
+    {{!-- VFX / Sound (GM fields) --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.vfxKey"}}</span>
+      <input class="gs-item-sheet__input gs-item-sheet__input--mono"
+             type="text"
+             name="system.vfxKey"
+             value="{{system.vfxKey}}"
+             placeholder="{{localize "GOODSOCIETY.item.magicSkill.vfxKeyPlaceholder"}}" />
+    </div>
+
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.soundUrl"}}</span>
+      <input class="gs-item-sheet__input gs-item-sheet__input--mono"
+             type="text"
+             name="system.soundUrl"
+             value="{{system.soundUrl}}"
+             placeholder="{{localize "GOODSOCIETY.item.magicSkill.soundUrlPlaceholder"}}" />
+    </div>
+
+  </div>
+
+  <footer class="gs-item-sheet__footer">
+    <span class="gs-item-sheet__footer-note">{{localize "GOODSOCIETY.item.magicSkill.castNote"}}</span>
+    <button type="button" class="gs-btn gs-btn--primary" data-action="cast">
+      {{localize "GOODSOCIETY.item.magicSkill.cast"}}
+    </button>
+  </footer>
+</form>

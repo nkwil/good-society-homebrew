@@ -1,0 +1,13 @@
+/* Inner Conflict item sheet — thin delta from _item-base.css.
+   Body gets extra padding to breathe around the grid partial. */
+
+.gs-item-sheet--inner-conflict .gs-item-sheet__meta--completed {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-positive);
+}
+
+.gs-item-sheet__body--inner-conflict {
+  padding: 20px 22px;
+}

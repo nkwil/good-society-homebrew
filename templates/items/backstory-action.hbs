@@ -1,0 +1,46 @@
+<form class="gs-item-sheet__form" autocomplete="off">
+  <header class="gs-item-sheet__header">
+    <div class="gs-item-sheet__header-row">
+      <span class="gs-item-sheet__eyebrow">{{localize "GOODSOCIETY.item.backstoryAction.eyebrow"}}</span>
+      <div class="gs-item-sheet__header-flags">
+        <button type="button"
+                class="gs-btn-flag{{#if system.expanded}} gs-btn-flag--active{{/if}}"
+                data-action="toggleExpanded"
+                title="{{localize "GOODSOCIETY.item.backstoryAction.expandedTitle"}}">
+          {{#if system.expanded}}{{localize "GOODSOCIETY.item.backstoryAction.expanded"}}{{else}}{{localize "GOODSOCIETY.item.backstoryAction.collapsed"}}{{/if}}
+        </button>
+        <button type="button"
+                class="gs-btn-flag{{#if system.used}} gs-btn-flag--spent{{/if}}"
+                data-action="toggleUsed"
+                title="{{localize "GOODSOCIETY.item.backstoryAction.usedTitle"}}">
+          {{#if system.used}}{{localize "GOODSOCIETY.item.backstoryAction.used"}}{{else}}{{localize "GOODSOCIETY.item.backstoryAction.available"}}{{/if}}
+        </button>
+      </div>
+    </div>
+    <input class="gs-item-sheet__name"
+           type="text"
+           name="name"
+           value="{{document.name}}"
+           placeholder="{{localize "GOODSOCIETY.item.backstoryAction.namePlaceholder"}}" />
+  </header>
+
+  <div class="gs-item-sheet__body">
+
+    {{!-- Description --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.backstoryAction.description"}}</span>
+      {{editor system.description target="system.description" button=true editable=true}}
+    </div>
+
+    {{!-- Source conflict (read-only ID for now; conflict picker is B-5) --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.backstoryAction.sourceConflict"}}</span>
+      {{#if system.sourceConflictId}}
+        <p class="gs-item-sheet__helper gs-item-sheet__helper--id">{{system.sourceConflictId}}</p>
+      {{else}}
+        <p class="gs-item-sheet__helper gs-item-sheet__helper--empty">{{localize "GOODSOCIETY.item.backstoryAction.noSourceConflict"}}</p>
+      {{/if}}
+    </div>
+
+  </div>
+</form>

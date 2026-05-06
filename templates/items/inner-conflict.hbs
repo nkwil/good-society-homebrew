@@ -1,0 +1,31 @@
+<form class="gs-item-sheet__form" autocomplete="off">
+  <header class="gs-item-sheet__header">
+    <div class="gs-item-sheet__header-row">
+      <span class="gs-item-sheet__eyebrow">{{localize "GOODSOCIETY.item.innerConflict.eyebrow"}}</span>
+      {{#if completed}}
+        <span class="gs-item-sheet__meta gs-item-sheet__meta--completed">{{localize "GOODSOCIETY.item.innerConflict.completed"}}</span>
+      {{/if}}
+    </div>
+    <input class="gs-item-sheet__name"
+           type="text"
+           name="name"
+           value="{{document.name}}"
+           placeholder="{{localize "GOODSOCIETY.item.innerConflict.namePlaceholder"}}" />
+  </header>
+
+  <div class="gs-item-sheet__body gs-item-sheet__body--inner-conflict">
+
+    {{!-- The shared inner-conflict-grid partial (registered at init) --}}
+    {{> inner-conflict-grid}}
+
+  </div>
+
+  {{#if completed}}
+  <footer class="gs-item-sheet__footer">
+    <span class="gs-item-sheet__footer-note">{{localize "GOODSOCIETY.item.innerConflict.completedNote"}}</span>
+    <button type="button" class="gs-btn gs-btn--ghost" data-action="reopenConflict">
+      {{localize "GOODSOCIETY.item.innerConflict.reopen"}}
+    </button>
+  </footer>
+  {{/if}}
+</form>

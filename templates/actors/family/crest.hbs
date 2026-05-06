@@ -1,0 +1,36 @@
+{{!-- Family sheet — crest PART. Per docs/design/14-family-sheet.md §"Crest block". --}}
+<section class="gs-family-sheet__crest">
+
+  <div class="gs-family-sheet__crest-grid">
+
+    {{!-- Left: crest medallion + engraving label --}}
+    <div class="gs-family-sheet__crest-col">
+      <div class="gs-crest-medallion">
+        {{#if system.crest.imageUrl}}
+          <img class="gs-crest-medallion__image"
+               src="{{system.crest.imageUrl}}"
+               alt="{{system.familyName}}"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+          <span class="gs-crest-medallion__monogram" style="display:none">{{familyInitial}}</span>
+        {{else}}
+          <span class="gs-crest-medallion__monogram">{{familyInitial}}</span>
+        {{/if}}
+      </div>
+      <span class="gs-crest-medallion__label">{{system.familyName}}</span>
+    </div>
+
+    {{!-- Right: motto --}}
+    <div class="gs-family-sheet__motto-col">
+      <header class="gs-section-header" data-tooltip-key="familyMotto">
+        {{localize "GOODSOCIETY.family.houseMotto"}}
+      </header>
+      <input class="gs-family-sheet__motto"
+             type="text"
+             name="system.crest.motto"
+             value="{{system.crest.motto}}"
+             placeholder="{{localize "GOODSOCIETY.family.mottoPlaceholder"}}" />
+    </div>
+
+  </div>
+
+</section>

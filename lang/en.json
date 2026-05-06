@@ -31,15 +31,25 @@
     "sheets": {
       "stub": "Good Society Actor Sheet (placeholder)",
       "majorCharacter": "Major Character Sheet",
-      "connection": "Connection Sheet"
+      "connection": "Connection Sheet",
+      "family": "Family Sheet",
+      "npc": "NPC Sheet",
+      "reputationTag": "Reputation Tag Sheet",
+      "reputationCondition": "Reputation Condition Sheet",
+      "innerConflict": "Inner Conflict Sheet",
+      "magicSkill": "Magic / Skill Sheet",
+      "backstoryAction": "Backstory Action Sheet"
     },
+
     "tab": {
       "public": "Public",
       "private": "Private"
     },
+
     "sheet": {
       "namePlaceholder": "Character name"
     },
+
     "strip": {
       "resolve": "resolve",
       "mtTitle": "Major Token — click to toggle",
@@ -49,16 +59,139 @@
       "cycle": "cycle",
       "takeMonologue": "Take Monologue"
     },
+
     "polarity": {
+      "label": "Polarity",
       "positive": "Positive (▲)",
       "negative": "Negative (▼)"
     },
+
     "tag": {
       "namePlaceholder": "Tag name (e.g. Ambitious)",
       "polarity": "Polarity",
       "description": "Description",
       "source": "Source"
     },
+
+    "item": {
+      "reputationTag": {
+        "eyebrow": "Reputation tag",
+        "namePlaceholder": "Tag name (e.g. Ambitious)",
+        "sourcePlaceholder": "Scene 4 · declared ducal investment intent"
+      },
+      "reputationCondition": {
+        "eyebrow": "Reputation condition",
+        "namePlaceholder": "Condition name",
+        "toggleActive": "Toggle active / inactive",
+        "active": "active",
+        "inactive": "inactive",
+        "description": "Description",
+        "sourceTags": "Source tags",
+        "sourceTagsLinked": "tag(s) linked"
+      },
+      "innerConflict": {
+        "eyebrow": "Inner conflict",
+        "namePlaceholder": "Conflict name",
+        "leftDefault": "Left",
+        "rightDefault": "Right",
+        "completed": "resolved",
+        "completedNote": "This conflict is resolved. GM may reopen.",
+        "reopen": "reopen"
+      },
+      "magicSkill": {
+        "eyebrow": "Magic · skill",
+        "namePlaceholder": "Skill or magic name",
+        "hidden": "hidden",
+        "visible": "visible",
+        "hiddenTitle": "Hidden from other players",
+        "description": "Description",
+        "referenceUrl": "Reference",
+        "referenceUrlPlaceholder": "https://...",
+        "vfxKey": "VFX key",
+        "vfxKeyPlaceholder": "jb2a.misty_step.01.blue",
+        "soundUrl": "Sound URL",
+        "soundUrlPlaceholder": "sounds/magic/sparkle.ogg",
+        "cast": "cast",
+        "castNote": "Triggers VFX and sound on all clients."
+      },
+      "backstoryAction": {
+        "eyebrow": "Backstory action",
+        "namePlaceholder": "Action name",
+        "expanded": "expanded",
+        "collapsed": "collapsed",
+        "expandedTitle": "Show / hide detail",
+        "used": "spent",
+        "available": "available",
+        "usedTitle": "Mark used / available",
+        "description": "Description",
+        "sourceConflict": "Source conflict",
+        "noSourceConflict": "No inner conflict linked."
+      }
+    },
+
+    "npc": {
+      "eyebrow": "NPC · ambient cast",
+      "namePlaceholder": "NPC name",
+      "themeLabel": "theme · npc · house style",
+      "description": "Description",
+      "promoteToConnection": "+ promote to connection",
+      "grantToPlayer": "grant to player",
+      "promoteTitle": "Promote to Connection?",
+      "promoteConfirm": "Promote {name} to Connection? They'll gain a resolve track, impressions, and a theme. Bio, description, scene info, and personas are preserved."
+    },
+
+    "family": {
+      "eyebrow": "Family",
+      "namePlaceholder": "Family name",
+      "member": "member",
+      "members": "members",
+      "linkMajor": "link a Major",
+      "houseMotto": "House Motto",
+      "mottoPlaceholder": "Probity. Patience. Honour.",
+      "origin": {
+        "label": "Origin",
+        "heir": "heir",
+        "newArrival": "new arrival",
+        "foreign": "foreign"
+      },
+      "heirStatus": {
+        "label": "Heir Status",
+        "namedSon": "named — a son",
+        "namedDaughter": "named — a daughter",
+        "namedFoster": "named — a foster",
+        "vacant": "no heir",
+        "contested": "contested"
+      },
+      "heirStatusFlavorPlaceholder": "e.g. unprecedented in 200 years",
+      "uniqueNegativeRepCriteria": "Unique Negative Reputation Criteria",
+      "criteriaPlaceholder": "A daughter of this house is judged by…",
+      "criteriaNote": "— shown read-only on every member Major's tab",
+      "notes": "Notes · history",
+      "memberMajors": "Member Majors",
+      "membersHelper": "click any to open",
+      "noMembers": "No Major characters linked to this family yet.",
+      "noTheme": "no theme assigned"
+    },
+
+    "connection": {
+      "eyebrow": "Connection",
+      "namePlaceholder": "Connection name",
+      "linkedTo": "linked to",
+      "noMajor": "no Major assigned",
+      "description": "Description",
+      "impressions": "Impressions",
+      "addImpression": "add",
+      "impressionPlaceholder": "No impression written yet.",
+      "edit": "edit",
+      "noImpressions": "No impressions yet.",
+      "publicTags": "Public tags",
+      "noTags": "none",
+      "hoverSummary": "Hover summary",
+      "hoverSummaryPlaceholder": "What appears when a player mouses over this connection's token.",
+      "personas": "Personas",
+      "noPersonas": "no alternate identities"
+    },
+
     "public": {
       "reputationCriteria": "Reputation Criteria",
       "noFamily": "No family assigned.",
@@ -74,6 +207,7 @@
       "beginConflict": "Begin a conflict",
       "completedConflicts": "Completed Conflicts"
     },
+
     "private": {
       "age": "years",
       "appearancePlaceholder": "gentle, composed…",
@@ -89,6 +223,19 @@
       "adventurerSentiment": "Adventurer Sentiment",
       "adventurerSentimentPlaceholder": "A dashing adventurer, secretly…"
     },
+
+    "tooltips": {
+      "familyMotto": { "body": "The family's sworn declaration — read aloud at formal toasts and printed on the crest." },
+      "familyOrigin": { "body": "The family's social standing: heir (established local nobility), new arrival (recently titled or relocated), or foreign (outsider lineage)." },
+      "heirStatus": { "body": "Whether the family has a named heir, and in what form. Affects reputation conditions in some scenarios." },
+      "uniqueNegativeRepCriteria": { "body": "The standard by which this family's members are judged. Shown read-only on every member Major's Public tab." },
+      "familyNotes": { "body": "GM-only history, internal politics, and secrets the players don't know." },
+      "memberMajors": { "body": "Major Characters linked to this family. Set a Major's familyId field to add them here." },
+      "npcDescription": { "body": "Bio, role, and backstory for this NPC. Longer prose goes here; the Hover Summary is the one-line version for the canvas." },
+      "publicTags": { "body": "Short tags visible on the canvas hover card and in the NPC Organizer. Examples: eligible, tradesman, widowed, spy." },
+      "hoverSummary": { "body": "The one or two sentences that appear when a player hovers over this character's token on the canvas." }
+    },
+
     "theme": {
       "rose": "Rose",
       "roger": "Roger",
@@ -110,7 +257,6 @@
       "character": "Character",
       "npc": "NPC",
       "family": "Family",
-      "npc": "NPC",
       "connection": "Connection",
       "major-character": "Major Character"
     },

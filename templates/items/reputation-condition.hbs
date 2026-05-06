@@ -1,0 +1,57 @@
+<form class="gs-item-sheet__form" autocomplete="off">
+  <header class="gs-item-sheet__header">
+    <div class="gs-item-sheet__header-row">
+      <span class="gs-item-sheet__eyebrow">{{localize "GOODSOCIETY.item.reputationCondition.eyebrow"}}</span>
+      <button type="button"
+              class="gs-btn-status{{#if system.active}} gs-btn-status--active{{/if}}"
+              data-action="toggleActive"
+              title="{{localize "GOODSOCIETY.item.reputationCondition.toggleActive"}}">
+        {{#if system.active}}{{localize "GOODSOCIETY.item.reputationCondition.active"}}{{else}}{{localize "GOODSOCIETY.item.reputationCondition.inactive"}}{{/if}}
+      </button>
+    </div>
+    <input class="gs-item-sheet__name"
+           type="text"
+           name="name"
+           value="{{document.name}}"
+           placeholder="{{localize "GOODSOCIETY.item.reputationCondition.namePlaceholder"}}" />
+  </header>
+
+  <div class="gs-item-sheet__body">
+
+    {{!-- Polarity --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.polarity.label"}}</span>
+      <div class="gs-item-sheet__polarity-row">
+        <button type="button"
+                class="gs-btn-polarity gs-btn-polarity--positive{{#if (eq system.polarity 'positive')}} gs-btn-polarity--active{{/if}}"
+                data-action="setPolarity"
+                data-polarity="positive">
+          {{localize "GOODSOCIETY.polarity.positive"}}
+        </button>
+        <button type="button"
+                class="gs-btn-polarity gs-btn-polarity--negative{{#if (eq system.polarity 'negative')}} gs-btn-polarity--active{{/if}}"
+                data-action="setPolarity"
+                data-polarity="negative">
+          {{localize "GOODSOCIETY.polarity.negative"}}
+        </button>
+      </div>
+    </div>
+
+    {{!-- Description --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.reputationCondition.description"}}</span>
+      {{editor system.description target="system.description" button=true editable=true}}
+    </div>
+
+    {{!-- Source tag IDs (read-only count for now; full tag picker is B-5) --}}
+    {{#if system.sourceTagIds.length}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.reputationCondition.sourceTags"}}</span>
+      <p class="gs-item-sheet__helper">
+        {{system.sourceTagIds.length}} {{localize "GOODSOCIETY.item.reputationCondition.sourceTagsLinked"}}
+      </p>
+    </div>
+    {{/if}}
+
+  </div>
+</form>

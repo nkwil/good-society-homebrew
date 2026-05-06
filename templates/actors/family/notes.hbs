@@ -1,0 +1,23 @@
+{{!-- Family sheet — GM notes PART. Per docs/design/14-family-sheet.md §"GM Notes block". --}}
+<section class="gs-family-sheet__notes">
+
+  <div class="gs-family-sheet__section-row">
+    <div class="gs-family-sheet__notes-label">
+      <span class="gs-gm-pill">GM</span>
+      <header class="gs-section-header" data-tooltip-key="familyNotes">
+        {{localize "GOODSOCIETY.family.notes"}}
+      </header>
+    </div>
+    <button class="gs-visibility-flag gs-visibility-flag--{{system.visibility.notes}}"
+            type="button"
+            data-action="toggleVisibility"
+            data-field="notes">
+      {{system.visibility.notes}}
+    </button>
+  </div>
+
+  <div class="gs-family-sheet__notes-body">
+    {{editor system.notes target="system.notes" button=true editable=true}}
+  </div>
+
+</section>

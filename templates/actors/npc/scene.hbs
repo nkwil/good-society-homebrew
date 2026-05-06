@@ -1,0 +1,35 @@
+{{!-- NPC sheet — scene info PART. Same structure as Connection scene. --}}
+<section class="gs-npc-sheet__scene">
+  <div class="gs-npc-sheet__scene-grid">
+
+    <div class="gs-npc-sheet__scene-col">
+      <div class="gs-npc-sheet__section-row">
+        <header class="gs-section-header" data-tooltip-key="publicTags">
+          {{localize "GOODSOCIETY.connection.publicTags"}}
+        </header>
+        <button class="gs-btn gs-btn--secondary gs-btn--sm"
+                type="button"
+                data-action="addPublicTag">+</button>
+      </div>
+      <div class="gs-npc-sheet__tag-list">
+        {{#each publicTags}}
+          <span class="gs-scene-tag">{{this}}</span>
+        {{/each}}
+        {{#unless publicTags.length}}
+          <span class="gs-npc-sheet__empty-state">{{localize "GOODSOCIETY.connection.noTags"}}</span>
+        {{/unless}}
+      </div>
+    </div>
+
+    <div class="gs-npc-sheet__scene-col">
+      <header class="gs-section-header" data-tooltip-key="hoverSummary">
+        {{localize "GOODSOCIETY.connection.hoverSummary"}}
+      </header>
+      <textarea class="gs-npc-sheet__hover-summary"
+                name="system.sceneInfo.hoverSummary"
+                placeholder="{{localize "GOODSOCIETY.connection.hoverSummaryPlaceholder"}}"
+                rows="3">{{hoverSummary}}</textarea>
+    </div>
+
+  </div>
+</section>

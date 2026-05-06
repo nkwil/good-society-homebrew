@@ -1,0 +1,46 @@
+{{!-- Family sheet — origin/heir status PART. Per docs/design/14-family-sheet.md §"Origin and Heir Status row". --}}
+<section class="gs-family-sheet__status">
+
+  {{!-- Origin --}}
+  <div class="gs-family-sheet__status-item">
+    <header class="gs-section-header" data-tooltip-key="familyOrigin">
+      {{localize "GOODSOCIETY.family.origin.label"}}
+    </header>
+    <div class="gs-family-sheet__status-value">
+      <span class="gs-family-sheet__dot gs-family-sheet__dot--origin-{{system.origin}}"></span>
+      <select name="system.origin" class="gs-family-sheet__select">
+        <option value="heir"        {{#if (eq system.origin "heir")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.heir"}}</option>
+        <option value="new-arrival" {{#if (eq system.origin "new-arrival")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.newArrival"}}</option>
+        <option value="foreign"     {{#if (eq system.origin "foreign")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.foreign"}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="gs-family-sheet__status-divider"></div>
+
+  {{!-- Heir Status --}}
+  <div class="gs-family-sheet__status-item gs-family-sheet__status-item--heir">
+    <header class="gs-section-header" data-tooltip-key="heirStatus">
+      {{localize "GOODSOCIETY.family.heirStatus.label"}}
+    </header>
+    <div class="gs-family-sheet__status-value">
+      <span class="gs-family-sheet__dot {{#if heirStatusPositive}}gs-family-sheet__dot--positive{{else}}gs-family-sheet__dot--negative{{/if}}"></span>
+      <select name="system.heirStatus" class="gs-family-sheet__select">
+        <option value="named-son"      {{#if (eq system.heirStatus "named-son")}}selected{{/if}}>{{localize "GOODSOCIETY.family.heirStatus.namedSon"}}</option>
+        <option value="named-daughter" {{#if (eq system.heirStatus "named-daughter")}}selected{{/if}}>{{localize "GOODSOCIETY.family.heirStatus.namedDaughter"}}</option>
+        <option value="named-foster"   {{#if (eq system.heirStatus "named-foster")}}selected{{/if}}>{{localize "GOODSOCIETY.family.heirStatus.namedFoster"}}</option>
+        <option value="vacant"         {{#if (eq system.heirStatus "vacant")}}selected{{/if}}>{{localize "GOODSOCIETY.family.heirStatus.vacant"}}</option>
+        <option value="contested"      {{#if (eq system.heirStatus "contested")}}selected{{/if}}>{{localize "GOODSOCIETY.family.heirStatus.contested"}}</option>
+      </select>
+    </div>
+    {{#if system.heirStatusFlavor}}
+      <p class="gs-family-sheet__heir-flavor">{{system.heirStatusFlavor}}</p>
+    {{/if}}
+    <input class="gs-family-sheet__heir-flavor-input"
+           type="text"
+           name="system.heirStatusFlavor"
+           value="{{system.heirStatusFlavor}}"
+           placeholder="{{localize "GOODSOCIETY.family.heirStatusFlavorPlaceholder"}}" />
+  </div>
+
+</section>

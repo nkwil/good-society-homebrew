@@ -859,12 +859,13 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 ## 14. Build phase status
 
-**Currently in:** Phase 1c — Sheet templates batch (Session B-1 in progress)
+**Currently in:** Phase 1d — Theme presets + chat cards (Session B-2 up next)
 
 **Done:**
 - Phase 0: fork, rename, verify load
 - Session A: all 10 DataModels defined and registered
 - Session A.5: theme field backfilled on Major/Connection/NPC; chatStyle removed from Major
+- Session A.6: Family `heirStatus` enum + optional `establishedYear` and `heirStatusFlavor` fields ✓
 - Design integration v1 + v2: theming architecture, registry, antique-but-clean principle, per-component design docs (04-09) integrated
 - Design integration v3: per-component design docs 10–20 integrated (chat cards, Upkeep wizard, item sheets, persona switcher, Family sheet, Welcome panel, NPC sheet, Token hover card, Condition picker, GM tools, Rule tooltips)
 - Session B-0: CSS architecture
@@ -876,15 +877,19 @@ Discord: Foundry's official Discord, `#system-development` channel.
   - themedWrap helper at module/helpers/themed-wrap.js (canonical wrapping for all themed content)
   - Clayton theme implemented as override on both .gs-actor and .gs-themed selectors
   - Validated: Clayton cards render distinctly from house cards, themedWrap returns expected HTML
-- Session B-1 (in progress):
-  - Component primitives: buttons (#40–42), form inputs (#36–38)
-  - Token economy primitives: resolve track (#45), MT toggle (#46), monologue dot (#47)
-  - Major Character sheet header (#1), tab nav (#2), persistent strip (#5)
+- Session B-1: all sheet templates ✓
+  - Component primitives: buttons, form inputs, resolve track, MT badge, monologue dot, GM pill, polarity arrow, reputation tag, reputation meter, visibility flag, inner conflict grid, impression card, crest medallion
+  - Major Character sheet: header, tab nav (Public/Private), tab-public, tab-private, persistent strip
+  - Connection sheet: header, description, impressions, scene, state (resolve + personas)
+  - Family sheet: header, crest, origin, reputation, notes, members (cross-theme rows)
+  - NPC sheet: header, description, scene, personas
+  - Item sheets (all 5): reputation-tag, reputation-condition, inner-conflict, magic-skill, backstory-action
+  - In-sheet persona picker: native `<select>` on Major header; persona pills on Connection state block
+  - Comprehensive lang/en.json backfill: all 127 template keys present; `family.origin.*` and `family.heirStatus.*` structural bug fixed (flat dotted keys → proper nesting with `.label` sub-key)
 
 **Next:**
-- ~~Session A.6~~ — Family `heirStatus` enum + optional `establishedYear` and `heirStatusFlavor` fields. ✓
-- Session B-1 (continuing) — remaining components, Major full layout, Connection, Family, NPC, item sheets, in-sheet persona picker (per docs/design/04, 06, 12, 14, 16)
 - Session B-2 — remaining eleven theme presets
+- Session B-3 — chat card system (per docs/design/10) — six variants + Speaking-As switcher + Inner Monologue editor flow
 - Session B-3 — chat card system (per docs/design/10) — six variants + Speaking-As switcher + Inner Monologue editor flow
 - Session B-4 — custom apps batch — Welcome Panel, Public Info Dashboard, My Characters Dock, Cycle HUD, GM Tools, Token Hover Card, Tooltip system
 - Session B-5 — Persona switcher + Upkeep Wizard + Condition Picker (per docs/design/13, 11, 18)

@@ -1,0 +1,57 @@
+{{!-- Family sheet — member Majors PART. Per docs/design/14-family-sheet.md §"Member Majors block".
+     Critical pattern: each member row is wrapped in the member's theme via .gs-themed[data-theme="..."]
+     so the 2.5px left-edge accent resolves to that Major's --gs-brand color.
+     Per docs/design/14-family-sheet.md §"Theme behavior". --}}
+<section class="gs-family-sheet__members">
+
+  <div class="gs-family-sheet__section-row">
+    <header class="gs-section-header" data-tooltip-key="memberMajors">
+      {{localize "GOODSOCIETY.family.memberMajors"}} · {{memberCount}}
+    </header>
+    <span class="gs-family-sheet__members-helper">{{localize "GOODSOCIETY.family.membersHelper"}}</span>
+  </div>
+
+  {{#if memberActors.length}}
+    <div class="gs-family-sheet__member-list">
+      {{#each memberActors}}
+        {{!-- Each row wrapped in the Major's theme — left-edge accent resolves to that Major's --gs-brand --}}
+        <button class="gs-family-member-row gs-themed"
+                data-theme="{{this.theme}}"
+                type="button"
+                data-action="openMajor"
+                data-actor-id="{{this.id}}">
+
+          {{!-- Portrait / initial --}}
+          {{#if this.portraitUrl}}
+            <img class="gs-family-member-row__portrait"
+                 src="{{this.portraitUrl}}"
+                 alt="{{this.name}}" />
+          {{else}}
+            <span class="gs-family-member-row__initial">{{this.initial}}</span>
+          {{/if}}
+
+          {{!-- Name + peerage --}}
+          <div class="gs-family-member-row__info">
+            <span class="gs-family-member-row__name">{{this.name}}</span>
+            {{#if this.peerage}}
+              <span class="gs-family-member-row__peerage">{{this.peerage}}</span>
+            {{/if}}
+          </div>
+
+          {{!-- Theme code --}}
+          <span class="gs-family-member-row__theme">
+            {{#if (eq this.theme "npc")}}
+              {{localize "GOODSOCIETY.family.noTheme"}}
+            {{else}}
+              theme · {{this.theme}}
+            {{/if}}
+          </span>
+
+        </button>
+      {{/each}}
+    </div>
+  {{else}}
+    <p class="gs-family-sheet__empty-state">{{localize "GOODSOCIETY.family.noMembers"}}</p>
+  {{/if}}
+
+</section>

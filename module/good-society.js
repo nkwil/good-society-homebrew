@@ -1,22 +1,7 @@
 /**
  * Good Society (Homebrew) — system entry point.
  * Registers all Good Society document types (DataModels + sheets).
- * Phase 1 Session A: DataModel registrations only — no sheets yet.
  */
-
-// Placeholder sheet so new actor types open without errors until real sheets are built.
-class GoodSocietyActorSheetStub extends foundry.appv1.sheets.ActorSheet {
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ['good-society', 'sheet', 'actor'],
-      width: 480,
-      height: 120,
-    });
-  }
-  get template() {
-    return 'systems/good-society-homebrew/templates/actors/placeholder.hbs';
-  }
-}
 
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
@@ -29,6 +14,13 @@ import { ConnectionDataModel } from './data-models/connection.js';
 import { MajorCharacterDataModel } from './data-models/major-character.js';
 import { MajorCharacterSheet } from './sheets/major-character-sheet.js';
 import { ConnectionSheet } from './sheets/connection-sheet.js';
+import { FamilySheet } from './sheets/family-sheet.js';
+import { NpcSheet } from './sheets/npc-sheet.js';
+import { ReputationTagSheet } from './sheets/reputation-tag-sheet.js';
+import { ReputationConditionSheet } from './sheets/reputation-condition-sheet.js';
+import { InnerConflictSheet } from './sheets/inner-conflict-sheet.js';
+import { MagicSkillSheet } from './sheets/magic-skill-sheet.js';
+import { BackstoryActionSheet } from './sheets/backstory-action-sheet.js';
 
 /** Handlebars component partials — loaded once and registered for {{> partialName}} use. */
 const GS_COMPONENT_PARTIALS = {
@@ -64,7 +56,7 @@ Hooks.once('init', async function () {
     'major-character': MajorCharacterDataModel,
   });
 
-  // Real sheets (Session B-1+)
+  // ── Actor sheets ─────────────────────────────────────────────────────────
   foundry.documents.collections.Actors.registerSheet('good-society-homebrew', MajorCharacterSheet, {
     types: ['major-character'],
     makeDefault: true,
@@ -77,10 +69,46 @@ Hooks.once('init', async function () {
     label: 'GOODSOCIETY.sheets.connection',
   });
 
-  // Placeholder stub for types that don't have a real sheet yet.
-  foundry.documents.collections.Actors.registerSheet('good-society-homebrew', GoodSocietyActorSheetStub, {
-    types: ['family', 'npc'],
+  foundry.documents.collections.Actors.registerSheet('good-society-homebrew', FamilySheet, {
+    types: ['family'],
     makeDefault: true,
-    label: 'GOODSOCIETY.sheets.stub',
+    label: 'GOODSOCIETY.sheets.family',
+  });
+
+  foundry.documents.collections.Actors.registerSheet('good-society-homebrew', NpcSheet, {
+    types: ['npc'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.npc',
+  });
+
+  // ── Item sheets ──────────────────────────────────────────────────────────
+  foundry.documents.collections.Items.registerSheet('good-society-homebrew', ReputationTagSheet, {
+    types: ['reputation-tag'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.reputationTag',
+  });
+
+  foundry.documents.collections.Items.registerSheet('good-society-homebrew', ReputationConditionSheet, {
+    types: ['reputation-condition'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.reputationCondition',
+  });
+
+  foundry.documents.collections.Items.registerSheet('good-society-homebrew', InnerConflictSheet, {
+    types: ['inner-conflict'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.innerConflict',
+  });
+
+  foundry.documents.collections.Items.registerSheet('good-society-homebrew', MagicSkillSheet, {
+    types: ['magic-skill'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.magicSkill',
+  });
+
+  foundry.documents.collections.Items.registerSheet('good-society-homebrew', BackstoryActionSheet, {
+    types: ['backstory-action'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.backstoryAction',
   });
 });

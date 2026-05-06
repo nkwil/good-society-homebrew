@@ -1,0 +1,49 @@
+/* Magic / Skill item sheet — thin delta from _item-base.css.
+   Monospace inputs for VFX key and sound URL paths.
+   Hidden/visible flag buttons in header. */
+
+/* Flag toggle (hidden / visible) */
+.gs-item-sheet__header-flags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gs-btn-flag {
+  padding: 3px 8px;
+  background: transparent;
+  border: 0.5px solid var(--gs-accent-1);
+  border-radius: 10px;
+  font-family: var(--gs-body);
+  font-variant: small-caps;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--gs-accent-1);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.12s;
+}
+
+.gs-btn-flag:hover {
+  opacity: 1;
+}
+
+.gs-btn-flag--active {
+  opacity: 1;
+  background: var(--gs-accent-1);
+  color: var(--gs-paper);
+}
+
+.gs-btn-flag--spent {
+  opacity: 1;
+  background: var(--gs-accent-2);
+  border-color: var(--gs-accent-2);
+  color: var(--gs-paper);
+}
+
+/* Monospace inputs for VFX/sound paths */
+.gs-item-sheet__input--mono {
+  font-family: var(--gs-ui);
+  font-size: 11px;
+  letter-spacing: 0.01em;
+}

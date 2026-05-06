@@ -1,0 +1,53 @@
+{{!-- NPC sheet — header PART. Per docs/design/16-npc-sheet.md §"Header spec".
+     Delta from Connection: sage side panel, GM pill in eyebrow, promote/grant action row.
+     House-styled throughout — no .gs-themed wrapper needed. --}}
+<header class="gs-npc-sheet__header">
+
+  <div class="gs-npc-sheet__side">
+    {{#if portraitUrl}}
+      <img class="gs-npc-sheet__portrait" src="{{portraitUrl}}" alt="{{actor.name}}" />
+    {{else}}
+      <div class="gs-npc-sheet__portrait-fallback">{{portraitInitial}}</div>
+    {{/if}}
+    <div class="gs-npc-sheet__bio-chips">
+      {{#if system.bio.pronouns}}<span>{{system.bio.pronouns}}</span>{{/if}}
+      {{#if system.bio.role}}<span>{{system.bio.role}}</span>{{/if}}
+    </div>
+  </div>
+
+  <div class="gs-npc-sheet__main">
+
+    <div class="gs-npc-sheet__eyebrow">
+      <div class="gs-npc-sheet__eyebrow-left">
+        <span class="gs-gm-pill">GM</span>
+        <span class="gs-npc-sheet__eyebrow-label">{{localize "GOODSOCIETY.npc.eyebrow"}}</span>
+      </div>
+      <span class="gs-npc-sheet__eyebrow-right">{{localize "GOODSOCIETY.npc.themeLabel"}}</span>
+    </div>
+
+    <input class="gs-npc-sheet__name"
+           type="text"
+           name="name"
+           value="{{actor.name}}"
+           placeholder="{{localize "GOODSOCIETY.npc.namePlaceholder"}}" />
+
+    <p class="gs-npc-sheet__role">
+      {{system.bio.role}}{{#if system.bio.pronouns}} · {{system.bio.pronouns}}{{/if}}
+    </p>
+
+    <div class="gs-npc-sheet__actions">
+      <button class="gs-btn gs-btn--secondary gs-btn--sm"
+              type="button"
+              data-action="promoteToConnection">
+        {{localize "GOODSOCIETY.npc.promoteToConnection"}}
+      </button>
+      <button class="gs-btn gs-btn--secondary gs-btn--sm"
+              type="button"
+              data-action="grantToPlayer">
+        {{localize "GOODSOCIETY.npc.grantToPlayer"}}
+      </button>
+    </div>
+
+  </div>
+
+</header>

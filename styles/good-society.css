@@ -26,24 +26,31 @@
 @import './components/_visibility-flag.css';
 @import './components/_inner-conflict-grid.css';
 @import './components/_impression-card.css';
+@import './components/_crest-medallion.css';
 
-/* Sheets */
+/* Actor sheets */
 @import './sheets/_major-character.css';
 @import './sheets/_connection.css';
+@import './sheets/_family.css';
+@import './sheets/_npc.css';
+
+/* Item sheets — base then per-type deltas */
+@import './sheets/_item-base.css';
+@import './sheets/_item-reputation-tag.css';
+@import './sheets/_item-reputation-condition.css';
+@import './sheets/_item-inner-conflict.css';
+@import './sheets/_item-magic-skill.css';
+@import './sheets/_item-backstory-action.css';
 
 /* Character theme presets */
 @import './themes/_theme-clayton.css';
 
-/* Session B-1 additions (remaining):
- * ... (remaining component primitives from CLAUDE.md §5)
- * @import './sheets/_family.css';
- * @import './sheets/_npc.css';
+/* B-2 additions:
+ * @import './themes/_theme-rose.css';
+ * ... (remaining 11 theme presets)
+ * B-4 additions:
  * @import './apps/_dashboard.css';
  * @import './apps/_dock.css';
  * @import './apps/_letter-composer.css';
  * @import './apps/_cycle-hud.css';
- *
- * Session B-2 additions:
- * @import './themes/_theme-rose.css';
- * ... (remaining 11 theme presets)
  */

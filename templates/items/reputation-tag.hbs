@@ -1,0 +1,54 @@
+<form class="gs-item-sheet__form" autocomplete="off">
+  <header class="gs-item-sheet__header">
+    <div class="gs-item-sheet__header-row">
+      <span class="gs-item-sheet__eyebrow">{{localize "GOODSOCIETY.item.reputationTag.eyebrow"}}</span>
+      <span class="gs-item-sheet__meta gs-item-sheet__meta--polarity gs-item-sheet__meta--polarity-{{system.polarity}}">
+        {{#if (eq system.polarity "positive")}}▲{{else}}▼{{/if}}
+      </span>
+    </div>
+    <input class="gs-item-sheet__name"
+           type="text"
+           name="name"
+           value="{{document.name}}"
+           placeholder="{{localize "GOODSOCIETY.item.reputationTag.namePlaceholder"}}" />
+  </header>
+
+  <div class="gs-item-sheet__body">
+
+    {{!-- Polarity --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.polarity.label"}}</span>
+      <div class="gs-item-sheet__polarity-row">
+        <button type="button"
+                class="gs-btn-polarity gs-btn-polarity--positive{{#if (eq system.polarity 'positive')}} gs-btn-polarity--active{{/if}}"
+                data-action="setPolarity"
+                data-polarity="positive">
+          {{localize "GOODSOCIETY.polarity.positive"}}
+        </button>
+        <button type="button"
+                class="gs-btn-polarity gs-btn-polarity--negative{{#if (eq system.polarity 'negative')}} gs-btn-polarity--active{{/if}}"
+                data-action="setPolarity"
+                data-polarity="negative">
+          {{localize "GOODSOCIETY.polarity.negative"}}
+        </button>
+      </div>
+    </div>
+
+    {{!-- Description --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.tag.description"}}</span>
+      {{editor system.description target="system.description" button=true editable=true}}
+    </div>
+
+    {{!-- Source --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.tag.source"}}</span>
+      <input class="gs-item-sheet__input"
+             type="text"
+             name="system.source"
+             value="{{system.source}}"
+             placeholder="{{localize "GOODSOCIETY.item.reputationTag.sourcePlaceholder"}}" />
+    </div>
+
+  </div>
+</form>

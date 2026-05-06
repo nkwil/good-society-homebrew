@@ -1,0 +1,25 @@
+{{!-- Family sheet — reputation criteria PART. Per docs/design/14-family-sheet.md §"Reputation Criteria block". --}}
+<section class="gs-family-sheet__reputation">
+
+  <div class="gs-family-sheet__section-row">
+    <header class="gs-section-header" data-tooltip-key="uniqueNegativeRepCriteria">
+      {{localize "GOODSOCIETY.family.uniqueNegativeRepCriteria"}}
+    </header>
+    <button class="gs-visibility-flag gs-visibility-flag--{{system.visibility.uniqueNegativeRepCriteria}}"
+            type="button"
+            data-action="toggleVisibility"
+            data-field="uniqueNegativeRepCriteria">
+      {{system.visibility.uniqueNegativeRepCriteria}}
+    </button>
+  </div>
+
+  <div class="gs-family-sheet__criteria-card">
+    <textarea class="gs-family-sheet__criteria-text"
+              name="system.uniqueNegativeRepCriteria"
+              rows="4"
+              placeholder="{{localize "GOODSOCIETY.family.criteriaPlaceholder"}}">{{system.uniqueNegativeRepCriteria}}</textarea>
+  </div>
+
+  <p class="gs-family-sheet__criteria-note">{{localize "GOODSOCIETY.family.criteriaNote"}}</p>
+
+</section>

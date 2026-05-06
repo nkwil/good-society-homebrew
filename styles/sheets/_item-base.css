@@ -1,0 +1,122 @@
+/* Item sheet — shared foundation for all five types.
+   Type-specific overrides live in _item-{type}.css files.
+   Per docs/design/12-item-sheets.md §"Common item sheet conventions".
+   House-styled throughout: no .gs-themed wrapper, no .gs-actor class. */
+
+.gs-item-sheet {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--gs-body);
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.gs-item-sheet__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 22px;
+  background: var(--gs-paper);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+/* Eyebrow row: type label left, optional meta right */
+.gs-item-sheet__header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gs-item-sheet__eyebrow {
+  font-family: var(--gs-body);
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--gs-accent-2);
+}
+
+.gs-item-sheet__meta {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 10px;
+  color: var(--gs-accent-2);
+}
+
+/* Name — full-width, display type, bottom-border-only edit affordance */
+.gs-item-sheet__name {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  color: var(--gs-brand);
+  background: transparent;
+  border: none;
+  border-bottom: 0.5px solid var(--gs-accent-1);
+  padding: 0 0 4px;
+  width: 100%;
+  line-height: 1.2;
+}
+
+.gs-item-sheet__name:focus {
+  outline: none;
+  border-bottom-color: var(--gs-brand);
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+.gs-item-sheet__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 22px;
+  background: var(--gs-paper);
+}
+
+/* Field: small-caps label stacked above its control */
+.gs-item-sheet__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.gs-item-sheet__label {
+  font-family: var(--gs-body);
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--gs-accent-2);
+}
+
+/* Shared control styles */
+.gs-item-sheet__input {
+  padding: 6px 12px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.gs-item-sheet__input:focus {
+  outline: none;
+  border-color: var(--gs-brand);
+}
+
+/* ── Footer (Magic/Skill and Inner Conflict only) ────────────────────────── */
+.gs-item-sheet__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 22px;
+  border-top: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-item-sheet__footer-note {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-accent-2);
+  flex: 1;
+  margin-right: 12px;
+}

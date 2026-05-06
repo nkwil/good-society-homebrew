@@ -1,0 +1,50 @@
+/* Reputation Tag item sheet — thin delta from _item-base.css.
+   Polarity buttons use gs-positive / gs-danger colors. */
+
+.gs-item-sheet--reputation-tag .gs-item-sheet__meta--polarity-positive {
+  color: var(--gs-positive);
+  font-size: 14px;
+}
+
+.gs-item-sheet--reputation-tag .gs-item-sheet__meta--polarity-negative {
+  color: var(--gs-danger);
+  font-size: 14px;
+}
+
+/* Polarity toggle row */
+.gs-item-sheet__polarity-row {
+  display: flex;
+  gap: 8px;
+}
+
+.gs-btn-polarity {
+  flex: 1;
+  padding: 7px 12px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  font-family: var(--gs-body);
+  font-size: 12px;
+  color: var(--gs-ink);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.12s, border-color 0.12s;
+}
+
+.gs-btn-polarity:hover {
+  opacity: 0.8;
+}
+
+.gs-btn-polarity--active {
+  opacity: 1;
+}
+
+.gs-btn-polarity--positive.gs-btn-polarity--active {
+  border-color: var(--gs-positive);
+  color: var(--gs-positive);
+}
+
+.gs-btn-polarity--negative.gs-btn-polarity--active {
+  border-color: var(--gs-danger);
+  color: var(--gs-danger);
+}

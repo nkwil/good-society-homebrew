@@ -1,0 +1,20 @@
+/* Backstory Action item sheet — thin delta from _item-base.css.
+   Used/available and expanded/collapsed flag buttons in header. */
+
+.gs-item-sheet__helper--id {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  color: var(--gs-accent-2);
+  opacity: 0.7;
+  margin: 0;
+  word-break: break-all;
+}
+
+.gs-item-sheet__helper--empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  opacity: 0.6;
+  margin: 0;
+}

@@ -1,0 +1,25 @@
+{{!-- Family sheet — header PART. Per docs/design/14-family-sheet.md §"Header spec". --}}
+<header class="gs-family-sheet__header">
+
+  <div class="gs-family-sheet__header-left">
+    <span class="gs-family-sheet__eyebrow">{{localize "GOODSOCIETY.family.eyebrow"}}</span>
+    <input class="gs-family-sheet__name"
+           type="text"
+           name="system.familyName"
+           value="{{system.familyName}}"
+           placeholder="{{localize "GOODSOCIETY.family.namePlaceholder"}}" />
+  </div>
+
+  <div class="gs-family-sheet__header-right">
+    <span class="gs-family-sheet__meta">
+      {{#if system.establishedYear}}est. {{system.establishedYear}} · {{/if}}{{memberCount}}
+      {{#if (eq memberCount 1)}}{{localize "GOODSOCIETY.family.member"}}{{else}}{{localize "GOODSOCIETY.family.members"}}{{/if}}
+    </span>
+    <button class="gs-btn gs-btn--secondary gs-btn--sm"
+            type="button"
+            data-action="linkMajor">
+      + {{localize "GOODSOCIETY.family.linkMajor"}}
+    </button>
+  </div>
+
+</header>

@@ -1,0 +1,43 @@
+/* Crest Medallion (#57) — heraldic monogram oval for Family sheet.
+   Outer ring: var(--gs-accent-3) honey-gold. Inner field: var(--gs-brand) forest-green.
+   Monogram: var(--gs-accent-3) on green field. Swaps to crest image if imageUrl is set.
+   Reusable for any future emblematic surface (e.g. dashboard family panel). */
+
+.gs-crest-medallion {
+  width: 92px;
+  height: 110px;
+  border-radius: 50%;
+  border: 5px solid var(--gs-accent-3); /* honey-gold outer ring */
+  background: var(--gs-brand);          /* forest-green inner field */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.gs-crest-medallion__monogram {
+  font-family: var(--gs-display);
+  font-size: 38px;
+  letter-spacing: 0.04em;
+  color: var(--gs-accent-3); /* honey-gold contrasts against green field */
+  line-height: 1;
+  user-select: none;
+}
+
+.gs-crest-medallion__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Engraving label — family name in small caps below the medallion */
+.gs-crest-medallion__label {
+  font-family: var(--gs-body);
+  font-variant: small-caps;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--gs-brand);
+  text-align: center;
+  margin-top: 6px;
+}

@@ -1,0 +1,36 @@
+/* Reputation Condition item sheet — thin delta from _item-base.css.
+   Active/inactive status toggle in header-row. */
+
+/* Status toggle pill */
+.gs-btn-status {
+  padding: 3px 10px;
+  background: transparent;
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 10px;
+  font-family: var(--gs-body);
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gs-accent-2);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.gs-btn-status:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+}
+
+.gs-btn-status--active {
+  border-color: var(--gs-positive);
+  color: var(--gs-positive);
+}
+
+/* Helper text for source tag count */
+.gs-item-sheet__helper {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  margin: 0;
+}

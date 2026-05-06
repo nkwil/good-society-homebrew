@@ -1,0 +1,31 @@
+{{!-- NPC sheet — personas PART (standalone; no resolve track beside it). --}}
+<section class="gs-npc-sheet__personas">
+  <div class="gs-npc-sheet__section-row">
+    <header class="gs-section-header">
+      {{localize "GOODSOCIETY.connection.personas"}}
+    </header>
+    <button class="gs-btn gs-btn--secondary gs-btn--sm"
+            type="button"
+            data-action="addPersona">
+      + {{localize "GOODSOCIETY.private.add"}}
+    </button>
+  </div>
+
+  {{#if personas.length}}
+    <div class="gs-npc-sheet__persona-list">
+      {{#each personas}}
+        <button class="gs-npc-persona-pill{{#if (eq this.id ../activePersonaId)}} gs-npc-persona-pill--active{{/if}}"
+                type="button"
+                data-action="switchPersona"
+                data-persona-id="{{this.id}}">
+          {{this.name}}
+          {{#if this.isPrimary}}
+            <span class="gs-npc-persona-pill__primary">primary</span>
+          {{/if}}
+        </button>
+      {{/each}}
+    </div>
+  {{else}}
+    <p class="gs-npc-sheet__empty-state">{{localize "GOODSOCIETY.connection.noPersonas"}}</p>
+  {{/if}}
+</section>
