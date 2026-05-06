@@ -1,0 +1,105 @@
+{{!-- Inner Conflict box grid primitive (#39).
+     Shared by: Inner Conflict item sheet + Major Character sheet Public tab.
+     Context expected:
+       leftLabel, rightLabel   — string (conflict side names)
+       leftBoxes, rightBoxes   — bool[5]
+       completed               — bool
+       completedSide           — "left" | "right" | null
+       totalCount, leftCount, rightCount — derived integers
+       itemId                  — string (the inner conflict item's id)
+       labelEditable           — bool (true on item sheet, false on Major sheet)
+       showPerSideCount        — bool (true on Major sheet, false on item sheet) --}}
+
+<div class="gs-inner-conflict-grid{{#if completed}} gs-inner-conflict-grid--completed{{/if}}">
+
+  {{!-- Label / header row --}}
+  <div class="gs-inner-conflict-grid__header">
+
+    <div class="gs-inner-conflict-grid__col gs-inner-conflict-grid__col--left">
+      {{#if labelEditable}}
+        <input class="gs-conflict-label-input"
+               type="text"
+               name="system.leftLabel"
+               value="{{leftLabel}}"
+               placeholder="Left side" />
+      {{else}}
+        <span class="gs-conflict-label">{{leftLabel}}</span>
+      {{/if}}
+      {{#if showPerSideCount}}
+        <span class="gs-conflict-side-count">{{leftCount}} of 5</span>
+      {{/if}}
+    </div>
+
+    <div class="gs-inner-conflict-grid__vs" aria-hidden="true">vs.</div>
+
+    <div class="gs-inner-conflict-grid__col gs-inner-conflict-grid__col--right">
+      {{#if labelEditable}}
+        <input class="gs-conflict-label-input"
+               type="text"
+               name="system.rightLabel"
+               value="{{rightLabel}}"
+               placeholder="Right side" />
+      {{else}}
+        <span class="gs-conflict-label">{{rightLabel}}</span>
+      {{/if}}
+      {{#if showPerSideCount}}
+        <span class="gs-conflict-side-count">{{rightCount}} of 5</span>
+      {{/if}}
+    </div>
+
+  </div>
+
+  {{!-- Box grid --}}
+  <div class="gs-inner-conflict-grid__boxes">
+
+    <div class="gs-inner-conflict-grid__side gs-inner-conflict-grid__side--left">
+      {{#each leftBoxes}}
+        <button class="gs-conflict-box{{#if this}} gs-conflict-box--filled{{/if}}"
+                type="button"
+                data-action="toggleBox"
+                data-item-id="{{../itemId}}"
+                data-side="left"
+                data-index="{{@index}}"
+                {{#if ../completed}}disabled{{/if}}
+                aria-label="Left conflict box — {{#if this}}filled{{else}}empty{{/if}}">
+        </button>
+      {{/each}}
+    </div>
+
+    <div class="gs-inner-conflict-grid__center-rule" aria-hidden="true"></div>
+
+    <div class="gs-inner-conflict-grid__side gs-inner-conflict-grid__side--right">
+      {{#each rightBoxes}}
+        <button class="gs-conflict-box{{#if this}} gs-conflict-box--filled{{/if}}"
+                type="button"
+                data-action="toggleBox"
+                data-item-id="{{../itemId}}"
+                data-side="right"
+                data-index="{{@index}}"
+                {{#if ../completed}}disabled{{/if}}
+                aria-label="Right conflict box — {{#if this}}filled{{else}}empty{{/if}}">
+        </button>
+      {{/each}}
+    </div>
+
+  </div>
+
+  {{!-- Summary line --}}
+  <div class="gs-inner-conflict-grid__summary">
+    {{#if completed}}
+      {{#if (eq completedSide "left")}}
+        total {{totalCount}} · resolved on the side of <em>{{leftLabel}}</em>
+      {{else if (eq completedSide "right")}}
+        total {{totalCount}} · resolved on the side of <em>{{rightLabel}}</em>
+      {{else}}
+        total {{totalCount}} · resolved
+      {{/if}}
+    {{else}}
+      total {{totalCount}} of 6
+      · left {{leftCount}} of 5
+      · right {{rightCount}} of 5
+      · the conflict is unresolved
+    {{/if}}
+  </div>
+
+</div>

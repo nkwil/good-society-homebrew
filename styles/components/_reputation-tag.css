@@ -1,0 +1,96 @@
+/* Reputation tag pills — positive ▲ (#43) and negative ▼ (#44).
+   Used in: Major sheet Public tab reputation grid, hover card tag row, condition picker. */
+.gs-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 100px;
+  padding: 3px 12px 3px 8px;
+  cursor: pointer;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.gs-tag-pill--positive {
+  border-left: 2.5px solid var(--gs-positive);
+}
+
+.gs-tag-pill--negative {
+  border-left: 2.5px solid var(--gs-danger);
+}
+
+.gs-tag-pill:hover {
+  background: var(--gs-paper-warm);
+}
+
+.gs-tag-pill__name {
+  font-family: var(--gs-body);
+}
+
+/* Condition pills — same shape, larger padding, display type.
+   Used in: Active Conditions section, Completed Conflicts section. */
+.gs-condition-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--gs-display);
+  font-size: 13px;
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 100px;
+  padding: 4px 16px 4px 10px;
+  cursor: pointer;
+  line-height: 1.3;
+}
+
+.gs-condition-pill--positive {
+  border-left: 2.5px solid var(--gs-positive);
+}
+
+.gs-condition-pill--negative {
+  border-left: 2.5px solid var(--gs-danger);
+}
+
+.gs-condition-pill:hover {
+  background: var(--gs-paper-warm);
+}
+
+/* Completed conflict pill — honey/gold accent (earned, not polarity-charged) */
+.gs-conflict-completed-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--gs-italic);
+  font-size: 12px;
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-left: 2.5px solid var(--gs-accent-3);
+  border-radius: 100px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+
+.gs-conflict-completed-pill:hover {
+  background: var(--gs-paper-warm);
+}
+
+/* Dashed drop-zone placeholder pill */
+.gs-tag-pill--placeholder {
+  border-style: dashed;
+  border-left-style: dashed;
+  border-color: var(--gs-accent-3);
+  color: var(--gs-accent-3);
+  font-style: italic;
+  cursor: default;
+  background: transparent;
+}
+
+.gs-tag-pill--placeholder:hover {
+  background: transparent;
+}

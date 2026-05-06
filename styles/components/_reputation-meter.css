@@ -1,0 +1,29 @@
+/* Visual reputation meter (#49) — 3-pip indicator per polarity column header.
+   Pip count = number of tags of that polarity, capped at 3 (full = condition trigger).
+   Used in: Major sheet Public tab reputation grid column headers. */
+.gs-rep-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gs-rep-meter__pip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gs-muted);
+  flex-shrink: 0;
+}
+
+.gs-rep-meter--positive .gs-rep-meter__pip--filled {
+  background: var(--gs-positive);
+}
+
+.gs-rep-meter--negative .gs-rep-meter__pip--filled {
+  background: var(--gs-danger);
+}
+
+/* Full (3/3): the meter flashes briefly when a third tag lands (animation applied by JS) */
+.gs-rep-meter--full .gs-rep-meter__pip {
+  background: var(--gs-accent-3);
+}

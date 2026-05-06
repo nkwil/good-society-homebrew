@@ -1,0 +1,55 @@
+{{!-- Connection sheet — state PART (resolve track + personas). --}}
+<section class="gs-connection-sheet__state">
+  <div class="gs-connection-sheet__state-grid">
+
+    {{!-- Resolve track --}}
+    <div class="gs-connection-sheet__state-col">
+      <header class="gs-section-header">{{localize "GOODSOCIETY.strip.resolve"}}</header>
+      <div class="gs-connection-sheet__resolve-row">
+        <div class="gs-resolve-track">
+          {{#each resolvePips}}
+            <button class="gs-resolve-pip{{#if this.filled}} filled{{/if}}"
+                    type="button"
+                    data-action="toggleResolvePip"
+                    data-pip="{{this.index}}"
+                    aria-label="{{this.label}}">
+            </button>
+          {{/each}}
+        </div>
+        <span class="gs-connection-sheet__resolve-count">
+          {{resolveCurrent}} of {{resolveMax}}
+        </span>
+      </div>
+    </div>
+
+    {{!-- Personas --}}
+    <div class="gs-connection-sheet__state-col">
+      <div class="gs-connection-sheet__section-row">
+        <header class="gs-section-header">{{localize "GOODSOCIETY.connection.personas"}}</header>
+        <button class="gs-btn gs-btn--secondary gs-btn--sm"
+                type="button"
+                data-action="addPersona">
+          + {{localize "GOODSOCIETY.private.add"}}
+        </button>
+      </div>
+      {{#if personas.length}}
+        <div class="gs-connection-sheet__persona-list">
+          {{#each personas}}
+            <button class="gs-connection-persona-pill{{#if (eq this.id ../activePersonaId)}} gs-connection-persona-pill--active{{/if}}"
+                    type="button"
+                    data-action="switchPersona"
+                    data-persona-id="{{this.id}}">
+              {{this.name}}
+              {{#if this.isPrimary}}
+                <span class="gs-connection-persona-pill__primary">primary</span>
+              {{/if}}
+            </button>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="gs-connection-sheet__empty-state">{{localize "GOODSOCIETY.connection.noPersonas"}}</p>
+      {{/if}}
+    </div>
+
+  </div>
+</section>

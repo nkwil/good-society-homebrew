@@ -5,9 +5,13 @@
 This is the largest session of the build. Schedule 2–3 days of focused work. Following the implementation order strictly is what keeps it manageable — don't jump ahead.
 
 **Source-of-truth design docs to keep open:**
-- `docs/design/03-component-inventory.md` — 59 components, theme scope, recommended order
-- `docs/design/04-character-sheet.md` — Major Character sheet, full spec (locked)
-- `docs/design/06-connection-sheet.md` — Connection sheet, full spec (locked)
+- `docs/design/03-component-inventory.md` — 61 components, theme scope, recommended order
+- `docs/design/04-character-sheet.md` — Major Character sheet, full spec (Locked)
+- `docs/design/06-connection-sheet.md` — Connection sheet, full spec (Locked)
+- `docs/design/12-item-sheets.md` — all five item sheets + inner-conflict grid primitive (Locked)
+- `docs/design/13-persona-switcher.md` — picker + popover + editor (deferred to Session B-5 but referenced from sheets)
+- `docs/design/14-family-sheet.md` — Family sheet (Locked)
+- `docs/design/16-npc-sheet.md` — NPC sheet (Locked, deltas from Connection)
 - `docs/design/decisions.md` — palette/type/registry, antique-but-clean principle
 - `docs/design/02-theme-architecture.md` — scope boundaries, hybrid-theming gotcha
 - `CLAUDE.md` §10 — Major Character sheet skeleton (now reflects two-tab + persistent strip structure)
@@ -36,40 +40,52 @@ These are pulled from the per-component design docs. Don't deviate without revis
 - Cross-theme rendering inside impressions: each impression card's left-edge accent uses the *target Major's* theme color (each impression wrapped in `.gs-themed[data-theme="<major-theme>"]`)
 - This is the canonical multi-theme-on-one-sheet validation
 
-### Family sheet
+### Family sheet (per `14-family-sheet.md`)
 
+- Width: **580px**, height: auto
 - House-styled (no `.gs-actor` wrapper). Family is shared across multiple Majors with different themes — must look "of the world."
-- Single page. Crest display, motto, family name, origin, heir status, unique negative reputation criteria, GM notes, member Majors list.
-- Spec lives in `03-component-inventory.md` row #7. Detailed per-component design doc not yet written; use the inventory entry plus standard house style.
+- Six PARTS: `header`, `crest`, `origin`, `reputation`, `notes`, `members`
+- Crest medallion uses monogram fallback (no per-family art needed unless `crest.imageUrl` is set)
+- Member rows use cross-theme rendering (each row wrapped in `.gs-themed[data-theme="<member-theme>"]`)
+- Schema revision (Session A.6) needed before this builds: `heirStatus` boolean → enum
 
-### NPC sheet
+### NPC sheet (per `16-npc-sheet.md`)
 
+- Width: **540px** (narrower than Connection's 600px)
 - House-styled. NPC theme inherits house with no overrides.
-- Single page. Bio, scene info, optional personas.
-- Spec lives in `03-component-inventory.md` row #8.
+- Same as Connection sheet **minus** the impressions list and **minus** the State row's resolve track
+- Sage side panel (`var(--gs-accent-2)`) — the visual signal that this is house-styled, not character-themed
+- GM pill in the header eyebrow
+- Includes `[+ promote to connection]` and `[grant to player]` actions in the header
+- **Reuse all shared partials from the Connection sheet** — only the impressions and state-row partials are absent
 
-### Item sheets (all house-styled)
+### Item sheets (per `12-item-sheets.md`)
 
-- Reputation Tag (already in `CLAUDE.md` §9 worked example), Reputation Condition, Inner Conflict, Magic/Skill, Backstory Action.
-- 360px wide popup-style sheets, height auto.
-- All adopt house style. No `.gs-actor` class.
-- Specs in `03-component-inventory.md` rows #9–13.
+All five: Reputation Tag (360px), Reputation Condition (380px), Inner Conflict (540px), Magic/Skill (460px), Backstory Action (400px).
+
+- All house-styled. No `.gs-actor` class.
+- Common conventions: header (eyebrow + name input + optional meta) + body (label + control field stack) + optional footer (only Magic/Skill and GM-overridden Inner Conflict have one).
+- **The Inner Conflict box grid is a shared primitive** — same partial used on the Inner Conflict item sheet AND on the Major sheet's Public tab. Build at `templates/components/inner-conflict-grid.hbs`.
+- Magic/Skill's Cast button has a visibility-aware confirm pipeline (per `12-item-sheets.md` §"Cast pipeline").
+- Backstory Action is auto-created when an Inner Conflict completes (per the box grid primitive's completion behavior).
 
 ## Implementation order
 
 Build per `03-component-inventory.md` §"Implementation order (suggested)". Summary:
 
 1. **Component primitives that everyone uses** — buttons (#40, #41, #42), text input + dropdown + checkbox (#36, #37, #38). Build as Handlebars partials in `templates/partials/` and matching CSS in `styles/components/`.
-2. **Major Character sheet header** (#1) — first character-themed surface. Validates that the `.gs-actor[data-theme="..."]` selector is being set on the sheet root. Locked layout: 130px side panel + flex main column. Per `04-character-sheet.md` §"Header spec — locked".
-3. **Token economy primitives** — resolve track (#45), MT toggle (#46), monologue dot (#47). These appear in the Major sheet's persistent strip *and* on the dashboard *and* the dock. Build once, reuse three places.
-4. **Reputation primitives** — tag pills positive (#43) and negative (#44), visual reputation meter (#49), visibility flag (#48).
-5. **Inner Conflict box grid** (#39) — the highest-stakes mechanical primitive. The 5+5 grid needs to feel weighty when boxes fill. Per `04-character-sheet.md` §"Inner Conflict (active)".
-6. **Major Character full layout** — header, tab nav, Public tab (sections 1-5 per `04-character-sheet.md`), Private tab (sections 1-7), persistent strip. Per the locked spec.
-7. **Connection sheet** — single page, five PARTS. Per `06-connection-sheet.md`. Validates cross-theme rendering inside the impressions list.
-8. **Family sheet** (#7) — house-styled. Crest display (#57) inline.
-9. **NPC sheet** (#8) — house-styled. Inherits NPC theme.
-10. **Item sheets** (#9–13).
-11. **Persona switcher** (#56) — sits inside the Major sheet bio header and the Connection sheet state block.
+2. **GM pill primitive** (#60) — extracted from the NPC sheet and GM tools. Single CSS file at `styles/components/_gm-pill.css`. Used by NPC sheet header, GM tools, GM Roster View. Per `docs/design/19-gm-tools.md`.
+3. **Polarity arrow primitive** (#61) — reusable ▲/▼ glyph used on tag pills, condition cards, hover cards. Per `docs/design/17-token-hover-card.md` and `docs/design/12-item-sheets.md`.
+4. **Major Character sheet header** (#1) — first character-themed surface. Validates that the `.gs-actor[data-theme="..."]` selector is being set on the sheet root. Per `04-character-sheet.md` §"Header spec — locked".
+5. **Token economy primitives** — resolve track (#45), MT toggle (#46), monologue dot (#47). These appear in the Major sheet's persistent strip *and* on the dashboard *and* the dock. Build once, reuse three places.
+6. **Reputation primitives** — tag pills positive (#43) and negative (#44), visual reputation meter (#49), visibility flag (#48).
+7. **Inner Conflict box grid** (#39) — the highest-stakes mechanical primitive. Per `docs/design/12-item-sheets.md` §"Inner Conflict box grid primitive". Build at `templates/components/inner-conflict-grid.hbs` so the same partial is used by both the Inner Conflict item sheet and the Major sheet's Public tab.
+8. **Major Character full layout** — header, tab nav, Public tab, Private tab, persistent strip. Per `04-character-sheet.md`.
+9. **Connection sheet** (#6) — single page, five PARTS. Per `06-connection-sheet.md`. Validates cross-theme rendering inside the impressions list.
+10. **Family sheet** (#7) — per `14-family-sheet.md`. House-styled. Includes the Crest Medallion primitive (#57) — monogram fallback when `crest.imageUrl` is unset.
+11. **NPC sheet** (#8) — per `16-npc-sheet.md`. Reuses Connection partials.
+12. **Item sheets** (#9–13) — per `12-item-sheets.md`. Includes the Inner Conflict box grid (already built in step 7).
+13. **In-sheet persona picker (closed state)** — the small inline picker on Major and Connection sheets. The popover and editor modal are deferred to Session B-5.
 
 ## What's NOT in this session
 
@@ -78,6 +94,8 @@ Build per `03-component-inventory.md` §"Implementation order (suggested)". Summ
 - ❌ Custom apps (Public Info dashboard, My Characters dock, Cycle HUD, Upkeep wizard, letter composer). Those are Phase 3 / 5 / 6 per PLAN.md §13.
 - ❌ Hover cards, scene controls, persona switching pipeline, monologue journal flow.
 - ❌ The remaining eleven theme presets — that's Session B-2.
+- ❌ Persona switcher full editor. The in-sheet picker (closed state) per `04-character-sheet.md` and `06-connection-sheet.md` IS in scope. The popover and editor modal are in Session B-5.
+- ❌ Tooltip system. The tooltip primitive is system-wide infrastructure built in Session B-4 (custom apps). However, **section headers built this session should already have the `data-tooltip-key` attributes set** so they're tooltip-ready when B-4 ships. Use the catalog in `docs/design/20-rule-tooltips.md` to map header → key.
 
 This session is **shape and styling only**. Resist scope creep.
 

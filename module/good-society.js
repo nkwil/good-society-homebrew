@@ -27,8 +27,26 @@ import { FamilyDataModel } from './data-models/family.js';
 import { NpcDataModel } from './data-models/npc.js';
 import { ConnectionDataModel } from './data-models/connection.js';
 import { MajorCharacterDataModel } from './data-models/major-character.js';
+import { MajorCharacterSheet } from './sheets/major-character-sheet.js';
+import { ConnectionSheet } from './sheets/connection-sheet.js';
 
-Hooks.once('init', function () {
+/** Handlebars component partials — loaded once and registered for {{> partialName}} use. */
+const GS_COMPONENT_PARTIALS = {
+  'inner-conflict-grid':
+    'systems/good-society-homebrew/templates/components/inner-conflict-grid.hbs',
+};
+
+Hooks.once('init', async function () {
+  // Load and register Handlebars partials for shared components.
+  const loaded = await loadTemplates(GS_COMPONENT_PARTIALS);
+  for (const [name, fn] of Object.entries(loaded)) {
+    Handlebars.registerPartial(name, fn);
+  }
+
+  // Comparison helpers not guaranteed by Foundry's default set.
+  Handlebars.registerHelper('gte', (a, b) => a >= b);
+  Handlebars.registerHelper('gt',  (a, b) => a >  b);
+  Handlebars.registerHelper('lte', (a, b) => a <= b);
   // ── Item DataModels ──────────────────────────────────────────────────────
   Object.assign(CONFIG.Item.dataModels, {
     'reputation-tag': ReputationTagDataModel,
@@ -46,9 +64,22 @@ Hooks.once('init', function () {
     'major-character': MajorCharacterDataModel,
   });
 
-  // Placeholder sheets — replaced one by one as real sheets are built in Session B.
+  // Real sheets (Session B-1+)
+  foundry.documents.collections.Actors.registerSheet('good-society-homebrew', MajorCharacterSheet, {
+    types: ['major-character'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.majorCharacter',
+  });
+
+  foundry.documents.collections.Actors.registerSheet('good-society-homebrew', ConnectionSheet, {
+    types: ['connection'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.connection',
+  });
+
+  // Placeholder stub for types that don't have a real sheet yet.
   foundry.documents.collections.Actors.registerSheet('good-society-homebrew', GoodSocietyActorSheetStub, {
-    types: ['major-character', 'connection', 'family', 'npc'],
+    types: ['family', 'npc'],
     makeDefault: true,
     label: 'GOODSOCIETY.sheets.stub',
   });

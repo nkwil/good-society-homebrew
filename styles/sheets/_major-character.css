@@ -1,0 +1,512 @@
+/* Major Character sheet — sheet-level layout
+ * spec: docs/design/04-character-sheet.md §"Header spec — locked"
+ * Data-theme set on this.element by MajorCharacterSheet._onRender;
+ * all CSS variables below resolve from the character's theme scope.
+ */
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+
+/* Two-column: side panel (130px) + main (flex 1) */
+.gs-major-sheet__header {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+}
+
+/* Side panel — uses theme-specific --gs-side-panel bg */
+.gs-major-sheet__side {
+  background: var(--gs-side-panel);
+  padding: 24px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Portrait: 86×102px oval. 50% border-radius on non-square = ellipse. */
+.gs-major-sheet__portrait {
+  width: 86px;
+  height: 102px;
+  border-radius: 50%;
+  border: 1px solid var(--gs-accent-3);
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Fallback when no portrait URL: initial letter in display type */
+.gs-major-sheet__portrait-fallback {
+  width: 86px;
+  height: 102px;
+  border-radius: 50%;
+  border: 1px solid var(--gs-accent-3);
+  background: var(--gs-paper-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 42px;
+  color: var(--gs-brand);
+  flex-shrink: 0;
+}
+
+.gs-major-sheet__bio-chips {
+  font-style: italic;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--gs-ink);
+}
+
+/* Full-width hairline inside the side panel */
+.gs-major-sheet__side-rule {
+  width: 100%;
+  margin: 0;
+}
+
+/* "persona" small-caps eyebrow above the switcher */
+.gs-major-sheet__persona-eyebrow {
+  font-variant: small-caps;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--gs-brand);
+  text-align: center;
+}
+
+/* Persona select styled as italic text dropdown, no chrome */
+.gs-major-sheet__persona-select {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14px;
+  color: var(--gs-brand);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  padding-right: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%232A3A2D'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+}
+
+.gs-major-sheet__persona-none {
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-accent-2);
+}
+
+/* ── Main column ─────────────────────────────────────────────────────── */
+
+.gs-major-sheet__main {
+  background: var(--gs-paper);
+  padding: 22px 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Eyebrow row: "major character" left, "theme · {id}" right */
+.gs-major-sheet__eyebrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.gs-major-sheet__eyebrow-left {
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--gs-brand);
+}
+
+.gs-major-sheet__eyebrow-right {
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-brand);
+}
+
+/* Character name — display type, 32px; editable */
+.gs-major-sheet__name {
+  font-family: var(--gs-display);
+  font-size: 32px;
+  line-height: 1.05;
+  color: var(--gs-brand);
+  border: none;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  margin: 0;
+}
+
+.gs-major-sheet__name:focus {
+  outline: none;
+  border-bottom: 0.5px solid var(--gs-brand);
+}
+
+/* Role / title — derived display (peerage + family); read-only */
+.gs-major-sheet__role {
+  font-style: italic;
+  font-size: 14px;
+  color: var(--gs-brand);
+  margin: 0;
+}
+
+/* Hairline between role/title and the tab nav */
+.gs-major-sheet__main-rule {
+  margin: 8px 0 0;
+}
+
+/* ── Tab nav ─────────────────────────────────────────────────────────── */
+
+/* Sits at the bottom of the main column; hairline is the rule below it */
+.gs-major-sheet__nav {
+  display: flex;
+  gap: 0;
+  margin-top: auto;
+}
+
+.gs-major-sheet__tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid transparent;
+  padding: 8px 18px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--gs-accent-3);
+  cursor: pointer;
+  /* Overlap the hairline rule above the nav by 0.5px so the active underline */
+  /* extends cleanly below it without a gap.                                   */
+  margin-bottom: -0.5px;
+}
+
+.gs-major-sheet__tab-btn.active {
+  color: var(--gs-brand);
+  border-bottom-color: var(--gs-brand);
+}
+
+.gs-major-sheet__tab-btn:hover:not(.active) {
+  color: var(--gs-brand);
+}
+
+/* ── Tab content panels ──────────────────────────────────────────────── */
+
+.gs-major-sheet__tab-public,
+.gs-major-sheet__tab-private {
+  background: var(--gs-paper);
+  padding: 24px;
+  min-height: 200px;
+}
+
+/* ── Tab content — shared section layout ────────────────────────────── */
+
+.gs-major-sheet__section {
+  margin-bottom: 18px;
+}
+
+.gs-major-sheet__section--last {
+  margin-bottom: 6px;
+}
+
+/* Section row: header left, eyebrow/rule text right (e.g. Inner Conflict rule) */
+.gs-major-sheet__section-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.gs-major-sheet__rule-eyebrow {
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-ink);
+  opacity: 0.65;
+}
+
+/* Field header: section label left, visibility flag (± add button) right */
+.gs-major-sheet__field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.gs-major-sheet__field-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Empty-state placeholder text */
+.gs-major-sheet__empty-state {
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-accent-3);
+  margin: 0;
+}
+
+/* ── Public tab — Reputation Criteria card ──────────────────────────── */
+
+.gs-major-sheet__criteria-card {
+  background: var(--gs-paper-warm);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+}
+
+.gs-major-sheet__criteria-card--redacted {
+  display: flex;
+  align-items: center;
+}
+
+.gs-major-sheet__criteria-text {
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-ink);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.gs-major-sheet__criteria-empty {
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-accent-2);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gs-redacted-bar {
+  display: inline-block;
+  background: var(--gs-ink);
+  color: var(--gs-paper);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border-radius: 3px;
+  opacity: 0.65;
+}
+
+/* ── Public tab — Reputation Tags grid ──────────────────────────────── */
+
+/* Two-column grid for +/- polarity columns */
+.gs-major-sheet__rep-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.gs-major-sheet__rep-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.gs-major-sheet__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ── Public tab — Conditions ────────────────────────────────────────── */
+
+.gs-major-sheet__condition-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ── Public tab — Completed Conflicts ───────────────────────────────── */
+
+.gs-major-sheet__completed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* ── Private tab — Bio chips ────────────────────────────────────────── */
+
+.gs-major-sheet__section--bio {
+  margin-bottom: 12px;
+}
+
+.gs-bio-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--gs-ink);
+}
+
+.gs-bio-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.gs-bio-chip__sep {
+  color: var(--gs-accent-3);
+  user-select: none;
+}
+
+.gs-bio-chip__input {
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  background: transparent;
+  border: none;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  padding: 0 2px;
+  width: 3em;
+  text-align: center;
+}
+
+.gs-bio-chip__input--wide {
+  width: 10em;
+  text-align: left;
+}
+
+.gs-bio-chip__input--narrow {
+  width: 2.5em;
+}
+
+.gs-bio-chip__input:focus {
+  outline: none;
+  border-bottom-color: var(--gs-brand);
+}
+
+/* ── Private tab — Connections ──────────────────────────────────────── */
+
+.gs-connection-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.gs-connection-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 8px;
+  padding: 4px 10px 4px 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--gs-ink);
+}
+
+.gs-connection-chip__portrait {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--gs-accent-2);
+}
+
+.gs-connection-chip__initial {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--gs-accent-2);
+  background: var(--gs-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 12px;
+  color: var(--gs-brand);
+}
+
+.gs-connection-chip__name {
+  font-family: var(--gs-body);
+  font-size: 12px;
+}
+
+/* ── Private tab — Magic/Skills ─────────────────────────────────────── */
+
+.gs-major-sheet__skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.gs-skill-tile {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--gs-paper-warm);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.gs-skill-tile__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-skill-tile__name {
+  font-family: var(--gs-display);
+  font-size: 14px;
+  color: var(--gs-brand);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.gs-skill-tile__desc {
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-ink);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.gs-skill-tile__swap-note {
+  font-size: 11px;
+  color: var(--gs-accent-1);
+  font-style: italic;
+}
+
+.gs-skill-tile__cast {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* ── Private tab — Adventurer Sentiment ─────────────────────────────── */
+
+.gs-major-sheet__sentiment-input {
+  width: 100%;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-ink);
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  padding: 6px 12px;
+}
+
+.gs-major-sheet__sentiment-input:focus {
+  outline: none;
+  border-color: var(--gs-brand);
+}
+
+/* ── Tokens & Cycle strip ────────────────────────────────────────────── */
+
+.gs-major-sheet__strip {
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-3);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+}

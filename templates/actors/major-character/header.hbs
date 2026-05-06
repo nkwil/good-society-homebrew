@@ -1,0 +1,73 @@
+<header class="gs-major-sheet__header">
+
+  {{!-- Side panel: portrait + bio chips + persona switcher --}}
+  <div class="gs-major-sheet__side">
+
+    {{#if portraitUrl}}
+      <img class="gs-major-sheet__portrait" src="{{portraitUrl}}" alt="{{actor.name}}" />
+    {{else}}
+      <div class="gs-major-sheet__portrait-fallback">{{portraitInitial}}</div>
+    {{/if}}
+
+    <div class="gs-major-sheet__bio-chips">
+      {{#if system.bio.age}}age {{system.bio.age}}{{/if}}
+      {{#if system.bio.peerage}}<br>{{system.bio.peerage}}{{/if}}
+    </div>
+
+    <hr class="gs-hairline gs-major-sheet__side-rule">
+
+    <span class="gs-major-sheet__persona-eyebrow">persona</span>
+
+    {{#if personas.length}}
+      <select class="gs-major-sheet__persona-select" name="system.activePersonaId">
+        {{#each personas as |persona|}}
+          <option value="{{persona.id}}" {{#if (eq persona.id ../activePersonaId)}}selected{{/if}}>
+            {{persona.name}}
+          </option>
+        {{/each}}
+      </select>
+    {{else}}
+      <span class="gs-major-sheet__persona-none">— no personas —</span>
+    {{/if}}
+
+  </div>
+
+  {{!-- Main column: eyebrow row, character name, role/title, tab nav --}}
+  <div class="gs-major-sheet__main">
+
+    <div class="gs-major-sheet__eyebrow">
+      <span class="gs-major-sheet__eyebrow-left">major character</span>
+      <span class="gs-major-sheet__eyebrow-right">theme · {{system.theme}}</span>
+    </div>
+
+    <input class="gs-major-sheet__name"
+           type="text"
+           name="name"
+           value="{{actor.name}}"
+           placeholder="{{localize 'GOODSOCIETY.sheet.namePlaceholder'}}" />
+
+    <p class="gs-major-sheet__role">{{roleTitle}}</p>
+
+    <hr class="gs-hairline gs-major-sheet__main-rule">
+
+    {{!-- Tab nav — ApplicationV2 built-in tab handling via data-action="tab" --}}
+    <nav class="gs-major-sheet__nav">
+      <button type="button"
+              class="gs-major-sheet__tab-btn {{#if (eq tabGroups.sheet 'public')}}active{{/if}}"
+              data-action="tab"
+              data-group="sheet"
+              data-tab="public">
+        {{localize "GOODSOCIETY.tab.public"}}
+      </button>
+      <button type="button"
+              class="gs-major-sheet__tab-btn {{#if (eq tabGroups.sheet 'private')}}active{{/if}}"
+              data-action="tab"
+              data-group="sheet"
+              data-tab="private">
+        {{localize "GOODSOCIETY.tab.private"}}
+      </button>
+    </nav>
+
+  </div>
+
+</header>

@@ -255,7 +255,10 @@ ownership:
 ```
 familyName: string
 origin: enum["heir", "new-arrival", "foreign"]
-heirStatus: boolean
+heirStatus: enum["named-son", "named-daughter", "named-foster", "vacant", "contested"]
+                             // initial: "vacant"
+establishedYear: number|null          // optional; nullable integer
+heirStatusFlavor: string              // optional flavor text for heir status
 uniqueNegativeRepCriteria: string    // shows up read-only on member Majors' sheets
 crest: { imageUrl, motto }
 notes: string                        // GM-only history
@@ -330,6 +333,9 @@ Registered in `Hooks.once("init", ...)` via `game.settings.register("good-societ
 - `defaultStartingResolve` — integer. Default `3`.
 - `homebrewMagicEnabled` — boolean. Default `true`.
 - `welcomePanelDismissed` — boolean. User scope.
+- `tooltipsEnabled` — boolean. Default `true`. User scope. Hides tooltip `?` glyphs and suppresses hover when false (per `docs/design/20-rule-tooltips.md`).
+- `upkeepWizardEnabled` — boolean. Default `true`. User scope. When false, Upkeep advances without opening the per-Major wizard (per `docs/design/11-upkeep-wizard.md`).
+- `organizerPlayerVisible` — boolean. Default `false`. World scope. Whether non-GM users can open the NPC Organizer sidebar (per `docs/design/19-gm-tools.md`).
 
 ---
 
@@ -656,21 +662,26 @@ Same as above but `Item` instead of `Actor`, `ItemSheetV2` instead of `ActorShee
 
 ### Adding a chat card or themed surface
 
-Use the `themedWrap` helper. All chat cards, letter cards, dashboard rows, and dock rows go through it:
+All chat cards go through `module/helpers/chat-cards.js`. Six post-card helpers exist:
 
 ```js
-import { themedWrap } from "../helpers/themed-wrap.js";
-
-// Wraps content in <div class="gs-themed" data-theme="<actor-theme>">.
-// If the actor has an active persona with a chatColor override, applies it as inline style.
-const html = themedWrap(actor, innerHTML, ["gs-letter-card"]);
+import { postSystemCard } from "../helpers/chat-cards.js";        // house style, mechanical updates
+import { postInCharacterCard } from "../helpers/chat-cards.js";   // themed, normal chat
+import { postMonologueCard } from "../helpers/chat-cards.js";     // themed, expanded weight
+import { postCompletionCard } from "../helpers/chat-cards.js";    // themed, ceremony
+import { postPersonaSwitchCard } from "../helpers/chat-cards.js"; // themed (new persona)
+import { postLetterCard } from "../helpers/chat-cards.js";        // themed (sender)
 ```
 
-The helper lives in `module/helpers/themed-wrap.js` and is the canonical implementation of the `.gs-themed[data-theme="..."]` wrapper pattern from §12.5. Centralizing the wrapping means every themed surface stays in sync if class names ever change.
+Each helper:
+1. Resolves the theme id from the actor (or "npc"/"system" for non-character cards).
+2. Wraps content via `themedWrap()` from `module/helpers/themed-wrap.js`.
+3. Stores `cardType`, `speakerActorId`, `speakerTheme`, `speakerPersonaId` on the chat message flags so historic cards survive theme changes.
+4. Calls `ChatMessage.create({...})`.
 
-Persona overrides: when the actor's active persona has a `chatColor`, the helper applies it as `style="--gs-brand: ${chatColor};"` so the chat card's brand color shifts without redefining the rest of the theme. See `docs/design/05-epistolary-ui.md` §"Sender is a Persona override" for the full pattern.
+Templates live under `templates/chat-cards/` (one per variant). Per-variant CSS lives under `styles/components/_chat-card-{variant}.css` plus a shared `_chat-card-base.css`.
 
-For chat-message specifics (flags carried, whisper rules, archive behavior), see `module/helpers/chat-cards.js` and `docs/design/05-epistolary-ui.md`.
+Full spec in `docs/design/10-chat-cards.md`.
 
 ### Switching a persona (the trickiest pattern)
 
@@ -848,13 +859,14 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 ## 14. Build phase status
 
-**Currently in:** Phase 1c — Sheet templates batch (next: Session B-1)
+**Currently in:** Phase 1c — Sheet templates batch (Session B-1 in progress)
 
 **Done:**
 - Phase 0: fork, rename, verify load
 - Session A: all 10 DataModels defined and registered
-- Session A.5: theme field backfilled on Major/Connection/NPC
-- Design integration v1 + v2: theming architecture, registry, antique-but-clean principle, per-component design docs (04-09) integrated into PLAN/CLAUDE
+- Session A.5: theme field backfilled on Major/Connection/NPC; chatStyle removed from Major
+- Design integration v1 + v2: theming architecture, registry, antique-but-clean principle, per-component design docs (04-09) integrated
+- Design integration v3: per-component design docs 10–20 integrated (chat cards, Upkeep wizard, item sheets, persona switcher, Family sheet, Welcome panel, NPC sheet, Token hover card, Condition picker, GM tools, Rule tooltips)
 - Session B-0: CSS architecture
   - House variables (palette, type, scale)
   - @fontsource imports for all twelve themes
@@ -864,10 +876,18 @@ Discord: Foundry's official Discord, `#system-development` channel.
   - themedWrap helper at module/helpers/themed-wrap.js (canonical wrapping for all themed content)
   - Clayton theme implemented as override on both .gs-actor and .gs-themed selectors
   - Validated: Clayton cards render distinctly from house cards, themedWrap returns expected HTML
+- Session B-1 (in progress):
+  - Component primitives: buttons (#40–42), form inputs (#36–38)
+  - Token economy primitives: resolve track (#45), MT toggle (#46), monologue dot (#47)
+  - Major Character sheet header (#1), tab nav (#2), persistent strip (#5)
 
 **Next:**
-- Session B-1 — sheet templates batch (Major, Connection, Family, NPC, item types) per docs/design/04 and 06
+- ~~Session A.6~~ — Family `heirStatus` enum + optional `establishedYear` and `heirStatusFlavor` fields. ✓
+- Session B-1 (continuing) — remaining components, Major full layout, Connection, Family, NPC, item sheets, in-sheet persona picker (per docs/design/04, 06, 12, 14, 16)
 - Session B-2 — remaining eleven theme presets
+- Session B-3 — chat card system (per docs/design/10) — six variants + Speaking-As switcher + Inner Monologue editor flow
+- Session B-4 — custom apps batch — Welcome Panel, Public Info Dashboard, My Characters Dock, Cycle HUD, GM Tools, Token Hover Card, Tooltip system
+- Session B-5 — Persona switcher + Upkeep Wizard + Condition Picker (per docs/design/13, 11, 18)
 
 ---
 
@@ -895,3 +915,7 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - ❌ Don't let a `.gs-themed` wrapper's variable cascade override "always-house" properties (e.g. dashboard row backgrounds). Hardcode house values inside the themed component for those properties, and document with a comment. See `docs/design/07-public-info-dashboard.md` §"Theme behavior" for the canonical example.
 - ❌ Don't manually concatenate `<div class="gs-themed" data-theme="...">` inline. Always go through `themedWrap()` from `module/helpers/themed-wrap.js`. Centralized wrapping survives class-name changes; inline concatenation doesn't.
 - ❌ Don't render the Tokens & Cycle strip as a third tab on the Major sheet. It's a persistent strip below the tab body; tokens state must remain visible across tab switches. See `docs/design/04-character-sheet.md` §"Structural recommendation."
+- ❌ Don't render the Token Hover Card with hardcoded actor-type styling. The same component template handles Majors, Connections, and NPCs via the `.gs-themed[data-theme="..."]` wrapper. Per `docs/design/17-token-hover-card.md`.
+- ❌ Don't filter the Token Hover Card's content client-side. Visibility filtering for non-owners (hiding secret-persona true names, etc.) happens in `_prepareContext` server-side. Client-side filtering is not safe for secret-persona protection.
+- ❌ Don't tooltip a section header without a `data-tooltip-key` attribute and a body in `lang/en.json` under `GOODSOCIETY.tooltips.{key}.body`. Per `docs/design/20-rule-tooltips.md`. Missing keys silently render no tooltip — easy to miss in QA.
+- ❌ Don't manually concatenate chat-card HTML. Always go through `module/helpers/chat-cards.js`. Centralized helpers carry the right flags + theme wrapping consistently. Per `docs/design/10-chat-cards.md`.

@@ -1,0 +1,15 @@
+/* Polarity arrow primitive (#61) — reusable ▲/▼ glyph for reputation tag pills,
+   condition cards, hover card tag rows, and the polarity toggle in item sheets. */
+.gs-polarity-arrow {
+  font-family: var(--gs-body);
+  font-style: normal;
+  line-height: 1;
+}
+
+.gs-polarity-arrow--positive {
+  color: var(--gs-positive);
+}
+
+.gs-polarity-arrow--negative {
+  color: var(--gs-danger);
+}

@@ -1,0 +1,60 @@
+{{!-- Connection sheet — header PART. Per docs/design/06-connection-sheet.md §"Header spec". --}}
+<header class="gs-connection-sheet__header">
+
+  <div class="gs-connection-sheet__side">
+    {{#if portraitUrl}}
+      <img class="gs-connection-sheet__portrait" src="{{portraitUrl}}" alt="{{actor.name}}" />
+    {{else}}
+      <div class="gs-connection-sheet__portrait-fallback">{{portraitInitial}}</div>
+    {{/if}}
+    <div class="gs-connection-sheet__bio-chips">
+      {{#if system.bio.pronouns}}<span>{{system.bio.pronouns}}</span>{{/if}}
+      {{#if system.bio.relationshipLabel}}<span>{{system.bio.relationshipLabel}}</span>{{/if}}
+    </div>
+  </div>
+
+  <div class="gs-connection-sheet__main">
+
+    <div class="gs-connection-sheet__eyebrow">
+      <span class="gs-connection-sheet__eyebrow-left">{{localize "GOODSOCIETY.connection.eyebrow"}}</span>
+      <span class="gs-connection-sheet__eyebrow-right">theme · {{system.theme}}</span>
+    </div>
+
+    <input class="gs-connection-sheet__name"
+           type="text"
+           name="name"
+           value="{{actor.name}}"
+           placeholder="{{localize "GOODSOCIETY.connection.namePlaceholder"}}" />
+
+    <p class="gs-connection-sheet__role">
+      {{system.bio.relationshipLabel}}{{#if system.bio.pronouns}} · {{system.bio.pronouns}}{{/if}}
+    </p>
+
+    <div class="gs-hairline gs-connection-sheet__main-rule"></div>
+
+    {{!-- Linked Major reference — the Major name uses the Major's theme via .gs-themed --}}
+    <div class="gs-connection-sheet__linked-row">
+      <span class="gs-connection-sheet__linked-label">{{localize "GOODSOCIETY.connection.linkedTo"}} ·</span>
+      {{#if linkedMajor}}
+        <button class="gs-connection-sheet__linked-major gs-themed"
+                data-theme="{{linkedMajorTheme}}"
+                type="button"
+                data-action="openMajor"
+                data-actor-id="{{linkedMajor.id}}">
+          {{#if linkedMajor.system.bio.portraitUrl}}
+            <img class="gs-connection-sheet__linked-portrait"
+                 src="{{linkedMajor.system.bio.portraitUrl}}"
+                 alt="{{linkedMajor.name}}" />
+          {{else}}
+            <span class="gs-connection-sheet__linked-initial">{{linkedMajorInitial}}</span>
+          {{/if}}
+          <span class="gs-connection-sheet__linked-name">{{linkedMajor.name}}</span>
+        </button>
+      {{else}}
+        <span class="gs-connection-sheet__linked-none">{{localize "GOODSOCIETY.connection.noMajor"}}</span>
+      {{/if}}
+    </div>
+
+  </div>
+
+</header>

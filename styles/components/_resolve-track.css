@@ -1,0 +1,45 @@
+/* #45 — Resolve token track
+ * Five-pip horizontal row. Filled pips = --gs-brand solid.
+ * Empty pips = 1px outline --gs-accent-3. Click to toggle; right-click resets.
+ */
+
+.gs-resolve-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gs-resolve-track__label {
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--gs-brand);
+}
+
+.gs-resolve-track__pips {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.gs-resolve-pip {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--gs-accent-3);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+
+.gs-resolve-pip.filled {
+  background: var(--gs-brand);
+  border-color: var(--gs-brand);
+}
+
+.gs-resolve-pip:hover:not(.filled) {
+  border-color: var(--gs-brand);
+  background: var(--gs-muted);
+}

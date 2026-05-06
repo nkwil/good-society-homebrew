@@ -1,0 +1,33 @@
+/* #46 — MT (Major Token) toggle badge
+ * Off state: outline only in --gs-brand.
+ * On state: filled --gs-brand background, paper-color "MT" text.
+ */
+
+.gs-mt-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 18px;
+  border: 1px solid var(--gs-brand);
+  border-radius: 3px;
+  font-family: var(--gs-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--gs-brand);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+  user-select: none;
+}
+
+.gs-mt-badge.active {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+}
+
+.gs-mt-badge:hover:not(.active) {
+  background: var(--gs-muted);
+}

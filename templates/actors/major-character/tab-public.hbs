@@ -1,0 +1,173 @@
+{{!-- Major Character — Public tab (#3). Per docs/design/04-character-sheet.md §"Public tab spec". --}}
+<div class="gs-major-sheet__tab-public"
+     data-group="sheet"
+     data-tab="public"
+     {{#unless (eq tabGroups.sheet "public")}}hidden{{/unless}}>
+
+  {{!-- ── 1. Reputation Criteria (read-only from Family) ─────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <header class="gs-section-header" data-tooltip-key="reputationCriteria">
+      {{localize "GOODSOCIETY.public.reputationCriteria"}}{{#if familyName}} · <span class="gs-section-header__family">{{familyName}}</span>{{/if}}
+    </header>
+
+    {{#if (eq criteriaVisibility "redacted")}}
+      <div class="gs-major-sheet__criteria-card gs-major-sheet__criteria-card--redacted">
+        <span class="gs-redacted-bar">[redacted]</span>
+      </div>
+    {{else}}
+      <div class="gs-major-sheet__criteria-card">
+        {{#if reputationCriteria}}
+          <p class="gs-major-sheet__criteria-text">{{{reputationCriteria}}}</p>
+        {{else if familyActor}}
+          <p class="gs-major-sheet__criteria-empty">{{localize "GOODSOCIETY.public.criteriaEmpty"}}</p>
+        {{else}}
+          <p class="gs-major-sheet__criteria-empty">{{localize "GOODSOCIETY.public.noFamily"}}</p>
+        {{/if}}
+      </div>
+    {{/if}}
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 2. Reputation Tags grid ─────────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <div class="gs-major-sheet__rep-grid">
+
+      {{!-- Positive column --}}
+      <div class="gs-major-sheet__rep-col gs-major-sheet__rep-col--positive">
+        <div class="gs-major-sheet__rep-col-header">
+          <span class="gs-section-header" data-tooltip-key="reputationTags">
+            {{localize "GOODSOCIETY.public.positive"}} ▲
+          </span>
+          <div class="gs-rep-meter gs-rep-meter--positive{{#if (gte positiveTags.length 3)}} gs-rep-meter--full{{/if}}">
+            {{#each positiveMeterPips}}
+              <span class="gs-rep-meter__pip{{#if this.filled}} gs-rep-meter__pip--filled{{/if}}"></span>
+            {{/each}}
+          </div>
+        </div>
+        <div class="gs-major-sheet__tag-list">
+          {{#each positiveTags}}
+            <button class="gs-tag-pill gs-tag-pill--positive"
+                    type="button"
+                    data-action="openItem"
+                    data-item-id="{{this.id}}">
+              <span class="gs-polarity-arrow gs-polarity-arrow--positive">▲</span>
+              <span class="gs-tag-pill__name">{{this.name}}</span>
+            </button>
+          {{/each}}
+          <span class="gs-tag-pill gs-tag-pill--placeholder" aria-hidden="true">
+            {{localize "GOODSOCIETY.public.dragTagHere"}}
+          </span>
+        </div>
+      </div>
+
+      {{!-- Negative column --}}
+      <div class="gs-major-sheet__rep-col gs-major-sheet__rep-col--negative">
+        <div class="gs-major-sheet__rep-col-header">
+          <span class="gs-section-header" data-tooltip-key="reputationTags">
+            {{localize "GOODSOCIETY.public.negative"}} ▼
+          </span>
+          <div class="gs-rep-meter gs-rep-meter--negative{{#if (gte negativeTags.length 3)}} gs-rep-meter--full{{/if}}">
+            {{#each negativeMeterPips}}
+              <span class="gs-rep-meter__pip{{#if this.filled}} gs-rep-meter__pip--filled{{/if}}"></span>
+            {{/each}}
+          </div>
+        </div>
+        <div class="gs-major-sheet__tag-list">
+          {{#each negativeTags}}
+            <button class="gs-tag-pill gs-tag-pill--negative"
+                    type="button"
+                    data-action="openItem"
+                    data-item-id="{{this.id}}">
+              <span class="gs-polarity-arrow gs-polarity-arrow--negative">▼</span>
+              <span class="gs-tag-pill__name">{{this.name}}</span>
+            </button>
+          {{/each}}
+          <span class="gs-tag-pill gs-tag-pill--placeholder" aria-hidden="true">
+            {{localize "GOODSOCIETY.public.dragTagHere"}}
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 3. Active Conditions ────────────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <header class="gs-section-header" data-tooltip-key="activeConditions">
+      {{localize "GOODSOCIETY.public.activeConditions"}}
+    </header>
+    {{#if activeConditions.length}}
+      <div class="gs-major-sheet__condition-list">
+        {{#each activeConditions}}
+          <button class="gs-condition-pill gs-condition-pill--{{this.system.polarity}}"
+                  type="button"
+                  data-action="openItem"
+                  data-item-id="{{this.id}}">
+            <span class="gs-polarity-arrow gs-polarity-arrow--{{this.system.polarity}}">
+              {{#if (eq this.system.polarity "positive")}}▲{{else}}▼{{/if}}
+            </span>
+            {{this.name}}
+          </button>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="gs-major-sheet__empty-state">{{localize "GOODSOCIETY.public.noConditions"}}</p>
+    {{/if}}
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 4. Inner Conflict (active) ─────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <div class="gs-major-sheet__section-row">
+      <header class="gs-section-header" data-tooltip-key="innerConflict">
+        {{localize "GOODSOCIETY.public.innerConflict"}}
+      </header>
+      <span class="gs-major-sheet__rule-eyebrow">{{localize "GOODSOCIETY.public.innerConflictRule"}}</span>
+    </div>
+
+    {{#if activeConflicts.length}}
+      {{#each activeConflicts}}
+        {{> "inner-conflict-grid" this}}
+      {{/each}}
+    {{else}}
+      <div class="gs-major-sheet__criteria-card">
+        <p class="gs-major-sheet__criteria-empty">
+          {{localize "GOODSOCIETY.public.noConflict"}}
+          <button class="gs-btn gs-btn--secondary gs-btn--sm"
+                  type="button"
+                  data-action="beginConflict">
+            + {{localize "GOODSOCIETY.public.beginConflict"}}
+          </button>
+        </p>
+      </div>
+    {{/if}}
+  </section>
+
+  {{!-- ── 5. Completed Conflicts ──────────────────────────────────────────── --}}
+  {{#if completedConflicts.length}}
+    <div class="gs-hairline"></div>
+    <section class="gs-major-sheet__section">
+      <header class="gs-section-header" data-tooltip-key="completedConflicts">
+        {{localize "GOODSOCIETY.public.completedConflicts"}}
+      </header>
+      <div class="gs-major-sheet__completed-list">
+        {{#each completedConflicts}}
+          <button class="gs-conflict-completed-pill"
+                  type="button"
+                  data-action="openItem"
+                  data-item-id="{{this.id}}">
+            ⌜ {{this.system.leftLabel}} · {{this.system.rightLabel}}
+            {{#if (eq this.system.completedSide "left")}}(resolved on side of {{this.system.leftLabel}})
+            {{else if (eq this.system.completedSide "right")}}(resolved on side of {{this.system.rightLabel}})
+            {{/if}} ⌟
+          </button>
+        {{/each}}
+      </div>
+    </section>
+  {{/if}}
+
+</div>

@@ -1,0 +1,16 @@
+/* GM pill primitive (#60) — used in NPC sheet headers, Reveal Control, NPC Quick-Create, NPC Organizer */
+.gs-gm-pill {
+  display: inline-block;
+  font-family: var(--gs-body);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--gs-paper);
+  background: var(--gs-accent-1);
+  padding: 1px 7px;
+  border-radius: 3px;
+  vertical-align: middle;
+  user-select: none;
+}

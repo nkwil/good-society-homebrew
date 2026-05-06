@@ -29,7 +29,25 @@
 
   "GOODSOCIETY": {
     "sheets": {
-      "stub": "Good Society Actor Sheet (placeholder)"
+      "stub": "Good Society Actor Sheet (placeholder)",
+      "majorCharacter": "Major Character Sheet",
+      "connection": "Connection Sheet"
+    },
+    "tab": {
+      "public": "Public",
+      "private": "Private"
+    },
+    "sheet": {
+      "namePlaceholder": "Character name"
+    },
+    "strip": {
+      "resolve": "resolve",
+      "mtTitle": "Major Token — click to toggle",
+      "monologue": "monologue",
+      "monologueAvailable": "Available this cycle",
+      "monologueSpent": "Spent this cycle",
+      "cycle": "cycle",
+      "takeMonologue": "Take Monologue"
     },
     "polarity": {
       "positive": "Positive (▲)",
@@ -40,6 +58,36 @@
       "polarity": "Polarity",
       "description": "Description",
       "source": "Source"
+    },
+    "public": {
+      "reputationCriteria": "Reputation Criteria",
+      "noFamily": "No family assigned.",
+      "criteriaEmpty": "No reputation criteria set for this family.",
+      "positive": "Positive",
+      "negative": "Negative",
+      "dragTagHere": "drag tag here",
+      "activeConditions": "Active Conditions",
+      "noConditions": "None. Her reputation holds.",
+      "innerConflict": "Inner Conflict",
+      "innerConflictRule": "complete at 6 total or 5 on one side",
+      "noConflict": "No active inner conflict.",
+      "beginConflict": "Begin a conflict",
+      "completedConflicts": "Completed Conflicts"
+    },
+    "private": {
+      "age": "years",
+      "appearancePlaceholder": "gentle, composed…",
+      "desire": "Desire",
+      "notesObjectives": "Notes & Objectives",
+      "connections": "Connections",
+      "noConnections": "Drag a Connection here, or click + to create one.",
+      "add": "add",
+      "backstory": "Backstory",
+      "magicSkills": "Magic & Skills",
+      "noSkills": "No magic or skills added.",
+      "triggersSwap": "triggers persona swap",
+      "adventurerSentiment": "Adventurer Sentiment",
+      "adventurerSentimentPlaceholder": "A dashing adventurer, secretly…"
     },
     "theme": {
       "rose": "Rose",

@@ -1,0 +1,219 @@
+{{!-- Major Character — Private tab (#4). Per docs/design/04-character-sheet.md §"Private tab spec". --}}
+<div class="gs-major-sheet__tab-private"
+     data-group="sheet"
+     data-tab="private"
+     {{#unless (eq tabGroups.sheet "private")}}hidden{{/unless}}>
+
+  {{!-- ── 1. Bio chips (compact inline row) ─────────────────────────────── --}}
+  <section class="gs-major-sheet__section gs-major-sheet__section--bio">
+    <div class="gs-bio-chips">
+      <span class="gs-bio-chip">
+        <input class="gs-bio-chip__input" type="number" name="system.bio.age"
+               value="{{system.bio.age}}" min="0" /> {{localize "GOODSOCIETY.private.age"}}
+      </span>
+      <span class="gs-bio-chip__sep" aria-hidden="true">·</span>
+      <span class="gs-bio-chip">{{peerageLabel}}</span>
+      <span class="gs-bio-chip__sep" aria-hidden="true">·</span>
+      <span class="gs-bio-chip">
+        <input class="gs-bio-chip__input gs-bio-chip__input--wide" type="text"
+               name="system.bio.appearance" value="{{system.bio.appearance}}"
+               placeholder="{{localize "GOODSOCIETY.private.appearancePlaceholder"}}" />
+      </span>
+      <span class="gs-bio-chip__sep" aria-hidden="true">·</span>
+      <span class="gs-bio-chip">
+        ↑<input class="gs-bio-chip__input gs-bio-chip__input--narrow" type="number"
+                name="system.bio.temperamentGiven" value="{{system.bio.temperamentGiven}}" />
+        ↓<input class="gs-bio-chip__input gs-bio-chip__input--narrow" type="number"
+                name="system.bio.temperamentTaken" value="{{system.bio.temperamentTaken}}" />
+      </span>
+    </div>
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 2. Desire ───────────────────────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <div class="gs-major-sheet__field-header">
+      <header class="gs-section-header" data-tooltip-key="desire">
+        {{localize "GOODSOCIETY.private.desire"}}
+      </header>
+      <button class="gs-visibility-flag gs-visibility-flag--{{visibility.desire}}"
+              type="button"
+              data-action="toggleVisibility"
+              data-field="desire"
+              aria-label="Desire visibility: {{visibility.desire}}">
+        <span class="gs-visibility-flag__glyph">{{#if (eq visibility.desire "public")}}●{{else if (eq visibility.desire "redacted")}}⊘{{else}}○{{/if}}</span>
+        {{visibility.desire}}
+      </button>
+    </div>
+    {{#if (eq visibility.desire "redacted")}}
+      <div class="gs-redacted-bar">[redacted]</div>
+    {{else}}
+      {{editor system.desire target="system.desire" button=true editable=true}}
+    {{/if}}
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 3. Notes & Objectives ──────────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <div class="gs-major-sheet__field-header">
+      <header class="gs-section-header" data-tooltip-key="notesObjectives">
+        {{localize "GOODSOCIETY.private.notesObjectives"}}
+      </header>
+      <button class="gs-visibility-flag gs-visibility-flag--{{visibility.notesObjectives}}"
+              type="button"
+              data-action="toggleVisibility"
+              data-field="notesObjectives"
+              aria-label="Notes visibility: {{visibility.notesObjectives}}">
+        <span class="gs-visibility-flag__glyph">{{#if (eq visibility.notesObjectives "public")}}●{{else if (eq visibility.notesObjectives "redacted")}}⊘{{else}}○{{/if}}</span>
+        {{visibility.notesObjectives}}
+      </button>
+    </div>
+    {{#if (eq visibility.notesObjectives "redacted")}}
+      <div class="gs-redacted-bar">[redacted]</div>
+    {{else}}
+      {{editor system.notesObjectives target="system.notesObjectives" button=true editable=true}}
+    {{/if}}
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 4. Connections ──────────────────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <div class="gs-major-sheet__field-header">
+      <header class="gs-section-header" data-tooltip-key="connections">
+        {{localize "GOODSOCIETY.private.connections"}}
+      </header>
+      <button class="gs-btn gs-btn--secondary gs-btn--sm"
+              type="button"
+              data-action="addConnection">
+        + {{localize "GOODSOCIETY.private.add"}}
+      </button>
+    </div>
+    {{#if connectionActors.length}}
+      <div class="gs-connection-chips">
+        {{#each connectionActors}}
+          <button class="gs-connection-chip"
+                  type="button"
+                  data-action="openActor"
+                  data-actor-id="{{this.id}}">
+            {{#if this.system.bio.portraitUrl}}
+              <img class="gs-connection-chip__portrait" src="{{this.system.bio.portraitUrl}}"
+                   alt="{{this.name}}" />
+            {{else}}
+              <span class="gs-connection-chip__initial">{{this.name.[0]}}</span>
+            {{/if}}
+            <span class="gs-connection-chip__name">{{this.name}}</span>
+          </button>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="gs-major-sheet__empty-state">{{localize "GOODSOCIETY.private.noConnections"}}</p>
+    {{/if}}
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 5. Backstory ────────────────────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <div class="gs-major-sheet__field-header">
+      <header class="gs-section-header" data-tooltip-key="backstory">
+        {{localize "GOODSOCIETY.private.backstory"}}
+      </header>
+      <button class="gs-visibility-flag gs-visibility-flag--{{visibility.backstory}}"
+              type="button"
+              data-action="toggleVisibility"
+              data-field="backstory"
+              aria-label="Backstory visibility: {{visibility.backstory}}">
+        <span class="gs-visibility-flag__glyph">{{#if (eq visibility.backstory "public")}}●{{else if (eq visibility.backstory "redacted")}}⊘{{else}}○{{/if}}</span>
+        {{visibility.backstory}}
+      </button>
+    </div>
+    {{#if (eq visibility.backstory "redacted")}}
+      <div class="gs-redacted-bar">[redacted]</div>
+    {{else}}
+      {{editor system.backstory target="system.backstory" button=true editable=true}}
+    {{/if}}
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 6. Magic & Skills ───────────────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section">
+    <div class="gs-major-sheet__field-header">
+      <header class="gs-section-header" data-tooltip-key="magicSkills">
+        {{localize "GOODSOCIETY.private.magicSkills"}}
+      </header>
+      <div class="gs-major-sheet__field-header-actions">
+        <button class="gs-visibility-flag gs-visibility-flag--{{visibility.magic}}"
+                type="button"
+                data-action="toggleVisibility"
+                data-field="magic"
+                aria-label="Magic visibility: {{visibility.magic}}">
+          <span class="gs-visibility-flag__glyph">{{#if (eq visibility.magic "public")}}●{{else if (eq visibility.magic "redacted")}}⊘{{else}}○{{/if}}</span>
+          {{visibility.magic}}
+        </button>
+        <button class="gs-btn gs-btn--secondary gs-btn--sm"
+                type="button"
+                data-action="createItem"
+                data-item-type="magic-skill">
+          + {{localize "GOODSOCIETY.private.add"}}
+        </button>
+      </div>
+    </div>
+
+    {{#if magicSkills.length}}
+      <div class="gs-major-sheet__skill-list">
+        {{#each magicSkills}}
+          <div class="gs-skill-tile">
+            <div class="gs-skill-tile__body">
+              <span class="gs-skill-tile__name">✦ {{this.name}}</span>
+              {{#if this.system.description}}
+                <p class="gs-skill-tile__desc">{{{this.system.description}}}</p>
+              {{/if}}
+              {{#if this.system.triggersPersonaSwap}}
+                <span class="gs-skill-tile__swap-note">
+                  {{localize "GOODSOCIETY.private.triggersSwap"}}
+                </span>
+              {{/if}}
+            </div>
+            <button class="gs-btn gs-btn--primary gs-btn--sm gs-skill-tile__cast"
+                    type="button"
+                    data-action="castSkill"
+                    data-item-id="{{this.id}}">
+              cast ↗
+            </button>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="gs-major-sheet__empty-state">{{localize "GOODSOCIETY.private.noSkills"}}</p>
+    {{/if}}
+  </section>
+
+  <div class="gs-hairline"></div>
+
+  {{!-- ── 7. Adventurer Sentiment ─────────────────────────────────────────── --}}
+  <section class="gs-major-sheet__section gs-major-sheet__section--last">
+    <div class="gs-major-sheet__field-header">
+      <header class="gs-section-header" data-tooltip-key="adventurerSentiment">
+        {{localize "GOODSOCIETY.private.adventurerSentiment"}}
+      </header>
+      <button class="gs-visibility-flag gs-visibility-flag--{{visibility.adventurerSentiment}}"
+              type="button"
+              data-action="toggleVisibility"
+              data-field="adventurerSentiment"
+              aria-label="Adventurer Sentiment visibility: {{visibility.adventurerSentiment}}">
+        <span class="gs-visibility-flag__glyph">{{#if (eq visibility.adventurerSentiment "public")}}●{{else if (eq visibility.adventurerSentiment "redacted")}}⊘{{else}}○{{/if}}</span>
+        {{visibility.adventurerSentiment}}
+      </button>
+    </div>
+    <input class="gs-major-sheet__sentiment-input"
+           type="text"
+           name="system.adventurerSentiment"
+           value="{{system.adventurerSentiment}}"
+           placeholder="{{localize "GOODSOCIETY.private.adventurerSentimentPlaceholder"}}" />
+  </section>
+
+</div>

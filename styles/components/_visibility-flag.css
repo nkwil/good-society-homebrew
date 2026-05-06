@@ -1,0 +1,48 @@
+/* Visibility flag indicator (#48) — three-state interactive pill: secret | public | redacted.
+   Used in: Major sheet Private tab fields (Desire, Notes, Backstory, Magic, Adventurer Sentiment). */
+.gs-visibility-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--gs-body);
+  font-size: 11px;
+  font-style: italic;
+  line-height: 1;
+  padding: 2px 8px;
+  border-radius: 100px;
+  border: 0.5px solid currentColor;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  background: transparent;
+}
+
+.gs-visibility-flag__glyph {
+  font-style: normal;
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* State variants */
+.gs-visibility-flag--secret {
+  color: var(--gs-accent-2); /* sage — quiet, not alarming */
+}
+
+.gs-visibility-flag--public {
+  color: var(--gs-positive); /* verdant — confirmed visible */
+}
+
+.gs-visibility-flag--redacted {
+  color: var(--gs-danger); /* oxblood — conspicuous suppression */
+}
+
+.gs-visibility-flag:hover {
+  opacity: 0.75;
+}
+
+/* Non-owner/non-GM: flag shown but not interactive */
+.gs-visibility-flag[aria-disabled="true"] {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.5;
+}

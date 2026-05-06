@@ -1,0 +1,52 @@
+<div class="gs-major-sheet__strip">
+
+  {{!-- Left cluster: resolve track + MT badge + monologue dot --}}
+  <div class="gs-major-sheet__strip-left">
+
+    {{!-- #45 Resolve track --}}
+    <div class="gs-resolve-track">
+      <span class="gs-resolve-track__label">{{localize "GOODSOCIETY.strip.resolve"}}</span>
+      <div class="gs-resolve-track__pips">
+        {{#each resolvePips as |pip|}}
+          <button type="button"
+                  class="gs-resolve-pip {{#if pip.filled}}filled{{/if}}"
+                  data-action="toggleResolvePip"
+                  data-pip="{{pip.index}}"
+                  title="{{pip.label}}">
+          </button>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- #46 MT toggle --}}
+    <button type="button"
+            class="gs-mt-badge {{#if system.tokens.major}}active{{/if}}"
+            data-action="toggleMt"
+            title="{{localize 'GOODSOCIETY.strip.mtTitle'}}">
+      MT
+    </button>
+
+    {{!-- #47 Monologue dot (read-only indicator; state changes via Take Monologue) --}}
+    <div class="gs-monologue-dot">
+      <span class="gs-monologue-dot__label">{{localize "GOODSOCIETY.strip.monologue"}}</span>
+      <span class="gs-monologue-dot__pip {{#if system.tokens.monologuedThisCycle}}spent{{/if}}"
+            title="{{#if system.tokens.monologuedThisCycle}}{{localize 'GOODSOCIETY.strip.monologueSpent'}}{{else}}{{localize 'GOODSOCIETY.strip.monologueAvailable'}}{{/if}}">
+      </span>
+    </div>
+
+  </div>
+
+  {{!-- Right cluster: cycle indicator + Take Monologue action --}}
+  <div class="gs-major-sheet__strip-right">
+    <span class="gs-major-sheet__cycle-info">
+      {{localize "GOODSOCIETY.strip.cycle"}} {{cycleNumber}} · {{cyclePhase}}
+    </span>
+    <button type="button"
+            class="gs-btn gs-btn-secondary gs-btn-sm"
+            data-action="takeMonologue"
+            {{#if system.tokens.monologuedThisCycle}}disabled{{/if}}>
+      {{localize "GOODSOCIETY.strip.takeMonologue"}}
+    </button>
+  </div>
+
+</div>

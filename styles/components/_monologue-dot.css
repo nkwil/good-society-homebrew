@@ -1,0 +1,33 @@
+/* #47 — Monologue dot
+ * "monologue" small-caps label + single 12px circle.
+ * Available (not spent): --gs-accent-3 filled.
+ * Spent: 1px outline only in --gs-accent-3, transparent fill.
+ */
+
+.gs-monologue-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gs-monologue-dot__label {
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--gs-brand);
+}
+
+.gs-monologue-dot__pip {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gs-accent-3);
+  border: 1px solid var(--gs-accent-3);
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.gs-monologue-dot__pip.spent {
+  background: transparent;
+}

@@ -1,0 +1,343 @@
+/* Connection sheet — layout and chrome.
+   Cross-theme accent on impression cards: _impression-card.css.
+   Resolve pip atoms: _resolve-track.css.
+   This file owns sheet structure only. */
+
+/* ── Sheet wrapper ───────────────────────────────────────────────────────── */
+.gs-connection-sheet {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--gs-body);
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.gs-connection-sheet__header {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  background: var(--gs-paper-warm);
+  border-bottom: 0.5px solid var(--gs-accent-1);
+}
+
+/* Side panel */
+.gs-connection-sheet__side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 12px;
+  border-right: 0.5px solid var(--gs-accent-1);
+}
+
+.gs-connection-sheet__portrait {
+  width: 70px;
+  height: 84px;
+  border-radius: 50%;
+  border: 1px solid var(--gs-brand);
+  object-fit: cover;
+}
+
+.gs-connection-sheet__portrait-fallback {
+  width: 70px;
+  height: 84px;
+  border-radius: 50%;
+  border: 1px solid var(--gs-brand);
+  background: var(--gs-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 32px;
+  color: var(--gs-brand);
+}
+
+.gs-connection-sheet__bio-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--gs-brand);
+  text-align: center;
+}
+
+/* Main column */
+.gs-connection-sheet__main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 26px;
+}
+
+.gs-connection-sheet__eyebrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+
+.gs-connection-sheet__eyebrow-left {
+  font-family: var(--gs-body);
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--gs-brand);
+}
+
+.gs-connection-sheet__eyebrow-right {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-brand);
+  opacity: 0.7;
+}
+
+.gs-connection-sheet__name {
+  font-family: var(--gs-display);
+  font-size: 26px;
+  color: var(--gs-ink);
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+  line-height: 1.2;
+}
+
+.gs-connection-sheet__name:focus {
+  outline: none;
+  border-bottom: 0.5px solid var(--gs-brand);
+}
+
+.gs-connection-sheet__role {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-brand);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.gs-connection-sheet__main-rule {
+  margin: 6px 0;
+}
+
+/* Linked Major row */
+.gs-connection-sheet__linked-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.gs-connection-sheet__linked-label {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  color: var(--gs-ink);
+  opacity: 0.6;
+}
+
+/* Major name pill — wrapped in .gs-themed so colors resolve to the Major's theme */
+.gs-connection-sheet__linked-major {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 0.5px solid var(--gs-brand); /* Major's brand via .gs-themed wrapper */
+  border-radius: 100px;
+  padding: 2px 8px 2px 4px;
+  cursor: pointer;
+  font-family: var(--gs-body);
+  font-size: 12px;
+  color: var(--gs-brand); /* Major's brand */
+}
+
+.gs-connection-sheet__linked-major:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.gs-connection-sheet__linked-portrait {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.gs-connection-sheet__linked-initial {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-family: var(--gs-display);
+}
+
+.gs-connection-sheet__linked-none {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-ink);
+  opacity: 0.45;
+}
+
+/* ── Description ─────────────────────────────────────────────────────────── */
+.gs-connection-sheet__description {
+  padding: 18px 22px 12px;
+  border-bottom: 0.5px solid var(--gs-accent-1);
+}
+
+/* ── Impressions ─────────────────────────────────────────────────────────── */
+.gs-connection-sheet__impressions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 0.5px solid var(--gs-accent-1);
+}
+
+/* Section header + action button — shared by impressions, scene-col, state-col */
+.gs-connection-sheet__section-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.gs-impressions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Scene info ──────────────────────────────────────────────────────────── */
+.gs-connection-sheet__scene {
+  padding: 18px 22px;
+  border-bottom: 0.5px solid var(--gs-accent-1);
+}
+
+.gs-connection-sheet__scene-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+  margin-top: 12px;
+}
+
+.gs-connection-sheet__scene-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gs-connection-sheet__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Public scene tags per doc: paper bg, 0.5px accent-1 border, brand text */
+.gs-scene-tag {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  color: var(--gs-brand);
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-1);
+  border-radius: 100px;
+  padding: 3px 10px;
+}
+
+.gs-connection-sheet__hover-summary {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+  background: transparent;
+  border: 0.5px solid var(--gs-accent-1);
+  border-radius: 4px;
+  padding: 6px 8px;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.gs-connection-sheet__empty-state {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-ink);
+  opacity: 0.5;
+  margin: 0;
+}
+
+/* ── State block ─────────────────────────────────────────────────────────── */
+.gs-connection-sheet__state {
+  padding: 18px 22px;
+  border-top: 0.5px solid var(--gs-accent-1);
+}
+
+.gs-connection-sheet__state-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+  margin-top: 12px;
+}
+
+.gs-connection-sheet__state-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gs-connection-sheet__resolve-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gs-connection-sheet__resolve-count {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-brand);
+}
+
+.gs-connection-sheet__persona-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Persona pill — active has 2.5px left-edge brand accent per doc */
+.gs-connection-persona-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0.5px solid var(--gs-accent-1);
+  border-left: 2.5px solid transparent;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-family: var(--gs-body);
+  font-size: 12px;
+  color: var(--gs-ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.gs-connection-persona-pill--active {
+  border-left-color: var(--gs-brand);
+}
+
+.gs-connection-persona-pill__primary {
+  font-style: italic;
+  font-size: 10px;
+  color: var(--gs-ink);
+  opacity: 0.5;
+  margin-left: auto;
+}

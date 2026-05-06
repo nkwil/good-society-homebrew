@@ -1,0 +1,109 @@
+/* Button primitives — inventory #40, #41, #42 (03-component-inventory.md)
+ *
+ * All buttons inherit scope: inside a .gs-actor[data-theme="..."] or
+ * .gs-themed[data-theme="..."] wrapper, --gs-brand and --gs-paper resolve
+ * to the character's palette. House surfaces use the root values.
+ *
+ * Rule 2 (antique-but-clean): hairlines — secondary uses 0.5px border, not 1px.
+ * Rule 7: no shadow, no blur. Letterpress precision.
+ */
+
+/* Shared base */
+.gs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--gs-body);
+  font-size: var(--gs-size-body);
+  line-height: 1;
+  padding: 7px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.gs-btn:disabled,
+.gs-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* #40 — Primary button: solid brand fill, paper text.
+ * Used for: Take Monologue, Cast, Advance Phase — moments that matter.
+ */
+.gs-btn-primary {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border: none;
+  font-weight: 600;
+}
+
+.gs-btn-primary:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.gs-btn-primary:active:not(:disabled) {
+  opacity: 0.75;
+}
+
+/* #41 — Secondary button: outline only. Body type in brand color.
+ * Used for: save draft, cancel, + add actions, Take Monologue default state.
+ */
+.gs-btn-secondary {
+  background: transparent;
+  color: var(--gs-brand);
+  border: 0.5px solid var(--gs-brand);
+  font-weight: 400;
+}
+
+.gs-btn-secondary:hover:not(:disabled) {
+  background: var(--gs-paper-warm);
+}
+
+.gs-btn-secondary:active:not(:disabled) {
+  background: var(--gs-muted);
+}
+
+/* #42 — GM-only button: house-styled, distinguished from character-themed buttons.
+ * Small key icon (content: '🔑' or SVG) set by the caller's ::before pseudo-element.
+ * Always confirms before destructive actions — enforced in the JS click handler.
+ */
+.gs-btn-gm {
+  background: transparent;
+  color: var(--gs-accent-2);
+  border: 0.5px solid var(--gs-accent-2);
+  font-size: var(--gs-size-ui);
+  font-family: var(--gs-ui);
+  letter-spacing: 0.06em;
+}
+
+.gs-btn-gm::before {
+  content: '⚷';
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.gs-btn-gm:hover:not(:disabled) {
+  background: var(--gs-muted);
+}
+
+/* Small variant — for inline "+ add" actions */
+.gs-btn-sm {
+  padding: 3px 10px;
+  font-size: var(--gs-size-ui);
+}
+
+/* Icon-only button (#54 icon button preview) */
+.gs-btn-icon {
+  padding: 5px 6px;
+  background: transparent;
+  border: none;
+  color: var(--gs-accent-2);
+  border-radius: 4px;
+}
+
+.gs-btn-icon:hover:not(:disabled) {
+  background: var(--gs-paper-warm);
+  color: var(--gs-brand);
+}

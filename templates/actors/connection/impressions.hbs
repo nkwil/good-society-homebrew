@@ -1,0 +1,70 @@
+{{!-- Connection sheet — impressions PART.
+     Critical pattern: each impression card is wrapped in the *target Major's* theme,
+     so the 2.5px left-edge accent uses that Major's --gs-brand color.
+     Per docs/design/06-connection-sheet.md §"Cross-theme rendering inside the sheet". --}}
+
+<section class="gs-connection-sheet__impressions">
+
+  <div class="gs-connection-sheet__section-row">
+    <header class="gs-section-header" data-tooltip-key="impressions">
+      {{localize "GOODSOCIETY.connection.impressions"}}
+    </header>
+    <button class="gs-btn gs-btn--secondary gs-btn--sm"
+            type="button"
+            data-action="addImpression">
+      + {{localize "GOODSOCIETY.connection.addImpression"}}
+    </button>
+  </div>
+
+  {{#if impressions.length}}
+    <div class="gs-impressions-list">
+      {{#each impressions}}
+
+        {{!-- Each card wrapped in the Major's theme — left-edge accent resolves to Major's --gs-brand --}}
+        <div class="gs-impression-card gs-themed" data-theme="{{this.majorTheme}}">
+
+          <div class="gs-impression-card__major-col">
+            {{#if this.majorPortraitUrl}}
+              <img class="gs-impression-card__portrait"
+                   src="{{this.majorPortraitUrl}}"
+                   alt="{{this.majorName}}" />
+            {{else}}
+              <span class="gs-impression-card__portrait-fallback">{{this.majorInitial}}</span>
+            {{/if}}
+            <button class="gs-impression-card__major-ref"
+                    type="button"
+                    data-action="openMajor"
+                    data-actor-id="{{this.majorId}}">
+              {{this.majorName}}
+            </button>
+          </div>
+
+          <div class="gs-impression-card__text-col">
+            {{#if this.text}}
+              <p class="gs-impression-card__text">{{this.text}}</p>
+            {{else}}
+              <p class="gs-impression-card__text gs-impression-card__text--empty">
+                {{localize "GOODSOCIETY.connection.impressionPlaceholder"}}
+              </p>
+            {{/if}}
+            <button class="gs-impression-card__edit"
+                    type="button"
+                    data-action="editImpression"
+                    data-index="{{this.index}}">
+              {{localize "GOODSOCIETY.connection.edit"}}
+            </button>
+          </div>
+
+        </div>
+
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="gs-impression-card gs-impression-card--placeholder">
+      <p class="gs-impression-card__text gs-impression-card__text--empty">
+        {{localize "GOODSOCIETY.connection.noImpressions"}}
+      </p>
+    </div>
+  {{/if}}
+
+</section>

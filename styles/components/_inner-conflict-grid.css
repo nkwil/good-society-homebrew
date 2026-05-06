@@ -1,0 +1,167 @@
+/* Inner Conflict box grid primitive (#39).
+   Shared by: Inner Conflict item sheet + Major Character sheet Public tab.
+   Default box size is 22px (item sheet). Major sheet overrides to 18px below. */
+
+.gs-inner-conflict-grid {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 8px;
+  padding: 18px 22px;
+}
+
+/* Header: left col | vs. | right col */
+.gs-inner-conflict-grid__header,
+.gs-inner-conflict-grid__boxes {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0 16px;
+}
+
+.gs-inner-conflict-grid__header {
+  margin-bottom: 14px;
+}
+
+.gs-inner-conflict-grid__col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-inner-conflict-grid__col--left {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.gs-inner-conflict-grid__col--right {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.gs-conflict-label {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  color: var(--gs-brand);
+  line-height: 1.1;
+}
+
+.gs-conflict-label-input {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  color: var(--gs-brand);
+  background: transparent;
+  border: none;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  width: 100%;
+  padding: 2px 0;
+  line-height: 1.1;
+}
+
+.gs-conflict-label-input:focus {
+  outline: none;
+  border-bottom-color: var(--gs-brand);
+}
+
+.gs-conflict-side-count {
+  font-family: var(--gs-italic);
+  font-size: 12px;
+  color: var(--gs-ink);
+  opacity: 0.65;
+}
+
+.gs-inner-conflict-grid__vs {
+  font-family: var(--gs-italic);
+  font-size: 13px;
+  color: var(--gs-accent-3);
+  text-align: center;
+  user-select: none;
+}
+
+/* Box rows */
+.gs-inner-conflict-grid__side {
+  display: flex;
+  gap: 5px;
+}
+
+.gs-inner-conflict-grid__side--left {
+  justify-content: flex-end;
+}
+
+.gs-inner-conflict-grid__side--right {
+  justify-content: flex-start;
+}
+
+/* Center hairline between box halves */
+.gs-inner-conflict-grid__center-rule {
+  width: 1px;
+  height: 30px;
+  background: var(--gs-accent-2);
+  margin: 0 auto;
+}
+
+/* Individual box — default 22px for item sheet */
+.gs-conflict-box {
+  --gs-conflict-box-size: 22px;
+  width: var(--gs-conflict-box-size);
+  height: var(--gs-conflict-box-size);
+  border: 1px solid var(--gs-accent-2);
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 120ms, border-color 120ms;
+}
+
+.gs-conflict-box--filled {
+  background: var(--gs-brand);
+  border-color: var(--gs-brand);
+}
+
+.gs-conflict-box:hover:not(:disabled) {
+  border-color: var(--gs-brand);
+  opacity: 0.7;
+}
+
+.gs-conflict-box:disabled {
+  cursor: default;
+}
+
+/* Summary line */
+.gs-inner-conflict-grid__summary {
+  border-top: 0.5px solid var(--gs-accent-2);
+  margin-top: 12px;
+  padding-top: 10px;
+  font-family: var(--gs-italic);
+  font-size: 12px;
+  color: var(--gs-ink);
+  text-align: center;
+  line-height: 1.55;
+}
+
+/* Completed state — boxes become read-only, dimmed */
+.gs-inner-conflict-grid--completed .gs-conflict-box {
+  opacity: 0.55;
+}
+
+/* Completion glow — added by JS when conflict resolves, removed after 800ms.
+   Hardcoded RGB for --gs-accent-3 (#C9A55C = 201, 165, 92) because CSS rgba()
+   cannot take a custom property as its color argument. */
+@keyframes gs-conflict-resolve-glow {
+  0%   { box-shadow: 0 0 0 0   rgba(201, 165, 92, 0.7); }
+  40%  { box-shadow: 0 0 12px 4px rgba(201, 165, 92, 0.45); }
+  100% { box-shadow: 0 0 0 0   rgba(201, 165, 92, 0); }
+}
+
+.gs-inner-conflict-grid--resolving {
+  animation: gs-conflict-resolve-glow 800ms ease-out forwards;
+}
+
+/* Major Character sheet override — 18px boxes (smaller than item sheet default) */
+.gs-major-sheet .gs-conflict-box {
+  --gs-conflict-box-size: 18px;
+}
+
+.gs-major-sheet .gs-inner-conflict-grid {
+  padding: 14px 18px;
+}

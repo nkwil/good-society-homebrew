@@ -1,4 +1,4 @@
-const { StringField, BooleanField, ArrayField, SchemaField, HTMLField } = foundry.data.fields;
+const { StringField, NumberField, ArrayField, SchemaField, HTMLField } = foundry.data.fields;
 
 export class FamilyDataModel extends foundry.abstract.TypeDataModel {
   static defineSchema() {
@@ -8,7 +8,13 @@ export class FamilyDataModel extends foundry.abstract.TypeDataModel {
         choices: ['heir', 'new-arrival', 'foreign'],
         initial: 'heir',
       }),
-      heirStatus: new BooleanField({ initial: false }),
+      heirStatus: new StringField({
+        required: true,
+        choices: ['named-son', 'named-daughter', 'named-foster', 'vacant', 'contested'],
+        initial: 'vacant',
+      }),
+      establishedYear: new NumberField({ required: false, integer: true, nullable: true, initial: null }),
+      heirStatusFlavor: new StringField({ required: false, initial: '' }),
       // Pulled into member Majors' sheets as a read-only reputation criteria panel
       uniqueNegativeRepCriteria: new StringField({ initial: '' }),
       crest: new SchemaField({

@@ -245,14 +245,25 @@ A full design-system documentation tree lives in `docs/design/`:
 - `README.md` — folder orientation
 - `01-mood-exploration.md` — mood directions explored, decision rationale (Closed)
 - `02-theme-architecture.md` — two-layer model, scope boundaries, wrapper mechanism (Locked)
-- `03-component-inventory.md` — 59 components mapped to theme scope and design status
-- `04-character-sheet.md` — Major Character sheet spec (Locked)
+- `03-component-inventory.md` — 61 components mapped to theme scope and design status
+- `decisions.md` — authoritative locked palette, type tokens, twelve-theme registry, antique-but-clean principle
+- `04-character-sheet.md` — Major Character sheet (Locked)
 - `05-epistolary-ui.md` — Letter composer + letter card + `themedWrap` helper (Locked)
 - `06-connection-sheet.md` — Connection sheet (Locked)
 - `07-public-info-dashboard.md` — Public Info dashboard (Locked)
 - `08-cycle-phase-hud.md` — Cycle Phase HUD strip (Locked)
 - `09-my-characters-dock.md` — My Characters dock (Locked)
-- `decisions.md` — authoritative locked palette, type tokens, twelve-theme registry, antique-but-clean principle
+- `10-chat-cards.md` — six chat card variants + Speaking-As switcher + Inner Monologue editor flow (Locked)
+- `11-upkeep-wizard.md` — six-step Upkeep wizard + GM Roster (Locked)
+- `12-item-sheets.md` — all five item sheets + inner-conflict box grid (Locked)
+- `13-persona-switcher.md` — picker + popover + editor (Locked)
+- `14-family-sheet.md` — Family sheet + crest medallion (Locked)
+- `15-welcome-panel.md` — first-load modal (Locked)
+- `16-npc-sheet.md` — NPC sheet + promote-to-Connection (Locked)
+- `17-token-hover-card.md` — canvas hover card for all actor types (Locked)
+- `18-condition-picker.md` — reputation threshold modal (Locked)
+- `19-gm-tools.md` — Reveal Control + NPC Quick-Create + NPC Organizer (Locked)
+- `20-rule-tooltips.md` — tooltip primitive + ~50-key content catalog (Locked)
 
 When implementing visual surfaces, link the relevant design doc in your Claude Code prompt rather than describing the design inline. This keeps the implementation grounded in the locked decisions and prevents drift.
 
@@ -590,19 +601,27 @@ Personas array on Major (and copy schema to Connection/NPC). Sheet UI for adding
 
 The My Characters dock (`docs/design/09-my-characters-dock.md`) ships in this phase. It's a pinned per-user panel showing owned actors with full state for Majors and tighter rows for Connections. Footer hosts the Speaking-As switcher.
 
-**Phase 6 — Public Info / Facilitator dashboard + GM tools (3–4 days)**
-Custom ApplicationV2 dashboard window, scene control button, all-Majors at-a-glance, GM bulk actions. **Reveal control** (§12.5) for per-field visibility flips. **Bulk permissions panel** (§12.5) for setting actor ownership across all users in one screen.
+**Phase 6 — Custom apps batch (5–7 days)**
+Build the persistent UI trinity and GM tools using the `themedWrap` helper from B-0:
+- Public Info dashboard (per `docs/design/07-public-info-dashboard.md`)
+- My Characters dock with Speaking-As switcher (per `docs/design/09-my-characters-dock.md`)
+- Cycle Phase HUD strip (per `docs/design/08-cycle-phase-hud.md`)
+- Welcome Panel (per `docs/design/15-welcome-panel.md`)
+- GM tools: Reveal Control, NPC Quick-Create, NPC Organizer (per `docs/design/19-gm-tools.md`)
+- Token Hover Card (per `docs/design/17-token-hover-card.md`)
+- In-sheet Tooltip system (per `docs/design/20-rule-tooltips.md`)
 
-Full spec in `docs/design/07-public-info-dashboard.md` — covers the hybrid-theming row pattern, GM bulk actions, real-time updates via `updateActor` hooks, and the CSS hybrid-theming gotcha (row backgrounds use hardcoded house values to prevent wrapper cascade).
+**Phase 7 — Chat card system (3–4 days)**
+Six card variants + Speaking-As switcher + Inner Monologue editor flow per `docs/design/10-chat-cards.md`. Centralized helpers in `module/helpers/chat-cards.js`. Templates under `templates/chat-cards/`. The Speaking-As switcher integrates with the My Characters dock's footer.
 
-**Phase 7 — Scene + NPC hover + scene tools (2–3 days)**
-`hoverToken` hook, custom hover card component sourced from the active persona's `hoverSummary`. Connection- and NPC-aware token display. **NPC quick-create** (§12.5) right-click canvas action. **NPC organizer per scene** (§12.5) sidebar listing tokens on the active scene.
+**Phase 8 — Personas + interactive flows (4–5 days)**
+- Persona switcher (picker + popover + editor) per `docs/design/13-persona-switcher.md`
+- Upkeep Wizard (per-Major) + GM Roster View per `docs/design/11-upkeep-wizard.md`
+- Condition Picker modal per `docs/design/18-condition-picker.md`
+- Magic/Skill VFX integration with Sequencer + JB2A per `docs/design/12-item-sheets.md` Cast pipeline
 
-**Phase 8 — Magic/Skills VFX + scene-default personas (2–3 days)**
-Sequencer + JB2A integration, VFX firing on cast, Alter Self → persona-swap link. Per-scene default-persona flag with auto-switch when an actor's token enters the scene. Persona transition animation reusing the VFX pipeline.
-
-**Phase 9 — Cycle UX polish (3–4 days)**
-**Upkeep wizard** (§12.2) modal walking each player through resolve refresh, notes update, monologue prompt, and reputation review. **Inner monologue journal flow** (§12.4) — text editor on monologue, journal entry creation, stylized chat card. **Inner conflict completion ceremony** (§12.4) auto-posting and Backstory Action creation. **Reputation pending changes log** (§12.3) and **condition picker on threshold** (§12.3).
+**Phase 9 — Polish & content (ongoing)**
+Compendium packs (canonical conditions, sample characters, sample inner conflicts, sample personas), localization (the ~50 tooltip keys catalogued in `20-rule-tooltips.md`), settings UI, README for friends installing it.
 
 **Phase 10 — Chat & flavor polish (2–3 days)**
 **Speaking-as chat switcher** (§12.1) above the chat input. **Persona-aware chat** (§12.1) using active persona's portrait/name. **Per-character chat styling** (§12.1) via persona-stored colors and fonts. **Epistolary letter formatter** (§12.5) parchment-themed composer for the Epistolary phase.
@@ -628,6 +647,10 @@ These are the decisions made during planning. Paste this section into `CLAUDE.md
 8. **Personas are first-class.** Each Major (and optionally Connection/NPC) has a list of personas with their own portraits, token images, names, and visibility overrides. Switching persona updates every placed token of that actor across all scenes. See §11.
 9. **Visual design follows the antique-but-clean principle and a two-layer theming model.** House style (Inkwell & Wildflower) owns chrome, item sheets, Family, NPC, system-emitted chat, and the Cycle HUD. Character themes own Major/Connection sheet bodies, in-character chat, letters, monologues, and character-themed entries on shared boards. Twelve theme presets are locked (six Major, five Connection, one NPC). Source of truth: `docs/design/decisions.md` and `docs/design/02-theme-architecture.md`.
 10. **Per-character chat styling is derived from the active theme**, not stored on the actor. The Major actor schema carries a `theme` enum field; chat cards resolve the theme's `--gs-brand` (color) and `--gs-body` (font) at render time. Personas may override the brand color via their existing `chatColor` field.
+11. **Chat card system uses the `themedWrap` helper for all character-bound variants.** Six variants are locked: system-emitted (house), in-character (themed), monologue (themed, expanded), completion ceremony (themed), persona-switch (new persona's theme), letter (sender's theme). Theme id stored on the chat message flag at post time so historic cards survive theme changes. Source of truth: `docs/design/10-chat-cards.md`.
+12. **The Token Hover Card serves all three actor types** (Majors, Connections, NPCs) via the wrapper mechanism. Inventory entry #23 renamed from "NPC hover card" to "Token hover card." Source: `docs/design/17-token-hover-card.md`.
+13. **The Inner Conflict box grid is a shared primitive** rendered identically on the Major sheet's Public tab and the Inner Conflict item sheet. Single Handlebars partial at `templates/components/inner-conflict-grid.hbs`. Per `docs/design/12-item-sheets.md`.
+14. **Tooltips are system-wide and house-styled.** Triggered by `data-tooltip-key` attribute on section headers. ~50 tooltip keys catalogued in `docs/design/20-rule-tooltips.md`. Authored in `lang/en.json` under `GOODSOCIETY.tooltips.*`.
 
 ---
 

@@ -14,16 +14,28 @@
 @import './components/_card.css';
 @import './components/_section-header.css';
 @import './components/_hairline.css';
+@import './components/_buttons.css';
+@import './components/_form-inputs.css';
+@import './components/_resolve-track.css';
+@import './components/_mt-badge.css';
+@import './components/_monologue-dot.css';
+@import './components/_gm-pill.css';
+@import './components/_polarity-arrow.css';
+@import './components/_reputation-tag.css';
+@import './components/_reputation-meter.css';
+@import './components/_visibility-flag.css';
+@import './components/_inner-conflict-grid.css';
+@import './components/_impression-card.css';
+
+/* Sheets */
+@import './sheets/_major-character.css';
+@import './sheets/_connection.css';
 
 /* Character theme presets */
 @import './themes/_theme-clayton.css';
 
-/* Session B-1 additions:
- * @import './components/_resolve-track.css';
- * @import './components/_mt-badge.css';
- * ... (remaining 16 component primitives from CLAUDE.md §5)
- * @import './sheets/_major-character.css';
- * @import './sheets/_connection.css';
+/* Session B-1 additions (remaining):
+ * ... (remaining component primitives from CLAUDE.md §5)
  * @import './sheets/_family.css';
  * @import './sheets/_npc.css';
  * @import './apps/_dashboard.css';
