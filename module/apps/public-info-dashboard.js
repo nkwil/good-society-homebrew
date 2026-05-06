@@ -15,6 +15,7 @@
  */
 
 import { buildDashboardContext, NEXT_PHASE } from '../helpers/dashboard-context.js';
+import { openRevealControl } from './reveal-control.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 } = foundry.applications.api;
@@ -71,15 +72,22 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
 
   // ── Row interaction ─────────────────────────────────────────────────────────
 
-  /** Click anywhere on a row (except the desire field) → open the Major's sheet. */
+  /** Click a row → open the Major's sheet. Click the desire cell → Reveal Control (GM only). */
   _wireRowClicks() {
     const root = this.element;
     if (!root || root._gsDashRowBound) return;
     root._gsDashRowBound = true;
 
     root.addEventListener('click', (ev) => {
-      // Desire field is GM-only (for a future reveal-control popover) — don't open sheet.
-      if (ev.target.closest('.gs-dashboard__row-desire')) return;
+      const desireEl = ev.target.closest('.gs-dashboard__row-desire');
+      if (desireEl) {
+        if (game.user?.isGM) {
+          const row = desireEl.closest('[data-actor-id]');
+          const actor = row ? game.actors?.get(row.dataset.actorId) : null;
+          if (actor) openRevealControl(actor, 'desire', desireEl);
+        }
+        return;
+      }
       const row = ev.target.closest('[data-actor-id]');
       if (!row) return;
       const actor = game.actors?.get(row.dataset.actorId);

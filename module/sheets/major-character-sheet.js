@@ -3,6 +3,7 @@
  */
 
 import { MonologueEditor } from '../apps/monologue-editor.js';
+import { openRevealControl } from '../apps/reveal-control.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -252,13 +253,9 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     item[0]?.sheet?.render(true);
   }
 
-  // Stub — Reveal Control popover (inventory #20) ships in B-4. Logs for now.
   static async #toggleVisibility(event, target) {
-    const field = target.dataset.field;
-    const current = this.actor.system.visibility?.[field] ?? 'secret';
-    const cycle = { secret: 'public', public: 'redacted', redacted: 'secret' };
-    console.log(`toggleVisibility stub | field: ${field}, ${current} → ${cycle[current]}`);
-    await this.actor.update({ [`system.visibility.${field}`]: cycle[current] });
+    if (!game.user?.isGM) return;
+    openRevealControl(this.actor, target.dataset.field, target);
   }
 
   static async #openActor(event, target) {

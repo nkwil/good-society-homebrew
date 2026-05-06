@@ -454,6 +454,25 @@
       "upkeep":       "Upkeep"
     },
 
+    "revealControl": {
+      "title":                 "REVEAL CONTROL",
+      "ariaLabel":             "Reveal Control",
+      "gridField":             "FIELD",
+      "gridCurrent":           "CURRENT",
+      "gridFlipTo":            "FLIP TO",
+      "irreversibleFeel":      "(irreversible feel)",
+      "consequencePublic":     "This will reveal {name}'s {field} to all players. The reveal posts a chat card and is logged. Continue?",
+      "consequenceRedacted":   "This will replace {name}'s {field} with a redaction bar visible to all players. Continue?",
+      "consequenceSecret":     "This will hide {name}'s {field} from all players.",
+      "btnCancel":             "cancel",
+      "btnPublic":             "reveal to all ↗",
+      "btnRedacted":           "redact",
+      "btnSecret":             "make secret",
+      "postedPublic":          "GM revealed {name}'s {field} to all players.",
+      "postedRedacted":        "GM redacted {name}'s {field}.",
+      "postedSecret":          "GM made {name}'s {field} secret."
+    },
+
     "hud": {
       "cycleLabel":     "cycle",
       "advancePhase":   "advance phase →",

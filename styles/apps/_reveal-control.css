@@ -1,0 +1,169 @@
+/* Reveal Control — GM popover for per-field visibility confirmation.
+ * Appended to document.body. Fixed-positioned, z-index 500.
+ * House-styled chrome; actor name uses .gs-themed wrapper for character brand color.
+ * Design: docs/design/19-gm-tools.md §"Reveal Control widget"
+ */
+
+.gs-reveal-control {
+  position: fixed;
+  z-index: 500;
+  width: 360px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(61, 47, 38, 0.18);
+  pointer-events: auto;
+  font-family: var(--gs-body);
+  box-sizing: border-box;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.gs-reveal-control__header {
+  padding: 14px 20px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-reveal-control__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.gs-reveal-control__title {
+  font-family: var(--gs-ui);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--gs-accent-2);
+  font-variant: small-caps;
+  text-transform: uppercase;
+}
+
+/* Actor name uses .gs-themed[data-theme] wrapper so --gs-brand resolves to
+ * the character's palette (e.g. Rose pink-wine, Avril candlelight gold).
+ * The rest of the popover stays house — no theming bleed. */
+.gs-reveal-control__actor-name {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  color: var(--gs-brand);
+  line-height: 1.2;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+
+.gs-reveal-control__body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Two-column grid: label (70px) | value */
+.gs-reveal-control__grid {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  row-gap: 7px;
+  align-items: baseline;
+}
+
+.gs-reveal-control__grid-label {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  font-variant: small-caps;
+  letter-spacing: 0.12em;
+  color: var(--gs-accent-2);
+  text-transform: uppercase;
+}
+
+.gs-reveal-control__grid-value {
+  font-size: 13px;
+  color: var(--gs-ink);
+}
+
+/* State-specific value styling */
+.gs-reveal-control__state--secret {
+  font-style: italic;
+  color: var(--gs-accent-2);
+  font-size: 12px;
+}
+
+.gs-reveal-control__state--public {
+  color: var(--gs-positive);
+  font-weight: 500;
+}
+
+.gs-reveal-control__state--redacted {
+  color: var(--gs-danger);
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* "(irreversible feel)" tag next to the FLIP TO value */
+.gs-reveal-control__irreversible {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--gs-accent-2);
+  opacity: 0.75;
+  margin-left: 6px;
+}
+
+/* Consequence warning — parchment-warm card with terracotta left edge */
+.gs-reveal-control__consequence {
+  background: var(--gs-paper-warm);
+  border-left: 2.5px solid var(--gs-accent-1);
+  padding: 10px 12px;
+  font-style: italic;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+  border-radius: 0 3px 3px 0;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.gs-reveal-control__footer {
+  padding: 12px 20px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+  border-radius: 0 0 6px 6px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+}
+
+.gs-reveal-control__btn-cancel,
+.gs-reveal-control__btn-confirm {
+  font-family: var(--gs-body);
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1.2;
+  transition: background 0.15s ease, color 0.15s ease;
+  letter-spacing: 0.03em;
+}
+
+.gs-reveal-control__btn-cancel {
+  background: transparent;
+  color: var(--gs-accent-2);
+  border: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-reveal-control__btn-cancel:hover {
+  background: var(--gs-paper);
+  color: var(--gs-brand);
+  border-color: var(--gs-brand);
+}
+
+.gs-reveal-control__btn-confirm {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border: none;
+  font-weight: 600;
+}
+
+.gs-reveal-control__btn-confirm:hover {
+  opacity: 0.88;
+}
