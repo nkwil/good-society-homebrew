@@ -437,6 +437,69 @@
       "expand": "Expand dock"
     },
 
+    "major": {
+      "peerage": {
+        "heir": "Heir",
+        "new-arrival": "New arrival",
+        "foreign": "Foreign"
+      }
+    },
+
+    "cyclePhase": {
+      "preCycle":     "Pre-Cycle",
+      "novel":        "Novel Chapter",
+      "reputation":   "Reputation Phase",
+      "rumourScandal":"Rumour & Scandal",
+      "epistolary":   "Epistolary Phase",
+      "upkeep":       "Upkeep"
+    },
+
+    "dashboard": {
+      "windowTitle":        "Public Info · Facilitator Dashboard",
+      "title":              "Public Info · Facilitator Dashboard",
+      "subtitle":           "All Major characters at a glance · GM controls below · individual sheets remain authoritative.",
+      "cycleLabel":         "cycle",
+      "sceneControlTitle":  "Public Info Dashboard",
+      "systemAlias":        "Good Society",
+      "majorsEyebrow":      "Major Characters",
+      "noMajors":           "No Major characters yet. Create one in the actors sidebar.",
+      "lastUpdated":        "updated {n}s ago",
+      "desireFieldTitle":   "Desire",
+      "desireEmpty":        "(no desire written)",
+      "desireSecret":       "— secret —",
+      "desireRedacted":     "redacted",
+      "bulk": {
+        "eyebrow":                    "GM ·",
+        "refreshResolve":             "refresh resolve",
+        "refreshResolveHint":         "Reset every Major's resolve to the default starting value.",
+        "refreshResolveConfirm":      "Reset resolve to {n} for all Major characters?",
+        "refreshResolvePosted":       "Resolve refreshed to {n} for {count} Major characters.",
+        "clearMonologues":            "clear monologues",
+        "clearMonologuesHint":        "Clear the monologue-spent flag on all Majors for a new cycle.",
+        "clearMonologuesConfirm":     "Clear monologue flags for all Major characters?",
+        "clearMonologuesPosted":      "Monologue flags cleared for {count} Major characters.",
+        "revealDesires":              "reveal desires",
+        "revealDesiresHint":          "Toggle all Major desires between public and secret.",
+        "revealDesireConfirm":        "Make all Major desires public? This is a dramatic move — the table will see them.",
+        "revealDesirePosted":         "All Major desires are now public.",
+        "hideDesireConfirm":          "Hide all Major desires? They will return to secret.",
+        "hideDesirePosted":           "All Major desires are now secret.",
+        "rumour":                     "roll rumour",
+        "rumourHint":                 "Open the Rumour & Scandal generator.",
+        "rumourStub":                 "The Rumour & Scandal generator is not yet implemented.",
+        "advancePhase":               "advance phase",
+        "advancePhaseHint":           "Advance the world cycle to the next phase.",
+        "advancePhaseConfirm":        "Advance to the next cycle phase?",
+        "advancePhasePosted":         "Cycle advanced to: {phase}."
+      },
+      "footer": {
+        "of":          "of",
+        "majorsActive":"majors active",
+        "offline":     "offline",
+        "allActive":   "majors present"
+      }
+    },
+
     "settings": {
       "tooltipsEnabled": {
         "name": "Show Rule Tooltips",
@@ -445,6 +508,26 @@
       "applyFoundryChrome": {
         "name": "Apply Foundry Chrome Theme",
         "hint": "Re-themes Foundry's surrounding chrome (titlebars, sidebar, chat log, scene navigation, form controls, notifications, player list, hotbar) to match the Good Society house style. Toggles instantly without a page reload."
+      },
+      "autoRefreshOnUpkeep": {
+        "name": "Auto-Refresh Resolve on Upkeep",
+        "hint": "When the cycle advances to Upkeep, visually highlight the Refresh Resolve button on the dashboard. GM still clicks — this never fires automatically."
+      },
+      "promptOnThreeTags": {
+        "name": "Prompt on Three Reputation Tags",
+        "hint": "When a Major reaches three tags of one polarity, open a reminder to review Reputation Conditions."
+      },
+      "defaultMaxResolve": {
+        "name": "Default Maximum Resolve",
+        "hint": "The maximum resolve track length for new Major and Connection characters. Default: 5."
+      },
+      "defaultStartingResolve": {
+        "name": "Default Starting Resolve",
+        "hint": "The resolve value assigned to new Major characters, and the value used by Refresh Resolve on the dashboard. Default: 3."
+      },
+      "homebrewMagicEnabled": {
+        "name": "Enable Homebrew Magic & Skills",
+        "hint": "Show the Magic & Skills tab on Major character sheets and enable VFX casting. Disable for tables playing canonical Good Society without the homebrew additions."
       }
     },
 

@@ -1,0 +1,196 @@
+/* Dashboard Major row — hybrid-themed component.
+ * Per docs/design/07-public-info-dashboard.md §"Theme behavior".
+ *
+ * The .gs-themed wrapper rebinds --gs-brand (and friends) to the character's
+ * theme palette inside each row. Properties that must stay house-styled are
+ * hardcoded below (see "house-pinned" comments) — they cannot use var()
+ * because the theme wrapper would override them.
+ */
+
+/* ── Row container ───────────────────────────────────────────────────────── */
+
+.gs-dashboard__row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto auto auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 14px;
+
+  /* house-pinned: row background must not follow the theme's --gs-paper-warm */
+  background: #F4ECD8;
+
+  border-left: 2.5px solid var(--gs-brand);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.12s ease;
+}
+
+.gs-dashboard__row:hover {
+  /* Subtle border emphasis — uses house sage, not theme accent */
+  box-shadow: 0 0 0 0.5px #708060;
+}
+
+.gs-dashboard__row:focus-visible {
+  outline: 1.5px solid var(--gs-brand);
+  outline-offset: 2px;
+}
+
+/* ── Portrait ─────────────────────────────────────────────────────────────── */
+
+.gs-dashboard__row-portrait {
+  width: 38px;
+  height: 44px;
+  border-radius: 19px / 22px;
+  border: 1px solid var(--gs-brand);
+  background: var(--gs-paper);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gs-dashboard__row-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gs-dashboard__row-portrait-initial {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  color: var(--gs-brand);
+  line-height: 1;
+}
+
+/* ── Name + role ──────────────────────────────────────────────────────────── */
+
+.gs-dashboard__row-name {
+  min-width: 0;
+}
+
+.gs-dashboard__row-name-primary {
+  font-family: var(--gs-display);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--gs-brand);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gs-dashboard__row-name-role {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  /* house-pinned: role subtitle stays house sage, not theme color */
+  color: #708060;
+  line-height: 1.3;
+  margin-top: 1px;
+}
+
+/* ── Resolve pips ─────────────────────────────────────────────────────────── */
+
+.gs-dashboard__row-resolve {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.gs-dashboard__row-pip {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 0.5px solid var(--gs-brand);
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.gs-dashboard__row-pip.filled {
+  background: var(--gs-brand);
+}
+
+/* ── MT badge ─────────────────────────────────────────────────────────────── */
+
+.gs-dashboard__row-mt {
+  font-family: var(--gs-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--gs-brand);
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 6px;
+  padding: 1px 6px;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.gs-dashboard__row-mt.is-on {
+  background: var(--gs-brand);
+  /* house-pinned: text on filled MT badge is always paper */
+  color: #EFE6D2;
+}
+
+/* ── Monologue dot ────────────────────────────────────────────────────────── */
+
+.gs-dashboard__row-monologue {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 0.5px solid var(--gs-accent-3);
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.gs-dashboard__row-monologue.is-available {
+  background: var(--gs-accent-3);
+}
+
+/* ── Desire field ─────────────────────────────────────────────────────────── */
+
+.gs-dashboard__row-desire {
+  max-width: 200px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.gs-dashboard__row-desire-text {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-ink);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.gs-dashboard__row-desire-secret {
+  font-family: var(--gs-body);
+  font-size: 12px;
+  /* house-pinned: muted sage, not theme color */
+  color: #708060;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+.gs-dashboard__row-desire-empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  /* house-pinned */
+  color: #708060;
+}
+
+/* Redaction bar — width approximates a typical short desire */
+.gs-dashboard__row-desire-redacted {
+  display: inline-block;
+  width: 120px;
+  height: 12px;
+  border-radius: 2px;
+  /* house-pinned: redaction uses house ink tone */
+  background: rgba(61, 47, 38, 0.2);
+  vertical-align: middle;
+}

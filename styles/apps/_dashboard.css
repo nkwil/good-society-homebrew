@@ -1,0 +1,160 @@
+/* Public Info Dashboard — chrome, header, GM bulk row, majors section, footer.
+ * Per docs/design/07-public-info-dashboard.md.
+ *
+ * House-styled throughout. Each Major row is styled in
+ * styles/components/_dashboard-row.css with the hybrid-theming pattern.
+ */
+
+/* ── Application wrapper ────────────────────────────────────────────────── */
+
+.gs-public-info-dashboard .window-content {
+  padding: 0;
+  background: var(--gs-paper);
+  overflow: hidden;
+}
+
+/* ── Root section ────────────────────────────────────────────────────────── */
+
+.gs-dashboard {
+  display: flex;
+  flex-direction: column;
+  background: var(--gs-paper);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.gs-dashboard__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 28px;
+  background: var(--gs-paper);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-dashboard__header-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-dashboard__title {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  line-height: 1.2;
+  margin: 0 0 5px;
+}
+
+.gs-dashboard__subtitle {
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.gs-dashboard__header-right {
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.gs-dashboard__cycle {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  white-space: nowrap;
+}
+
+/* ── GM bulk actions ─────────────────────────────────────────────────────── */
+
+.gs-dashboard__bulk {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 28px;
+  background: var(--gs-paper-warm);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-dashboard__bulk-eyebrow {
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.16em;
+  color: var(--gs-accent-1);
+  flex-shrink: 0;
+}
+
+.gs-dashboard__bulk-spacer {
+  flex: 1;
+}
+
+/* Button overrides for the bulk strip — keep them compact */
+.gs-dashboard__bulk .gs-btn--sm {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+/* ── Majors section ──────────────────────────────────────────────────────── */
+
+.gs-dashboard__majors {
+  padding: 18px 28px;
+  background: var(--gs-paper);
+  flex: 1;
+}
+
+.gs-dashboard__section-eyebrow {
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.18em;
+  color: var(--gs-accent-2);
+  margin-bottom: 12px;
+}
+
+.gs-dashboard__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Internal scroll when more than 12 rows would push the footer off-screen. */
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.gs-dashboard__empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-accent-2);
+  margin: 0;
+  padding: 8px 0;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.gs-dashboard__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-dashboard__footer-status,
+.gs-dashboard__footer-time {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-accent-2);
+}
+
+.gs-dashboard__footer-time {
+  font-style: normal;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}

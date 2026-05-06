@@ -1,0 +1,58 @@
+{{!-- Dashboard Major row — hybrid-themed: house chrome, per-character accents.
+     The .gs-themed wrapper rebinds --gs-brand and friends to the character's
+     palette. Row background is hardcoded in CSS to prevent theme bleed.
+     Click anywhere except .gs-dashboard__row-desire → opens the Major sheet. --}}
+<div class="gs-dashboard__row gs-themed"
+     data-theme="{{theme}}"
+     data-actor-id="{{id}}"
+     role="button"
+     tabindex="0"
+     aria-label="{{ariaLabel}}">
+
+  {{!-- Portrait — oval, theme border, initial fallback --}}
+  <div class="gs-dashboard__row-portrait" aria-hidden="true">
+    {{#if portraitUrl}}
+      <img src="{{portraitUrl}}" alt="" />
+    {{else}}
+      <span class="gs-dashboard__row-portrait-initial">{{initial}}</span>
+    {{/if}}
+  </div>
+
+  {{!-- Name + role --}}
+  <div class="gs-dashboard__row-name">
+    <div class="gs-dashboard__row-name-primary">{{name}}</div>
+    <div class="gs-dashboard__row-name-role">{{role}}</div>
+  </div>
+
+  {{!-- Resolve track (read-only) --}}
+  <div class="gs-dashboard__row-resolve" aria-hidden="true">
+    {{#each resolvePips as |filled|}}
+      <span class="gs-dashboard__row-pip {{#if filled}}filled{{/if}}"></span>
+    {{/each}}
+  </div>
+
+  {{!-- MT badge (read-only) --}}
+  <div class="gs-dashboard__row-mt {{#if mtActive}}is-on{{/if}}" aria-hidden="true">MT</div>
+
+  {{!-- Monologue dot --}}
+  <div class="gs-dashboard__row-monologue {{#if monologueAvailable}}is-available{{/if}}"
+       title="{{#if monologueAvailable}}{{localize "GOODSOCIETY.dock.monologueAvailable"}}{{else}}{{localize "GOODSOCIETY.dock.monologueSpent"}}{{/if}}"
+       aria-hidden="true"></div>
+
+  {{!-- Desire (visibility-aware) --}}
+  <div class="gs-dashboard__row-desire gs-dashboard__row-desire--{{desireVis}}"
+       title="{{localize "GOODSOCIETY.dashboard.desireFieldTitle"}}">
+    {{#if (eq desireVis "public")}}
+      {{#if desireText}}
+        <span class="gs-dashboard__row-desire-text">"{{desireText}}"</span>
+      {{else}}
+        <span class="gs-dashboard__row-desire-empty">{{localize "GOODSOCIETY.dashboard.desireEmpty"}}</span>
+      {{/if}}
+    {{else if (eq desireVis "secret")}}
+      <span class="gs-dashboard__row-desire-secret">{{localize "GOODSOCIETY.dashboard.desireSecret"}}</span>
+    {{else}}
+      <span class="gs-dashboard__row-desire-redacted" aria-label="{{localize "GOODSOCIETY.dashboard.desireRedacted"}}"></span>
+    {{/if}}
+  </div>
+
+</div>

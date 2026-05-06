@@ -4,7 +4,9 @@
  */
 
 import { register as registerSpeakingAs } from './hooks/speaking-as.js';
+import { register as registerSceneControls } from './hooks/scene-controls.js';
 import { renderDock } from './apps/my-characters-dock.js';
+import { getDashboard } from './apps/public-info-dashboard.js';
 import { initTooltipSystem } from './helpers/rule-tooltip.js';
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
@@ -33,6 +35,8 @@ const GS_COMPONENT_PARTIALS = {
     'systems/good-society-homebrew/templates/components/dock-major-row.hbs',
   'dock-connection-row':
     'systems/good-society-homebrew/templates/components/dock-connection-row.hbs',
+  'dashboard-major-row':
+    'systems/good-society-homebrew/templates/components/dashboard-major-row.hbs',
 };
 
 Hooks.once('init', async function () {
@@ -95,6 +99,66 @@ Hooks.once('init', async function () {
     onChange: (value) => {
       document.body.classList.toggle('gs-chrome-themed', value);
     },
+  });
+
+  // ── World settings ───────────────────────────────────────────────────────
+  game.settings.register('good-society-homebrew', 'cyclePhase', {
+    scope: 'world',
+    config: false,
+    type: String,
+    default: 'pre-cycle',
+  });
+
+  game.settings.register('good-society-homebrew', 'cycleNumber', {
+    scope: 'world',
+    config: false,
+    type: Number,
+    default: 1,
+  });
+
+  game.settings.register('good-society-homebrew', 'autoRefreshOnUpkeep', {
+    name: 'GOODSOCIETY.settings.autoRefreshOnUpkeep.name',
+    hint: 'GOODSOCIETY.settings.autoRefreshOnUpkeep.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register('good-society-homebrew', 'promptOnThreeTags', {
+    name: 'GOODSOCIETY.settings.promptOnThreeTags.name',
+    hint: 'GOODSOCIETY.settings.promptOnThreeTags.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register('good-society-homebrew', 'defaultMaxResolve', {
+    name: 'GOODSOCIETY.settings.defaultMaxResolve.name',
+    hint: 'GOODSOCIETY.settings.defaultMaxResolve.hint',
+    scope: 'world',
+    config: true,
+    type: Number,
+    default: 5,
+  });
+
+  game.settings.register('good-society-homebrew', 'defaultStartingResolve', {
+    name: 'GOODSOCIETY.settings.defaultStartingResolve.name',
+    hint: 'GOODSOCIETY.settings.defaultStartingResolve.hint',
+    scope: 'world',
+    config: true,
+    type: Number,
+    default: 3,
+  });
+
+  game.settings.register('good-society-homebrew', 'homebrewMagicEnabled', {
+    name: 'GOODSOCIETY.settings.homebrewMagicEnabled.name',
+    hint: 'GOODSOCIETY.settings.homebrewMagicEnabled.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
   });
 
   // Load and register Handlebars partials for shared components.
@@ -195,12 +259,22 @@ Hooks.once('ready', () => {
   initTooltipSystem();
 });
 
-// Re-render the dock whenever owned-actor data changes.
-Hooks.on('updateActor', () => renderDock());
-Hooks.on('createActor', () => renderDock());
-Hooks.on('deleteActor', () => renderDock());
+// Re-render the dock and dashboard whenever actor data changes.
+Hooks.on('updateActor', () => {
+  renderDock();
+  getDashboard()?.rendered && getDashboard().refreshAndReset();
+});
+Hooks.on('createActor', () => {
+  renderDock();
+  getDashboard()?.rendered && getDashboard().refreshAndReset();
+});
+Hooks.on('deleteActor', () => {
+  renderDock();
+  getDashboard()?.rendered && getDashboard().refreshAndReset();
+});
 // Mirror speaker-changed events from the chat-input switcher.
 Hooks.on('goodSociety.activeSpeakerChanged', () => renderDock());
 
 // Register hooks that must fire after init.
 registerSpeakingAs();
+registerSceneControls();

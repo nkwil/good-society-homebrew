@@ -83,9 +83,12 @@
 /* App windows */
 @import './apps/_monologue-editor.css';
 @import './apps/_dock.css';
+@import './apps/_dashboard.css';
+
+/* Dashboard Major row — hybrid-themed component */
+@import './components/_dashboard-row.css';
 
 /* B-4 additions (not yet implemented):
- * @import './apps/_dashboard.css';
  * @import './apps/_letter-composer.css';
  * @import './apps/_cycle-hud.css';
  */

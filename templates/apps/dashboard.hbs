@@ -1,0 +1,86 @@
+{{!-- Public Info Dashboard — single root <section> required by ApplicationV2 PARTS.
+     House-styled chrome; each Major row is wrapped in .gs-themed so its own
+     character palette applies to accent properties only. --}}
+<section class="gs-dashboard">
+
+  {{!-- ── Header ──────────────────────────────────────────────────────────── --}}
+  <header class="gs-dashboard__header">
+    <div class="gs-dashboard__header-left">
+      <h2 class="gs-dashboard__title">{{localize "GOODSOCIETY.dashboard.title"}}</h2>
+      <p class="gs-dashboard__subtitle">{{localize "GOODSOCIETY.dashboard.subtitle"}}</p>
+    </div>
+    <div class="gs-dashboard__header-right">
+      <span class="gs-dashboard__cycle">
+        {{localize "GOODSOCIETY.dashboard.cycleLabel"}} {{cycleNumber}} · {{cyclePhaseName}}
+      </span>
+    </div>
+  </header>
+
+  {{!-- ── GM bulk actions (GM-only) ─────────────────────────────────────── --}}
+  {{#if isGM}}
+  <div class="gs-dashboard__bulk">
+    <span class="gs-dashboard__bulk-eyebrow">{{localize "GOODSOCIETY.dashboard.bulk.eyebrow"}}</span>
+    <button type="button" class="gs-btn gs-btn--sm gs-btn--outline"
+            data-action="refresh-resolve"
+            title="{{localize "GOODSOCIETY.dashboard.bulk.refreshResolveHint"}}">
+      {{localize "GOODSOCIETY.dashboard.bulk.refreshResolve"}}
+    </button>
+    <button type="button" class="gs-btn gs-btn--sm gs-btn--outline"
+            data-action="clear-monologues"
+            title="{{localize "GOODSOCIETY.dashboard.bulk.clearMonologuesHint"}}">
+      {{localize "GOODSOCIETY.dashboard.bulk.clearMonologues"}}
+    </button>
+    <button type="button" class="gs-btn gs-btn--sm gs-btn--outline"
+            data-action="reveal-desires"
+            title="{{localize "GOODSOCIETY.dashboard.bulk.revealDesiresHint"}}">
+      {{localize "GOODSOCIETY.dashboard.bulk.revealDesires"}}
+    </button>
+    <button type="button" class="gs-btn gs-btn--sm gs-btn--outline"
+            data-action="stub-rumour"
+            title="{{localize "GOODSOCIETY.dashboard.bulk.rumourHint"}}">
+      {{localize "GOODSOCIETY.dashboard.bulk.rumour"}} ↗
+    </button>
+    <span class="gs-dashboard__bulk-spacer"></span>
+    <button type="button" class="gs-btn gs-btn--sm gs-btn--primary"
+            data-action="advance-phase"
+            title="{{localize "GOODSOCIETY.dashboard.bulk.advancePhaseHint"}}">
+      {{localize "GOODSOCIETY.dashboard.bulk.advancePhase"}} ↗
+    </button>
+  </div>
+  {{/if}}
+
+  {{!-- ── Majors list ─────────────────────────────────────────────────── --}}
+  <div class="gs-dashboard__majors">
+    <div class="gs-dashboard__section-eyebrow">
+      {{localize "GOODSOCIETY.dashboard.majorsEyebrow"}}
+    </div>
+
+    {{#if noMajors}}
+      <p class="gs-dashboard__empty">{{localize "GOODSOCIETY.dashboard.noMajors"}}</p>
+    {{else}}
+      <div class="gs-dashboard__rows">
+        {{#each majors}}
+          {{> dashboard-major-row this}}
+        {{/each}}
+      </div>
+    {{/if}}
+  </div>
+
+  {{!-- ── Footer ─────────────────────────────────────────────────────── --}}
+  <footer class="gs-dashboard__footer">
+    <span class="gs-dashboard__footer-status">
+      {{#if inactiveNames.length}}
+        {{activeMajorCount}} {{localize "GOODSOCIETY.dashboard.footer.of"}} {{totalMajorCount}}
+        {{localize "GOODSOCIETY.dashboard.footer.majorsActive"}} ·
+        {{#each inactiveNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+        {{localize "GOODSOCIETY.dashboard.footer.offline"}}
+      {{else}}
+        {{totalMajorCount}} {{localize "GOODSOCIETY.dashboard.footer.allActive"}}
+      {{/if}}
+    </span>
+    <span class="gs-dashboard__footer-time">
+      {{localize "GOODSOCIETY.dashboard.lastUpdated" n=0}}
+    </span>
+  </footer>
+
+</section>

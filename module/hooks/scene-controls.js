@@ -1,0 +1,47 @@
+/**
+ * Scene Controls — registers the "Public Info Dashboard" button in the
+ * Foundry canvas left-hand tool panel.
+ *
+ * Foundry v13.346+ changed `getSceneControlButtons` to pass `controls` as an
+ * OBJECT keyed by control name (e.g. `{ tokens, notes, walls, ... }`), not
+ * an array. Each control's `tools` is also an object keyed by tool name.
+ * Older v13 builds (pre-.346) passed arrays. We handle both shapes.
+ *
+ * We attach to the 'notes' control group (map pins) so we don't have to
+ * declare a canvas layer. The button fires a callback (button: true) — it
+ * does not activate a persistent tool.
+ */
+
+import { openDashboard } from '../apps/public-info-dashboard.js';
+
+export function register() {
+  Hooks.on('getSceneControlButtons', (controls) => {
+    // Prefer the 'notes' control group; fall back to the first group.
+    // `controls` may be an array (older v13) or an object (v13.346+).
+    let target;
+    if (Array.isArray(controls)) {
+      target = controls.find(c => c.name === 'notes') ?? controls[0];
+    } else {
+      target = controls.notes ?? Object.values(controls)[0];
+    }
+    if (!target?.tools) return;
+
+    // Foundry v13 deprecated `onClick` in favor of `onChange` for SceneControlTool.
+    // Backwards-compatible support is slated for removal in v15.
+    const tool = {
+      name: 'gs-dashboard',
+      title: 'GOODSOCIETY.dashboard.sceneControlTitle',
+      icon: 'fa-solid fa-users',
+      button: true,
+      onChange: () => openDashboard(),
+      visible: true,
+    };
+
+    // tools may be an array (older v13) or an object (v13.346+).
+    if (Array.isArray(target.tools)) {
+      target.tools.push(tool);
+    } else {
+      target.tools['gs-dashboard'] = tool;
+    }
+  });
+}
