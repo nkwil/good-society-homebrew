@@ -688,21 +688,17 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 ## 13. Build phase status
 
-Update this section as work progresses.
-
-**Currently in:** Phase 0 — Scaffolding
+**Currently in:** Phase 0 — Scaffolding (almost done)
 
 **Done:**
-- (nothing yet)
+- Forked Asacolips' Boilerplate
+- Renamed system identity (system.json, package.json, README)
+- Symlinked into Foundry data folder
+- Verified loads in v13 with no console errors
 
 **Next:**
-- Fork Asacolips' Boilerplate
-- Update `system.json` (id, title, version, v13 compatibility)
-- Symlink to Foundry's `Data/systems/`
-- Confirm the boilerplate loads in v13
-
-**Phase log (most recent first):**
-- (none yet)
+- Rename boilerplate's internal Actor type to `major-character`
+- Begin Phase 1 (DataModel batch — see §17.3 of PLAN.md)
 
 ---
 
