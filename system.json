@@ -24,7 +24,22 @@
     "minimum": 13,
     "verified": "13"
   },
-  "esmodules": ["module/boilerplate.mjs"],
+  "esmodules": ["module/boilerplate.mjs", "module/good-society.js"],
+  "documentTypes": {
+    "Actor": {
+      "family": {},
+      "npc": {},
+      "connection": {},
+      "major-character": {}
+    },
+    "Item": {
+      "reputation-tag": {},
+      "reputation-condition": {},
+      "inner-conflict": {},
+      "magic-skill": {},
+      "backstory-action": {}
+    }
+  },
   "styles": ["css/boilerplate.css"],
   "languages": [
     {

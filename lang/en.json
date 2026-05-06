@@ -27,15 +27,40 @@
     }
   },
 
+  "GOODSOCIETY": {
+    "sheets": {
+      "stub": "Good Society Actor Sheet (placeholder)"
+    },
+    "polarity": {
+      "positive": "Positive (▲)",
+      "negative": "Negative (▼)"
+    },
+    "tag": {
+      "namePlaceholder": "Tag name (e.g. Ambitious)",
+      "polarity": "Polarity",
+      "description": "Description",
+      "source": "Source"
+    }
+  },
+
   "TYPES": {
     "Actor": {
       "character": "Character",
-      "npc": "NPC"
+      "npc": "NPC",
+      "family": "Family",
+      "npc": "NPC",
+      "connection": "Connection",
+      "major-character": "Major Character"
     },
     "Item": {
       "item": "Item",
       "feature": "Feature",
-      "spell": "Spell"
+      "spell": "Spell",
+      "reputation-tag": "Reputation Tag",
+      "reputation-condition": "Reputation Condition",
+      "inner-conflict": "Inner Conflict",
+      "magic-skill": "Magic / Skill",
+      "backstory-action": "Backstory Action"
     }
   }
 }
