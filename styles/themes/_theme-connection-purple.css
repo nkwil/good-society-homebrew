@@ -1,0 +1,21 @@
+/* Theme: connection-purple
+ * Paper and type stack from the .gs-connection base (defined in _theme-clayton.css).
+ * .gs-themed duplicates base variables so portable wrappers resolve without the class.
+ * Source: docs/design/decisions.md §"Theme registry → connection-purple"
+ */
+.gs-connection[data-theme='connection-purple'] {
+  --gs-ink:      #3A2A4A;
+  --gs-brand:    #6B4A7A;
+  --gs-accent-1: #C0A8C9;
+}
+
+.gs-themed[data-theme='connection-purple'] {
+  --gs-paper:      #F4F1E6;
+  --gs-paper-warm: #ECE7D6;
+  --gs-ink:        #3A2A4A;
+  --gs-brand:      #6B4A7A;
+  --gs-accent-1:   #C0A8C9;
+  --gs-display:    'Lora', 'Palatino', Georgia, serif;
+  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+}

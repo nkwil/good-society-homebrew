@@ -1,0 +1,22 @@
+/* Theme: connection-grey
+ * Neutral slate — the understated connection variant.
+ * Paper and type stack from the .gs-connection base (defined in _theme-clayton.css).
+ * .gs-themed duplicates base variables so portable wrappers resolve without the class.
+ * Source: docs/design/decisions.md §"Theme registry → connection-grey"
+ */
+.gs-connection[data-theme='connection-grey'] {
+  --gs-ink:      #2A2D32;
+  --gs-brand:    #5C6068;
+  --gs-accent-1: #B8BCC0;
+}
+
+.gs-themed[data-theme='connection-grey'] {
+  --gs-paper:      #F4F1E6;
+  --gs-paper-warm: #ECE7D6;
+  --gs-ink:        #2A2D32;
+  --gs-brand:      #5C6068;
+  --gs-accent-1:   #B8BCC0;
+  --gs-display:    'Lora', 'Palatino', Georgia, serif;
+  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+}

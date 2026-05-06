@@ -1,0 +1,21 @@
+/* Theme: connection-green
+ * Paper and type stack from the .gs-connection base (defined in _theme-clayton.css).
+ * .gs-themed duplicates base variables so portable wrappers resolve without the class.
+ * Source: docs/design/decisions.md §"Theme registry → connection-green"
+ */
+.gs-connection[data-theme='connection-green'] {
+  --gs-ink:      #2A4A2D;
+  --gs-brand:    #6B8A4F;
+  --gs-accent-1: #B8C99A;
+}
+
+.gs-themed[data-theme='connection-green'] {
+  --gs-paper:      #F4F1E6;
+  --gs-paper-warm: #ECE7D6;
+  --gs-ink:        #2A4A2D;
+  --gs-brand:      #6B8A4F;
+  --gs-accent-1:   #B8C99A;
+  --gs-display:    'Lora', 'Palatino', Georgia, serif;
+  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+}

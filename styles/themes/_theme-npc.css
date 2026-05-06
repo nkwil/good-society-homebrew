@@ -1,0 +1,6 @@
+/* Theme: npc — inherits house style, no overrides.
+ * NPCs are "world citizens" — their visual identity is the world itself.
+ * This file exists for consistency; all variables come from :root defaults.
+ * If an NPC grows important enough for a personal theme, promote to Connection.
+ * Source: docs/design/decisions.md §"Theme registry → npc"
+ */

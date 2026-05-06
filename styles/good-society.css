@@ -42,13 +42,25 @@
 @import './sheets/_item-magic-skill.css';
 @import './sheets/_item-backstory-action.css';
 
-/* Character theme presets */
+/* Character theme presets — Major themes */
 @import './themes/_theme-clayton.css';
+@import './themes/_theme-rose.css';
+@import './themes/_theme-roger.css';
+@import './themes/_theme-mags.css';
+@import './themes/_theme-avril.css';
+@import './themes/_theme-dixon.css';
 
-/* B-2 additions:
- * @import './themes/_theme-rose.css';
- * ... (remaining 11 theme presets)
- * B-4 additions:
+/* Character theme presets — Connection variants */
+@import './themes/_theme-connection-green.css';
+@import './themes/_theme-connection-purple.css';
+@import './themes/_theme-connection-blue.css';
+@import './themes/_theme-connection-yellow.css';
+@import './themes/_theme-connection-grey.css';
+
+/* Character theme presets — NPC (inherits house; file exists for consistency) */
+@import './themes/_theme-npc.css';
+
+/* B-4 additions (not yet implemented):
  * @import './apps/_dashboard.css';
  * @import './apps/_dock.css';
  * @import './apps/_letter-composer.css';

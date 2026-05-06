@@ -1,8 +1,7 @@
 {{!-- Major Character — Private tab (#4). Per docs/design/04-character-sheet.md §"Private tab spec". --}}
-<div class="gs-major-sheet__tab-private"
+<div class="tab gs-major-sheet__tab-private {{#if (eq tabGroups.sheet 'private')}}active{{/if}}"
      data-group="sheet"
-     data-tab="private"
-     {{#unless (eq tabGroups.sheet "private")}}hidden{{/unless}}>
+     data-tab="private">
 
   {{!-- ── 1. Bio chips (compact inline row) ─────────────────────────────── --}}
   <section class="gs-major-sheet__section gs-major-sheet__section--bio">

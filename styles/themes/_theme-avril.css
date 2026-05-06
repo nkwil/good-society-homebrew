@@ -1,0 +1,20 @@
+/* Theme: avril — Candlelight & crimson.
+ * Inverted palette: near-black paper, warm candlelight ink.
+ * Didot display (preferred); DM Serif Display as fallback.
+ * accent-1 is oxblood — darker and more contained than mags's blood.
+ * Source: docs/design/decisions.md §"Theme registry → avril"
+ */
+.gs-actor[data-theme='avril'],
+.gs-themed[data-theme='avril'] {
+  --gs-paper:       #16100E;
+  --gs-paper-warm:  #2C1F2A;
+  --gs-side-panel:  #2C1F2A;
+  --gs-ink:         #E8DDC8;
+  --gs-brand:       #E8C988;
+  --gs-accent-1:    #8B2A2A;
+  --gs-accent-2:    #8B6A3F;
+  --gs-accent-3:    #4A2C1E;
+  --gs-display:     'Didot', 'Bodoni 72', 'DM Serif Display', serif;
+  --gs-body:        'Crimson Text', Georgia, serif;
+  --gs-italic:      'Crimson Text Italic', Georgia, serif;
+}

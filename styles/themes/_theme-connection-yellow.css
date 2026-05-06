@@ -1,0 +1,22 @@
+/* Theme: connection-yellow
+ * Marigold / ochre palette — warm and distinctive.
+ * Paper and type stack from the .gs-connection base (defined in _theme-clayton.css).
+ * .gs-themed duplicates base variables so portable wrappers resolve without the class.
+ * Source: docs/design/decisions.md §"Theme registry → connection-yellow"
+ */
+.gs-connection[data-theme='connection-yellow'] {
+  --gs-ink:      #6B4A1A;
+  --gs-brand:    #B88B33;
+  --gs-accent-1: #E8D4A0;
+}
+
+.gs-themed[data-theme='connection-yellow'] {
+  --gs-paper:      #F4F1E6;
+  --gs-paper-warm: #ECE7D6;
+  --gs-ink:        #6B4A1A;
+  --gs-brand:      #B88B33;
+  --gs-accent-1:   #E8D4A0;
+  --gs-display:    'Lora', 'Palatino', Georgia, serif;
+  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+}

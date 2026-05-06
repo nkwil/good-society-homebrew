@@ -1,8 +1,7 @@
 {{!-- Major Character — Public tab (#3). Per docs/design/04-character-sheet.md §"Public tab spec". --}}
-<div class="gs-major-sheet__tab-public"
+<div class="tab gs-major-sheet__tab-public {{#if (eq tabGroups.sheet 'public')}}active{{/if}}"
      data-group="sheet"
-     data-tab="public"
-     {{#unless (eq tabGroups.sheet "public")}}hidden{{/unless}}>
+     data-tab="public">
 
   {{!-- ── 1. Reputation Criteria (read-only from Family) ─────────────────── --}}
   <section class="gs-major-sheet__section">

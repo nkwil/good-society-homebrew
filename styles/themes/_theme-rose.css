@@ -1,0 +1,19 @@
+/* Theme: rose — Soft, pink, traditional.
+ * Cormorant Garamond + EB Garamond for an elegant, period feel.
+ * accent-3 (#C9A574) shared with roger — twin link between the pair.
+ * Source: docs/design/decisions.md §"Theme registry → rose"
+ */
+.gs-actor[data-theme='rose'],
+.gs-themed[data-theme='rose'] {
+  --gs-paper:       #FAF1ED;
+  --gs-paper-warm:  #F5E6E0;
+  --gs-side-panel:  #E8C5CE;
+  --gs-ink:         #4A2030;
+  --gs-brand:       #B85B6F;
+  --gs-accent-1:    #D4889E;
+  --gs-accent-2:    #E8C5CE;
+  --gs-accent-3:    #C9A574;
+  --gs-display:     'Cormorant Garamond', Georgia, serif;
+  --gs-body:        'EB Garamond', 'Lora', Georgia, serif;
+  --gs-italic:      'EB Garamond Italic', 'Lora Italic', Georgia, serif;
+}
