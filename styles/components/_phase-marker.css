@@ -1,0 +1,96 @@
+/* Phase Marker — dot / pill primitive for the Cycle Phase HUD track.
+ * Three states: --complete (filled dot), --current (terracotta pill), --future (outlined dot).
+ * May be reused in the Upkeep wizard.
+ * Design: docs/design/08-cycle-phase-hud.md §"Marker states"
+ */
+
+.gs-phase-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* ── Shared dot ──────────────────────────────────────────────────────────── */
+
+.gs-phase-marker__dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Shared label ────────────────────────────────────────────────────────── */
+
+.gs-phase-marker__label {
+  font-family: var(--gs-ui);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--gs-accent-2);
+  line-height: 1;
+}
+
+/* ── Completed: filled brand-color dot, sage italic label ────────────────── */
+
+.gs-phase-marker--complete .gs-phase-marker__dot {
+  background: var(--gs-brand);
+  border: none;
+}
+
+/* ── Current: terracotta pill, paper dot, display-type label ─────────────── */
+
+.gs-phase-marker--current {
+  background: var(--gs-accent-1);
+  border-radius: 100px;
+  padding: 4px 10px;
+  gap: 6px;
+  /* Animation runs each time this element is inserted (full re-render on phase change). */
+  animation: gs-pill-appear 0.4s ease both;
+}
+
+.gs-phase-marker--current .gs-phase-marker__dot {
+  background: var(--gs-paper);
+  border: none;
+}
+
+.gs-phase-marker--current .gs-phase-marker__label {
+  font-style: normal;
+  font-size: 12px;
+  font-family: var(--gs-display);
+  color: var(--gs-paper);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* ── Future: outlined dot, sage italic label (dimmed) ───────────────────── */
+
+.gs-phase-marker--future .gs-phase-marker__dot {
+  background: transparent;
+  border: 1px solid var(--gs-accent-2);
+  opacity: 0.6;
+}
+
+.gs-phase-marker--future .gs-phase-marker__label {
+  opacity: 0.65;
+}
+
+/* ── Pill appear animation ───────────────────────────────────────────────── */
+/* Grows from narrow → full padding and fades the terracotta in.
+ * "Functional motion": communicates what changed without decorating.
+ * Per docs/design/08-cycle-phase-hud.md §"Phase transition animation".
+ */
+
+@keyframes gs-pill-appear {
+  from {
+    padding-left: 4px;
+    padding-right: 4px;
+    opacity: 0.4;
+  }
+  to {
+    padding-left: 10px;
+    padding-right: 10px;
+    opacity: 1;
+  }
+}

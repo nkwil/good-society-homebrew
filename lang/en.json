@@ -454,6 +454,23 @@
       "upkeep":       "Upkeep"
     },
 
+    "hud": {
+      "cycleLabel":     "cycle",
+      "advancePhase":   "advance phase →",
+      "advanceConfirm": "Advance from {current} to {next}?",
+      "advancePosted":  "Cycle advanced to: {phase}.",
+      "trackAriaLabel": "Phase progression",
+      "ariaLabel":      "Cycle {cycle} · {phase}",
+      "phase": {
+        "preCycle":      "pre",
+        "novel":         "novel",
+        "reputation":    "rep.",
+        "rumourScandal": "rumour",
+        "epistolary":    "epi.",
+        "upkeep":        "upk."
+      }
+    },
+
     "dashboard": {
       "windowTitle":        "Public Info · Facilitator Dashboard",
       "title":              "Public Info · Facilitator Dashboard",

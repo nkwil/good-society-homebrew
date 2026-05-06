@@ -29,6 +29,7 @@
 @import './components/_crest-medallion.css';
 @import './components/_dock-row-major.css';
 @import './components/_dock-row-connection.css';
+@import './components/_phase-marker.css';
 
 /* Speaking-As switcher — chat sidebar component */
 @import './components/_speaking-as.css';
@@ -88,7 +89,8 @@
 /* Dashboard Major row — hybrid-themed component */
 @import './components/_dashboard-row.css';
 
+@import './apps/_cycle-hud.css';
+
 /* B-4 additions (not yet implemented):
  * @import './apps/_letter-composer.css';
- * @import './apps/_cycle-hud.css';
  */

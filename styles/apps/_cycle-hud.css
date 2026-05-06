@@ -1,0 +1,115 @@
+/* Cycle Phase HUD Strip — persistent bar injected into #ui-top before #navigation.
+ * House-styled only — no character theming. Belongs to the table, not to any actor.
+ * Design: docs/design/08-cycle-phase-hud.md
+ *
+ * pointer-events: auto is mandatory on the root and all interactive descendants.
+ * #ui-top inherits pointer-events: none from Foundry's canvas interaction chain;
+ * without explicit re-enable, clicks pass through to the canvas.
+ * (Anti-pattern logged in CLAUDE.md §16.)
+ */
+
+#gs-cycle-hud,
+.gs-cycle-hud {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 8px 22px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 8px;
+  margin: 6px 8px 2px;
+  min-height: 40px;
+  box-sizing: border-box;
+
+  /* Pointer events: must be explicit — Foundry's #ui-top chain has none. */
+  pointer-events: auto;
+}
+
+/* ── Counter (left) ──────────────────────────────────────────────────────── */
+
+.gs-cycle-hud__counter {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.gs-cycle-hud__counter-label {
+  font-family: var(--gs-ui);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.16em;
+  color: var(--gs-accent-2);
+  text-transform: lowercase;
+}
+
+.gs-cycle-hud__counter-number {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  color: var(--gs-brand);
+  line-height: 1;
+}
+
+/* ── Track (center) ──────────────────────────────────────────────────────── */
+
+.gs-cycle-hud__track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  gap: 0;
+}
+
+/* Connectors — hairline rules between markers. */
+
+.gs-cycle-hud__connector {
+  display: inline-block;
+  width: 22px;
+  height: 0.5px;
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+.gs-cycle-hud__connector--complete {
+  background: var(--gs-brand);
+}
+
+.gs-cycle-hud__connector--future {
+  background: var(--gs-accent-2);
+  opacity: 0.4;
+}
+
+/* ── Advance button column (right, GM only) ──────────────────────────────── */
+
+.gs-cycle-hud__advance {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+/* Player view: collapse the column entirely so the track fills the freed space. */
+.gs-cycle-hud__advance--player {
+  display: none;
+}
+
+.gs-cycle-hud__advance-btn {
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-brand);
+  color: var(--gs-brand);
+  font-family: var(--gs-body);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  padding: 5px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.15s ease, color 0.15s ease;
+  line-height: 1.2;
+}
+
+.gs-cycle-hud__advance-btn:hover {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+}

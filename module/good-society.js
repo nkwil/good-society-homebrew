@@ -7,6 +7,7 @@ import { register as registerSpeakingAs } from './hooks/speaking-as.js';
 import { register as registerSceneControls } from './hooks/scene-controls.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
+import { initCycleHud, renderCycleHud } from './apps/cycle-hud.js';
 import { initTooltipSystem } from './helpers/rule-tooltip.js';
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
@@ -107,6 +108,7 @@ Hooks.once('init', async function () {
     config: false,
     type: String,
     default: 'pre-cycle',
+    onChange: () => renderCycleHud(),
   });
 
   game.settings.register('good-society-homebrew', 'cycleNumber', {
@@ -114,6 +116,7 @@ Hooks.once('init', async function () {
     config: false,
     type: Number,
     default: 1,
+    onChange: () => renderCycleHud(),
   });
 
   game.settings.register('good-society-homebrew', 'autoRefreshOnUpkeep', {
@@ -254,6 +257,9 @@ Hooks.once('ready', () => {
 
   // Open the My Characters Dock if the user owns any actors.
   renderDock();
+
+  // Inject the Cycle Phase HUD strip above the scene navigation.
+  initCycleHud();
 
   // Wire hover-tooltip system for all [data-tooltip-key] elements.
   initTooltipSystem();
