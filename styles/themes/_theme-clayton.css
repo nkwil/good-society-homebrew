@@ -1,0 +1,37 @@
+/* Theme: clayton — Green and simple.
+ * Default theme for new Major characters.
+ * Shares display/body type with house style (Lora + Crimson Text).
+ * Differentiation is palette only — appropriate for a grounded, unstyled character.
+ * Source: docs/design/decisions.md §"Theme registry → clayton"
+ *
+ * Selector pattern repeated for every theme in Session B-2:
+ *   .gs-actor[data-theme="{id}"]   — full-sheet scoping (Major/Connection sheets)
+ *   .gs-themed[data-theme="{id}"]  — portable wrapper (chat cards, letters, board rows)
+ * Both selectors apply the same variable overrides; they are peers, not parent-child.
+ */
+.gs-actor[data-theme='clayton'],
+.gs-themed[data-theme='clayton'] {
+  --gs-paper:       #F4F1E6;
+  --gs-paper-warm:  #E8E4D6;
+  --gs-side-panel:  #C9DABB;
+  --gs-ink:         #2A332A;
+  --gs-brand:       #4A6B3F;
+  --gs-accent-1:    #708060;
+  --gs-accent-2:    #C9A574;
+  --gs-accent-3:    #9CB088;
+  --gs-display:     'Lora', 'Palatino', Georgia, serif;
+  --gs-body:        'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:      'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+}
+
+/* Connection base — shared by all five connection variants.
+ * Per docs/design/decisions.md: connections use house type (Lora + Crimson Text)
+ * so connection cards feel "of the world." Color varies per variant.
+ */
+.gs-connection {
+  --gs-paper:      #F4F1E6;
+  --gs-paper-warm: #ECE7D6;
+  --gs-display:    'Lora', 'Palatino', Georgia, serif;
+  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+}

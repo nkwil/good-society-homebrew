@@ -1,0 +1,25 @@
+/* Portable theme wrapper for content that travels (chat, letters, board entries, dock rows).
+ *
+ * Per docs/design/02-theme-architecture.md §"Where theming gets applied dynamically":
+ * the data-theme attribute locally rebinds CSS variables so any descendant using
+ * var(--gs-paper), var(--gs-ink), etc. resolves to the character's palette.
+ *
+ * Per docs/design/02-theme-architecture.md §"Open Question 3 — Theme transitions":
+ * a 0.5px accent border provides a soft envelope between house chrome and character-themed
+ * content without looking heavy-handed.
+ *
+ * Per-theme variable overrides live in styles/themes/_theme-{id}.css.
+ * This file is plumbing only — it owns no palette values.
+ */
+.gs-themed {
+  border-left: 0.5px solid var(--gs-accent-1, var(--gs-brand));
+  padding-left: 12px;
+}
+
+/* Full-sheet theming: Major and Connection sheet bodies.
+ * These also define the data-theme variable scope but don't carry the accent border —
+ * the border would appear on the outer sheet chrome, not a content envelope. */
+.gs-actor[data-theme],
+.gs-connection[data-theme] {
+  /* Variable scope established here; visual chrome from sheet stylesheets. */
+}

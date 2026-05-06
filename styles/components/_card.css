@@ -1,0 +1,11 @@
+/* Card primitive — inventory #33 (docs/design/03-component-inventory.md)
+ * Base surface for any contained group of content.
+ * Rule 1 (antique-but-clean): generous whitespace — 20px+ on small axis.
+ * Rule 2: hairline border (0.5px via --gs-muted).
+ */
+.gs-card {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 12px;
+  padding: 20px 24px;
+}

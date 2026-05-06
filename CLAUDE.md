@@ -848,18 +848,25 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 ## 14. Build phase status
 
-**Currently in:** Phase 1b — CSS architecture (next: Session B-0)
+**Currently in:** Phase 1c — Sheet templates batch (next: Session B-1)
 
 **Done:**
 - Phase 0: fork, rename, verify load
 - Session A: all 10 DataModels defined and registered
-- Session A.5: theme field backfilled on Major/Connection/NPC; chatStyle removed from Major
-- Design integration v1: theming architecture, twelve-theme registry, antique-but-clean principle integrated into PLAN/CLAUDE
-- Design integration v2: per-component design docs (04 character sheet, 05 epistolary, 06 connection, 07 dashboard, 08 cycle HUD, 09 dock) integrated; structural changes (two tabs + strip on Major sheet, themedWrap helper, per-component CSS organization, hybrid-theming gotcha) reflected in PLAN/CLAUDE
+- Session A.5: theme field backfilled on Major/Connection/NPC
+- Design integration v1 + v2: theming architecture, registry, antique-but-clean principle, per-component design docs (04-09) integrated into PLAN/CLAUDE
+- Session B-0: CSS architecture
+  - House variables (palette, type, scale)
+  - @fontsource imports for all twelve themes
+  - House base styling
+  - .gs-themed wrapper mechanism (with 0.5px accent border)
+  - Three foundational primitives: card, section header, hairline
+  - themedWrap helper at module/helpers/themed-wrap.js (canonical wrapping for all themed content)
+  - Clayton theme implemented as override on both .gs-actor and .gs-themed selectors
+  - Validated: Clayton cards render distinctly from house cards, themedWrap returns expected HTML
 
 **Next:**
-- Session B-0 — CSS architecture (variables, fonts, themedWrap helper, card primitive, .gs-themed wrapper, clayton preset)
-- Session B-1 — sheet templates batch (per docs/design/04, 06, 07; structural changes locked)
+- Session B-1 — sheet templates batch (Major, Connection, Family, NPC, item types) per docs/design/04 and 06
 - Session B-2 — remaining eleven theme presets
 
 ---
@@ -868,7 +875,8 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 Record decisions made *during* the build here so future sessions don't re-litigate them.
 
-- (none yet — add as you go)
+- **B-0 (2026-05-05): Font loading approach.** The boilerplate uses Sass (not Vite), and `@import "@fontsource/..."` npm paths aren't browser-resolvable without a bundler. Decision: copy the needed woff2 files from node_modules into `styles/fonts/` (tracked in git); `@font-face` declarations in `_fonts.css` use local relative paths. A `postinstall` script (`scripts/copy-fonts.mjs`) keeps them in sync after `npm install`. If a bundler (Vite) is added later, the `_fonts.css` approach can swap to `@import` npm paths at that point.
+- **B-0 (2026-05-05): `"type": "module"` added to package.json.** All JS files in this project use ES module syntax (`import`/`export`). Added to eliminate Node.js `MODULE_TYPELESS_PACKAGE_JSON` warnings from the helpers.
 
 ---
 

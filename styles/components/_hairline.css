@@ -1,0 +1,9 @@
+/* Hairline divider primitive — inventory #35 (docs/design/03-component-inventory.md)
+ * Rule 2 (antique-but-clean): hairlines (0.5px), not heavy borders.
+ * Color is --gs-accent-2 (sage) — the house divider color.
+ */
+.gs-hairline {
+  border: none;
+  border-top: 0.5px solid var(--gs-accent-2);
+  margin: 1em 0;
+}

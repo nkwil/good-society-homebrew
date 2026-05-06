@@ -1,0 +1,116 @@
+/* Font declarations for all twelve registered themes.
+ *
+ * Font files are copied from @fontsource node_modules into styles/fonts/
+ * by the postinstall npm script (scripts/copy-fonts.mjs).
+ * Do not reference node_modules paths here — Foundry does not serve node_modules.
+ */
+
+/* Lora — house display + Clayton, roger (fallback) */
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/lora/lora-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/lora/lora-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/lora/lora-latin-400-italic.woff2') format('woff2');
+}
+
+/* Crimson Text — house body + most character themes */
+@font-face {
+  font-family: 'Crimson Text';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/crimson-text/crimson-text-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Crimson Text';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/crimson-text/crimson-text-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Crimson Text';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/crimson-text/crimson-text-latin-400-italic.woff2') format('woff2');
+}
+
+/* Cormorant Garamond — rose and roger display */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/cormorant-garamond/cormorant-garamond-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/cormorant-garamond/cormorant-garamond-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/cormorant-garamond/cormorant-garamond-latin-400-italic.woff2') format('woff2');
+}
+
+/* EB Garamond — rose and roger body */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/eb-garamond/eb-garamond-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/eb-garamond/eb-garamond-latin-400-italic.woff2') format('woff2');
+}
+
+/* DM Serif Display — mags display (open substitute for Didot/Bodoni) */
+@font-face {
+  font-family: 'DM Serif Display';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/dm-serif-display/dm-serif-display-latin-400-normal.woff2') format('woff2');
+}
+
+/* Cinzel — dixon display (Roman-monumental; limit to names and labels) */
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/cinzel/cinzel-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/cinzel/cinzel-latin-600-normal.woff2') format('woff2');
+}

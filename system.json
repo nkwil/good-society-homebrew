@@ -40,7 +40,7 @@
       "backstory-action": {}
     }
   },
-  "styles": ["css/boilerplate.css"],
+  "styles": ["styles/good-society.css"],
   "languages": [
     {
       "lang": "en",

@@ -5,7 +5,8 @@
   "scripts": {
     "build": "sass src/scss/boilerplate.scss css/boilerplate.css --style=expanded --no-source-map",
     "watch": "sass src/scss/boilerplate.scss css/boilerplate.css --style=expanded --source-map --watch",
-    "generate": "node src/generate-boilerplate-system.mjs"
+    "generate": "node src/generate-boilerplate-system.mjs",
+    "postinstall": "node scripts/copy-fonts.mjs"
   },
   "browserslist": [
     "last 3 versions"
@@ -13,6 +14,7 @@
   "author": "Opal",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "@league-of-foundry-developers/foundry-vtt-types": "^13.346.0-beta.20250812191140",
     "glob": "^10.3.10",
@@ -21,5 +23,13 @@
     "renamer": "^5.0.0",
     "replace": "^1.2.2",
     "sass": "^1.53.0"
+  },
+  "dependencies": {
+    "@fontsource/cinzel": "^5.2.8",
+    "@fontsource/cormorant-garamond": "^5.2.11",
+    "@fontsource/crimson-text": "^5.2.7",
+    "@fontsource/dm-serif-display": "^5.2.8",
+    "@fontsource/eb-garamond": "^5.2.7",
+    "@fontsource/lora": "^5.2.8"
   }
 }

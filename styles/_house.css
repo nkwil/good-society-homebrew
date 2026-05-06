@@ -1,0 +1,60 @@
+/* Antique-but-clean base styling — Inkwell & Wildflower house style.
+ * App-container rules and base typography only.
+ * Component primitives (cards, headers, hairlines) live in styles/components/.
+ */
+
+.gs-app {
+  font-family: var(--gs-body);
+  font-size: var(--gs-size-body);
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+  line-height: 1.55;
+}
+
+/* Display-type text — character names, section headers, stat numerics */
+.gs-display {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Small-caps eyebrow labels — rule 8: small caps for labels, sentence case for prose */
+.gs-label {
+  font-family: var(--gs-ui);
+  font-size: var(--gs-size-ui);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+}
+
+/* Muted italic — secondary text, hints, placeholder lines */
+.gs-muted {
+  font-style: italic;
+  color: var(--gs-accent-2);
+}
+
+/* Form rows — shared layout used across sheet sections */
+.gs-form-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.gs-form-row label {
+  font-family: var(--gs-ui);
+  font-size: var(--gs-size-ui);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gs-brand);
+}
+
+/* Scrollable body — for apps with fixed headers/footers */
+.gs-scrollable {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gs-muted) transparent;
+}

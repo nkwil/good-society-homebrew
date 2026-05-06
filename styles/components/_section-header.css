@@ -1,0 +1,15 @@
+/* Section header primitive — inventory #34 (docs/design/03-component-inventory.md)
+ * Small-caps eyebrow label for grouping content within a sheet or board.
+ * Rule 8 (antique-but-clean): small caps for section labels, not prose.
+ * Rule 3: period typography at modern sizes — 12px minimum for labels.
+ */
+.gs-section-header {
+  font-family: var(--gs-display);
+  font-size: var(--gs-size-label);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-feature-settings: 'smcp';
+  color: var(--gs-brand);
+  margin: 1.5em 0 0.5em;
+}

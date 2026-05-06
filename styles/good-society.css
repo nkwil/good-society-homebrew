@@ -1,0 +1,37 @@
+/* Good Society (Homebrew) — CSS entry point.
+ * Import order matters: variables before house, house before themes,
+ * components after house, sheets/apps after components.
+ * Session B-1 will add component, sheet, and app imports below.
+ */
+
+/* Foundation */
+@import './_fonts.css';
+@import './_variables.css';
+@import './_house.css';
+@import './_themed-wrapper.css';
+
+/* Component primitives */
+@import './components/_card.css';
+@import './components/_section-header.css';
+@import './components/_hairline.css';
+
+/* Character theme presets */
+@import './themes/_theme-clayton.css';
+
+/* Session B-1 additions:
+ * @import './components/_resolve-track.css';
+ * @import './components/_mt-badge.css';
+ * ... (remaining 16 component primitives from CLAUDE.md §5)
+ * @import './sheets/_major-character.css';
+ * @import './sheets/_connection.css';
+ * @import './sheets/_family.css';
+ * @import './sheets/_npc.css';
+ * @import './apps/_dashboard.css';
+ * @import './apps/_dock.css';
+ * @import './apps/_letter-composer.css';
+ * @import './apps/_cycle-hud.css';
+ *
+ * Session B-2 additions:
+ * @import './themes/_theme-rose.css';
+ * ... (remaining 11 theme presets)
+ */

@@ -1,0 +1,30 @@
+/* House CSS variables — Inkwell & Wildflower */
+/* Source of truth: docs/design/decisions.md §"House style → CSS custom property mirror" */
+:root {
+  /* Palette */
+  --gs-paper:        #EFE6D2;
+  --gs-paper-warm:   #F4ECD8;
+  --gs-ink:          #3D2F26;
+  --gs-brand:        #2A3A2D;
+  --gs-accent-1:     #B85C3F;
+  --gs-accent-2:     #708060;
+  --gs-accent-3:     #C9A55C;
+  --gs-muted:        rgba(112, 128, 96, 0.3);
+  --gs-danger:       #8B2A2A;
+  --gs-positive:     #4A7A4A;
+  --gs-side-panel:   var(--gs-paper-warm); /* character themes override per-actor */
+
+  /* Type stacks */
+  --gs-display:      'Lora', 'Palatino', 'Book Antiqua', Georgia, serif;
+  --gs-body:         'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  --gs-ui:           system-ui, 'Helvetica Neue', sans-serif;
+
+  /* Type scale */
+  --gs-size-window:  22px; /* module window header, character names */
+  --gs-size-section: 18px; /* section headers on boards/trackers */
+  --gs-size-label:   12px; /* small-caps labels, eyebrows */
+  --gs-size-body:    14px; /* body text */
+  --gs-size-ui:      11px; /* UI labels, pills, controls */
+  --gs-size-numeric: 16px; /* token counts, ages, numeric stats */
+}
