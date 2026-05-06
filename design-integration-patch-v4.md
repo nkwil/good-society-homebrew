@@ -22,6 +22,7 @@ Apply via Claude Code with this prompt:
 | `25-backup-export.md` | GM-only utility for full world JSON export/import | No — Phase 11 robustness |
 | `26-pending-changes-log.md` | Inline "Since last Upkeep" section on Major sheet Public tab | **Public tab section ordering** — Public tab is currently a stub in B-1, so update the spec, no rework |
 | `27-token-frame.md` | Canvas-side ring/border distinguishing Major / Connection / NPC tokens | No — Phase 6 scene work |
+| `28-foundry-chrome-theme.md` | CSS overrides re-theming Foundry's surrounding chrome (titlebars, sidebar, chat log, scene nav, form controls, notifications, player list, hotbar) | No — slots into Session B-2.5 (small standalone CSS session, can also fold into B-2 or B-4) |
 
 **Net effect on B-1's remaining work:** small. One Public tab section ordering update (insert "Pending Changes Log" between Active Conditions and Inner Conflict, conditional render) — and that section is currently a stub anyway. Resume B-1 after applying patch v4 with no rework.
 
@@ -46,6 +47,8 @@ Five things matter most:
    - These are Foundry document flags, not schema-defined fields — no DataModel change required. Just add note in CLAUDE.md.
 
 5. **`00-system-overview.md` is a living index doc.** Treat it as the single starting point when onboarding to the design folder. Reference from PLAN.md §6.4 design-system list as the recommended entry point.
+
+6. **Foundry chrome theme is opt-in via a setting.** Per `28-foundry-chrome-theme.md`, the system ships a `styles/foundry-chrome.css` with overrides for Foundry's surrounding application chrome (titlebars, sidebar, chat log, scene nav, form controls, notifications, player list, hotbar). Loaded conditionally via a `body.gs-chrome-themed` class toggled by the `applyFoundryChrome` user setting (default true). New file structure entry, new setting registration, new ready hook, no schema changes. **Don't touch B-1 currently-built work** — chrome theme is its own session.
 
 ---
 
@@ -124,6 +127,25 @@ The chat card variants compose from primitives in `docs/design/23-primitives-bat
 - **B-1 (2026-05-05): Token frame implementation deferred to Phase 6.** Per `docs/design/27-token-frame.md`, canvas-side ring frames are not in B-1 scope. Inventory entry #51 stays as Phase 6 work.
 - **B-1 (2026-05-05): Edit Conflict Warning, Session Log, Backup Export deferred to Session B-6.** Per `21`, `24`, `25` — these are robustness features that don't block any other phase. Group them at the end as a single robustness session.
 - **B-1 (2026-05-05): Bulk Permissions Panel slotted into Session B-4 (custom apps batch).** Per `docs/design/22-bulk-permissions-panel.md`. It's a GM tool comparable to the dashboard in surface complexity.
+- **B-1 (2026-05-05): Foundry chrome theme slotted into Session B-2.5.** Per `docs/design/28-foundry-chrome-theme.md`. Small standalone CSS session — overrides Foundry's surrounding application chrome (titlebars, sidebar, chat log, scene navigation, default form controls, notifications, player list, hotbar). Opt-in via `applyFoundryChrome` setting (default true). Body-class wrapper (`body.gs-chrome-themed`) for instant runtime toggling without page reload. Independent of B-1 sheet work; can run after B-2 themes or anywhere CSS-only work is convenient.
+```
+
+### 1.6 Add `applyFoundryChrome` setting to §8
+
+**Find** the §8 world settings list (the bullet list of `game.settings.register` entries) and **append**:
+
+```markdown
+- `applyFoundryChrome` — boolean. Default `true`. User scope. When true, applies the `body.gs-chrome-themed` class that re-themes Foundry's surrounding application chrome via `styles/foundry-chrome.css` (per `docs/design/28-foundry-chrome-theme.md`). Toggleable at runtime without page reload — the body class is added/removed on `clientSettingChanged`.
+```
+
+### 1.7 Add `styles/foundry-chrome.css` to §5 file structure tree
+
+**Find** the `styles/` block in the §5 repo layout and **add** a new line at the bottom of that block:
+
+```
+├── foundry-chrome.css         # Foundry chrome overrides (per docs/design/28)
+                                # All rules namespaced under body.gs-chrome-themed
+                                # Loaded unconditionally; applied via body class toggle
 ```
 
 ---
@@ -169,6 +191,7 @@ A full design-system documentation tree lives in `docs/design/`. Start with `00-
 - `25-backup-export.md` — GM-only utility for full world JSON export/import (Locked)
 - `26-pending-changes-log.md` — inline "Since last Upkeep" section on Major sheet (Locked)
 - `27-token-frame.md` — canvas-side ring distinguishing Major / Connection / NPC (Locked)
+- `28-foundry-chrome-theme.md` — opt-in CSS overrides re-theming Foundry's application chrome (Locked)
 
 When implementing visual surfaces, link the relevant design doc in your Claude Code prompt rather than describing the design inline. This keeps the implementation grounded in the locked decisions and prevents drift.
 ```
@@ -205,7 +228,22 @@ A grouped session covering the features that catch problems and create archives:
    - Completed Inner Conflicts list
 ```
 
-### 2.4 Update §15 locked-in decisions
+### 2.4 Add Session B-2.5 — Foundry chrome theme
+
+**Find** the existing build-phases list in §13 (the numbered Phase 1 sub-sessions or the broader phase list) and **insert** a new sub-session entry between Session B-2 (theme presets) and Session B-3 (chat cards):
+
+```markdown
+**Session B-2.5 — Foundry chrome theme (½ day)**
+A small standalone CSS session that re-themes Foundry's surrounding application chrome to match the house style. Eight surfaces in scope: window titlebars, sidebar, chat log surrounding chrome, scene navigation, default form controls, notification toasts, player list, macro hotbar. Out of scope: settings dialogs, file picker, compendium browser, Configure Token, User Configuration, Hotbar Macro editor (these stay default Foundry to limit maintenance burden).
+
+Opt-in via the `applyFoundryChrome` user setting (default true). All rules namespaced under `body.gs-chrome-themed`; the setting toggles the body class on/off for instant runtime apply without page reload.
+
+New file: `styles/foundry-chrome.css`. New setting registration in `module/settings.js`. New `Hooks.once("ready", ...)` and `Hooks.on("clientSettingChanged", ...)` handlers in `module/good-society.js` to manage the body class.
+
+Per `docs/design/28-foundry-chrome-theme.md`. Independent of B-1 sheet work; can run any time after Session B-0 (which provides the house CSS variables this session consumes).
+```
+
+### 2.5 Update §15 locked-in decisions
 
 **Append** to the numbered list in §15:
 
@@ -216,6 +254,7 @@ A grouped session covering the features that catch problems and create archives:
 18. **Backups are full-world JSON exports.** Per `docs/design/25-backup-export.md`, single .json file format with metadata envelope (format/version/exportedAt/exportedBy/world/data). Merge-or-replace import. GM-only.
 19. **Edit conflict prevention is three layers, escalating in intrusiveness.** Per `docs/design/21-edit-conflict-warning.md`, awareness banner (passive), field-level presence (subtle), save-time conflict warning toast (action-required). The system's robustness for shared Connections.
 20. **Bulk Permissions Panel lifted from stub to full spec.** Per `docs/design/22-bulk-permissions-panel.md`, GM grid for setting actor ownership in one screen. Inventory entry #19 was a placeholder; this is its detailed spec.
+21. **Foundry chrome re-theming is opt-in, body-class–scoped.** Per `docs/design/28-foundry-chrome-theme.md`, the system overrides ~8 Foundry surfaces (titlebars, sidebar, chat log, scene nav, form controls, notifications, player list, hotbar). All rules namespaced under `body.gs-chrome-themed`; toggled by `applyFoundryChrome` user setting (default true). House style only — character themes don't apply to chrome. Settings dialogs, file picker, compendium browser, and other deep-internal Foundry UIs are explicitly out of scope.
 ```
 
 ---
