@@ -38,7 +38,7 @@ function _buildContext() {
 /** (Re)render the Speaking-As bar inside the given chat log element. */
 async function _inject(html) {
   const ctx = _buildContext();
-  const rendered = await renderTemplate(TEMPLATE, ctx);
+  const rendered = await foundry.applications.handlebars.renderTemplate(TEMPLATE, ctx);
   const bar = html instanceof HTMLElement ? html : html[0];
 
   // Remove any previous instance before re-injecting.

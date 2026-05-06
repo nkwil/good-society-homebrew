@@ -1,35 +1,35 @@
 {{!-- Inner Monologue editor modal.
      Opened by "Take Monologue" on the Major Character strip.
-     Per docs/design/10-chat-cards.md §"Inner Monologue editor flow". --}}
-<div class="gs-monologue-editor__preview">
-  <div class="gs-chat-card__portrait" aria-hidden="true">{{portraitInitial}}</div>
-  <div class="gs-monologue-editor__speaker-stack">
-    <span class="gs-monologue-editor__speaker-name">{{speakerName}}</span>
-    {{#if cycleNumber}}
-      <span class="gs-monologue-editor__cycle">{{localize "GOODSOCIETY.monologueEditor.cycleLabel"}} {{cycleNumber}}</span>
-    {{/if}}
+     Per docs/design/10-chat-cards.md §"Inner Monologue editor flow".
+     Single root required by ApplicationV2 PARTS — preview + form are siblings inside .gs-monologue-editor. --}}
+<div class="gs-monologue-editor">
+  <div class="gs-monologue-editor__preview">
+    <div class="gs-chat-card__portrait" aria-hidden="true">{{portraitInitial}}</div>
+    <div class="gs-monologue-editor__speaker-stack">
+      <span class="gs-monologue-editor__speaker-name">{{speakerName}}</span>
+      {{#if cycleNumber}}
+        <span class="gs-monologue-editor__cycle">{{localize "GOODSOCIETY.monologueEditor.cycleLabel"}} {{cycleNumber}}</span>
+      {{/if}}
+    </div>
   </div>
+  <form class="gs-monologue-editor__form">
+    <textarea
+      name="monologueText"
+      class="gs-monologue-editor__textarea"
+      rows="8"
+      placeholder="{{localize "GOODSOCIETY.monologueEditor.placeholder"}}"
+      autofocus></textarea>
+    <label class="gs-monologue-editor__archive-row">
+      <input type="checkbox" name="archiveEntry" {{#if archiveByDefault}}checked{{/if}} />
+      <span>{{localize "GOODSOCIETY.monologueEditor.archiveLabel"}}</span>
+    </label>
+    <div class="gs-monologue-editor__actions">
+      <button type="button" data-action="cancel" class="gs-btn gs-btn--ghost">
+        {{localize "GOODSOCIETY.monologueEditor.cancel"}}
+      </button>
+      <button type="button" data-action="submit" class="gs-btn gs-btn--primary">
+        {{localize "GOODSOCIETY.monologueEditor.post"}}
+      </button>
+    </div>
+  </form>
 </div>
-
-<form class="gs-monologue-editor__form">
-  <textarea
-    name="monologueText"
-    class="gs-monologue-editor__textarea"
-    rows="8"
-    placeholder="{{localize "GOODSOCIETY.monologueEditor.placeholder"}}"
-    autofocus></textarea>
-
-  <label class="gs-monologue-editor__archive-row">
-    <input type="checkbox" name="archiveEntry" {{#if archiveByDefault}}checked{{/if}} />
-    <span>{{localize "GOODSOCIETY.monologueEditor.archiveLabel"}}</span>
-  </label>
-
-  <div class="gs-monologue-editor__actions">
-    <button type="button" data-action="cancel" class="gs-btn gs-btn--ghost">
-      {{localize "GOODSOCIETY.monologueEditor.cancel"}}
-    </button>
-    <button type="button" data-action="submit" class="gs-btn gs-btn--primary">
-      {{localize "GOODSOCIETY.monologueEditor.post"}}
-    </button>
-  </div>
-</form>

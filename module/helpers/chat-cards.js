@@ -79,7 +79,7 @@ function _possessive(pronouns = '') {
  * @param {string} [opts.context=''] - Eyebrow context (e.g. "cycle 3", "upkeep").
  */
 export async function postSystemCard({ content, context = '' }) {
-  const inner = await renderTemplate(`${T}/system.hbs`, {
+  const inner = await foundry.applications.handlebars.renderTemplate(`${T}/system.hbs`, {
     content,
     context,
     timestamp: _ts(),
@@ -101,7 +101,7 @@ export async function postSystemCard({ content, context = '' }) {
 export async function postInCharacterCard({ actor, persona, message, mode = 'in-character' }) {
   const resolvedPersona = _persona(actor, persona);
   const speakerName = resolvedPersona?.name || actor.name;
-  const inner = await renderTemplate(`${T}/in-character.hbs`, {
+  const inner = await foundry.applications.handlebars.renderTemplate(`${T}/in-character.hbs`, {
     actor,
     persona: resolvedPersona,
     message,
@@ -139,7 +139,7 @@ export async function postMonologueCard({
   const speakerName = resolvedPersona?.name || actor.name;
   const personaRole = (resolvedPersona && !resolvedPersona.isPrimary) ? resolvedPersona.name : null;
   const cycleNum = cycleNumber ?? _cycle();
-  const inner = await renderTemplate(`${T}/monologue.hbs`, {
+  const inner = await foundry.applications.handlebars.renderTemplate(`${T}/monologue.hbs`, {
     actor,
     persona: resolvedPersona,
     monologueText,
@@ -177,7 +177,7 @@ export async function postCompletionCard({ actor, conflict, resolvedSide }) {
   const resolvedLabel = resolvedSide === 'left'
     ? conflict.system.leftLabel
     : conflict.system.rightLabel;
-  const inner = await renderTemplate(`${T}/completion.hbs`, {
+  const inner = await foundry.applications.handlebars.renderTemplate(`${T}/completion.hbs`, {
     actor,
     persona,
     conflict,
@@ -210,7 +210,7 @@ export async function postCompletionCard({ actor, conflict, resolvedSide }) {
  */
 export async function postPersonaSwitchCard({ actor, fromPersona, toPersona }) {
   const secret = toPersona?.visibility?.magic === 'secret';
-  const inner = await renderTemplate(`${T}/persona-switch.hbs`, {
+  const inner = await foundry.applications.handlebars.renderTemplate(`${T}/persona-switch.hbs`, {
     actor,
     fromPersona,
     toPersona,
@@ -255,7 +255,7 @@ export async function postLetterCard({
 }) {
   const resolvedPersona = _persona(actor, persona);
   const cycleNum = cycleNumber ?? _cycle();
-  const inner = await renderTemplate(`${T}/letter.hbs`, {
+  const inner = await foundry.applications.handlebars.renderTemplate(`${T}/letter.hbs`, {
     actor,
     persona: resolvedPersona,
     letter,
