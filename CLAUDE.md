@@ -107,6 +107,45 @@ good-society-homebrew/
 │   ├── apps/
 │   └── partials/                   # reusable Handlebars partials
 ├── styles/
+│   ├── good-society.css            # entry point — imports everything in order
+│   ├── _variables.css              # house CSS variables (palette, type, scale)
+│   ├── _fonts.css                  # @fontsource imports
+│   ├── _house.css                  # antique-but-clean base styling
+│   ├── _themed-wrapper.css         # .gs-themed plumbing
+│   ├── themes/                     # one file per registry theme
+│   │   ├── _theme-clayton.css
+│   │   ├── _theme-rose.css
+│   │   └── ...                     # one per registry id
+│   ├── components/                 # reusable primitives — see docs/design/03 inventory
+│   │   ├── _card.css
+│   │   ├── _section-header.css
+│   │   ├── _hairline.css
+│   │   ├── _resolve-track.css
+│   │   ├── _mt-badge.css
+│   │   ├── _monologue-dot.css
+│   │   ├── _reputation-tag.css
+│   │   ├── _reputation-meter.css
+│   │   ├── _inner-conflict.css
+│   │   ├── _visibility-flag.css
+│   │   ├── _portrait-frame.css
+│   │   ├── _persona-switcher.css
+│   │   ├── _magic-skill-tile.css
+│   │   ├── _letter-card.css        # used by composer + chat + journal
+│   │   ├── _impression-card.css    # cross-theme accent stripe
+│   │   ├── _dashboard-row.css      # hybrid-theming gotcha lives here
+│   │   ├── _dock-row-major.css
+│   │   ├── _dock-row-connection.css
+│   │   └── _phase-marker.css
+│   ├── sheets/                     # one file per actor sheet
+│   │   ├── _major-character.css
+│   │   ├── _connection.css
+│   │   ├── _family.css
+│   │   └── _npc.css
+│   └── apps/                       # one file per custom app
+│       ├── _dashboard.css
+│       ├── _dock.css
+│       ├── _letter-composer.css
+│       └── _cycle-hud.css
 ├── lang/
 │   └── en.json
 ├── packs/                          # compendium content
@@ -528,9 +567,13 @@ export class MajorCharacterDataModel extends foundry.abstract.TypeDataModel {
 }
 ```
 
-### 10.2 Sheet — tabs structure
+### 10.2 Sheet structure — two tabs + persistent strip
 
-`module/sheets/major-character-sheet.js` extends `HandlebarsApplicationMixin(ActorSheetV2)`. PARTS:
+The Major Character sheet uses two tabs (Public, Private) plus a persistent tokens & cycle strip at the bottom. The strip stays rendered across tab switches so resolve, MT, and monologue state are always visible.
+
+Sheet width: 720px. Height auto.
+
+PARTS composition:
 
 ```js
 static PARTS = {
@@ -538,28 +581,28 @@ static PARTS = {
   tabs:   { template: "systems/good-society-homebrew/templates/actors/major-character/nav.hbs" },
   public: { template: "systems/good-society-homebrew/templates/actors/major-character/tab-public.hbs" },
   private:{ template: "systems/good-society-homebrew/templates/actors/major-character/tab-private.hbs" },
-  tokens: { template: "systems/good-society-homebrew/templates/actors/major-character/tab-tokens.hbs" },
+  strip:  { template: "systems/good-society-homebrew/templates/actors/major-character/strip-tokens.hbs" },
 };
 ```
+
+If implementation surfaces a reason this won't work in ApplicationV2 (e.g. composing three siblings around a tab body), fall back to a third tab. Default to the strip — full rationale in `docs/design/04-character-sheet.md` §"Structural recommendation."
 
 Action handlers map button clicks (`data-action="..."`) to instance methods. See the boilerplate's example for the wiring pattern.
 
 ### 10.3 Build order
 
-Don't build the whole sheet at once. Build it in this order:
+Don't build the whole sheet at once. Build it in this order — sourced from `docs/design/04-character-sheet.md` §"Implementation notes":
 
 1. DataModel + empty sheet that opens without errors
-2. Header (portrait, name, peerage, age) — confirms the actor → sheet pipe works
-3. Tab nav
-4. Public tab — Reputation Tags grid (read-only first, then editable)
-5. Public tab — Inner Conflict checkbox grid
-6. Public tab — Reputation Conditions
-7. Private tab — text fields (Desire, Notes, Backstory, Adventurer Sentiment)
-8. Private tab — Connections list
-9. Private tab — Magic/Skills list
-10. Tokens tab — resolve track, MT, monologue
+2. Header partial — portrait side panel, name, role, theme attribute on the sheet root
+3. Tab nav — Public / Private toggle
+4. Persistent strip — resolve track + MT + monologue + cycle indicator. Get the resolve track click-to-toggle working first; it's the most-clicked element.
+5. Public tab — section by section, top to bottom: Reputation Criteria (read-only from Family), Reputation Tags grid, Active Conditions, Inner Conflict, Completed Conflicts.
+6. Private tab — section by section: Bio header, Desire, Notes & Objectives, Connections, Backstory, Magic/Skills, Adventurer Sentiment.
 
 Test in Foundry after each step. Each step is small enough that if it breaks, you know which step.
+
+For full per-section specs (layout, CSS classes, behavior, edge cases) refer to `docs/design/04-character-sheet.md`. Don't paraphrase from this file — link the design doc.
 
 ---
 
@@ -611,19 +654,23 @@ Same as above but `Item` instead of `Actor`, `ItemSheetV2` instead of `ActorShee
 2. Add the localization keys.
 3. Read it via `game.settings.get("good-society-homebrew", "myKey")`.
 
-### Adding a chat card
+### Adding a chat card or themed surface
 
-Use the period styling. All chat cards from this system go through `module/helpers/chat-cards.js`:
+Use the `themedWrap` helper. All chat cards, letter cards, dashboard rows, and dock rows go through it:
 
 ```js
-import { postChatCard } from "../helpers/chat-cards.js";
-postChatCard({
-  speaker: ChatMessage.getSpeaker({ actor }),
-  flavor: "Inner Monologue",
-  content: `<div class="gs-chat-monologue">${monologueText}</div>`,
-  persona,  // optional; sets portrait + name
-});
+import { themedWrap } from "../helpers/themed-wrap.js";
+
+// Wraps content in <div class="gs-themed" data-theme="<actor-theme>">.
+// If the actor has an active persona with a chatColor override, applies it as inline style.
+const html = themedWrap(actor, innerHTML, ["gs-letter-card"]);
 ```
+
+The helper lives in `module/helpers/themed-wrap.js` and is the canonical implementation of the `.gs-themed[data-theme="..."]` wrapper pattern from §12.5. Centralizing the wrapping means every themed surface stays in sync if class names ever change.
+
+Persona overrides: when the actor's active persona has a `chatColor`, the helper applies it as `style="--gs-brand: ${chatColor};"` so the chat card's brand color shifts without redefining the rest of the theme. See `docs/design/05-epistolary-ui.md` §"Sender is a Persona override" for the full pattern.
+
+For chat-message specifics (flags carried, whisper rules, archive behavior), see `module/helpers/chat-cards.js` and `docs/design/05-epistolary-ui.md`.
 
 ### Switching a persona (the trickiest pattern)
 
@@ -747,6 +794,24 @@ For surfaces that aren't bound to a single actor (chat messages, letter cards, t
 </div>
 ```
 
+A canonical helper centralizes the wrapping:
+
+```js
+// module/helpers/themed-wrap.js
+export function themedWrap(actor, content, extraClasses = []) {
+  const themeId = actor?.system?.theme || "npc";
+  const persona = actor?.system?.activePersonaId
+    ? actor.system.personas.find(p => p.id === actor.system.activePersonaId)
+    : null;
+  const overrideColor = persona?.chatColor;
+  const styleAttr = overrideColor ? ` style="--gs-brand: ${overrideColor};"` : "";
+  const classList = ["gs-themed", ...extraClasses].join(" ");
+  return `<div class="${classList}" data-theme="${themeId}"${styleAttr}>${content}</div>`;
+}
+```
+
+Used by every chat card, letter card, dashboard row, dock row. If the wrapper class names ever change, update one file.
+
 ### 12.6 Font loading
 
 System loads font files for all registered themes at init time using `@fontsource` packages bundled with the system. Fallback stacks ensure missing fonts degrade gracefully. Declared in `system.json`'s `styles` array; loaded by base SCSS `@import` directives.
@@ -783,16 +848,18 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 ## 14. Build phase status
 
-**Currently in:** Phase 1.5 — Theme field backfill (next: Session A.5)
+**Currently in:** Phase 1b — CSS architecture (next: Session B-0)
 
 **Done:**
 - Phase 0: fork, rename, verify load
 - Session A: all 10 DataModels defined and registered
+- Session A.5: theme field backfilled on Major/Connection/NPC; chatStyle removed from Major
+- Design integration v1: theming architecture, twelve-theme registry, antique-but-clean principle integrated into PLAN/CLAUDE
+- Design integration v2: per-component design docs (04 character sheet, 05 epistolary, 06 connection, 07 dashboard, 08 cycle HUD, 09 dock) integrated; structural changes (two tabs + strip on Major sheet, themedWrap helper, per-component CSS organization, hybrid-theming gotcha) reflected in PLAN/CLAUDE
 
 **Next:**
-- Session A.5 — backfill `theme` field on Major/Connection/NPC; remove `chatStyle` storage from Major
-- Session B-0 — CSS architecture (variables, fonts, card primitive, `.gs-themed` wrapper, clayton preset)
-- Session B-1 — sheet templates batch
+- Session B-0 — CSS architecture (variables, fonts, themedWrap helper, card primitive, .gs-themed wrapper, clayton preset)
+- Session B-1 — sheet templates batch (per docs/design/04, 06, 07; structural changes locked)
 - Session B-2 — remaining eleven theme presets
 
 ---
@@ -817,3 +884,6 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - ❌ Don't store `chatStyle.color` or `chatStyle.font` on the actor. They're derived from `actor.system.theme` at render time. Hard-coding them anywhere except the theme CSS files defeats the registry.
 - ❌ Don't add new theme presets without an entry in `docs/design/decisions.md` §"Theme registry". Visual decisions live in the design track; code follows the registry, not the other way around.
 - ❌ Don't put `:root` overrides inside a sheet's stylesheet. They leak globally. Scope to `.gs-actor[data-theme="..."]` or `.gs-themed[data-theme="..."]`.
+- ❌ Don't let a `.gs-themed` wrapper's variable cascade override "always-house" properties (e.g. dashboard row backgrounds). Hardcode house values inside the themed component for those properties, and document with a comment. See `docs/design/07-public-info-dashboard.md` §"Theme behavior" for the canonical example.
+- ❌ Don't manually concatenate `<div class="gs-themed" data-theme="...">` inline. Always go through `themedWrap()` from `module/helpers/themed-wrap.js`. Centralized wrapping survives class-name changes; inline concatenation doesn't.
+- ❌ Don't render the Tokens & Cycle strip as a third tab on the Major sheet. It's a persistent strip below the tab body; tokens state must remain visible across tab switches. See `docs/design/04-character-sheet.md` §"Structural recommendation."

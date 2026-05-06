@@ -25,6 +25,11 @@ export class ConnectionDataModel extends foundry.abstract.TypeDataModel {
         hoverSummary: new StringField({ initial: '' }),
         publicTags: new ArrayField(new StringField()),
       }),
+      theme: new StringField({
+        required: true,
+        choices: ['connection-green', 'connection-purple', 'connection-blue', 'connection-yellow', 'connection-grey'],
+        initial: 'connection-green',
+      }),
       personas: new ArrayField(new EmbeddedDataField(PersonaModel)),
       activePersonaId: new StringField({ initial: '' }),
     };

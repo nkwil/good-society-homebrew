@@ -18,6 +18,11 @@ export class MajorCharacterDataModel extends foundry.abstract.TypeDataModel {
         temperamentTaken: new NumberField({ integer: true, initial: 0 }),
         portraitUrl: new StringField({ initial: '' }),
       }),
+      theme: new StringField({
+        required: true,
+        choices: ['rose', 'roger', 'mags', 'avril', 'dixon', 'clayton'],
+        initial: 'clayton',
+      }),
       personas: new ArrayField(new EmbeddedDataField(PersonaModel)),
       activePersonaId: new StringField({ initial: '' }),
       desire: new HTMLField({ initial: '' }),
@@ -72,10 +77,6 @@ export class MajorCharacterDataModel extends foundry.abstract.TypeDataModel {
           choices: ['secret', 'public', 'redacted'],
           initial: 'secret',
         }),
-      }),
-      chatStyle: new SchemaField({
-        color: new StringField({ initial: '' }),
-        font: new StringField({ initial: '' }),
       }),
     };
   }

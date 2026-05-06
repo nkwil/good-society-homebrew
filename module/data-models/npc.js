@@ -14,6 +14,11 @@ export class NpcDataModel extends foundry.abstract.TypeDataModel {
         hoverSummary: new StringField({ initial: '' }),
         publicTags: new ArrayField(new StringField()),
       }),
+      theme: new StringField({
+        required: true,
+        choices: ['npc'],
+        initial: 'npc',
+      }),
       personas: new ArrayField(new EmbeddedDataField(PersonaModel)),
       activePersonaId: new StringField({ initial: '' }),
     };

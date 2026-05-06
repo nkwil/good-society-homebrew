@@ -203,32 +203,30 @@ Registered in `Hooks.once("init", ...)` via `game.settings.register`.
 
 All sheets use `ApplicationV2 + HandlebarsApplicationMixin` (v13's mandatory approach).
 
-### 6.1 Major Character sheet — three tabs
+### 6.1 Major Character sheet — two tabs + persistent strip
 
 1. **Public** (front of sheet, image 1)
-   - Portrait, name, title, "Major Character: The New Arrival"
+   - Portrait side panel + main column header (name, theme, persona switcher)
+   - Reputation Criteria (read-only from Family)
    - Reputation Tags grid (positive / negative)
    - Active Reputation Conditions
-   - Possible Reputation Conditions (drag-drop target)
-   - Reputation Criteria (read-only text from family-background item)
    - Inner Conflict pair, with the 5+5 boxes as clickable checkboxes
    - Completed Inner Conflicts list
 
 2. **Private** (back of sheet, image 2)
    - Bio header (age, peerage, appearance, temperament given/taken)
-   - Notes & Objectives
-   - Connections list (links to Connection actors)
-   - Desire
-   - Backstory
+   - Desire, Notes & Objectives, Backstory, Adventurer Sentiment (all with per-field visibility flags)
+   - Connections list
    - Magic/Skills
-   - Adventurer Sentiment
 
-3. **Tokens & Cycle** (mechanical strip — could be a header, not a tab)
-   - Resolve tokens (clickable 5-box row)
+3. **Tokens & Cycle persistent strip** (always visible, below the tab body)
+   - Resolve tokens (clickable 5-pip row)
    - MT toggle
-   - "Monologued this cycle?" toggle
-   - Current cycle phase (read-only mirror of world setting)
-   - "Take Monologue" button (disabled if already monologued)
+   - Monologue dot
+   - Current cycle phase indicator (read-only)
+   - "Take Monologue" button
+
+Full per-section spec lives in `docs/design/04-character-sheet.md`. Sheet dimensions: 720px wide, height auto.
 
 ### 6.2 Connection sheet — single page
 
@@ -248,6 +246,12 @@ A full design-system documentation tree lives in `docs/design/`:
 - `01-mood-exploration.md` — mood directions explored, decision rationale (Closed)
 - `02-theme-architecture.md` — two-layer model, scope boundaries, wrapper mechanism (Locked)
 - `03-component-inventory.md` — 59 components mapped to theme scope and design status
+- `04-character-sheet.md` — Major Character sheet spec (Locked)
+- `05-epistolary-ui.md` — Letter composer + letter card + `themedWrap` helper (Locked)
+- `06-connection-sheet.md` — Connection sheet (Locked)
+- `07-public-info-dashboard.md` — Public Info dashboard (Locked)
+- `08-cycle-phase-hud.md` — Cycle Phase HUD strip (Locked)
+- `09-my-characters-dock.md` — My Characters dock (Locked)
 - `decisions.md` — authoritative locked palette, type tokens, twelve-theme registry, antique-but-clean principle
 
 When implementing visual surfaces, link the relevant design doc in your Claude Code prompt rather than describing the design inline. This keeps the implementation grounded in the locked decisions and prevents drift.
@@ -455,6 +459,8 @@ Turns Upkeep from "did everyone remember to do the things" into a guided 60-seco
 
 **Epistolary letter formatter.** During Epistolary phase, GMs and players get a "Send Letter" button that opens a composer (sender persona, recipient persona, subject, body, optional handwriting style). The composer chrome uses house style; the preview pane and the posted card use the *sender's* full character theme via the `.gs-themed[data-theme="..."]` wrapper. This is the canonical proof-point for portable theming — any sender's letter renders correctly with the same template. Optionally archives the letter to a journal folder dated by cycle.
 
+Full composer spec in `docs/design/05-epistolary-ui.md` — covers the two-zone layout (house chrome + sender-themed preview), the seal-color picker, the send flow with chat flags, and the canonical `themedWrap` helper that powers all themed-content rendering across the system.
+
 **NPC quick-create.** Right-click empty canvas → "Create NPC here." Tiny modal: name, role (Innkeeper/Footman/...), portrait (optional, uses generic if none). Drops an NPC actor token at the click location with sensible defaults. For when a player asks "what's the innkeeper's name?" mid-scene and you don't want to break flow.
 
 **NPC organizer per scene.** A sidebar panel listing all Connection and NPC tokens currently placed on the active scene. Click to focus camera on their token. Hover to highlight. Right-click for quick actions (open sheet, change persona, remove). Solves "where did I put the gardener?" on busy ballroom maps.
@@ -564,9 +570,9 @@ Phase 1.5 — Theme field backfill (Session A.5) — 30 min. Add `theme` enum to
 
 Phase 1b — CSS architecture (Session B-0) — 1–2 days. House CSS variables, font loading via `@fontsource`, one card primitive in house style, the `.gs-themed[data-theme="..."]` wrapper mechanism, and one character preset (`clayton`) implemented as full overrides to validate the pipeline. No sheet templates yet.
 
-Phase 1c — Sheet templates batch (Session B-1) — 2–3 days. Build all Handlebars templates (Major, Connection, Family, NPC, item types) consuming the theme tokens and house variables. In-sheet rule tooltips wired. Per-component implementation order follows `docs/design/03-component-inventory.md` §"Implementation order (suggested)".
+Phase 1c — Sheet templates batch (Session B-1) — 2–3 days. Build all Handlebars templates following `docs/design/04-character-sheet.md`, `docs/design/06-connection-sheet.md`, and the inventory order in `03-component-inventory.md`. The themedWrap helper from B-0 is consumed by chat-card and letter-card primitives built here. Persistent tokens & cycle strip on Major sheets (not a third tab — see §6.1).
 
-Phase 1d — Remaining theme presets — 1 day. The other eleven presets implemented. Each is a CSS file with overrides under `.gs-actor[data-theme="..."]`. The `clayton` work in Phase 1b is the template.
+Phase 1d — Remaining theme presets (Session B-2) — 1 day. Eleven presets implemented. Each is a CSS file with `.gs-actor[data-theme="..."]` and `.gs-themed[data-theme="..."]` selectors per `docs/design/decisions.md` §Theme registry.
 
 **Phase 2 — Item types & token mechanics (2–3 days)**
 Reputation Tag, Reputation Condition, Inner Conflict, Magic/Skill, Backstory Action as item types. Resolve tokens click-to-toggle. MT toggle. Monologue toggle. **Visual reputation meter** (§12.3) on the sheet. Rules tracked but not enforced.
@@ -574,14 +580,20 @@ Reputation Tag, Reputation Condition, Inner Conflict, Magic/Skill, Backstory Act
 **Phase 3 — Cycle phase + automation hooks (2–3 days)**
 World setting for cycle phase, advance button, auto-refresh on Upkeep, "earn Expanded Backstory" detection on inner-conflict completion (6 boxes total or 5 on one side). **Cycle phase HUD strip** (§12.2) always-visible at the top of the canvas.
 
+The Cycle Phase HUD strip (`docs/design/08-cycle-phase-hud.md`) ships in this phase. It's a 40px persistent strip at the top of the canvas with cycle counter, six-phase track, and GM advance button.
+
 **Phase 4 — Family + Connection + NPC actors (2–3 days)**
 Family actor type (shared between Majors), Connection actor type with shared-pool default, NPC actor type with GM-only default. Link Family from each Major; render read-only family panel on the Major sheet. "I think [Major] is..." impressions on Connections.
 
 **Phase 5 — Personas + multi-character ergonomics (3–4 days)**
 Personas array on Major (and copy schema to Connection/NPC). Sheet UI for adding/editing personas and switching active persona. On switch, update prototype token + every placed token of this actor across scenes. **My Characters dock** (§12.1) pinned panel listing user-owned actors. No auto-switch on scenes yet.
 
+The My Characters dock (`docs/design/09-my-characters-dock.md`) ships in this phase. It's a pinned per-user panel showing owned actors with full state for Majors and tighter rows for Connections. Footer hosts the Speaking-As switcher.
+
 **Phase 6 — Public Info / Facilitator dashboard + GM tools (3–4 days)**
 Custom ApplicationV2 dashboard window, scene control button, all-Majors at-a-glance, GM bulk actions. **Reveal control** (§12.5) for per-field visibility flips. **Bulk permissions panel** (§12.5) for setting actor ownership across all users in one screen.
+
+Full spec in `docs/design/07-public-info-dashboard.md` — covers the hybrid-theming row pattern, GM bulk actions, real-time updates via `updateActor` hooks, and the CSS hybrid-theming gotcha (row backgrounds use hardcoded house values to prevent wrapper cascade).
 
 **Phase 7 — Scene + NPC hover + scene tools (2–3 days)**
 `hoverToken` hook, custom hover card component sourced from the active persona's `hoverSummary`. Connection- and NPC-aware token display. **NPC quick-create** (§12.5) right-click canvas action. **NPC organizer per scene** (§12.5) sidebar listing tokens on the active scene.

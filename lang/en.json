@@ -40,6 +40,20 @@
       "polarity": "Polarity",
       "description": "Description",
       "source": "Source"
+    },
+    "theme": {
+      "rose": "Rose",
+      "roger": "Roger",
+      "mags": "Mags",
+      "avril": "Avril",
+      "dixon": "Dixon",
+      "clayton": "Clayton",
+      "connection-green": "Connection — Green",
+      "connection-purple": "Connection — Purple",
+      "connection-blue": "Connection — Blue",
+      "connection-yellow": "Connection — Yellow",
+      "connection-grey": "Connection — Grey",
+      "npc": "NPC"
     }
   },
 
