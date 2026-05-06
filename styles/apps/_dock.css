@@ -1,0 +1,225 @@
+/* My Characters Dock — pinned compact panel showing the user's owned actors.
+ *
+ * House-styled chrome. Per-row themed via .gs-themed[data-theme]. The
+ * design's hybrid theming pattern (per docs/design/09 §"Theme behavior").
+ *
+ * Pointer-events:
+ *   ApplicationV2 windows render under #ui-top by default but our dock is
+ *   frameless and may end up inside chains where pointer-events: none is
+ *   inherited (Foundry's UI gap pattern). Explicitly set pointer-events: auto
+ *   on the dock and all descendants. See the anti-pattern in CLAUDE.md.
+ *
+ * Per docs/design/09-my-characters-dock.md.
+ */
+
+/* ApplicationV2 frameless wrapper — strip default window padding/border.
+ * Frameless windows don't get position:absolute or z-index from ApplicationV2's
+ * window manager (those come from the framing logic that frame:false strips),
+ * so we set them explicitly. Without position:fixed/absolute, the inline
+ * left/top styles from setPosition() have no effect.
+ *
+ * Targeting by ID because the .application class may not be applied to
+ * frameless ApplicationV2 wrappers in v13. ID is unique and unambiguous. */
+#gs-my-characters-dock,
+.application.gs-my-characters-dock {
+  position: fixed !important;
+  /* Backstop position — inline left/top from ApplicationV2 should override,
+   * but if they don't (frameless quirks), these defaults keep the dock visible
+   * below the scene navigation. */
+  left: 70px;
+  top: 100px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  pointer-events: auto;
+  z-index: 50 !important;
+}
+
+#gs-my-characters-dock .window-content,
+.application.gs-my-characters-dock .window-content {
+  padding: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+/* Dock root */
+.gs-dock {
+  display: flex;
+  flex-direction: column;
+  width: 290px;
+  max-height: 80vh;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(20, 12, 14, 0.18);
+  font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
+  color: var(--gs-ink);
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.gs-dock *,
+.gs-dock *::before,
+.gs-dock *::after {
+  pointer-events: auto;
+}
+
+/* Header — also serves as the drag handle.
+ * cursor: move signals draggability; .gs-dock__minimize button overrides
+ * the cursor inside its bounds so clicking the minimize button doesn't
+ * trigger a drag start. */
+.gs-dock__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 12px 16px 10px;
+  background: var(--gs-paper);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  cursor: move;
+  user-select: none;
+}
+
+.gs-dock__title {
+  flex: 1;
+  font-family: var(--gs-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+}
+
+.gs-dock__count {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-accent-2);
+}
+
+.gs-dock__minimize {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--gs-accent-2);
+  font-family: var(--gs-display);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gs-dock__minimize:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: var(--gs-paper-warm);
+}
+
+/* Minimized state — body + footer collapse, only header remains. */
+.gs-dock.is-minimized .gs-dock__body,
+.gs-dock.is-minimized .gs-dock__footer {
+  display: none;
+}
+
+.gs-dock.is-minimized .gs-dock__header {
+  border-bottom: 0;
+  border-radius: 10px;
+}
+
+/* Visual feedback while dragging */
+.gs-dock.is-dragging {
+  opacity: 0.85;
+  transition: none;
+}
+
+/* Body */
+.gs-dock__body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  overflow-y: auto;
+}
+
+.gs-dock__eyebrow {
+  font-family: var(--gs-display);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+  margin: 4px 2px 2px;
+}
+
+.gs-dock__divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+  color: var(--gs-accent-2);
+  font-family: var(--gs-display);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.gs-dock__divider::before,
+.gs-dock__divider::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: var(--gs-muted);
+}
+
+.gs-dock__empty {
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  text-align: center;
+  margin: 16px 8px;
+  line-height: 1.5;
+}
+
+/* Footer */
+.gs-dock__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 10px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-dock__hint {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 10px;
+  color: var(--gs-accent-2);
+}
+
+/* The dock variant of the Speaking-As switcher uses a more compact label,
+ * inherits the rest from styles/components/_speaking-as.css. */
+.gs-dock__footer .gs-speaking-as {
+  background: transparent;
+  border-bottom: 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.gs-dock__footer .gs-speaking-as__label {
+  display: none;
+}
+
+.gs-dock__footer .gs-speaking-as__pill {
+  font-size: 11px;
+  padding: 3px 8px;
+  max-width: 130px;
+}

@@ -1,0 +1,91 @@
+{{!-- My Characters Dock — pinned compact panel showing the user's owned actors.
+     Per docs/design/09-my-characters-dock.md.
+
+     Single root element (.gs-dock) so ApplicationV2's _parsePartHTML accepts
+     it as a PART. The frame:false config strips Foundry's window chrome. --}}
+<aside class="gs-dock {{#if minimized}}is-minimized{{/if}}" data-application-part="main">
+  <header class="gs-dock__header" data-action="drag-handle">
+    <span class="gs-dock__title">{{localize "GOODSOCIETY.dock.title"}}</span>
+    <span class="gs-dock__count">{{total}}</span>
+    <button type="button"
+            class="gs-dock__minimize"
+            data-action="toggle-minimize"
+            aria-label="{{#if minimized}}{{localize 'GOODSOCIETY.dock.expand'}}{{else}}{{localize 'GOODSOCIETY.dock.minimize'}}{{/if}}"
+            title="{{#if minimized}}{{localize 'GOODSOCIETY.dock.expand'}}{{else}}{{localize 'GOODSOCIETY.dock.minimize'}}{{/if}}">
+      {{#if minimized}}+{{else}}−{{/if}}
+    </button>
+  </header>
+
+  <div class="gs-dock__body">
+    {{#if hasMajors}}
+      <div class="gs-dock__eyebrow">
+        {{#if (gt majors.length 1)}}
+          {{localize "GOODSOCIETY.dock.majorsEyebrow"}}
+        {{else}}
+          {{localize "GOODSOCIETY.dock.majorEyebrow"}}
+        {{/if}}
+      </div>
+      {{#each majors as |row|}}
+        {{> dock-major-row row}}
+      {{/each}}
+    {{/if}}
+
+    {{#if hasConnections}}
+      <div class="gs-dock__divider">
+        <span>{{localize "GOODSOCIETY.dock.connectionsEyebrow"}}</span>
+      </div>
+      {{#each connections as |row|}}
+        {{> dock-connection-row row}}
+      {{/each}}
+    {{/if}}
+
+    {{#unless hasAny}}
+      <p class="gs-dock__empty">{{localize "GOODSOCIETY.dock.empty"}}</p>
+    {{/unless}}
+  </div>
+
+  {{#if hasAny}}
+    <footer class="gs-dock__footer">
+      <span class="gs-dock__hint">{{localize "GOODSOCIETY.dock.clickToOpen"}}</span>
+
+      {{!-- Speaking-As mirror — same template the chat-input bar uses, with a
+           variant data-attribute so the chat-input's _doInject doesn't strip
+           this copy. The delegated click handlers in speaking-as.js match by
+           class so both surfaces share behavior. --}}
+      <div class="gs-speaking-as gs-speaking-as--dock"
+           data-variant="dock"
+           data-active-actor="{{activeSpeakerActorId}}"
+           data-active-persona="{{activeSpeakerPersonaId}}">
+        <button type="button" class="gs-speaking-as__pill" aria-haspopup="listbox" aria-expanded="false">
+          <span class="gs-speaking-as__pill-name">
+            {{#if speakerLabel}}{{speakerLabel}}{{else}}— {{localize "GOODSOCIETY.speakingAs.none"}} —{{/if}}
+          </span>
+          <span class="gs-speaking-as__pill-chevron" aria-hidden="true">▾</span>
+        </button>
+        <div class="gs-speaking-as__popover" role="listbox" hidden>
+          <button type="button" class="gs-speaking-as__option" role="option" data-actor-id="" data-persona-id="">
+            — {{localize "GOODSOCIETY.speakingAs.none"}} —
+          </button>
+          {{#each myMajors as |actor|}}
+            <button type="button"
+                    class="gs-speaking-as__option {{#if (eq ../activeSpeakerActorId actor.id)}}is-active{{/if}}"
+                    role="option"
+                    data-actor-id="{{actor.id}}"
+                    data-persona-id="">
+              {{actor.name}}
+            </button>
+            {{#each actor.system.personas as |persona|}}
+              <button type="button"
+                      class="gs-speaking-as__option gs-speaking-as__option--persona {{#if (and (eq ../../activeSpeakerActorId ../actor.id) (eq ../../activeSpeakerPersonaId persona.id))}}is-active{{/if}}"
+                      role="option"
+                      data-actor-id="{{../actor.id}}"
+                      data-persona-id="{{persona.id}}">
+              ↳ {{persona.name}}
+              </button>
+            {{/each}}
+          {{/each}}
+        </div>
+      </div>
+    </footer>
+  {{/if}}
+</aside>

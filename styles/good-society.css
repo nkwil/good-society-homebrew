@@ -27,6 +27,8 @@
 @import './components/_inner-conflict-grid.css';
 @import './components/_impression-card.css';
 @import './components/_crest-medallion.css';
+@import './components/_dock-row-major.css';
+@import './components/_dock-row-connection.css';
 
 /* Speaking-As switcher — chat sidebar component */
 @import './components/_speaking-as.css';
@@ -77,10 +79,10 @@
 
 /* App windows */
 @import './apps/_monologue-editor.css';
+@import './apps/_dock.css';
 
 /* B-4 additions (not yet implemented):
  * @import './apps/_dashboard.css';
- * @import './apps/_dock.css';
  * @import './apps/_letter-composer.css';
  * @import './apps/_cycle-hud.css';
  */

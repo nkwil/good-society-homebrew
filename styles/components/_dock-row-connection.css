@@ -1,0 +1,45 @@
+/* Dock — Connection row primitive.
+ *
+ * Tighter than Major rows; no MT/monologue (Major-only mechanics).
+ * Mini resolve track on the right. Connection name in ink color (rather
+ * than brand) per docs/design/09-my-characters-dock.md §"Connection row spec":
+ * "Connections use ink color for the name (unlike Majors which use brand) —
+ * they're 'of the world' rather than 'voiced.'"
+ */
+
+.gs-dock__row--connection {
+  padding: 7px 10px;
+  border-radius: 6px;
+}
+
+.gs-dock__portrait--small {
+  width: 26px;
+  height: 30px;
+  border-radius: 13px / 15px;
+  border-width: 0.5px;
+}
+
+.gs-dock__portrait--small .gs-dock__portrait-initial {
+  font-size: 13px;
+}
+
+.gs-dock__row--connection .gs-dock__row-name {
+  font-size: 12px;
+  color: var(--gs-ink);
+}
+
+.gs-dock__row-role {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 10px;
+  color: var(--gs-brand);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gs-dock__resolve--mini .gs-dock__resolve-pip {
+  width: 6px;
+  height: 6px;
+}

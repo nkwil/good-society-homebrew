@@ -691,6 +691,70 @@ Full spec in `docs/design/10-chat-cards.md`.
 
 The chat card variants compose from primitives in `docs/design/23-primitives-batch.md` (card surface #1, section header #2, hairline divider #3, GM pill #12). Don't redefine these inside chat-card stylesheets; reuse the existing primitive CSS files via `@import` in `styles/good-society.css`'s entry point.
 
+### Adding a frameless ApplicationV2 surface (dock, HUD, hover card, etc.)
+
+Frameless apps need explicit positioning + z-index in CSS — ApplicationV2's
+window manager strips that logic when `window: { frame: false }` is set. The
+worked example is `module/apps/my-characters-dock.js` + `styles/apps/_dock.css`.
+Three things you must do that you don't have to do for framed windows:
+
+1. **Set `position: fixed` (or `absolute`) on the application wrapper in CSS.**
+   Without this, the wrapper is `position: static` (the div default) and any
+   inline `left`/`top` styles from `setPosition()` or `DEFAULT_OPTIONS.position`
+   have no effect — the wrapper sits wherever document flow puts it (often
+   wrong, e.g. squeezed into a flex slot in `<body>`).
+
+   ```css
+   .application.gs-my-frameless-app {
+     position: fixed;
+     z-index: 50;       /* see (2) */
+     pointer-events: auto; /* see (3) */
+   }
+   ```
+
+2. **Set z-index explicitly.** Frameless ApplicationV2 doesn't get
+   z-index management. Default is `auto`, which renders below any positioned
+   element with z-index > 0. Use `50` (above canvas/player-list defaults)
+   unless you have a reason to layer differently.
+
+3. **Set `pointer-events: auto`** on the wrapper AND its descendants. Same
+   rule as the speaking-as anti-pattern — Foundry's UI chain often inherits
+   `pointer-events: none`.
+
+4. **Put the default position in `DEFAULT_OPTIONS.position`, not in
+   `_onFirstRender + setPosition`.** ApplicationV2 applies `DEFAULT_OPTIONS.position`
+   to inline styles automatically. Calling `setPosition` from `_onFirstRender`
+   sometimes only lands a subset of keys (we observed `left:70` applying but
+   `top:100` silently dropping when wrapper is static-positioned with
+   `height: 'auto'`). Worked example:
+
+   ```js
+   static DEFAULT_OPTIONS = {
+     window: { frame: false, positioned: true },
+     position: { width: 290, height: 'auto', left: 70, top: 100 },
+   };
+
+   /** Read stored override at construction; merge over defaults. */
+   constructor(options = {}) {
+     const stored = (() => {
+       try { return game.settings.get('good-society-homebrew', 'myAppPosition'); }
+       catch { return null; }
+     })();
+     if (stored?.left != null && stored?.top != null) {
+       options.position = { ...MyApp.DEFAULT_OPTIONS.position, ...stored };
+     }
+     super(options);
+   }
+   ```
+
+5. **Mind the placement vs Foundry's chrome.** Foundry v13's default layout
+   puts the chat sidebar on the right (anchored to viewport-right). If your
+   default `left` puts the surface in that band, the surface will render
+   visibly correct *but be hidden behind* the chat sidebar's parent stack.
+   Either anchor to the left of the canvas (e.g. `left: 70` to clear the
+   tools panel) or detect the chat-sidebar's left edge at construction time
+   and place to its left. The dock chose the former for v0.
+
 ### Switching a persona (the trickiest pattern)
 
 ```js
@@ -917,6 +981,12 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - **B-1 (2026-05-05): Edit Conflict Warning, Session Log, Backup Export deferred to Session B-6.** Per docs/design/21, 24, 25 — these are robustness features that don't block any other phase. Group them at the end as a single robustness session.
 - **B-1 (2026-05-05): Bulk Permissions Panel slotted into Session B-4 (custom apps batch).** Per `docs/design/22-bulk-permissions-panel.md`. It's a GM tool comparable to the dashboard in surface complexity.
 - **B-1 (2026-05-05): Foundry chrome theme slotted into Session B-2.5.** Per `docs/design/28-foundry-chrome-theme.md`. Small standalone CSS session — overrides Foundry's surrounding application chrome (titlebars, sidebar, chat log, scene navigation, default form controls, notifications, player list, hotbar). Opt-in via `applyFoundryChrome` setting (default true). Body-class wrapper (`body.gs-chrome-themed`) for instant runtime toggling without page reload. Independent of B-1 sheet work; can run after B-2 themes or anywhere CSS-only work is convenient.
+- **B-3 (2026-05-06): Speaking-As switcher rebuilt as a click-driven popover.** Native `<select>` rendered as zero-size in Foundry v13's chat-sidebar context (cause not chased; symptom-fixed). Replaced with `<button class="gs-speaking-as__pill">` + `.gs-speaking-as__popover` listing actors and indented personas. Matches the design spec from `docs/design/10-chat-cards.md` §"Speaking-As switcher" better than the select did.
+- **B-3 (2026-05-06): Speaking-As switcher uses delegated listeners + MutationObserver.** Per-element handlers were going stale across Foundry's chat-sidebar re-renders. Now: a single `document`-level capture-phase delegated `click` handler (in `module/hooks/speaking-as.js`) covers the bar regardless of how many times it's torn down and recreated. A MutationObserver on `document.body` re-injects the bar if it goes missing. Inject calls are serialized through a single promise chain to prevent the duplicate-bar race we saw with the GM popout chat.
+- **B-3 (2026-05-06): Foundry v13 chat-input injection — use `renderChatInput` hook, not `renderChatLog`.** Added in v13.346, fires when the chat input is mounted/re-parented (Foundry moves it dynamically via `ChatLog#_toggleNotifications`). The legacy `renderChatLog` + `#chat-form` lookup doesn't work — by the time the hook fires the form may not yet be a child of the rendered log, OR a subsequent re-parent strips your injected node. Kept `renderChatLog` as a fallback for older builds via `_findChatInput()` which queries the whole document and prefers the `#chat`-scoped instance over the popout.
+- **B-3 (2026-05-06): Foundry v13 sidebar chain has `pointer-events: none` on every parent.** The `#interface > .ui-right > #sidebar > .sidebar-content > .chat-sidebar` chain all set `pointer-events: none` so the canvas stays interactive in non-UI gaps; individual interactive elements explicitly re-enable. Because `pointer-events` inherits, our injected bar inherited `none` — `getBoundingClientRect()` reported it visible but `elementsFromPoint()` didn't include it and real mouse clicks passed through to the canvas (synthetic `.click()` worked because it bypasses hit-testing). Fixed in `styles/components/_speaking-as.css` with explicit `pointer-events: auto` on `.gs-speaking-as` and `.gs-speaking-as *`. **Anti-pattern logged below.** Any future surface injected into the Foundry sidebar/chrome chain MUST explicitly set `pointer-events: auto` or face the same silent bug.
+- **B-3 (2026-05-06): Speaking-As speaker rewriting via `preCreateChatMessage`.** The switcher UI selecting an actor wasn't enough — Foundry still used the user's default speaker. Hook in `module/hooks/speaking-as.js` rewrites `data.speaker.actor`, `speaker.alias`, and `style: IC` on every non-whisper, non-roll message when an actor is selected. Persona name is used as the alias when a persona is active; the underlying actor stays unchanged so chat-card flags still resolve theme/portrait. The Speaking-As selection takes precedence over Foundry's chat-mode toggle (globe/IC/etc) — picking an actor in the switcher means "I want to speak as this actor," full stop. OOC mode users who want OOC chat should set the switcher to "myself."
+- **B-3 (2026-05-06): Monologue editor JournalEntry creation rebuilt for v10+ pages API.** Old code passed `content` at the entry level (v9-era pattern); v10+ moved content to `pages` and the entry is just a container. Empty entries got created instead of populated ones. Now creates a `pages: [{ type: 'text', text: { content, format: HTML }}]` shape. Page content is wrapped via `themedWrap()` so the actor's theme applies (parchment surface, brand color, persona `chatColor` override). Wraps in `<div class="gs-card gs-monologue-archive">` with section header showing speaker name + cycle.
 
 ---
 
@@ -948,3 +1018,10 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - ❌ Don't write a Handlebars PART template with multiple top-level elements, conditional blocks, or text/whitespace at the root. Foundry v13 ApplicationV2's `_parsePartHTML` requires each PART to render exactly one root HTML element. Wrap everything in a single root (e.g. `<form>`, `<section>`, `<div>`) and put conditionals INSIDE that root. Whitespace before or after the root is also read as a text node and trips the same error.
 - ❌ Don't promote `<form>` to be the root element of an ApplicationV2 PART template if your sheet class queries `this.element.querySelector('form')`. Either keep the form nested inside a wrapper div, or change the JS to use `this.element` directly. The wrapper approach is usually less risky.
 - ⚠ Chat card templates (`templates/chat-cards/*.hbs`) render via `ChatMessage.create → innerHTML`, NOT through ApplicationV2 PARTS, so multiple top-level elements are fine there. BUT: when the letter composer in B-4 renders `letter.hbs` through its own ApplicationV2, that template will need a single-root wrapper. Same fix as `monologue-editor.hbs` at that point.
+- ❌ Don't inject UI into the Foundry sidebar/chrome chain without explicitly setting `pointer-events: auto` on your root element AND its descendants. Foundry v13 sets `pointer-events: none` on every parent in the `#interface > .ui-right > #sidebar > .sidebar-content > .chat-sidebar` chain so the canvas stays interactive in non-UI gaps; built-in UI elements re-enable on themselves. Because `pointer-events` inherits, anything you inject inherits `none` — the bar renders visibly but `elementsFromPoint()` doesn't include it and real mouse clicks pass through to the canvas. Synthetic `.click()` works (it bypasses hit-testing), which makes the bug feel like a click-handler issue when it's actually a CSS one. Worked example: `styles/components/_speaking-as.css` `.gs-speaking-as { pointer-events: auto; } .gs-speaking-as * { pointer-events: auto; }`. This applies to every B-4 app that injects into the sidebar (My Characters Dock, Cycle HUD, etc.).
+- ❌ Don't inject above the chat input via `Hooks.on('renderChatLog', ...)` and `bar.querySelector('#chat-form')` in v13. The chat input is a `<chat-input>` custom element re-parented dynamically by `ChatLog#_toggleNotifications`; by the time `renderChatLog` fires it may not be a child of the rendered html, AND a subsequent re-parent strips your injected node. Use `renderChatInput` (v13.346+) instead — it fires when the input is actually mounted/in-position. Keep `renderChatLog` as a fallback that searches the whole document. Worked example: `module/hooks/speaking-as.js` `_findChatInput()` and the dual-hook `register()`. There may be more than one `<chat-input>` (main + GM popout) — pick the one inside `#chat` to avoid duplicate bars, and serialize injects through a single promise chain to prevent the race.
+- ❌ Don't bind event listeners directly to elements injected into Foundry chrome that gets re-rendered. Foundry's chat sidebar (and likely other ApplicationV2 surfaces) re-renders frequently. Per-element handlers go stale and the click-target you wired vanishes. Use a single `document`-level capture-phase delegated listener that matches by class. Worked example: `_attachDelegatedListeners()` in `module/hooks/speaking-as.js`. Pair with a `MutationObserver` that re-injects the bar if a re-render strips it.
+- ❌ Don't create a `JournalEntry` with `content` at the entry level — that's pre-v10 API. The entry is just a container; content lives in `pages`. Always pass `pages: [{ name, type: 'text', text: { content: html, format: CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML } }]`. The entry will get created either way, but the page won't, and the journal opens to an empty body. Worked example: `module/apps/monologue-editor.js` `JournalEntry.create(...)`.
+- ❌ Don't ship a frameless ApplicationV2 (`window: { frame: false }`) without explicit `position: fixed` (or `absolute`) AND `z-index` AND `pointer-events: auto` in CSS. The framing logic that gets stripped by `frame: false` is also what positions the wrapper, manages its z-index, and re-enables pointer-events. Without `position: fixed`, the wrapper is `position: static` and inline `left`/`top` from `setPosition()` or `DEFAULT_OPTIONS.position` have no effect — the wrapper ends up wherever document flow puts it (often inside a flex slot in `<body>` at `x ≠ 0`). Without explicit z-index, it's at `auto` and renders behind anything with z-index > 0 (canvas overlays, player list, sidebar). Worked example + full recipe: §11 "Adding a frameless ApplicationV2 surface" and `module/apps/my-characters-dock.js` + `styles/apps/_dock.css`.
+- ❌ Don't use `_onFirstRender + setPosition()` to set the default position of a frameless ApplicationV2. `setPosition` sometimes only lands a subset of keys when the wrapper is static-positioned with `height: 'auto'` (we observed `left` applying but `top` silently dropping). Put default position in `DEFAULT_OPTIONS.position` directly; merge stored overrides in the constructor. Worked example: `module/apps/my-characters-dock.js` constructor pattern.
+- ❌ Don't anchor a frameless ApplicationV2 to viewport-right (`left: window.innerWidth - width`). Foundry v13's default layout puts the chat sidebar there. The surface will render *visibly correct per CSS* but be hidden behind the chat sidebar's parent stack — confusing during debug because `getBoundingClientRect()` and `getComputedStyle().visibility` both report it as visible. Anchor to the left of the canvas (e.g. `left: 70` to clear the tools panel) for v0 surfaces; detect the chat-sidebar's left edge at construction time if you need to anchor right.

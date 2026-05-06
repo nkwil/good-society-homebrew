@@ -289,7 +289,22 @@
       "post": "Post monologue",
       "cancel": "Cancel",
       "alreadySpent": "You have already taken your monologue this cycle.",
-      "emptyWarning": "Write something before posting your monologue."
+      "emptyWarning": "Write something before posting your monologue.",
+      "pageName": "Monologue"
+    },
+
+    "dock": {
+      "title": "My Characters",
+      "majorEyebrow": "Major",
+      "majorsEyebrow": "Majors",
+      "connectionsEyebrow": "— Connections —",
+      "asPersona": "as",
+      "clickToOpen": "click any to open",
+      "empty": "No characters yet. Open the actors sidebar to create one.",
+      "monologueAvailable": "Monologue available",
+      "monologueSpent": "Monologue spent this cycle",
+      "minimize": "Minimize dock",
+      "expand": "Expand dock"
     },
 
     "settings": {

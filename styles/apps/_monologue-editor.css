@@ -80,3 +80,27 @@
   gap: 8px;
   padding-top: 4px;
 }
+
+/* Archived monologue card — rendered inside a JournalEntry text page.
+ * The .gs-themed wrapper supplies the actor's brand/palette; the card
+ * primitive supplies the parchment surface. Body text uses italic body
+ * type to match the chat monologue card's contemplative voice. */
+.gs-monologue-archive {
+  margin: 8px 0;
+}
+
+.gs-monologue-archive__body {
+  font-family: var(--gs-italic, var(--gs-body, 'Crimson Text', Georgia, serif));
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--gs-ink, #3D2F26);
+}
+
+.gs-monologue-archive__body p {
+  margin: 0 0 0.75em;
+}
+
+.gs-monologue-archive__body p:last-child {
+  margin-bottom: 0;
+}

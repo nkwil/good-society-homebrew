@@ -1,0 +1,27 @@
+{{!-- Connection row in the My Characters Dock — tighter than Major rows.
+     No MT or monologue (Major-only mechanics); compact resolve track on right. --}}
+<div class="gs-themed gs-dock__row gs-dock__row--connection"
+     data-theme="{{theme}}"
+     data-actor-id="{{id}}"
+     role="button"
+     tabindex="0"
+     aria-label="{{name}}, Connection{{#if role}}, {{role}}{{/if}}. Click to open sheet.">
+  <div class="gs-dock__portrait gs-dock__portrait--small" aria-hidden="true">
+    {{#if portraitUrl}}
+      <img src="{{portraitUrl}}" alt="" />
+    {{else}}
+      <span class="gs-dock__portrait-initial">{{initial}}</span>
+    {{/if}}
+  </div>
+  <div class="gs-dock__row-stack">
+    <div class="gs-dock__row-name">{{name}}</div>
+    {{#if role}}
+      <div class="gs-dock__row-role">{{role}}</div>
+    {{/if}}
+  </div>
+  <div class="gs-dock__resolve gs-dock__resolve--mini">
+    {{#each resolvePips as |filled|}}
+      <span class="gs-dock__resolve-pip {{#if filled}}filled{{/if}}"></span>
+    {{/each}}
+  </div>
+</div>

@@ -1,0 +1,34 @@
+{{!-- Major row in the My Characters Dock — wrapped in .gs-themed[data-theme]
+     so the actor's brand/palette applies to portrait, name, and resolve pips.
+     Click anywhere on the row to open the sheet (delegated handler). --}}
+<div class="gs-themed gs-dock__row gs-dock__row--major"
+     data-theme="{{theme}}"
+     data-actor-id="{{id}}"
+     role="button"
+     tabindex="0"
+     aria-label="{{name}}, Major character{{#if showPersonaLine}}, as {{speakerName}}{{/if}}. Click to open sheet.">
+  <div class="gs-dock__portrait" aria-hidden="true">
+    {{#if portraitUrl}}
+      <img src="{{portraitUrl}}" alt="" />
+    {{else}}
+      <span class="gs-dock__portrait-initial">{{initial}}</span>
+    {{/if}}
+  </div>
+  <div class="gs-dock__row-stack">
+    <div class="gs-dock__row-name">{{name}}</div>
+    {{#if showPersonaLine}}
+      <div class="gs-dock__row-persona">{{localize "GOODSOCIETY.dock.asPersona"}} {{speakerName}}</div>
+    {{/if}}
+    <div class="gs-dock__row-state">
+      <div class="gs-dock__resolve">
+        {{#each resolvePips as |filled|}}
+          <span class="gs-dock__resolve-pip {{#if filled}}filled{{/if}}"></span>
+        {{/each}}
+      </div>
+      <span class="gs-dock__mt {{#if mtActive}}is-on{{/if}}">MT</span>
+      <span class="gs-dock__monologue {{#if monologueAvailable}}is-available{{/if}}"
+            title="{{#if monologueAvailable}}{{localize 'GOODSOCIETY.dock.monologueAvailable'}}{{else}}{{localize 'GOODSOCIETY.dock.monologueSpent'}}{{/if}}"
+            aria-hidden="true"></span>
+    </div>
+  </div>
+</div>

@@ -8,6 +8,7 @@
  */
 
 import { postMonologueCard } from '../helpers/chat-cards.js';
+import { themedWrap } from '../helpers/themed-wrap.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 } = foundry.applications.api;
@@ -67,15 +68,38 @@ export class MonologueEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     // Mark monologue as spent.
     await this.actor.update({ 'system.tokens.monologuedThisCycle': true });
 
-    // Optional journal entry.
+    // Optional journal entry. In Foundry v10+ JournalEntry has no `content`
+    // at the entry level — content lives in pages. The page is wrapped in
+    // .gs-themed[data-theme="..."] with the actor's theme so the parchment
+    // card surface and brand color match the chat monologue card.
     let journalEntryUuid = null;
     if (archive) {
       const cycleNumber = (() => {
         try { return game.settings.get('good-society-homebrew', 'cycleNumber'); } catch { return 1; }
       })();
+      const persona = this.actor.system?.activePersona;
+      const speakerName = persona?.name ?? this.actor.name;
+      const bodyHtml = `<p>${text.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
+      const cardHtml = `
+        <div class="gs-card gs-monologue-archive">
+          <div class="gs-section-header">
+            ${speakerName} — ${game.i18n.localize('GOODSOCIETY.monologueEditor.title')}
+          </div>
+          <div class="gs-monologue-archive__body">${bodyHtml}</div>
+        </div>
+      `.trim();
+      const themedHtml = themedWrap(this.actor, cardHtml, ['gs-monologue-archive-wrap']);
+
       const entry = await JournalEntry.create({
         name: `${this.actor.name} — Cycle ${cycleNumber} Monologue`,
-        content: `<p>${text.replace(/\n/g, '</p><p>')}</p>`,
+        pages: [{
+          name: game.i18n.localize('GOODSOCIETY.monologueEditor.pageName') || 'Monologue',
+          type: 'text',
+          text: {
+            content: themedHtml,
+            format: CONST.JOURNAL_ENTRY_PAGE_FORMATS?.HTML ?? 1,
+          },
+        }],
       });
       journalEntryUuid = entry?.uuid ?? null;
     }

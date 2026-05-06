@@ -4,6 +4,7 @@
  */
 
 import { register as registerSpeakingAs } from './hooks/speaking-as.js';
+import { renderDock } from './apps/my-characters-dock.js';
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
 import { InnerConflictDataModel } from './data-models/inner-conflict.js';
@@ -27,6 +28,10 @@ import { BackstoryActionSheet } from './sheets/backstory-action-sheet.js';
 const GS_COMPONENT_PARTIALS = {
   'inner-conflict-grid':
     'systems/good-society-homebrew/templates/components/inner-conflict-grid.hbs',
+  'dock-major-row':
+    'systems/good-society-homebrew/templates/components/dock-major-row.hbs',
+  'dock-connection-row':
+    'systems/good-society-homebrew/templates/components/dock-connection-row.hbs',
 };
 
 Hooks.once('init', async function () {
@@ -43,6 +48,28 @@ Hooks.once('init', async function () {
     config: false,
     type: String,
     default: '',
+  });
+
+  game.settings.register('good-society-homebrew', 'dockVisible', {
+    scope: 'client',
+    config: false,
+    type: Boolean,
+    default: true,
+    onChange: () => renderDock(),
+  });
+
+  game.settings.register('good-society-homebrew', 'dockPosition', {
+    scope: 'client',
+    config: false,
+    type: Object,
+    default: null,
+  });
+
+  game.settings.register('good-society-homebrew', 'dockMinimized', {
+    scope: 'client',
+    config: false,
+    type: Boolean,
+    default: false,
   });
 
   game.settings.register('good-society-homebrew', 'applyFoundryChrome', {
@@ -144,7 +171,17 @@ Hooks.once('init', async function () {
 Hooks.once('ready', () => {
   const enabled = game.settings.get('good-society-homebrew', 'applyFoundryChrome');
   document.body.classList.toggle('gs-chrome-themed', enabled);
+
+  // Open the My Characters Dock if the user owns any actors.
+  renderDock();
 });
+
+// Re-render the dock whenever owned-actor data changes.
+Hooks.on('updateActor', () => renderDock());
+Hooks.on('createActor', () => renderDock());
+Hooks.on('deleteActor', () => renderDock());
+// Mirror speaker-changed events from the chat-input switcher.
+Hooks.on('goodSociety.activeSpeakerChanged', () => renderDock());
 
 // Register hooks that must fire after init.
 registerSpeakingAs();

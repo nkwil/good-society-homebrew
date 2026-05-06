@@ -1,15 +1,28 @@
 /* Speaking-As switcher — injected above the Foundry chat input.
- * House-styled (not character-themed). Compact single-row bar.
+ * House-styled (not character-themed). Compact single-row bar with a
+ * click-driven popover (no native <select> — see speaking-as.js for why).
  * Per docs/design/10-chat-cards.md §"Speaking-As switcher".
  */
 
 .gs-speaking-as {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 8px;
+  gap: 8px;
+  padding: 6px 10px;
   border-bottom: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
   background: var(--gs-paper-warm, #F4ECD8);
+  /* Foundry v13's #sidebar/.chat-sidebar chain sets pointer-events: none so
+   * the canvas underneath stays interactive in UI gaps. We must explicitly
+   * re-enable pointer events on the bar AND its interactive descendants,
+   * since pointer-events inherits. */
+  pointer-events: auto;
+}
+
+.gs-speaking-as *,
+.gs-speaking-as *::before,
+.gs-speaking-as *::after {
+  pointer-events: auto;
 }
 
 .gs-speaking-as__label {
@@ -23,32 +36,99 @@
   flex-shrink: 0;
 }
 
-.gs-speaking-as__actor-select,
-.gs-speaking-as__persona-select {
+.gs-speaking-as__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  padding: 4px 10px;
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
   font-size: 12px;
   color: var(--gs-ink, #3D2F26);
-  background: transparent;
+  background: var(--gs-paper, #EFE6D2);
   border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
-  border-radius: 4px;
-  padding: 2px 4px;
+  border-radius: 14px;
   cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gs-speaking-as__pill:hover,
+.gs-speaking-as__pill[aria-expanded='true'] {
+  border-color: var(--gs-brand, #2A3A2D);
+  color: var(--gs-brand, #2A3A2D);
+}
+
+.gs-speaking-as__pill-name {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.gs-speaking-as__actor-select:focus,
-.gs-speaking-as__persona-select:focus {
-  outline: 1px solid var(--gs-brand, #2A3A2D);
-  outline-offset: 1px;
-}
-
-/* Active speaker label — shows the final resolved name (persona or actor) */
-.gs-speaking-as__active {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 11px;
-  color: var(--gs-brand, #2A3A2D);
-  white-space: nowrap;
+.gs-speaking-as__pill-chevron {
+  font-size: 10px;
+  color: var(--gs-accent-2, #708060);
   flex-shrink: 0;
+}
+
+.gs-speaking-as__popover {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 10px;
+  right: 10px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--gs-paper, #EFE6D2);
+  border: 0.5px solid var(--gs-accent-2, #708060);
+  border-radius: 8px;
+  padding: 4px 0;
+  box-shadow: 0 4px 14px rgba(20, 12, 14, 0.18);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.gs-speaking-as__popover[hidden] {
+  display: none;
+}
+
+.gs-speaking-as__option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 6px 14px;
+  background: transparent;
+  border: 0;
+  font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
+  font-size: 12px;
+  color: var(--gs-ink, #3D2F26);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gs-speaking-as__option:hover {
+  background: var(--gs-paper-warm, #F4ECD8);
+  color: var(--gs-brand, #2A3A2D);
+}
+
+.gs-speaking-as__option.is-active {
+  font-weight: 600;
+  color: var(--gs-brand, #2A3A2D);
+}
+
+.gs-speaking-as__option--persona {
+  padding-left: 26px;
+  font-style: italic;
+  color: var(--gs-accent-2, #708060);
+}
+
+.gs-speaking-as__option--persona.is-active {
+  color: var(--gs-brand, #2A3A2D);
 }
