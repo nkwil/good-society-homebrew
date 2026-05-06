@@ -60,6 +60,9 @@
 /* Character theme presets — NPC (inherits house; file exists for consistency) */
 @import './themes/_theme-npc.css';
 
+/* Foundry chrome overrides — always loaded; body.gs-chrome-themed gates application */
+@import './foundry-chrome.css';
+
 /* B-4 additions (not yet implemented):
  * @import './apps/_dashboard.css';
  * @import './apps/_dock.css';

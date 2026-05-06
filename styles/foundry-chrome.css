@@ -1,0 +1,223 @@
+/**
+ * foundry-chrome.css — Good Society house-style overrides for Foundry's surrounding chrome.
+ *
+ * All rules are namespaced under body.gs-chrome-themed. The applyFoundryChrome
+ * user setting (default: true) adds or removes that class at runtime — no page
+ * reload needed. This file is always loaded; the class controls whether rules apply.
+ *
+ * Scope: eight high-visibility surfaces (medium-override strategy).
+ * Per docs/design/28-foundry-chrome-theme.md.
+ *
+ * Explicitly OUT OF SCOPE: settings dialogs, file picker, compendium browser,
+ * Configure Token, User Configuration, Hotbar Macro editor.
+ */
+
+/* === 1. Window titlebar === */
+
+body.gs-chrome-themed .window-app .window-header {
+  background: var(--gs-paper);
+  color: var(--gs-brand);
+  font-family: var(--gs-display);
+  font-size: 14px;
+  font-style: italic;
+  padding: 10px 18px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  border-radius: 8px 8px 0 0;
+}
+
+body.gs-chrome-themed .window-app .window-header .window-title {
+  color: var(--gs-brand);
+  font-style: italic;
+}
+
+body.gs-chrome-themed .window-app .window-header .header-button {
+  color: var(--gs-accent-2);
+  font-family: var(--gs-body);
+  font-size: 11px;
+  font-style: italic;
+}
+
+body.gs-chrome-themed .window-app .window-header .header-button:hover {
+  color: var(--gs-brand);
+}
+
+/* === 2. Sidebar === */
+
+body.gs-chrome-themed #sidebar {
+  background: var(--gs-paper);
+  border-left: 0.5px solid var(--gs-accent-2);
+}
+
+body.gs-chrome-themed .sidebar-tab {
+  background: var(--gs-paper);
+  font-family: var(--gs-display);
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  letter-spacing: 0.04em;
+  border: 0;
+  padding: 6px 14px 8px;
+}
+
+body.gs-chrome-themed .sidebar-tab.active {
+  color: var(--gs-brand);
+  border-bottom: 1.5px solid var(--gs-brand);
+  margin-bottom: -0.5px;
+}
+
+/* === 3. Chat log === */
+
+body.gs-chrome-themed #chat-log {
+  background: var(--gs-paper);
+  padding: 8px 0;
+}
+
+body.gs-chrome-themed #chat-form {
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+  padding: 10px 14px;
+}
+
+body.gs-chrome-themed #chat-form textarea {
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  padding: 6px 12px;
+}
+
+body.gs-chrome-themed #chat-form .send-button {
+  background: var(--gs-brand);
+  border: 0.5px solid var(--gs-brand);
+  color: var(--gs-paper);
+  font-family: var(--gs-display);
+  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* === 4. Scene navigation === */
+
+body.gs-chrome-themed #navigation {
+  background: var(--gs-paper-warm);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+body.gs-chrome-themed #navigation .scene-tab {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  padding: 6px 14px 8px;
+}
+
+body.gs-chrome-themed #navigation .scene-tab.active {
+  color: var(--gs-brand);
+  border-bottom: 1.5px solid var(--gs-brand);
+}
+
+/* === 5. Default form controls ===
+ * Scoped to .window-app to avoid collisions with embedded modules or external iframes.
+ * Per docs/design/28 §"Specificity strategy" — use context scoping rather than !important.
+ */
+
+body.gs-chrome-themed .window-app input[type='text'],
+body.gs-chrome-themed .window-app input[type='number'],
+body.gs-chrome-themed .window-app textarea,
+body.gs-chrome-themed .window-app select {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  padding: 6px 12px;
+}
+
+body.gs-chrome-themed .window-app input[type='text']:focus,
+body.gs-chrome-themed .window-app textarea:focus,
+body.gs-chrome-themed .window-app select:focus {
+  border-color: var(--gs-brand);
+  outline: none;
+}
+
+body.gs-chrome-themed .window-app button {
+  background: transparent;
+  border: 0.5px solid var(--gs-accent-2);
+  color: var(--gs-accent-2);
+  font-family: var(--gs-display);
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+body.gs-chrome-themed .window-app button:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+}
+
+body.gs-chrome-themed .window-app button.primary,
+body.gs-chrome-themed .window-app button[type='submit'] {
+  background: var(--gs-brand);
+  border-color: var(--gs-brand);
+  color: var(--gs-paper);
+}
+
+/* === 6. Notification toasts === */
+
+body.gs-chrome-themed #notifications .notification {
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-left: 2.5px solid var(--gs-accent-2);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  box-shadow: 0 2px 8px rgba(20, 12, 14, 0.2);
+}
+
+body.gs-chrome-themed #notifications .notification.warning {
+  border-left-color: var(--gs-accent-1);
+  color: var(--gs-accent-1);
+}
+
+body.gs-chrome-themed #notifications .notification.error {
+  border-left-color: var(--gs-danger);
+  color: var(--gs-danger);
+}
+
+body.gs-chrome-themed #notifications .notification.success {
+  border-left-color: var(--gs-positive);
+  color: var(--gs-positive);
+}
+
+body.gs-chrome-themed #notifications .notification.info {
+  border-left-color: var(--gs-brand);
+  color: var(--gs-brand);
+}
+
+/* === 7. Player list === */
+
+body.gs-chrome-themed #players {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+body.gs-chrome-themed #players .player-name {
+  font-family: var(--gs-body);
+  font-size: 12px;
+}
+
+/* === 8. Macro hotbar === */
+
+body.gs-chrome-themed #hotbar {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 8px;
+}

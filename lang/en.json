@@ -236,6 +236,13 @@
       "hoverSummary": { "body": "The one or two sentences that appear when a player hovers over this character's token on the canvas." }
     },
 
+    "settings": {
+      "applyFoundryChrome": {
+        "name": "Apply Foundry Chrome Theme",
+        "hint": "Re-themes Foundry's surrounding chrome (titlebars, sidebar, chat log, scene navigation, form controls, notifications, player list, hotbar) to match the Good Society house style. Toggles instantly without a page reload."
+      }
+    },
+
     "theme": {
       "rose": "Rose",
       "roger": "Roger",

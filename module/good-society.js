@@ -29,6 +29,19 @@ const GS_COMPONENT_PARTIALS = {
 };
 
 Hooks.once('init', async function () {
+  // ── Settings ─────────────────────────────────────────────────────────────
+  game.settings.register('good-society-homebrew', 'applyFoundryChrome', {
+    name: 'GOODSOCIETY.settings.applyFoundryChrome.name',
+    hint: 'GOODSOCIETY.settings.applyFoundryChrome.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: (value) => {
+      document.body.classList.toggle('gs-chrome-themed', value);
+    },
+  });
+
   // Load and register Handlebars partials for shared components.
   const loaded = await loadTemplates(GS_COMPONENT_PARTIALS);
   for (const [name, fn] of Object.entries(loaded)) {
@@ -111,4 +124,9 @@ Hooks.once('init', async function () {
     makeDefault: true,
     label: 'GOODSOCIETY.sheets.backstoryAction',
   });
+});
+
+Hooks.once('ready', () => {
+  const enabled = game.settings.get('good-society-homebrew', 'applyFoundryChrome');
+  document.body.classList.toggle('gs-chrome-themed', enabled);
 });
