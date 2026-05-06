@@ -1,0 +1,166 @@
+/* NPC Quick-Create modal — framed ApplicationV2, 380px wide. */
+
+.gs-npc-quick-create {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  font-family: var(--gs-body);
+}
+
+.gs-npc-quick-create__scene-hint {
+  font-size: 0.8rem;
+  color: var(--gs-ink);
+  opacity: 0.6;
+  margin: 0 0 2px;
+  font-style: normal;
+}
+
+.gs-npc-quick-create__scene-hint em {
+  font-style: italic;
+}
+
+/* ── Field rows ──────────────────────────────────────────────────────────── */
+
+.gs-npc-quick-create__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-npc-quick-create__label {
+  font-family: var(--gs-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-ink);
+  opacity: 0.65;
+}
+
+.gs-npc-quick-create__input,
+.gs-npc-quick-create__select {
+  width: 100%;
+  padding: 5px 8px;
+  border: 0.5px solid rgba(61, 47, 38, 0.3);
+  border-radius: 2px;
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+  font-family: var(--gs-body);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.gs-npc-quick-create__input:focus,
+.gs-npc-quick-create__select:focus {
+  outline: none;
+  border-color: var(--gs-brand);
+  box-shadow: 0 0 0 1px var(--gs-brand);
+}
+
+/* Custom role row — hidden by default; shown by JS when "Custom..." selected */
+.gs-npc-quick-create__custom-role {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Portrait row ────────────────────────────────────────────────────────── */
+
+.gs-npc-quick-create__portrait-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.gs-npc-quick-create__portrait-frame {
+  width: 54px;
+  height: 54px;
+  border: 0.5px solid rgba(61, 47, 38, 0.25);
+  border-radius: 3px;
+  background: var(--gs-paper-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.gs-npc-quick-create__portrait-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gs-npc-quick-create__portrait-placeholder {
+  font-family: var(--gs-display);
+  font-size: 1.6rem;
+  color: var(--gs-ink);
+  opacity: 0.3;
+  user-select: none;
+}
+
+.gs-npc-quick-create__portrait-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border: 0.5px solid rgba(61, 47, 38, 0.3);
+  border-radius: 2px;
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+  font-family: var(--gs-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-align: left;
+}
+
+.gs-npc-quick-create__portrait-btn:hover {
+  background: var(--gs-muted);
+  border-color: var(--gs-brand);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.gs-npc-quick-create__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 0.5px solid rgba(61, 47, 38, 0.15);
+  margin-top: 2px;
+}
+
+.gs-npc-quick-create__btn-cancel,
+.gs-npc-quick-create__btn-drop {
+  padding: 6px 14px;
+  border-radius: 2px;
+  font-family: var(--gs-ui);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.gs-npc-quick-create__btn-cancel {
+  border: 0.5px solid rgba(61, 47, 38, 0.25);
+  background: transparent;
+  color: var(--gs-ink);
+  opacity: 0.7;
+}
+
+.gs-npc-quick-create__btn-cancel:hover {
+  opacity: 1;
+  border-color: var(--gs-ink);
+}
+
+.gs-npc-quick-create__btn-drop {
+  border: none;
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  font-weight: 600;
+}
+
+.gs-npc-quick-create__btn-drop:hover {
+  opacity: 0.88;
+}

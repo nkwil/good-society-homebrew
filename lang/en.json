@@ -473,6 +473,22 @@
       "postedSecret":          "GM made {name}'s {field} secret."
     },
 
+    "npcQuickCreate": {
+      "windowTitle":          "Drop NPC",
+      "scenePrefix":          "Scene:",
+      "nameLabel":            "Name",
+      "namePlaceholder":      "Leave blank to use role as name",
+      "roleLabel":            "Role",
+      "customRoleLabel":      "Custom role",
+      "customRolePlaceholder":"e.g. Card sharp, Dancing master",
+      "defaultRole":          "Anonymous NPC",
+      "browsePortrait":       "Browse portrait…",
+      "portraitAlt":          "NPC portrait",
+      "cancel":               "cancel",
+      "drop":                 "drop NPC ↓",
+      "created":              "NPC "{name}" dropped onto the scene."
+    },
+
     "hud": {
       "cycleLabel":     "cycle",
       "advancePhase":   "advance phase →",

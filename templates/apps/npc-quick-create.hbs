@@ -1,0 +1,87 @@
+<section class="gs-npc-quick-create">
+  {{#if sceneName}}
+  <p class="gs-npc-quick-create__scene-hint">
+    {{localize "GOODSOCIETY.npcQuickCreate.scenePrefix"}} <em>{{sceneName}}</em>
+  </p>
+  {{/if}}
+
+  {{!-- Name --}}
+  <div class="gs-npc-quick-create__field">
+    <label class="gs-npc-quick-create__label" for="gs-nqc-name">
+      {{localize "GOODSOCIETY.npcQuickCreate.nameLabel"}}
+    </label>
+    <input
+      class="gs-npc-quick-create__input"
+      type="text"
+      id="gs-nqc-name"
+      name="npcName"
+      placeholder="{{localize "GOODSOCIETY.npcQuickCreate.namePlaceholder"}}"
+      autocomplete="off"
+    />
+  </div>
+
+  {{!-- Role dropdown --}}
+  <div class="gs-npc-quick-create__field">
+    <label class="gs-npc-quick-create__label" for="gs-nqc-role">
+      {{localize "GOODSOCIETY.npcQuickCreate.roleLabel"}}
+    </label>
+    <select class="gs-npc-quick-create__select" id="gs-nqc-role" name="npcRole">
+      {{#each roles}}
+      <option value="{{value}}">{{label}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  {{!-- Custom role — hidden unless "Custom..." is selected --}}
+  <div class="gs-npc-quick-create__custom-role">
+    <label class="gs-npc-quick-create__label" for="gs-nqc-role-custom">
+      {{localize "GOODSOCIETY.npcQuickCreate.customRoleLabel"}}
+    </label>
+    <input
+      class="gs-npc-quick-create__input"
+      type="text"
+      id="gs-nqc-role-custom"
+      name="npcRoleCustom"
+      placeholder="{{localize "GOODSOCIETY.npcQuickCreate.customRolePlaceholder"}}"
+      autocomplete="off"
+    />
+  </div>
+
+  {{!-- Portrait picker --}}
+  <div class="gs-npc-quick-create__portrait-row">
+    <div class="gs-npc-quick-create__portrait-frame">
+      <img
+        class="gs-npc-quick-create__portrait-preview"
+        src="{{state.portraitUrl}}"
+        alt="{{localize "GOODSOCIETY.npcQuickCreate.portraitAlt"}}"
+        {{#unless state.portraitUrl}}hidden{{/unless}}
+      />
+      <span
+        class="gs-npc-quick-create__portrait-placeholder"
+        aria-hidden="true"
+        {{#if state.portraitUrl}}hidden{{/if}}
+      >?</span>
+    </div>
+    <button
+      class="gs-npc-quick-create__portrait-btn"
+      type="button"
+      data-action="browsePortrait"
+    >
+      {{localize "GOODSOCIETY.npcQuickCreate.browsePortrait"}}
+    </button>
+  </div>
+
+  {{!-- Footer --}}
+  <footer class="gs-npc-quick-create__footer">
+    <button
+      class="gs-npc-quick-create__btn-cancel"
+      type="button"
+      data-action="cancel"
+    >{{localize "GOODSOCIETY.npcQuickCreate.cancel"}}</button>
+    <button
+      class="gs-npc-quick-create__btn-drop"
+      type="button"
+      data-action="dropNpc"
+    >{{localize "GOODSOCIETY.npcQuickCreate.drop"}}</button>
+  </footer>
+</section>
