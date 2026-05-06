@@ -1,0 +1,27 @@
+/* Chat card — In-Character variant.
+ * Character-themed. Left-edge 2.5px accent stripe using var(--gs-brand) from the sender's theme.
+ * Two-column layout: portrait left, name + message right.
+ * Per docs/design/10-chat-cards.md §"Variant 2 — In-Character".
+ */
+
+.gs-chat-card--in-character {
+  border-left: 2.5px solid var(--gs-brand);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px 10px 12px;
+}
+
+/* Mode label — "in character" shown beneath sender name */
+.gs-chat-card__mode-label {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 10px;
+  color: var(--gs-accent-2, #708060);
+  line-height: 1.2;
+}
+
+/* Message body — double-brace, player-authored prose */
+.gs-chat-card__body--in-character {
+  margin-top: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

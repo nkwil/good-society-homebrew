@@ -2,6 +2,8 @@
  * @typedef {import('@league-of-foundry-developers/foundry-vtt-types').Actor} Actor
  */
 
+import { MonologueEditor } from '../apps/monologue-editor.js';
+
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
@@ -214,9 +216,12 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     await this.actor.update({ 'system.tokens.major': !this.actor.system.tokens.major });
   }
 
-  // Placeholder — Inner Monologue editor (inventory #28) is a future session.
   static async #takeMonologue(event, target) {
-    ui.notifications?.info('Inner Monologue editor coming in a future session.');
+    if (this.actor.system.tokens.monologuedThisCycle) {
+      ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.monologueEditor.alreadySpent'));
+      return;
+    }
+    new MonologueEditor(this.actor).render(true);
   }
 
   // Stub — full toggle logic ships with B-1 automation (item update on embedded InnerConflict).

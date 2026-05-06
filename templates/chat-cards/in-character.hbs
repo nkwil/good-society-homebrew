@@ -1,0 +1,13 @@
+{{!-- In-character card — themed via outer .gs-themed wrapper added by helper.
+     Two-column layout: portrait dot + content.
+     Per docs/design/10-chat-cards.md §"Variant 2". --}}
+<div class="gs-chat-card__layout">
+  <div class="gs-chat-card__portrait" aria-hidden="true">{{portraitInitial}}</div>
+  <div class="gs-chat-card__content">
+    <div class="gs-chat-card__header">
+      <span class="gs-chat-card__name">{{speakerName}}</span>
+      <span class="gs-chat-card__meta">{{localize "GOODSOCIETY.chatCard.inCharacter.mode"}} · {{timestamp}}</span>
+    </div>
+    <div class="gs-chat-card__body">{{message}}</div>
+  </div>
+</div>

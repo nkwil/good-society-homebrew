@@ -236,6 +236,62 @@
       "hoverSummary": { "body": "The one or two sentences that appear when a player hovers over this character's token on the canvas." }
     },
 
+    "chatCard": {
+      "system": {
+        "label": "SYSTEM"
+      },
+      "inCharacter": {
+        "mode": "in character"
+      },
+      "monologue": {
+        "eyebrow": "INNER MONOLOGUE",
+        "as": "as",
+        "spent": "monologue spent",
+        "cycle": "cycle",
+        "archived": "archived ↗"
+      },
+      "completion": {
+        "hasResolved": "has resolved",
+        "innerConflict": "inner conflict",
+        "vs": "vs.",
+        "resolvedOn": "resolved on the side of",
+        "earned": "EARNED",
+        "backstoryAction": "an Expanded Backstory Action"
+      },
+      "personaSwitch": {
+        "hasBecame": "has become",
+        "whisperNote": "whispered to GM and player only"
+      },
+      "letter": {
+        "epistolary": "epistolary",
+        "cycle": "cycle",
+        "from": "from",
+        "to": "to",
+        "sealed": "sealed",
+        "themeLabel": "theme",
+        "sealedIn": "sealed in"
+      }
+    },
+
+    "speakingAs": {
+      "label": "speaking as",
+      "none": "myself",
+      "primaryPersona": "primary",
+      "actorAriaLabel": "Select speaking character",
+      "personaAriaLabel": "Select persona"
+    },
+
+    "monologueEditor": {
+      "title": "Inner Monologue",
+      "cycleLabel": "cycle",
+      "placeholder": "What does your character truly feel, in this moment…",
+      "archiveLabel": "Archive to journal",
+      "post": "Post monologue",
+      "cancel": "Cancel",
+      "alreadySpent": "You have already taken your monologue this cycle.",
+      "emptyWarning": "Write something before posting your monologue."
+    },
+
     "settings": {
       "applyFoundryChrome": {
         "name": "Apply Foundry Chrome Theme",

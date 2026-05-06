@@ -1,0 +1,57 @@
+/* Chat card — System variant.
+ * House-styled (sage/inkwell palette), not character-themed.
+ * Used for mechanical updates: cycle phase changes, Upkeep events, GM announcements.
+ * Outer wrapper is .gs-chat-card--system (no .gs-themed, uses house vars directly).
+ * Per docs/design/10-chat-cards.md §"Variant 1 — System".
+ */
+
+.gs-chat-card--system {
+  background: var(--gs-paper-warm, #F4ECD8);
+  border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.gs-chat-card__system-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.gs-chat-card__system-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gs-accent-2, #708060);
+  flex-shrink: 0;
+}
+
+.gs-chat-card__system-eyebrow {
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2, #708060);
+  flex: 1;
+}
+
+.gs-chat-card__system-timestamp {
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 9px;
+  color: var(--gs-muted, rgba(112, 128, 96, 0.3));
+  white-space: nowrap;
+}
+
+.gs-chat-card__system-body {
+  font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gs-ink, #3D2F26);
+}
+
+/* Triple-brace content may contain Foundry enriched HTML */
+.gs-chat-card__system-body a {
+  color: var(--gs-brand, #2A3A2D);
+}

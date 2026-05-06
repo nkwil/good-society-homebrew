@@ -1,0 +1,156 @@
+/* Chat card — shared base structure.
+ * The outer .gs-themed[data-theme] wrapper is added by themedWrap() in the helper;
+ * templates only render the inner markup. All themed surfaces inherit from the wrapper.
+ * Per docs/design/10-chat-cards.md §"Shared anatomy".
+ *
+ * Rule 1: generous whitespace (20px+ padding)
+ * Rule 2: hairlines (0.5px border)
+ * Rule 3: period type at modern sizes
+ * Rule 7: no shadows, no blur
+ */
+
+/* Foundry's chat log strips margin from <p> inside .message-content — restore it */
+.gs-chat-card p {
+  margin: 0;
+}
+
+/* ── Layout ── */
+.gs-chat-card__layout {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* ── Portrait circle ── */
+.gs-chat-card__portrait {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 15px;
+  color: var(--gs-brand);
+  overflow: hidden;
+}
+
+.gs-chat-card__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* ── Speaker block ── */
+.gs-chat-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-chat-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.gs-chat-card__speaker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gs-chat-card__speaker-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.gs-chat-card__name {
+  font-family: var(--gs-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  line-height: 1.2;
+}
+
+.gs-chat-card__persona-role {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-accent-2, #708060);
+  line-height: 1.2;
+}
+
+.gs-chat-card__subtitle {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  color: var(--gs-accent-2, #708060);
+  line-height: 1.3;
+}
+
+.gs-chat-card__eyebrow {
+  font-family: var(--gs-ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-brand);
+  white-space: nowrap;
+}
+
+/* ── Hairline separator ── */
+.gs-chat-card__rule {
+  border: none;
+  border-top: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  margin: 8px 0;
+}
+
+/* ── Body ── */
+.gs-chat-card__body {
+  font-family: var(--gs-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--gs-ink);
+  margin: 0;
+}
+
+/* ── Footer ── */
+.gs-chat-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.gs-chat-card__footer-left {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--gs-accent-2, #708060);
+}
+
+.gs-chat-card__archive-link {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--gs-brand);
+  text-decoration: none;
+}
+
+.gs-chat-card__archive-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Meta / timestamp ── */
+.gs-chat-card__meta {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  color: var(--gs-accent-2, #708060);
+  white-space: nowrap;
+}

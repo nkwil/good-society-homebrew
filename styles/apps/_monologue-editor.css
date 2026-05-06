@@ -1,0 +1,82 @@
+/* Monologue Editor modal — ApplicationV2 window.
+ * House-styled. Period type, warm-paper background.
+ * Per docs/design/10-chat-cards.md §"Inner Monologue editor flow".
+ */
+
+.gs-monologue-editor__preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px 12px;
+  border-bottom: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+}
+
+.gs-monologue-editor__speaker-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gs-monologue-editor__speaker-name {
+  font-family: var(--gs-display, 'Lora', Georgia, serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gs-brand, #2A3A2D);
+}
+
+.gs-monologue-editor__cycle {
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2, #708060);
+}
+
+.gs-monologue-editor__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 20px 20px;
+}
+
+.gs-monologue-editor__textarea {
+  font-family: var(--gs-italic, var(--gs-body, 'Crimson Text', Georgia, serif));
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--gs-ink, #3D2F26);
+  background: var(--gs-paper-warm, #F4ECD8);
+  border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  border-radius: 6px;
+  padding: 10px 14px;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.gs-monologue-editor__textarea:focus {
+  outline: 1px solid var(--gs-brand, #2A3A2D);
+  outline-offset: 1px;
+}
+
+.gs-monologue-editor__textarea::placeholder {
+  color: var(--gs-accent-2, #708060);
+  font-style: italic;
+}
+
+.gs-monologue-editor__archive-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 12px;
+  color: var(--gs-ink, #3D2F26);
+  cursor: pointer;
+}
+
+.gs-monologue-editor__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 4px;
+}

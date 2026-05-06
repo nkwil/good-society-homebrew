@@ -1,0 +1,30 @@
+{{!-- Inner Monologue card — themed, expanded weight.
+     Outer .gs-themed wrapper added by postMonologueCard helper.
+     Per docs/design/10-chat-cards.md §"Variant 3". --}}
+<div class="gs-chat-card__header">
+  <div class="gs-chat-card__speaker">
+    <div class="gs-chat-card__portrait" aria-hidden="true">{{portraitInitial}}</div>
+    <div class="gs-chat-card__speaker-stack">
+      <span class="gs-chat-card__name">{{speakerName}}</span>
+      {{#if personaRole}}
+        <span class="gs-chat-card__persona-role">{{localize "GOODSOCIETY.chatCard.monologue.as"}} {{personaRole}}</span>
+      {{/if}}
+    </div>
+  </div>
+  <span class="gs-chat-card__eyebrow">{{localize "GOODSOCIETY.chatCard.monologue.eyebrow"}}</span>
+</div>
+<hr class="gs-chat-card__rule">
+<div class="gs-chat-card__body gs-chat-card__body--monologue">{{monologueText}}</div>
+<hr class="gs-chat-card__rule">
+<div class="gs-chat-card__footer">
+  <span class="gs-chat-card__footer-left">
+    {{localize "GOODSOCIETY.chatCard.monologue.spent"}}{{#if cycleNumber}} · {{localize "GOODSOCIETY.chatCard.monologue.cycle"}} {{cycleNumber}}{{/if}}{{#if whisper}} 🔒{{/if}}
+  </span>
+  {{#if journalEntryUuid}}
+    <a class="gs-chat-card__archive-link content-link"
+       data-type="JournalEntry"
+       data-uuid="{{journalEntryUuid}}">
+      {{localize "GOODSOCIETY.chatCard.monologue.archived"}}
+    </a>
+  {{/if}}
+</div>

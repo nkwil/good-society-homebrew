@@ -1,3 +1,5 @@
+import { postCompletionCard } from '../helpers/chat-cards.js';
+
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
 
@@ -63,6 +65,18 @@ export class InnerConflictSheet extends HandlebarsApplicationMixin(ItemSheetV2) 
     }
 
     await this.document.update(update);
+
+    // Fire the completion ceremony card when the conflict resolves.
+    if (update['system.completed']) {
+      const actor = this.document.parent;
+      if (actor) {
+        await postCompletionCard({
+          actor,
+          conflict: this.document,
+          resolvedSide: update['system.completedSide'],
+        });
+      }
+    }
   }
 
   static async #reopenConflict() {

@@ -1,0 +1,17 @@
+{{!-- Persona switch announcement card — themed to the post-switch persona.
+     Outer .gs-themed wrapper added by postPersonaSwitchCard helper.
+     Per docs/design/10-chat-cards.md §"Variant 5". --}}
+<div class="gs-chat-card__layout">
+  <div class="gs-chat-card__portrait" aria-hidden="true">{{portraitInitial}}</div>
+  <div class="gs-chat-card__content gs-chat-card__content--switch">
+    <p class="gs-chat-card__switch-from">
+      {{actor.name}} {{localize "GOODSOCIETY.chatCard.personaSwitch.hasBecame"}}
+    </p>
+    <p class="gs-chat-card__switch-to">{{toPersona.name}}</p>
+    {{#if secret}}
+      <p class="gs-chat-card__switch-visibility">
+        [{{localize "GOODSOCIETY.chatCard.personaSwitch.whisperNote"}}]
+      </p>
+    {{/if}}
+  </div>
+</div>

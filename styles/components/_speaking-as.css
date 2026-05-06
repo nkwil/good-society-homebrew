@@ -1,0 +1,54 @@
+/* Speaking-As switcher — injected above the Foundry chat input.
+ * House-styled (not character-themed). Compact single-row bar.
+ * Per docs/design/10-chat-cards.md §"Speaking-As switcher".
+ */
+
+.gs-speaking-as {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-bottom: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  background: var(--gs-paper-warm, #F4ECD8);
+}
+
+.gs-speaking-as__label {
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2, #708060);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.gs-speaking-as__actor-select,
+.gs-speaking-as__persona-select {
+  font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
+  font-size: 12px;
+  color: var(--gs-ink, #3D2F26);
+  background: transparent;
+  border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  border-radius: 4px;
+  padding: 2px 4px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-speaking-as__actor-select:focus,
+.gs-speaking-as__persona-select:focus {
+  outline: 1px solid var(--gs-brand, #2A3A2D);
+  outline-offset: 1px;
+}
+
+/* Active speaker label — shows the final resolved name (persona or actor) */
+.gs-speaking-as__active {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-brand, #2A3A2D);
+  white-space: nowrap;
+  flex-shrink: 0;
+}

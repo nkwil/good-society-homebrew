@@ -1,0 +1,93 @@
+/* Letter card — Epistolary variant.
+ * Character-themed (sender's theme). Used in chat log AND letter composer preview.
+ * No portrait — epistolary format uses header/footer strips instead of speaker block.
+ * Per docs/design/10-chat-cards.md §"Variant 6 — Letter" and docs/design/05-epistolary-ui.md.
+ */
+
+.gs-letter-card {
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Header strip — meta-left (epistolary · cycle N) and meta-right (from · to · sealed) */
+.gs-letter-card__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--gs-paper-warm);
+  border-bottom: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+}
+
+.gs-letter-card__meta-left,
+.gs-letter-card__meta-right {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--gs-accent-2, #708060);
+  white-space: nowrap;
+}
+
+.gs-letter-card__meta-right {
+  text-align: right;
+}
+
+/* Hairline overrides for letter context */
+.gs-letter-card__rule {
+  margin: 0;
+}
+
+/* Subject line — optional, rendered as a centered display line */
+.gs-letter-card__subject {
+  font-family: var(--gs-display);
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--gs-brand);
+  text-align: center;
+  padding: 14px 20px 0;
+  margin: 0;
+}
+
+/* Body — player-authored prose; pre-wrap preserves intentional line breaks */
+.gs-letter-card__body {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--gs-ink);
+  padding: 14px 20px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Footer strip — theme label left, seal label right */
+.gs-letter-card__footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+}
+
+.gs-letter-card__theme-label {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--gs-accent-2, #708060);
+  font-style: italic;
+}
+
+.gs-letter-card__seal {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--gs-brand);
+  font-weight: 600;
+  white-space: nowrap;
+}

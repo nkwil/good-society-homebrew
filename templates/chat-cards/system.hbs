@@ -1,0 +1,16 @@
+{{!-- System card — house-styled, no themed wrapper.
+     Outer .gs-chat-card.gs-chat-card--system added by postSystemCard helper.
+     Per docs/design/10-chat-cards.md §"Variant 1". --}}
+<div class="gs-chat-card__header">
+  <div class="gs-chat-card__speaker">
+    <span class="gs-chat-card__system-dot" aria-hidden="true"></span>
+    <span class="gs-chat-card__eyebrow">
+      {{localize "GOODSOCIETY.chatCard.system.label"}}{{#if context}} · {{context}}{{/if}}
+    </span>
+  </div>
+  <span class="gs-chat-card__timestamp">{{timestamp}}</span>
+</div>
+<hr class="gs-chat-card__rule">
+<div class="gs-chat-card__body gs-chat-card__body--system">
+  {{{content}}}
+</div>

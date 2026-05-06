@@ -1,0 +1,45 @@
+/* Chat card — Persona Switch variant.
+ * Character-themed (new persona's theme). Terracotta (accent-1) border — transitional signal.
+ * Compact layout: portrait + two-line "X has become / Y" stack.
+ * Per docs/design/10-chat-cards.md §"Variant 5 — Persona Switch".
+ */
+
+.gs-chat-card--persona-switch {
+  border: 1px solid var(--gs-accent-1, #B85C3F);
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+
+/* Content column for switch layout */
+.gs-chat-card__content--switch {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* "From" line — "Rosalind has become" */
+.gs-chat-card__switch-from {
+  font-family: var(--gs-body);
+  font-size: 12px;
+  color: var(--gs-accent-2, #708060);
+  margin: 0;
+}
+
+/* "To" line — persona name, prominent */
+.gs-chat-card__switch-to {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* Whisper note — "[whispered to GM and player only]" */
+.gs-chat-card__switch-visibility {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  font-style: italic;
+  color: var(--gs-accent-2, #708060);
+  margin: 4px 0 0;
+}

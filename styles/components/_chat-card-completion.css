@@ -1,0 +1,94 @@
+/* Chat card — Inner Conflict Completion variant.
+ * Character-themed. Ceremonial gold (accent-3) border. Centered body and footer.
+ * Star glyph ★ in header. "EARNED" eyebrow in footer.
+ * Per docs/design/10-chat-cards.md §"Variant 4 — Completion Ceremony".
+ */
+
+.gs-chat-card--completion {
+  border: 1px solid var(--gs-accent-3, #C9A55C);
+  border-radius: 8px;
+  padding: 20px 24px;
+  text-align: center;
+}
+
+/* Header: speaker block left-aligned within centered card, star right */
+.gs-chat-card__header--completion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+}
+
+.gs-chat-card__name--completion {
+  font-family: var(--gs-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gs-brand);
+}
+
+.gs-chat-card__star {
+  font-size: 22px;
+  color: var(--gs-accent-3, #C9A55C);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Body: centered conflict labels + resolution line */
+.gs-chat-card__body--completion {
+  text-align: center;
+}
+
+.gs-chat-card__conflict-labels {
+  font-family: var(--gs-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gs-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.gs-chat-card__vs {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2, #708060);
+}
+
+.gs-chat-card__resolved-on {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-accent-2, #708060);
+  margin: 0;
+}
+
+/* Footer: EARNED eyebrow + backstory action label, centered */
+.gs-chat-card__footer--completion {
+  text-align: center;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gs-chat-card__earned-eyebrow {
+  font-family: var(--gs-ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gs-accent-3, #C9A55C);
+  margin: 0;
+}
+
+.gs-chat-card__earned-label {
+  font-family: var(--gs-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gs-ink);
+  margin: 0;
+}

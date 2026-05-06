@@ -1,0 +1,32 @@
+/* Chat card — Inner Monologue variant.
+ * Character-themed. Expanded weight — more vertical breathing room than a regular card.
+ * "INNER MONOLOGUE" eyebrow top-right. Body in italic, blockquote-style weight.
+ * Per docs/design/10-chat-cards.md §"Variant 3 — Inner Monologue".
+ */
+
+.gs-chat-card--monologue {
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 8px;
+  padding: 22px 28px;
+}
+
+/* Eyebrow sits in the header, pushed right */
+.gs-chat-card--monologue .gs-chat-card__eyebrow {
+  color: var(--gs-brand);
+}
+
+/* Body — italic, generous line-height, pre-wrap for newlines */
+.gs-chat-card__body--monologue {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--gs-ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Footer: "monologue spent · cycle N" left, archive link right */
+.gs-chat-card--monologue .gs-chat-card__footer {
+  margin-top: 2px;
+}

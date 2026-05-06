@@ -28,6 +28,18 @@
 @import './components/_impression-card.css';
 @import './components/_crest-medallion.css';
 
+/* Speaking-As switcher — chat sidebar component */
+@import './components/_speaking-as.css';
+
+/* Chat card surfaces — base then per-variant */
+@import './components/_chat-card-base.css';
+@import './components/_chat-card-system.css';
+@import './components/_chat-card-in-character.css';
+@import './components/_chat-card-monologue.css';
+@import './components/_chat-card-completion.css';
+@import './components/_chat-card-persona-switch.css';
+@import './components/_letter-card.css';
+
 /* Actor sheets */
 @import './sheets/_major-character.css';
 @import './sheets/_connection.css';
@@ -62,6 +74,9 @@
 
 /* Foundry chrome overrides — always loaded; body.gs-chrome-themed gates application */
 @import './foundry-chrome.css';
+
+/* App windows */
+@import './apps/_monologue-editor.css';
 
 /* B-4 additions (not yet implemented):
  * @import './apps/_dashboard.css';

@@ -1,0 +1,30 @@
+{{!-- Speaking-As switcher — injected above the chat input by the renderChatLog hook.
+     Lets the player choose which Major Character (and persona) they speak as.
+     Per docs/design/10-chat-cards.md §"Speaking-As switcher". --}}
+<div class="gs-speaking-as">
+  <span class="gs-speaking-as__label">{{localize "GOODSOCIETY.speakingAs.label"}}</span>
+
+  <select class="gs-speaking-as__actor-select" aria-label="{{localize "GOODSOCIETY.speakingAs.actorAriaLabel"}}">
+    <option value="">— {{localize "GOODSOCIETY.speakingAs.none"}} —</option>
+    {{#each myMajors as |actor|}}
+      <option value="{{actor.id}}" {{#if (eq ../activeSpeakerActorId actor.id)}}selected{{/if}}>
+        {{actor.name}}
+      </option>
+    {{/each}}
+  </select>
+
+  {{#if personas.length}}
+    <select class="gs-speaking-as__persona-select" aria-label="{{localize "GOODSOCIETY.speakingAs.personaAriaLabel"}}">
+      <option value="">{{localize "GOODSOCIETY.speakingAs.primaryPersona"}}</option>
+      {{#each personas as |persona|}}
+        <option value="{{persona.id}}" {{#if (eq ../activePersonaId persona.id)}}selected{{/if}}>
+          {{persona.name}}
+        </option>
+      {{/each}}
+    </select>
+  {{/if}}
+
+  {{#if speakerLabel}}
+    <span class="gs-speaking-as__active">{{speakerLabel}}</span>
+  {{/if}}
+</div>

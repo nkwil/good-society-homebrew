@@ -3,6 +3,7 @@
  * Registers all Good Society document types (DataModels + sheets).
  */
 
+import { register as registerSpeakingAs } from './hooks/speaking-as.js';
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
 import { InnerConflictDataModel } from './data-models/inner-conflict.js';
@@ -30,6 +31,20 @@ const GS_COMPONENT_PARTIALS = {
 
 Hooks.once('init', async function () {
   // ── Settings ─────────────────────────────────────────────────────────────
+  game.settings.register('good-society-homebrew', 'activeSpeakerActorId', {
+    scope: 'client',
+    config: false,
+    type: String,
+    default: '',
+  });
+
+  game.settings.register('good-society-homebrew', 'activeSpeakerPersonaId', {
+    scope: 'client',
+    config: false,
+    type: String,
+    default: '',
+  });
+
   game.settings.register('good-society-homebrew', 'applyFoundryChrome', {
     name: 'GOODSOCIETY.settings.applyFoundryChrome.name',
     hint: 'GOODSOCIETY.settings.applyFoundryChrome.hint',
@@ -130,3 +145,6 @@ Hooks.once('ready', () => {
   const enabled = game.settings.get('good-society-homebrew', 'applyFoundryChrome');
   document.body.classList.toggle('gs-chrome-themed', enabled);
 });
+
+// Register hooks that must fire after init.
+registerSpeakingAs();
