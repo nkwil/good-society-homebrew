@@ -83,6 +83,8 @@ These are non-negotiable. Don't second-guess them in generated code.
 
 ## 5. File and code conventions
 
+> **Primitives vs. components.** `docs/design/23-primitives-batch.md` proposes a `styles/primitives/` folder for the smallest atomic components (card, button, hairline, etc.) with `styles/components/` reserved for composed components (e.g. `_impression-card.css`, `_chat-card-base.css`, `_dashboard-row.css`). The current build keeps primitives in `styles/components/` for simplicity — both folders coexist in the repo layout shown below, but in practice everything currently sits under `styles/components/`. Keep the existing primitives there; put new composed components there too. Don't create `styles/primitives/` unless a meaningful split emerges later.
+
 ### Repository layout
 
 ```
@@ -146,6 +148,9 @@ good-society-homebrew/
 │       ├── _dock.css
 │       ├── _letter-composer.css
 │       └── _cycle-hud.css
+├── foundry-chrome.css             # Foundry chrome overrides (per docs/design/28)
+│                                  # All rules namespaced under body.gs-chrome-themed
+│                                  # Loaded unconditionally; applied via body class toggle
 ├── lang/
 │   └── en.json
 ├── packs/                          # compendium content
@@ -336,6 +341,7 @@ Registered in `Hooks.once("init", ...)` via `game.settings.register("good-societ
 - `tooltipsEnabled` — boolean. Default `true`. User scope. Hides tooltip `?` glyphs and suppresses hover when false (per `docs/design/20-rule-tooltips.md`).
 - `upkeepWizardEnabled` — boolean. Default `true`. User scope. When false, Upkeep advances without opening the per-Major wizard (per `docs/design/11-upkeep-wizard.md`).
 - `organizerPlayerVisible` — boolean. Default `false`. World scope. Whether non-GM users can open the NPC Organizer sidebar (per `docs/design/19-gm-tools.md`).
+- `applyFoundryChrome` — boolean. Default `true`. User scope. When true, applies the `body.gs-chrome-themed` class that re-themes Foundry's surrounding application chrome via `styles/foundry-chrome.css` (per `docs/design/28-foundry-chrome-theme.md`). Toggleable at runtime without page reload — the body class is added/removed on `clientSettingChanged`.
 
 ---
 
@@ -683,6 +689,8 @@ Templates live under `templates/chat-cards/` (one per variant). Per-variant CSS 
 
 Full spec in `docs/design/10-chat-cards.md`.
 
+The chat card variants compose from primitives in `docs/design/23-primitives-batch.md` (card surface #1, section header #2, hairline divider #3, GM pill #12). Don't redefine these inside chat-card stylesheets; reuse the existing primitive CSS files via `@import` in `styles/good-society.css`'s entry point.
+
 ### Switching a persona (the trickiest pattern)
 
 ```js
@@ -868,6 +876,7 @@ Discord: Foundry's official Discord, `#system-development` channel.
 - Session A.6: Family `heirStatus` enum + optional `establishedYear` and `heirStatusFlavor` fields ✓
 - Design integration v1 + v2: theming architecture, registry, antique-but-clean principle, per-component design docs (04-09) integrated
 - Design integration v3: per-component design docs 10–20 integrated (chat cards, Upkeep wizard, item sheets, persona switcher, Family sheet, Welcome panel, NPC sheet, Token hover card, Condition picker, GM tools, Rule tooltips)
+- Design integration v4: docs 21–28 + meta-overview (00) integrated; primitives spec captured; pending changes log section ordering noted; token frame canvas spec captured for Phase 6; Foundry chrome theme slotted into Session B-2.5
 - Session B-0: CSS architecture
   - House variables (palette, type, scale)
   - @fontsource imports for all twelve themes
@@ -889,10 +898,11 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 **Next:**
 - Session B-2 — remaining eleven theme presets
+- Session B-2.5 — Foundry chrome theme (½ day): `styles/foundry-chrome.css`, `applyFoundryChrome` user setting, body-class toggle handler (per `docs/design/28-foundry-chrome-theme.md`)
 - Session B-3 — chat card system (per docs/design/10) — six variants + Speaking-As switcher + Inner Monologue editor flow
-- Session B-3 — chat card system (per docs/design/10) — six variants + Speaking-As switcher + Inner Monologue editor flow
-- Session B-4 — custom apps batch — Welcome Panel, Public Info Dashboard, My Characters Dock, Cycle HUD, GM Tools, Token Hover Card, Tooltip system
+- Session B-4 — custom apps batch — Welcome Panel, Public Info Dashboard, My Characters Dock, Cycle HUD, GM Tools, Token Hover Card, Tooltip system, Bulk Permissions Panel (per docs/design/22)
 - Session B-5 — Persona switcher + Upkeep Wizard + Condition Picker (per docs/design/13, 11, 18)
+- Session B-6 — robustness + retrospective: Edit Conflict Warning, Session Log, Backup Export, Pending Changes Log section, Token Frame (per docs/design/21, 24, 25, 26, 27)
 
 ---
 
@@ -902,6 +912,11 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 
 - **B-0 (2026-05-05): Font loading approach.** The boilerplate uses Sass (not Vite), and `@import "@fontsource/..."` npm paths aren't browser-resolvable without a bundler. Decision: copy the needed woff2 files from node_modules into `styles/fonts/` (tracked in git); `@font-face` declarations in `_fonts.css` use local relative paths. A `postinstall` script (`scripts/copy-fonts.mjs`) keeps them in sync after `npm install`. If a bundler (Vite) is added later, the `_fonts.css` approach can swap to `@import` npm paths at that point.
 - **B-0 (2026-05-05): `"type": "module"` added to package.json.** All JS files in this project use ES module syntax (`import`/`export`). Added to eliminate Node.js `MODULE_TYPELESS_PACKAGE_JSON` warnings from the helpers.
+- **B-1 (2026-05-05): Public tab section ordering updated.** Per `docs/design/26-pending-changes-log.md`, the Major sheet's Public tab now renders the Pending Changes Log between Active Conditions and Inner Conflict (conditional — only when `pendingChanges.length > 0`). Public tab section ordering is now: Reputation Criteria → Reputation Tags grid → Active Conditions → Pending Changes Log (conditional) → Inner Conflict → Completed Conflicts.
+- **B-1 (2026-05-05): Token frame implementation deferred to Phase 6.** Per `docs/design/27-token-frame.md`, canvas-side ring frames are not in B-1 scope. Inventory entry #51 stays as Phase 6 work.
+- **B-1 (2026-05-05): Edit Conflict Warning, Session Log, Backup Export deferred to Session B-6.** Per docs/design/21, 24, 25 — these are robustness features that don't block any other phase. Group them at the end as a single robustness session.
+- **B-1 (2026-05-05): Bulk Permissions Panel slotted into Session B-4 (custom apps batch).** Per `docs/design/22-bulk-permissions-panel.md`. It's a GM tool comparable to the dashboard in surface complexity.
+- **B-1 (2026-05-05): Foundry chrome theme slotted into Session B-2.5.** Per `docs/design/28-foundry-chrome-theme.md`. Small standalone CSS session — overrides Foundry's surrounding application chrome (titlebars, sidebar, chat log, scene navigation, default form controls, notifications, player list, hotbar). Opt-in via `applyFoundryChrome` setting (default true). Body-class wrapper (`body.gs-chrome-themed`) for instant runtime toggling without page reload. Independent of B-1 sheet work; can run after B-2 themes or anywhere CSS-only work is convenient.
 
 ---
 
@@ -924,3 +939,7 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - ❌ Don't filter the Token Hover Card's content client-side. Visibility filtering for non-owners (hiding secret-persona true names, etc.) happens in `_prepareContext` server-side. Client-side filtering is not safe for secret-persona protection.
 - ❌ Don't tooltip a section header without a `data-tooltip-key` attribute and a body in `lang/en.json` under `GOODSOCIETY.tooltips.{key}.body`. Per `docs/design/20-rule-tooltips.md`. Missing keys silently render no tooltip — easy to miss in QA.
 - ❌ Don't manually concatenate chat-card HTML. Always go through `module/helpers/chat-cards.js`. Centralized helpers carry the right flags + theme wrapping consistently. Per `docs/design/10-chat-cards.md`.
+- ❌ Don't store session-event tracking in actor flags. Per `docs/design/24-session-log.md`, the event log lives at `flags["good-society-homebrew"].sessionEvents` on the world (game), not per-actor. Per-actor would fragment the log and complicate retrieval.
+- ❌ Don't paint custom token graphics directly onto the Token document's image. Per `docs/design/27-token-frame.md`, ring frames use Foundry's TokenRing API (or a PIXI overlay fallback) — modifying the token's image baked-in would lose persona-aware swap behavior.
+- ❌ Don't render the Pending Changes Log section when `actor.system.reputation.pendingChanges` is empty. Per `docs/design/26-pending-changes-log.md`, the section is conditional — empty state collapses entirely. Don't ship an empty placeholder card.
+- ❌ Don't move existing primitives from `styles/components/` to `styles/primitives/`. The folder split proposed in `23-primitives-batch.md` is conventional; the repo's current organization works. Adding a `styles/primitives/` folder mid-build would cause every sheet's import to need updating — defer the rebrand or skip it entirely.

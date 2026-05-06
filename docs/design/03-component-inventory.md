@@ -59,13 +59,16 @@ All item sheets are house-styled — items are objects in the world, not voices.
 | 16 | Cycle Phase HUD Strip | Plan §12.2 | House | Designed | Locked in `08-cycle-phase-hud.md`. Thin 40px strip at top of canvas. Cycle counter, six-phase progression track, GM-only Advance Phase button. |
 | 17 | Upkeep Wizard | Plan §12.2 | Hybrid | Designed | Locked in `11-upkeep-wizard.md`. Six-step per-Major modal (welcome → tokens → notes → desire → reputation review → complete). Themed to the active Major. GM Roster View instead of own wizard for GM users. |
 | 18 | Welcome Panel | Plan §12.6 | House | Designed | Locked in `15-welcome-panel.md`. 520px first-load modal, three options (Sample World / Blank / Quick-Start), per-user `welcomePanelDismissed` setting. |
-| 19 | Bulk Permissions Panel | Plan §12.5 | House | Not started | GM-only grid: actors × users with permission level dropdowns. Pure utility surface. |
+| 19 | Bulk Permissions Panel | Plan §12.5 | House | Designed | Locked in `22-bulk-permissions-panel.md`. 720px GM-only grid: actors × users with permission level dropdowns. Grouped by actor type (Majors, Connections, NPCs). Pure utility surface, house-styled chrome. |
 | 20 | Reveal Control widget | Plan §12.5 | Hybrid | Designed | Locked in `19-gm-tools.md`. Single-field popover (360px) for per-field visibility flips, plus multi-field bulk form fired from dashboard's "reveal desires" GM action. House chrome with per-actor name accent. |
 | 20a | Condition Picker Modal | Plan §12.3 | Character | Designed | Locked in `18-condition-picker.md`. 520px non-blocking themed modal triggered when 3rd tag of a polarity is added. Sources from bundled + homebrew compendiums. Three close paths: pick / later / no-condition. |
 | 21 | NPC Quick-Create modal | Plan §12.5 | House | Designed | Locked in `19-gm-tools.md`. 380px modal triggered by canvas right-click. Name + role dropdown + optional portrait. Drops actor + token at click coordinates. |
 | 22 | NPC Organizer (per scene) | Plan §12.5 | House | Designed | Locked in `19-gm-tools.md`. 290px sidebar listing Connection + NPC tokens on active scene. Click to focus camera, right-click for actions. Cross-theme rendering on rows. |
 | 23 | Token Hover Card | Plan §8 | Hybrid | Designed | Locked in `17-token-hover-card.md`. 210px card serving Major/Connection/NPC tokens (renamed from "NPC hover card" since it serves all three). Persona-aware, visibility-respecting, position-aware. |
-| 24 | Edit-Conflict Warning | Plan §12.7 | House | Not started | Two-user simultaneous edit warning on shared Connections. Appears as a non-blocking toast or inline banner on the affected sheet. |
+| 24 | Edit-Conflict Warning | Plan §12.7 | House | Designed | Locked in `21-edit-conflict-warning.md`. Three-layer system: awareness banner (passive), field-level presence indicator (subtle), save-time conflict warning toast with diff resolution (action-required). |
+| 24a | Pending Changes Log section | `26-pending-changes-log.md` | House | Designed | Inline "Since last Upkeep" section on Major sheet's Public tab. Conditional render — collapses when `pendingChanges.length === 0`. Sits between Active Conditions and Inner Conflict. Cleared on Upkeep acknowledge. |
+| 24b | Session Log preview modal | `24-session-log.md` | House | Designed | Auto-generated end-of-session journal entry. Event tracking via world flag `flags["good-society-homebrew"].sessionEvents`. Markdown generation + preview modal + dated journal entry on "End Session" click. |
+| 24c | Backup & Export utility | `25-backup-export.md` | House | Designed | GM-only. Single .json export with metadata envelope (format/version/exportedAt/exportedBy/world/data). Merge-or-replace import. Accessible from settings menu or scene control button. |
 
 ## Chat and communication
 
@@ -104,7 +107,7 @@ These are the reusable building blocks that compose all of the above. House styl
 | 48 | Visibility flag indicator | Hybrid | Not started | Three-state pill or inline icon: secret/public/redacted. |
 | 49 | Visual reputation meter | Character | Not started | Three-pip indicator showing how close to a condition trigger. |
 | 50 | Portrait frame (oval, side panel) | Character | Sketched | Oval frame, 78×92px on Major sheet, 70×84px on Connection/NPC, smaller in dock and dashboard rows. |
-| 51 | Token frame (canvas) | Character | Not started | Custom token ring or border art so Connection tokens read as Connections vs PCs. |
+| 51 | Token frame (canvas) | Character | Designed | Locked in `27-token-frame.md`. Three variants: Major 3px solid ring + glow, Connection 2px solid ring, NPC 1px dashed ring. Implemented via Foundry's TokenRing API with custom PIXI overlay fallback. Persona-aware ring color. |
 | 52 | Modal / dialog | House | Not started | `border-radius: 16px`, paper background, optional title bar in `--gs-brand` with paper text. |
 | 53 | Tab navigation | Inherits scope | Not started | See #2 above. |
 | 54 | Icon button | Inherits scope | Not started | 28px square, ghost by default, hover fill `--gs-paper-warm`. |
@@ -165,6 +168,14 @@ As individual components reach the design stage, they get their own document und
 - `18-condition-picker.md` ✓ (Locked)
 - `19-gm-tools.md` ✓ (Locked, three GM tools)
 - `20-rule-tooltips.md` ✓ (Locked)
+- `21-edit-conflict-warning.md` ✓ (Locked)
+- `22-bulk-permissions-panel.md` ✓ (Locked)
+- `23-primitives-batch.md` ✓ (Locked)
+- `24-session-log.md` ✓ (Locked)
+- `25-backup-export.md` ✓ (Locked)
+- `26-pending-changes-log.md` ✓ (Locked)
+- `27-token-frame.md` ✓ (Locked)
+- `28-foundry-chrome-theme.md` ✓ (Locked)
 
 ## Changelog
 
@@ -175,3 +186,4 @@ As individual components reach the design stage, they get their own document und
 | 2026-05-05 | Status updates: #6 (Connection sheet) Designed in `06-connection-sheet.md`. #14 (Public Info dashboard) Designed in `07-public-info-dashboard.md`. Cross-theme rendering pattern documented and visually proven. |
 | 2026-05-05 | Status updates: #15 (My Characters Dock) Designed in `09-my-characters-dock.md`. #16 (Cycle Phase HUD) Designed in `08-cycle-phase-hud.md`. Persistent UI trinity complete. |
 | 2026-05-05 | Eleven new docs landed (10–20). Status flips: #7, #8, #9–13, #17, #18, #20, #21–23, #25–29, #32, #39, #55, #56, #57, #58, #59 all Designed. New entries: #20a Condition Picker, #60 GM pill, #61 Polarity arrow. Component #23 renamed from "NPC hover card" to "Token hover card" since it serves all three actor types. |
+| 2026-05-06 | Design integration v4 (docs 21–28 + 00). Status flips: #19 (Bulk Permissions Panel) → Designed per `22-bulk-permissions-panel.md`; #24 (Edit-Conflict Warning) → Designed per `21-edit-conflict-warning.md`; #51 (Token frame) → Designed per `27-token-frame.md`. New entries: #24a Pending Changes Log section, #24b Session Log preview modal, #24c Backup & Export utility. Design docs list extended to include 21–28. |

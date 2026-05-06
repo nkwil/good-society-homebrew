@@ -210,6 +210,7 @@ All sheets use `ApplicationV2 + HandlebarsApplicationMixin` (v13's mandatory app
    - Reputation Criteria (read-only from Family)
    - Reputation Tags grid (positive / negative)
    - Active Reputation Conditions
+   - Pending Changes Log (conditional — only when `pendingChanges.length > 0`, per `docs/design/26-pending-changes-log.md`)
    - Inner Conflict pair, with the 5+5 boxes as clickable checkboxes
    - Completed Inner Conflicts list
 
@@ -240,13 +241,14 @@ The eight implementation rules of the antique-but-clean principle (in `decisions
 
 ### 6.4 Reference: design system
 
-A full design-system documentation tree lives in `docs/design/`:
+A full design-system documentation tree lives in `docs/design/`. Start with `00-system-overview.md` — the meta-index that orients you to the whole folder.
 
-- `README.md` — folder orientation
-- `01-mood-exploration.md` — mood directions explored, decision rationale (Closed)
+- `00-system-overview.md` — folder index + architectural pillars + reading order (Living)
+- `README.md` — folder readme with workflow notes
+- `decisions.md` — authoritative locked palette, type tokens, twelve-theme registry, antique-but-clean principle (Locked)
+- `01-mood-exploration.md` — mood directions explored (Closed)
 - `02-theme-architecture.md` — two-layer model, scope boundaries, wrapper mechanism (Locked)
-- `03-component-inventory.md` — 61 components mapped to theme scope and design status
-- `decisions.md` — authoritative locked palette, type tokens, twelve-theme registry, antique-but-clean principle
+- `03-component-inventory.md` — components mapped to theme scope and design status (Open)
 - `04-character-sheet.md` — Major Character sheet (Locked)
 - `05-epistolary-ui.md` — Letter composer + letter card + `themedWrap` helper (Locked)
 - `06-connection-sheet.md` — Connection sheet (Locked)
@@ -264,6 +266,14 @@ A full design-system documentation tree lives in `docs/design/`:
 - `18-condition-picker.md` — reputation threshold modal (Locked)
 - `19-gm-tools.md` — Reveal Control + NPC Quick-Create + NPC Organizer (Locked)
 - `20-rule-tooltips.md` — tooltip primitive + ~50-key content catalog (Locked)
+- `21-edit-conflict-warning.md` — three-layer conflict prevention for shared Connections (Locked)
+- `22-bulk-permissions-panel.md` — GM grid for setting actor ownership across all users (Locked)
+- `23-primitives-batch.md` — canonical reference for 13 primitives + GM pill (Locked)
+- `24-session-log.md` — auto-generated end-of-session journal entry (Locked)
+- `25-backup-export.md` — GM-only utility for full world JSON export/import (Locked)
+- `26-pending-changes-log.md` — inline "Since last Upkeep" section on Major sheet (Locked)
+- `27-token-frame.md` — canvas-side ring distinguishing Major / Connection / NPC (Locked)
+- `28-foundry-chrome-theme.md` — opt-in CSS overrides re-theming Foundry's application chrome (Locked)
 
 When implementing visual surfaces, link the relevant design doc in your Claude Code prompt rather than describing the design inline. This keeps the implementation grounded in the locked decisions and prevents drift.
 
@@ -585,6 +595,15 @@ Phase 1c — Sheet templates batch (Session B-1) — 2–3 days. Build all Handl
 
 Phase 1d — Remaining theme presets (Session B-2) — 1 day. Eleven presets implemented. Each is a CSS file with `.gs-actor[data-theme="..."]` and `.gs-themed[data-theme="..."]` selectors per `docs/design/decisions.md` §Theme registry.
 
+**Session B-2.5 — Foundry chrome theme (½ day)**
+A small standalone CSS session that re-themes Foundry's surrounding application chrome to match the house style. Eight surfaces in scope: window titlebars, sidebar, chat log surrounding chrome, scene navigation, default form controls, notification toasts, player list, macro hotbar. Out of scope: settings dialogs, file picker, compendium browser, Configure Token, User Configuration, Hotbar Macro editor (these stay default Foundry to limit maintenance burden).
+
+Opt-in via the `applyFoundryChrome` user setting (default true). All rules namespaced under `body.gs-chrome-themed`; the setting toggles the body class on/off for instant runtime apply without page reload.
+
+New file: `styles/foundry-chrome.css`. New setting registration in `module/settings.js`. New `Hooks.once("ready", ...)` and `Hooks.on("clientSettingChanged", ...)` handlers in `module/good-society.js` to manage the body class.
+
+Per `docs/design/28-foundry-chrome-theme.md`. Independent of B-1 sheet work; can run any time after Session B-0 (which provides the house CSS variables this session consumes).
+
 **Phase 2 — Item types & token mechanics (2–3 days)**
 Reputation Tag, Reputation Condition, Inner Conflict, Magic/Skill, Backstory Action as item types. Resolve tokens click-to-toggle. MT toggle. Monologue toggle. **Visual reputation meter** (§12.3) on the sheet. Rules tracked but not enforced.
 
@@ -626,8 +645,15 @@ Compendium packs (canonical conditions, sample characters, sample inner conflict
 **Phase 10 — Chat & flavor polish (2–3 days)**
 **Speaking-as chat switcher** (§12.1) above the chat input. **Persona-aware chat** (§12.1) using active persona's portrait/name. **Per-character chat styling** (§12.1) via persona-stored colors and fonts. **Epistolary letter formatter** (§12.5) parchment-themed composer for the Epistolary phase.
 
-**Phase 11 — Onboarding, content & robustness (3–5 days)**
-**Bundled sample world** (§12.6) compendium with Dixon, the Cloudcandle family, his existing Connections, a sample ballroom scene. **System welcome panel** (§12.6) on first load. Expanded compendium content (canonical conditions, archetype inner conflicts, sample personas). **Session log auto-generator** (§12.2) on session end. **One-click backup/export** (§12.7). **Edit-conflict warning** (§12.7).
+**Phase 11 — Robustness + retrospective (4–5 days)**
+A grouped session covering the features that catch problems and create archives:
+- Edit Conflict Warning (per `docs/design/21-edit-conflict-warning.md`) — three-layer system: awareness banner, field-level presence indicator, save-time conflict warning toast with diff resolution.
+- Bulk Permissions Panel (per `docs/design/22-bulk-permissions-panel.md`) — GM grid for setting actor ownership across all users in one screen.
+- Session Log auto-generator (per `docs/design/24-session-log.md`) — event tracking via world flag, markdown generation, preview modal, dated journal entries.
+- Backup & Export utility (per `docs/design/25-backup-export.md`) — single .json file export with version-checked import.
+- Pending Changes Log section (per `docs/design/26-pending-changes-log.md`) — inline "Since last Upkeep" section on the Major sheet's Public tab. Conditional render based on `pendingChanges.length`.
+- Token Frame canvas rendering (per `docs/design/27-token-frame.md`) — three variants (Major 3px solid + glow, Connection 2px solid, NPC 1px dashed). Uses Foundry's TokenRing API with custom PIXI overlay fallback.
+- Bundled sample world — Dixon, the Cloudcandle family, his existing Connections, a sample ballroom scene. Expanded compendium content (canonical conditions, archetype inner conflicts, sample personas).
 
 ---
 
@@ -651,6 +677,13 @@ These are the decisions made during planning. Paste this section into `CLAUDE.md
 12. **The Token Hover Card serves all three actor types** (Majors, Connections, NPCs) via the wrapper mechanism. Inventory entry #23 renamed from "NPC hover card" to "Token hover card." Source: `docs/design/17-token-hover-card.md`.
 13. **The Inner Conflict box grid is a shared primitive** rendered identically on the Major sheet's Public tab and the Inner Conflict item sheet. Single Handlebars partial at `templates/components/inner-conflict-grid.hbs`. Per `docs/design/12-item-sheets.md`.
 14. **Tooltips are system-wide and house-styled.** Triggered by `data-tooltip-key` attribute on section headers. ~50 tooltip keys catalogued in `docs/design/20-rule-tooltips.md`. Authored in `lang/en.json` under `GOODSOCIETY.tooltips.*`.
+15. **Token frames are canvas-side identity markers.** Per `docs/design/27-token-frame.md`, three variants distinguish Major / Connection / NPC tokens. Implemented via Foundry's TokenRing API. Persona-aware: ring color shifts with persona swaps if `chatColor` override is set. Phase 11 work.
+16. **Pending changes log is a conditional inline section** on the Major sheet's Public tab. Per `docs/design/26-pending-changes-log.md`, renders only when `actor.system.reputation.pendingChanges.length > 0`. Sits between Active Conditions and Inner Conflict. Cleared on Upkeep acknowledge.
+17. **The session log is event-driven, not snapshot-based.** Per `docs/design/24-session-log.md`, events are appended to `flags["good-society-homebrew"].sessionEvents` (world-level flag) as they fire. Markdown is generated from the events array on "End Session" click. The flag clears on save.
+18. **Backups are full-world JSON exports.** Per `docs/design/25-backup-export.md`, single .json file format with metadata envelope (format/version/exportedAt/exportedBy/world/data). Merge-or-replace import. GM-only.
+19. **Edit conflict prevention is three layers, escalating in intrusiveness.** Per `docs/design/21-edit-conflict-warning.md`, awareness banner (passive), field-level presence (subtle), save-time conflict warning toast (action-required). The system's robustness for shared Connections.
+20. **Bulk Permissions Panel lifted from stub to full spec.** Per `docs/design/22-bulk-permissions-panel.md`, GM grid for setting actor ownership in one screen. Inventory entry #19 was a placeholder; this is its detailed spec.
+21. **Foundry chrome re-theming is opt-in, body-class–scoped.** Per `docs/design/28-foundry-chrome-theme.md`, the system overrides ~8 Foundry surfaces (titlebars, sidebar, chat log, scene nav, form controls, notifications, player list, hotbar). All rules namespaced under `body.gs-chrome-themed`; toggled by `applyFoundryChrome` user setting (default true). House style only — character themes don't apply to chrome. Settings dialogs, file picker, compendium browser, and other deep-internal Foundry UIs are explicitly out of scope.
 
 ---
 
