@@ -1,15 +1,10 @@
 {
-  "id": "boilerplate",
-  "title": "Boilerplate",
-  "description": "The Boilerplate system for FoundryVTT!",
+  "id": "good-society-homebrew",
+  "title": "Good Society (Homebrew)",
+  "description": "A homebrew Good Society TTRPG variant for Foundry VTT v13",
   "authors": [
     {
-      "name": "Asacolips",
-      "discord": "asacolips"
-    },
-    {
-      "name": "Lee Talman",
-      "discord": ".pizzaWizard"
+      "name": "Opal"
     }
   ],
   "url": "Replace this with a link to your public repository",
@@ -24,10 +19,10 @@
       "thumbnail": "systems/boilerplate/assets/anvil-impact.png"
     }
   ],
-  "version": "2.0.0",
+  "version": "0.1.0",
   "compatibility": {
-    "minimum": 11,
-    "verified": "11.315"
+    "minimum": 13,
+    "verified": "13"
   },
   "esmodules": ["module/boilerplate.mjs"],
   "styles": ["css/boilerplate.css"],
