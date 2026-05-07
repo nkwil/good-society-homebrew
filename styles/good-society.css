@@ -37,6 +37,12 @@
 /* Rule tooltip — floating hover panel for [data-tooltip-key] elements */
 @import './components/_rule-tooltip.css';
 
+/* Token hover card — themed floating card on canvas token hover */
+@import './components/_token-hover-card.css';
+
+/* Permission pill — compact ownership level indicator (Bulk Permissions Panel + reusable) */
+@import './components/_permission-pill.css';
+
 /* Chat card surfaces — base then per-variant */
 @import './components/_chat-card-base.css';
 @import './components/_chat-card-system.css';
@@ -93,6 +99,7 @@
 @import './apps/_reveal-control.css';
 @import './apps/_npc-quick-create.css';
 @import './apps/_npc-organizer.css';
+@import './apps/_bulk-permissions-panel.css';
 
 /* B-4 additions (not yet implemented):
  * @import './apps/_letter-composer.css';

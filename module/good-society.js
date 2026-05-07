@@ -6,6 +6,7 @@
 import { register as registerSpeakingAs } from './hooks/speaking-as.js';
 import { register as registerSceneControls } from './hooks/scene-controls.js';
 import { register as registerCanvasContext } from './hooks/canvas-context.js';
+import { register as registerTokenHoverCard } from './hooks/token-hover-card.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
 import { initCycleHud, renderCycleHud } from './apps/cycle-hud.js';
@@ -309,3 +310,4 @@ Hooks.on('canvasReady', () => renderOrganizer());
 registerSpeakingAs();
 registerSceneControls();
 registerCanvasContext();
+registerTokenHoverCard();

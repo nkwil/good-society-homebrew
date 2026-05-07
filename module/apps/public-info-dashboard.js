@@ -16,6 +16,7 @@
 
 import { buildDashboardContext, NEXT_PHASE } from '../helpers/dashboard-context.js';
 import { openRevealControl } from './reveal-control.js';
+import { openBulkPermissionsPanel } from './bulk-permissions-panel.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 } = foundry.applications.api;
@@ -37,6 +38,7 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
       'reveal-desires':   PublicInfoDashboard.#revealDesires,
       'advance-phase':    PublicInfoDashboard.#advancePhase,
       'stub-rumour':      PublicInfoDashboard.#stubRumour,
+      'open-permissions': PublicInfoDashboard.#openPermissions,
     },
   };
 
@@ -219,6 +221,10 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
 
   static #stubRumour(ev, target) {
     ui.notifications.info(game.i18n.localize('GOODSOCIETY.dashboard.bulk.rumourStub'));
+  }
+
+  static #openPermissions() {
+    openBulkPermissionsPanel();
   }
 }
 

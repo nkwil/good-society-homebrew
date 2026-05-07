@@ -1,0 +1,422 @@
+/* Bulk Permissions Panel — GM-only actor ownership matrix.
+ * Per docs/design/22-bulk-permissions-panel.md.
+ *
+ * Grid column count is set via --gs-perm-user-count CSS custom property,
+ * written by BulkPermissionsPanel._onRender() after each render.
+ */
+
+/* ── Panel root ──────────────────────────────────────────────────────────── */
+
+.gs-bulk-permissions {
+  display: flex;
+  flex-direction: column;
+  background: var(--gs-paper);
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.gs-bulk-permissions__header {
+  flex-shrink: 0;
+  background: var(--gs-paper);
+  padding: 16px 22px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-bulk-permissions__header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.gs-bulk-permissions__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gs-bulk-permissions__eyebrow {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.18em;
+  color: var(--gs-accent-2);
+}
+
+.gs-bulk-permissions__counts {
+  font-family: var(--gs-italic);
+  font-size: 11px;
+  color: var(--gs-accent-2);
+}
+
+/* Filter row */
+.gs-bulk-permissions__header-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.gs-bulk-permissions__search {
+  flex: 1;
+  font-family: var(--gs-body);
+  font-size: 12px;
+  padding: 4px 8px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 3px;
+  color: var(--gs-ink);
+}
+
+.gs-bulk-permissions__search::placeholder {
+  color: var(--gs-accent-2);
+  opacity: 0.7;
+}
+
+.gs-bulk-permissions__search:focus {
+  outline: none;
+  border-color: var(--gs-brand);
+}
+
+.gs-bulk-permissions__type-filter {
+  font-family: var(--gs-body);
+  font-size: 12px;
+  padding: 4px 8px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 3px;
+  color: var(--gs-ink);
+  cursor: pointer;
+}
+
+/* ── Shared grid layout ──────────────────────────────────────────────────── */
+
+/* Applied to both the user-row header and each actor row.
+ * Row quickset button is absolutely positioned out of grid flow. */
+.gs-bulk-permissions__grid-row {
+  display: grid;
+  grid-template-columns: 220px repeat(var(--gs-perm-user-count, 4), 1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 0 22px;
+}
+
+/* ── User column header (sticky) ─────────────────────────────────────────── */
+
+.gs-bulk-permissions__user-row {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--gs-paper-warm);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.gs-bulk-permissions__col-actor-label {
+  font-family: var(--gs-body);
+  font-size: 10px;
+  font-variant: small-caps;
+  letter-spacing: 0.16em;
+  color: var(--gs-accent-2);
+}
+
+.gs-bulk-permissions__col-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.gs-bulk-permissions__col-user-name {
+  font-family: var(--gs-display);
+  font-size: 11px;
+  color: var(--gs-ink);
+}
+
+.gs-bulk-permissions__col-gm-label {
+  font-family: var(--gs-italic);
+  font-size: 9px;
+  color: var(--gs-accent-2);
+}
+
+.gs-bulk-permissions__col-quickset {
+  font-family: var(--gs-body);
+  font-size: 9px;
+  color: var(--gs-accent-2);
+  background: none;
+  border: none;
+  padding: 1px 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms;
+  pointer-events: auto;
+}
+
+.gs-bulk-permissions__col-user:hover .gs-bulk-permissions__col-quickset {
+  opacity: 1;
+}
+
+/* ── Scroll area ─────────────────────────────────────────────────────────── */
+
+.gs-bulk-permissions__scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+
+.gs-bulk-permissions__body {
+  padding: 0 0 8px;
+}
+
+/* ── Type sections ───────────────────────────────────────────────────────── */
+
+.gs-bulk-permissions__section + .gs-bulk-permissions__section {
+  border-top: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-bulk-permissions__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px 6px;
+}
+
+.gs-bulk-permissions__section-label {
+  font-family: var(--gs-body);
+  font-size: 10px;
+  font-variant: small-caps;
+  letter-spacing: 0.18em;
+  color: var(--gs-accent-2);
+}
+
+.gs-bulk-permissions__section-reset {
+  font-family: var(--gs-italic);
+  font-size: 10px;
+  color: var(--gs-accent-2);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms;
+  pointer-events: auto;
+}
+
+.gs-bulk-permissions__section-header:hover .gs-bulk-permissions__section-reset {
+  opacity: 1;
+}
+
+.gs-bulk-permissions__section-empty {
+  font-family: var(--gs-italic);
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  padding: 10px 22px;
+}
+
+.gs-bulk-permissions__empty {
+  font-family: var(--gs-italic);
+  font-size: 13px;
+  color: var(--gs-accent-2);
+  text-align: center;
+  padding: 32px 22px;
+}
+
+/* ── Actor rows ──────────────────────────────────────────────────────────── */
+
+.gs-bulk-permissions__actor-row {
+  position: relative;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  transition: background 80ms;
+}
+
+.gs-bulk-permissions__actor-row:hover {
+  background: color-mix(in srgb, var(--gs-paper-warm) 60%, var(--gs-paper) 40%);
+}
+
+/* Pending row tint — subtle terracotta wash */
+.gs-bulk-permissions__actor-row--pending {
+  background: color-mix(in srgb, var(--gs-accent-1) 4%, var(--gs-paper) 96%);
+}
+
+/* ── Actor cell (column 1) ───────────────────────────────────────────────── */
+
+.gs-bulk-permissions__actor-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.gs-bulk-permissions__actor-portrait {
+  width: 22px;
+  height: 26px;
+  border-radius: 50% / 40%;
+  overflow: hidden;
+  border: 1px solid var(--gs-brand);
+  background: var(--gs-paper-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gs-bulk-permissions__actor-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gs-bulk-permissions__actor-initial {
+  font-family: var(--gs-display);
+  font-size: 12px;
+  color: var(--gs-brand);
+  line-height: 1;
+  user-select: none;
+}
+
+.gs-bulk-permissions__actor-name {
+  font-family: var(--gs-display);
+  font-size: 13px;
+  color: var(--gs-brand);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gs-bulk-permissions__stranded-dot {
+  font-size: 6px;
+  color: var(--gs-danger);
+  flex-shrink: 0;
+  cursor: help;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* ── Permission cells (columns 2–N) ──────────────────────────────────────── */
+
+.gs-bulk-permissions__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 2px;
+  transition: background 80ms;
+}
+
+.gs-bulk-permissions__cell[data-gm-cell='true'] {
+  cursor: default;
+  pointer-events: none;
+}
+
+.gs-bulk-permissions__cell:not([data-gm-cell='true']):hover .gs-perm-pill {
+  outline: 1px solid var(--gs-accent-2);
+  outline-offset: 1px;
+}
+
+/* Pending cell — terracotta outline + owner override */
+.gs-bulk-permissions__cell--pending .gs-perm-pill {
+  outline: 2px solid var(--gs-accent-1);
+  outline-offset: 1px;
+}
+
+.gs-bulk-permissions__cell--pending .gs-perm-pill--owner {
+  background: var(--gs-accent-1);
+  border-color: var(--gs-accent-1);
+}
+
+.gs-bulk-permissions__cell-changed {
+  font-family: var(--gs-italic);
+  font-size: 8px;
+  color: var(--gs-accent-1);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Row quick-set button ────────────────────────────────────────────────── */
+
+/* Absolutely positioned at right edge of the grid row, outside grid flow. */
+.gs-bulk-permissions__row-quickset {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--gs-body);
+  font-size: 9px;
+  color: var(--gs-accent-2);
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 2px;
+  padding: 2px 5px;
+  cursor: pointer;
+  visibility: hidden;
+  pointer-events: auto;
+  white-space: nowrap;
+}
+
+.gs-bulk-permissions__actor-row:hover .gs-bulk-permissions__row-quickset {
+  visibility: visible;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.gs-bulk-permissions__footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+  padding: 14px 22px;
+}
+
+.gs-bulk-permissions__footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.gs-bulk-permissions__footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.gs-bulk-permissions__pending-none {
+  font-family: var(--gs-italic);
+  font-size: 11px;
+  color: var(--gs-accent-2);
+}
+
+.gs-bulk-permissions__pending-pill {
+  font-family: var(--gs-body);
+  font-size: 10px;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  background: var(--gs-accent-1);
+  color: var(--gs-paper);
+  padding: 2px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.gs-bulk-permissions__pending-summary {
+  font-family: var(--gs-italic);
+  font-size: 11px;
+  color: var(--gs-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

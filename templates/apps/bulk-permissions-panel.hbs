@@ -1,0 +1,171 @@
+{{!-- Bulk Permissions Panel — single root required by ApplicationV2 PARTS.
+     House chrome. Actor names/portraits use .gs-themed for cross-theme rendering. --}}
+<section class="gs-bulk-permissions">
+
+  {{!-- ── Panel header ──────────────────────────────────────────────────── --}}
+  <header class="gs-bulk-permissions__header">
+    <div class="gs-bulk-permissions__header-top">
+      <div class="gs-bulk-permissions__header-left">
+        <span class="gs-gm-pill">{{localize "GOODSOCIETY.gmPill"}}</span>
+        <span class="gs-bulk-permissions__eyebrow">{{localize "GOODSOCIETY.bulkPermissions.eyebrow"}}</span>
+      </div>
+      <span class="gs-bulk-permissions__counts">
+        {{localize "GOODSOCIETY.bulkPermissions.counts" actors=totalActors users=userCount}}
+      </span>
+    </div>
+    <div class="gs-bulk-permissions__header-filters">
+      <input type="text"
+             class="gs-bulk-permissions__search"
+             placeholder="{{localize "GOODSOCIETY.bulkPermissions.searchPlaceholder"}}" />
+      <select class="gs-bulk-permissions__type-filter">
+        <option value="all">{{localize "GOODSOCIETY.bulkPermissions.filter.all"}}</option>
+        <option value="major-character">{{localize "GOODSOCIETY.bulkPermissions.filter.majors"}}</option>
+        <option value="connection">{{localize "GOODSOCIETY.bulkPermissions.filter.connections"}}</option>
+        <option value="family">{{localize "GOODSOCIETY.bulkPermissions.filter.family"}}</option>
+        <option value="npc">{{localize "GOODSOCIETY.bulkPermissions.filter.npcs"}}</option>
+      </select>
+    </div>
+  </header>
+
+  {{!-- ── Scrollable area: sticky user header + body ──────────────────── --}}
+  <div class="gs-bulk-permissions__scroll-area">
+
+    {{!-- User column header (sticky) --}}
+    <div class="gs-bulk-permissions__user-row gs-bulk-permissions__grid-row">
+      <div class="gs-bulk-permissions__col-actor-label">
+        {{localize "GOODSOCIETY.bulkPermissions.colActor"}}
+      </div>
+      {{#each users}}
+      <div class="gs-bulk-permissions__col-user">
+        <div class="gs-bulk-permissions__col-user-name">{{this.name}}</div>
+        {{#if this.isGM}}
+          <div class="gs-bulk-permissions__col-gm-label">{{localize "GOODSOCIETY.bulkPermissions.colGM"}}</div>
+        {{else}}
+          <button type="button"
+                  class="gs-bulk-permissions__col-quickset"
+                  data-user-id="{{this.id}}"
+                  title="{{localize "GOODSOCIETY.bulkPermissions.colQuickSetHint"}}">
+            {{localize "GOODSOCIETY.bulkPermissions.quickSet"}} ▾
+          </button>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+
+    {{!-- ── Actor sections ────────────────────────────────────────────── --}}
+    <div class="gs-bulk-permissions__body">
+      {{#each sections}}
+      <div class="gs-bulk-permissions__section" data-type="{{this.type}}">
+
+        <div class="gs-bulk-permissions__section-header">
+          <span class="gs-bulk-permissions__section-label">
+            {{this.label}} · {{this.actors.length}}
+          </span>
+          <button type="button"
+                  class="gs-bulk-permissions__section-reset"
+                  title="{{localize "GOODSOCIETY.bulkPermissions.section.resetHint"}}">
+            [{{localize "GOODSOCIETY.bulkPermissions.section.reset"}}]
+          </button>
+        </div>
+
+        {{#each this.actors}}
+        <div class="gs-bulk-permissions__actor-row gs-bulk-permissions__grid-row"
+             data-actor-id="{{this.id}}"
+             data-display-name="{{this.displayName}}"
+             data-type="{{this.type}}">
+
+          {{!-- Actor cell (column 1) --}}
+          <div class="gs-bulk-permissions__actor-cell">
+            <div class="gs-themed gs-bulk-permissions__actor-portrait" data-theme="{{this.theme}}">
+              {{#if this.portraitUrl}}
+                <img src="{{this.portraitUrl}}" alt="" />
+              {{else}}
+                <span class="gs-bulk-permissions__actor-initial">{{this.initial}}</span>
+              {{/if}}
+            </div>
+            <span class="gs-themed gs-bulk-permissions__actor-name" data-theme="{{this.theme}}">
+              {{this.displayName}}
+            </span>
+            {{#if this.isStranded}}
+              <span class="gs-bulk-permissions__stranded-dot"
+                    title="{{localize "GOODSOCIETY.bulkPermissions.strandedHint"}}">●</span>
+            {{/if}}
+          </div>
+
+          {{!-- Permission cells (columns 2–N) --}}
+          {{#each this.cells}}
+          <div class="gs-bulk-permissions__cell{{#if this.isPending}} gs-bulk-permissions__cell--pending{{/if}}"
+               data-actor-id="{{this.actorId}}"
+               data-user-id="{{this.userId}}"
+               data-level="{{this.level}}"
+               data-gm-cell="{{this.isGMCell}}"
+               role="{{#if this.isGMCell}}presentation{{else}}button{{/if}}"
+               tabindex="{{#if this.isGMCell}}-1{{else}}0{{/if}}"
+               aria-label="{{this.ariaLabel}}">
+            <span class="gs-perm-pill gs-perm-pill--{{this.cssClass}}">{{this.label}}</span>
+            {{#if this.isPending}}
+              <span class="gs-bulk-permissions__cell-changed">
+                {{localize "GOODSOCIETY.bulkPermissions.cell.changed"}}
+              </span>
+            {{/if}}
+          </div>
+          {{/each}}
+
+          {{!-- Row quick-set button (revealed on hover via CSS) --}}
+          <button type="button"
+                  class="gs-bulk-permissions__row-quickset"
+                  title="{{localize "GOODSOCIETY.bulkPermissions.rowQuickSetHint"}}">
+            {{localize "GOODSOCIETY.bulkPermissions.quickSet"}} ▾
+          </button>
+
+        </div>
+        {{/each}}
+
+        <div class="gs-bulk-permissions__section-empty" hidden>
+          {{localize "GOODSOCIETY.bulkPermissions.section.empty"}}
+        </div>
+
+      </div>
+      {{/each}}
+
+      {{#unless sections.length}}
+      <div class="gs-bulk-permissions__empty">
+        {{localize "GOODSOCIETY.bulkPermissions.noActors"}}
+      </div>
+      {{/unless}}
+    </div>
+
+  </div>
+
+  {{!-- ── Footer ──────────────────────────────────────────────────────── --}}
+  <footer class="gs-bulk-permissions__footer">
+    <div class="gs-bulk-permissions__footer-left">
+      <span class="gs-bulk-permissions__pending-none" {{#if hasPending}}hidden{{/if}}>
+        {{localize "GOODSOCIETY.bulkPermissions.footer.noPending"}}
+      </span>
+      <span class="gs-bulk-permissions__pending-pill" {{#unless hasPending}}hidden{{/unless}}>
+        {{localize "GOODSOCIETY.bulkPermissions.footer.pendingPill" n=pendingCount}}
+      </span>
+      <span class="gs-bulk-permissions__pending-summary" {{#unless hasPending}}hidden{{/unless}}>
+        {{pendingSummary}}
+      </span>
+    </div>
+    <div class="gs-bulk-permissions__footer-right">
+      <button type="button"
+              class="gs-btn gs-btn--sm gs-btn--outline gs-bulk-permissions__discard-btn"
+              {{#unless hasPending}}disabled{{/unless}}>
+        {{localize "GOODSOCIETY.bulkPermissions.footer.discard"}}
+      </button>
+      <button type="button"
+              class="gs-btn gs-btn--sm gs-btn--primary gs-bulk-permissions__save-btn"
+              {{#unless hasPending}}disabled{{/unless}}>
+        {{#if hasPending}}
+          {{localize "GOODSOCIETY.bulkPermissions.footer.saveBtn" n=pendingCount}}
+        {{else}}
+          {{localize "GOODSOCIETY.bulkPermissions.footer.saveBtnEmpty"}}
+        {{/if}}
+      </button>
+    </div>
+  </footer>
+
+</section>

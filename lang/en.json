@@ -454,6 +454,19 @@
       "upkeep":       "Upkeep"
     },
 
+    "hoverCard": {
+      "unknownToken":      "Unknown",
+      "unlinkedToken":     "(unlinked token)",
+      "secretPersona":     "(secret persona)",
+      "connection":        "Connection",
+      "connectionRole":    "Connection · {role}",
+      "npc":               "NPC",
+      "npcRole":           "NPC · {role}",
+      "peerageHeir":       "The Heir",
+      "peerageNewArrival": "New Arrival",
+      "peerageForeign":    "Foreign Guest"
+    },
+
     "revealControl": {
       "title":                 "REVEAL CONTROL",
       "ariaLabel":             "Reveal Control",
@@ -486,7 +499,7 @@
       "portraitAlt":          "NPC portrait",
       "cancel":               "cancel",
       "drop":                 "drop NPC ↓",
-      "created":              "NPC "{name}" dropped onto the scene."
+      "created":              "NPC \"{name}\" dropped onto the scene."
     },
 
     "hud": {
@@ -556,13 +569,62 @@
         "advancePhase":               "advance phase",
         "advancePhaseHint":           "Advance the world cycle to the next phase.",
         "advancePhaseConfirm":        "Advance to the next cycle phase?",
-        "advancePhasePosted":         "Cycle advanced to: {phase}."
+        "advancePhasePosted":         "Cycle advanced to: {phase}.",
+        "permissionsLink":            "permissions ↗",
+        "permissionsLinkHint":        "Open the Bulk Permissions panel to set actor ownership for all users."
       },
       "footer": {
         "of":          "of",
         "majorsActive":"majors active",
         "offline":     "offline",
         "allActive":   "majors present"
+      }
+    },
+
+    "bulkPermissions": {
+      "windowTitle":       "Bulk Permissions",
+      "eyebrow":           "BULK PERMISSIONS",
+      "counts":            "{actors} actors · {users} users",
+      "searchPlaceholder": "search actors...",
+      "colActor":          "ACTOR",
+      "colGM":             "GM",
+      "colQuickSetHint":   "Set all actors for this user",
+      "rowQuickSetHint":   "Set all users for this actor",
+      "quickSet":          "set all",
+      "strandedHint":      "No player has owner access to this actor",
+      "noActors":          "No actors found in this world.",
+      "sceneControlTitle": "Bulk Permissions",
+      "filter": {
+        "all":         "all types",
+        "majors":      "Majors only",
+        "connections": "Connections only",
+        "family":      "Family only",
+        "npcs":        "NPCs only"
+      },
+      "section": {
+        "majors":        "Majors",
+        "connections":   "Connections",
+        "family":        "Family",
+        "npcs":          "NPCs",
+        "reset":         "reset",
+        "resetHint":     "Reset this section to default permission levels",
+        "resetConfirm":  "Reset all {section} permissions to default ({level})? This overwrites any explicit grants.",
+        "empty":         "No actors match your filter."
+      },
+      "cell": {
+        "ariaLabel": "{actor}, {user}, {level}. Click to change.",
+        "changed":   "changed"
+      },
+      "footer": {
+        "noPending":    "No changes",
+        "pendingPill":  "{n} PENDING",
+        "andMore":      "and {n} more",
+        "discard":      "discard changes",
+        "saveBtn":      "save {n} changes ↗",
+        "saveBtnEmpty": "save changes",
+        "saveConfirm":  "Apply {n} permission change(s)? Ownership will update immediately.",
+        "saveSuccess":  "Permissions updated for {n} actors.",
+        "saveError":    "Save failed. {error} Please try again."
       }
     },
 

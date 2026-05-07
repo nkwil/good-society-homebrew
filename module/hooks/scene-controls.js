@@ -14,6 +14,7 @@
 
 import { openDashboard } from '../apps/public-info-dashboard.js';
 import { toggleOrganizer } from '../apps/npc-organizer.js';
+import { openBulkPermissionsPanel } from '../apps/bulk-permissions-panel.js';
 
 export function register() {
   Hooks.on('getSceneControlButtons', (controls) => {
@@ -45,12 +46,22 @@ export function register() {
       visible: game.user?.isGM,
     };
 
+    const permissionsTool = {
+      name: 'gs-permissions',
+      title: 'GOODSOCIETY.bulkPermissions.sceneControlTitle',
+      icon: 'fa-solid fa-key',
+      button: true,
+      onChange: () => openBulkPermissionsPanel(),
+      visible: game.user?.isGM,
+    };
+
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(dashboardTool, organizerTool);
+      target.tools.push(dashboardTool, organizerTool, permissionsTool);
     } else {
       target.tools['gs-dashboard'] = dashboardTool;
       target.tools['gs-organizer'] = organizerTool;
+      target.tools['gs-permissions'] = permissionsTool;
     }
   });
 }

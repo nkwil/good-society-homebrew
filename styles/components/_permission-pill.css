@@ -1,0 +1,80 @@
+/* Permission Pill — compact ownership level indicator.
+ * Reusable primitive; primary use is the Bulk Permissions Panel.
+ * Per docs/design/22-bulk-permissions-panel.md §"Permission cell".
+ *
+ * Four states: none (—), limited (view), observer (read), owner (OWN).
+ * Pending override handled by the parent cell via:
+ *   .gs-bulk-permissions__cell--pending .gs-perm-pill (see _bulk-permissions-panel.css)
+ */
+
+.gs-perm-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: var(--gs-body);
+  font-size: 10px;
+  line-height: 1.6;
+  text-align: center;
+  min-width: 36px;
+  white-space: nowrap;
+  transition: background 80ms ease, color 80ms ease, outline 80ms ease;
+  border: 0.5px solid transparent;
+}
+
+/* NONE (0) — dash, no fill */
+.gs-perm-pill--none {
+  color: var(--gs-accent-2);
+}
+
+/* LIMITED (1) — "view", paper-warm tint with muted border */
+.gs-perm-pill--limited {
+  background: var(--gs-paper-warm);
+  border-color: var(--gs-accent-2);
+  color: var(--gs-accent-2);
+}
+
+/* OBSERVER (2) — "read", paper-warm tint with muted border */
+.gs-perm-pill--observer {
+  background: var(--gs-paper-warm);
+  border-color: var(--gs-accent-2);
+  color: var(--gs-accent-2);
+}
+
+/* OWNER (3) — "OWN", brand-filled, high-contrast, small-caps */
+.gs-perm-pill--owner {
+  background: var(--gs-brand);
+  border-color: var(--gs-brand);
+  color: var(--gs-paper);
+  font-variant-numeric: normal;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+}
+
+/* ── Dropdown option states ───────────────────────────────────────────────── */
+
+.gs-perm-dropdown {
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 80px;
+  box-shadow: 0 2px 8px rgba(20, 12, 14, 0.15);
+}
+
+.gs-perm-dropdown__option {
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: center;
+}
+
+.gs-perm-dropdown__option:hover {
+  filter: brightness(0.93);
+}
+
+.gs-perm-dropdown__option--active {
+  outline: 2px solid var(--gs-accent-1);
+  outline-offset: -1px;
+}
