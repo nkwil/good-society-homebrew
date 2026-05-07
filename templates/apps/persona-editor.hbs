@@ -1,0 +1,137 @@
+{{!-- Persona Editor — single root <section> required by ApplicationV2 PARTS.
+     Themed to the parent actor so the editor feels like working inside the
+     character's voice (per docs/design/13-persona-switcher.md §"Theme behavior").
+     Does NOT use submitOnChange — all values are collected from the DOM on save. --}}
+<section class="gs-persona-editor gs-themed" data-theme="{{themeId}}">
+
+  {{!-- ── Header ──────────────────────────────────────────────────────────── --}}
+  <header class="gs-persona-editor__header">
+    <div class="gs-persona-editor__header-left">
+      <div class="gs-persona-editor__eyebrow">{{eyebrow}}</div>
+      <input class="gs-persona-editor__name-input"
+             type="text"
+             data-persona-field="name"
+             value="{{persona.name}}"
+             placeholder="{{localize 'GOODSOCIETY.personaEditor.namePlaceholder'}}" />
+    </div>
+    <div class="gs-persona-editor__header-right">
+      <button type="button"
+              class="gs-persona-editor__primary-toggle {{#if persona.isPrimary}}gs-persona-editor__primary-toggle--on{{/if}}"
+              data-action="togglePrimary"
+              data-value="{{persona.isPrimary}}"
+              title="{{localize 'GOODSOCIETY.personaEditor.primaryHint'}}">
+        {{localize "GOODSOCIETY.personaEditor.primaryLabel"}}
+      </button>
+    </div>
+  </header>
+
+  {{!-- ── Body ─────────────────────────────────────────────────────────────── --}}
+  <div class="gs-persona-editor__body">
+
+    {{!-- Portrait + Token Image --}}
+    <div class="gs-persona-editor__image-row">
+      <div class="gs-persona-editor__image-field">
+        <label class="gs-persona-editor__label">{{localize "GOODSOCIETY.personaEditor.portrait"}}</label>
+        <div class="gs-persona-editor__file-row">
+          {{#if persona.portraitUrl}}
+            <img class="gs-persona-editor__preview" data-for="portraitUrl" src="{{persona.portraitUrl}}" />
+          {{else}}
+            <span class="gs-persona-editor__preview gs-persona-editor__preview--empty" data-for="portraitUrl"></span>
+          {{/if}}
+          <input type="text" data-persona-field="portraitUrl" value="{{persona.portraitUrl}}"
+                 placeholder="{{localize 'GOODSOCIETY.personaEditor.imagePlaceholder'}}" />
+          <button type="button" class="gs-persona-editor__browse-btn"
+                  data-action="browseImage" data-target="portraitUrl"
+                  title="{{localize 'GOODSOCIETY.personaEditor.browseHint'}}">📁</button>
+        </div>
+      </div>
+      <div class="gs-persona-editor__image-field">
+        <label class="gs-persona-editor__label">{{localize "GOODSOCIETY.personaEditor.tokenImage"}}</label>
+        <div class="gs-persona-editor__file-row">
+          {{#if persona.tokenImageUrl}}
+            <img class="gs-persona-editor__preview" data-for="tokenImageUrl" src="{{persona.tokenImageUrl}}" />
+          {{else}}
+            <span class="gs-persona-editor__preview gs-persona-editor__preview--empty" data-for="tokenImageUrl"></span>
+          {{/if}}
+          <input type="text" data-persona-field="tokenImageUrl" value="{{persona.tokenImageUrl}}"
+                 placeholder="{{localize 'GOODSOCIETY.personaEditor.imagePlaceholder'}}" />
+          <button type="button" class="gs-persona-editor__browse-btn"
+                  data-action="browseImage" data-target="tokenImageUrl"
+                  title="{{localize 'GOODSOCIETY.personaEditor.browseHint'}}">📁</button>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Token Nameplate --}}
+    <div class="gs-persona-editor__field-group">
+      <label class="gs-persona-editor__label">{{localize "GOODSOCIETY.personaEditor.tokenName"}}</label>
+      <input type="text" data-persona-field="tokenName" value="{{persona.tokenName}}"
+             placeholder="{{localize 'GOODSOCIETY.personaEditor.tokenNamePlaceholder'}}" />
+    </div>
+
+    {{!-- Hover Summary --}}
+    <div class="gs-persona-editor__field-group">
+      <label class="gs-persona-editor__label">{{localize "GOODSOCIETY.personaEditor.hoverSummary"}}</label>
+      <textarea data-persona-field="hoverSummary" rows="2"
+                placeholder="{{localize 'GOODSOCIETY.personaEditor.hoverSummaryPlaceholder'}}">{{persona.hoverSummary}}</textarea>
+    </div>
+
+    {{!-- Chat Color --}}
+    <div class="gs-persona-editor__field-group">
+      <label class="gs-persona-editor__label">{{localize "GOODSOCIETY.personaEditor.chatColor"}}</label>
+      <div class="gs-persona-editor__color-row">
+        <input type="color" data-persona-field="chatColor"
+               value="{{#if persona.chatColor}}{{persona.chatColor}}{{else}}#2A3A2D{{/if}}"
+               title="{{localize 'GOODSOCIETY.personaEditor.chatColorHint'}}" />
+        <span class="gs-persona-editor__color-hint">{{localize "GOODSOCIETY.personaEditor.chatColorHint"}}</span>
+      </div>
+    </div>
+
+    {{!-- Visibility Overrides --}}
+    <div class="gs-persona-editor__vis-section">
+      <div class="gs-persona-editor__label">{{localize "GOODSOCIETY.personaEditor.visibilityOverrides"}}</div>
+      <div class="gs-persona-editor__vis-row">
+        <button type="button"
+                class="gs-persona-editor__vis-btn gs-persona-editor__vis-btn--{{persona.visibility.desire}}"
+                data-action="cycleVisibility" data-visibility-field="desire"
+                data-value="{{persona.visibility.desire}}">
+          {{localize "GOODSOCIETY.personaEditor.visDesire"}}: {{persona.visibility.desire}}
+        </button>
+        <button type="button"
+                class="gs-persona-editor__vis-btn gs-persona-editor__vis-btn--{{persona.visibility.backstory}}"
+                data-action="cycleVisibility" data-visibility-field="backstory"
+                data-value="{{persona.visibility.backstory}}">
+          {{localize "GOODSOCIETY.personaEditor.visBackstory"}}: {{persona.visibility.backstory}}
+        </button>
+        <button type="button"
+                class="gs-persona-editor__vis-btn gs-persona-editor__vis-btn--{{persona.visibility.magic}}"
+                data-action="cycleVisibility" data-visibility-field="magic"
+                data-value="{{persona.visibility.magic}}">
+          {{localize "GOODSOCIETY.personaEditor.visMagic"}}: {{persona.visibility.magic}}
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  {{!-- ── Footer ────────────────────────────────────────────────────────────── --}}
+  <footer class="gs-persona-editor__footer">
+    <div class="gs-persona-editor__footer-left">
+      {{#unless isCreate}}
+        <button type="button" class="gs-btn gs-btn--danger-outline" data-action="deletePersona"
+                {{#if persona.isPrimary}}disabled title="{{localize 'GOODSOCIETY.personaEditor.deletePrimaryHint'}}"{{/if}}>
+          {{localize "GOODSOCIETY.personaEditor.delete"}}
+        </button>
+      {{/unless}}
+    </div>
+    <div class="gs-persona-editor__footer-right">
+      <button type="button" class="gs-btn gs-btn--outline" data-action="cancelEditor">
+        {{localize "GOODSOCIETY.personaEditor.cancel"}}
+      </button>
+      <button type="button" class="gs-btn gs-btn--primary" data-action="savePersona">
+        {{localize "GOODSOCIETY.personaEditor.save"}}
+      </button>
+    </div>
+  </footer>
+
+</section>

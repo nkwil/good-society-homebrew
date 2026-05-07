@@ -37,6 +37,12 @@
 /* Rule tooltip — floating hover panel for [data-tooltip-key] elements */
 @import './components/_rule-tooltip.css';
 
+/* Persona picker — in-sheet trigger (closed state) */
+@import './components/_persona-picker.css';
+
+/* Persona switcher popover — floating persona list */
+@import './components/_persona-switcher-popover.css';
+
 /* Token hover card — themed floating card on canvas token hover */
 @import './components/_token-hover-card.css';
 
@@ -89,6 +95,7 @@
 
 /* App windows */
 @import './apps/_monologue-editor.css';
+@import './apps/_persona-editor.css';
 @import './apps/_dock.css';
 @import './apps/_dashboard.css';
 

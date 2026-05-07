@@ -791,16 +791,29 @@ The `tooltipsEnabled` user setting (default `true`) suppresses both the glyph an
 ### Switching a persona (the trickiest pattern)
 
 ```js
-async function switchPersona(actor, newPersonaId) {
-  const persona = actor.system.personas.find(p => p.id === newPersonaId);
-  if (!persona) return;
+// IMPLEMENTATION NOTE (Option B — B-5a-ii): the real implementation lives in
+// module/helpers/persona-swap.js. It differs from this worked example in one
+// critical way: actor.img is NEVER overwritten. actor.img stays as the canonical
+// base-identity portrait permanently. Only prototypeToken.texture.src and placed
+// Token textures change on each swap. The "no persona / true identity" target for
+// both is always actor.img. This removes the need for a flag to track the
+// original portrait and keeps portrait resolution consistent with how sheet
+// surfaces already resolve it: activePersona?.portraitUrl || actor.img.
 
-  // 1. Update the actor's active persona
+async function switchPersona(actor, newPersonaId) {
+  const persona = newPersonaId
+    ? actor.system.personas.find(p => p.id === newPersonaId)
+    : null;  // null = clear to true identity
+
+  // Option B: tokenSrc and tokenName resolve from persona OR fall back to actor.
+  const tokenSrc  = persona ? (persona.tokenImageUrl || actor.img) : actor.img;
+  const tokenName = persona ? (persona.tokenName || persona.name || actor.name) : actor.name;
+
+  // 1. Update the actor's active persona. Does NOT write actor.img (Option B).
   await actor.update({
-    "system.activePersonaId": newPersonaId,
-    "prototypeToken.texture.src": persona.tokenImageUrl,
-    "prototypeToken.name": persona.tokenName,
-    "img": persona.portraitUrl,
+    "system.activePersonaId":     newPersonaId,
+    "prototypeToken.texture.src": tokenSrc,
+    "prototypeToken.name":        tokenName,
   });
 
   // 2. Update every placed token of this actor across all scenes
@@ -809,13 +822,13 @@ async function switchPersona(actor, newPersonaId) {
     if (tokens.length === 0) continue;
     await scene.updateEmbeddedDocuments("Token", tokens.map(t => ({
       _id: t.id,
-      "texture.src": persona.tokenImageUrl,
-      name: persona.tokenName,
+      "texture.src": tokenSrc,
+      name: tokenName,
     })));
   }
 
-  // 3. Optional VFX
-  if (game.modules.get("sequencer")?.active) {
+  // 3. Optional VFX (only when switching TO a persona, not when clearing)
+  if (persona && game.modules.get("sequencer")?.active) {
     new Sequence().effect()
       .atLocation(canvas.tokens.placeables.find(t => t.actor?.id === actor.id))
       .file("jb2a.misty_step.01.blue")
@@ -1031,6 +1044,10 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - **B-4 (2026-05-06): Bulk Permissions Panel — pending changes tracked in a private Map, DOM updated in-place.** The `#pending = new Map<actorId, Map<userId, level>>` tracks all unsaved edits. Cell clicks update the Map then patch DOM directly (no Handlebars re-render). Only full re-render on Save and Discard. This is the correct pattern for any grid-style editor where re-rendering on every cell change would reset scroll position and lose focus.
 - **B-4 (2026-05-06): Bulk Permissions Panel — save merges pending onto current ownership; `{ ...actor.ownership }` shallow spread is sufficient.** The `ownership` object is flat (`{ default: N, [userId]: N }`), so a spread copy preserves all keys. Only the pending-changed user IDs are overwritten. The GM's implicit OWNER access is Foundry-enforced and does not need a key in the ownership object.
 - **B-4 (2026-05-06): Bulk Permissions Panel — keyboard shortcut deferred.** Ctrl+Shift+P collides with browser Print on some platforms. Keyboard shortcut can be added in v1 as an opt-in user setting. Not in v0.
+- **B-5a-i (2026-05-06): Persona picker — vanilla DOM popover replaces native `<select>`.** The native `<select name="system.activePersonaId">` on the Major sheet header was causing two bugs: form-submit not firing, then silent actor-rename. Replaced with a `data-action="openPersonaSwitcher"` button that opens a vanilla DOM popover (same pattern as reveal-control.js). Theme `<select name="system.theme">` added to the eyebrow row — the read-only label was replaced with an editable select; `submitOnChange: true` persists immediately and re-renders with the updated `data-theme`. `activePersonaExplicit: !!(system.activePersonaId)` distinguishes "no explicit selection" (show "true identity ▾") from "persona chosen" (show persona name ▾). Popover z-index: 500 (must overlay ApplicationV2 sheet windows).
+- **B-5a-ii (2026-05-06): Persona swap — Option B (never write actor.img).** The CLAUDE.md §11 worked example included `"img": persona.portraitUrl` in the actor.update call. Option B removes this line. actor.img stays as the canonical base-identity portrait permanently. Only `prototypeToken.texture.src` and placed Token textures change on each swap. The "no persona / true identity" target for both is always `actor.img`. This simplifies the reverse direction (no flag needed to store original portrait) and matches how rendering surfaces already resolve portraits: `activePersona?.portraitUrl || actor.img`. The §11 pseudocode in CLAUDE.md has been updated to reflect this.
+- **B-5a-ii (2026-05-06): Persona editor — `chatColor` color input defaults to theme brand.** `<input type="color">` requires a non-empty value; when persona.chatColor is '' (no override), the input defaults to `#2A3A2D` (Clayton theme brand). On save, the editor detects this case and stores '' instead of the stub default, so a user who never touches the color picker doesn't accidentally store an override. Users who want to set the theme's own brand as an explicit override will need to type the hex manually — acceptable for v0.
+- **B-5a-ii (2026-05-06): Persona editor — per-actor instance ID (`gs-persona-editor-{actor.id}`).** The editor uses a per-actor ID so multiple actors can have editors open simultaneously. Without this, opening the editor for a second actor would silently reuse the first's window.
 - **B-4 (2026-05-06): Bulk Permissions Panel — `_setPending` reverts to server state when level matches.** If the GM clicks a cell to OWN and then clicks it back to read (the server value), the pending entry is removed so the cell shows clean. This avoids showing a "changed" indicator for no-op changes.
 
 ---
@@ -1077,3 +1094,4 @@ Record decisions made *during* the build here so future sessions don't re-litiga
 - ❌ Don't use `actor.name` directly in display surfaces (sheets, dashboards, dock rows, hover cards, chat-card aliases, journal entries) when the actor has personas. The active persona's name overrides the actor's true name in displays — the actor's canonical name is editable on the sheet's name input but everywhere else, what users should see is the active persona. Always resolve `displayName = actor.system.activePersona?.name || actor.name` before rendering. `themedWrap()` handles persona-aware brand color but not display name — that's a separate resolution. Worked examples: `module/helpers/dashboard-context.js` (`displayName` computation), `module/helpers/dock-context.js` (`speakerName`), `module/sheets/major-character-sheet.js` (`displayName` in `_prepareContext`). When the editable name input on a sheet shows the resolved displayName, also add `{{#if activePersonaId}}readonly{{/if}}` so editing doesn't silently rename the actor while the persona's name keeps showing.
 - ❌ Don't ship localization changes without validating `lang/en.json` first. JSON parse errors break ALL localization globally — every key renders literally (e.g. `GOODSOCIETY.dock.title` instead of "My Characters") because Foundry can't load the file at all. Common cause: unescaped double quotes inside translated strings (`"NPC "{name}" dropped"` should be `"NPC \"{name}\" dropped"`). Always run `python3 -m json.tool lang/en.json > /dev/null` before committing localization changes; consider a pre-commit git hook to enforce.
 - ❌ Don't compute canvas-element-relative positions from `canvas.stage.scale/position` alone for hover cards or other viewport-anchored UI. The math `placeable.x * scale + panX` gives canvas-internal coords, NOT viewport coords — when the canvas element isn't at viewport `(0, 0)` (sidebars open, DevTools docked, popouts), the conversion is incomplete and the UI lands in the wrong place. Worse, `getBoundingClientRect()` and `elementsFromPoint()` will appear to confirm the wrong location. The robust pattern: track cursor position via a global `mousemove` listener and place the UI at `ev.clientX/Y` — `clientX/Y` is already in viewport coordinates, no conversion needed. Worked example: `module/hooks/token-hover-card.js` `_positionCard` (cursor-relative placement with edge-flip logic).
+- ❌ Don't ship a transient overlay (popover, hover card, dropdown menu) opened from inside an `ApplicationV2` sheet with `z-index < 500`. Active ApplicationV2 windows climb above `z-index: 100` (Foundry's window manager assigns them high stacks), so a `z-index: 100` popover renders correctly, lives in the DOM at the right viewport coords, computes `display: block; visibility: visible; opacity: 1` — and is still invisible because it's stacked **behind** the sheet that opened it. The bug looks like "click did nothing" until you probe `getBoundingClientRect()` and find the popover is right there, just buried. Established z-index precedent in this codebase: tooltips `10000` (overlays everything including modals), reveal-control popover `500` (overlays sheets), token hover card `300` (overlays canvas only), persona switcher popover `500` (overlays sheets — set after debugging this exact bug). Use `500` as the default for any new sheet-anchored overlay.

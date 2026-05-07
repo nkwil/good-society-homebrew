@@ -4,6 +4,9 @@
 
 import { MonologueEditor } from '../apps/monologue-editor.js';
 import { openRevealControl } from '../apps/reveal-control.js';
+import { openPersonaSwitcherPopover } from '../apps/persona-switcher-popover.js';
+import { openPersonaEditor } from '../apps/persona-editor.js';
+import { switchPersona } from '../helpers/persona-swap.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -49,6 +52,7 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       addConnection: MajorCharacterSheet.#addConnection,
       createItem: MajorCharacterSheet.#createItem,
       castSkill: MajorCharacterSheet.#castSkill,
+      openPersonaSwitcher: MajorCharacterSheet.#openPersonaSwitcher,
     },
   };
 
@@ -171,6 +175,17 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       peerageLabel,
       personas: system.personas ?? [],
       activePersonaId: system.activePersonaId ?? '',
+      // True when ANY persona is currently driving the displayed identity
+      // (whether explicitly selected via activePersonaId or resolved by the
+      // primary-persona fallback in the data model getter). Used by the
+      // header template to lock the name input against silent actor-rename.
+      hasActivePersona: !!activePersona,
+      // True only when a persona is EXPLICITLY selected (activePersonaId is set
+      // to a real persona ID). The picker trigger uses this to distinguish
+      // "no persona explicitly chosen" (show "true identity") from "persona
+      // selected" (show the persona name). Differs from hasActivePersona, which
+      // is also true when only the primary-persona fallback is in play.
+      activePersonaExplicit: !!(system.activePersonaId),
       // Strip
       resolvePips,
       cycleNumber,
@@ -280,9 +295,25 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     item[0]?.sheet?.render(true);
   }
 
-  // Stub — cast pipeline (visibility-aware confirm + Sequencer) ships with item sheets.
+  // Cast pipeline: if the skill has triggersPersonaSwap, run the swap. Full
+  // VFX-only cast pipeline (visibility-aware confirm + Sequencer for non-swap
+  // skills) ships in a future session.
   static async #castSkill(event, target) {
     const item = this.actor.items.get(target.dataset.itemId);
-    ui.notifications?.info(`Cast pipeline for "${item?.name ?? 'skill'}" coming in a future session.`);
+    if (!item) return;
+    const swapTargetId = item.system?.triggersPersonaSwap?.targetPersonaId;
+    if (swapTargetId) {
+      await switchPersona(this.actor, swapTargetId);
+    } else {
+      ui.notifications?.info(`Cast pipeline for "${item.name}" coming in a future session.`);
+    }
+  }
+
+  static #openPersonaSwitcher(event, target) {
+    openPersonaSwitcherPopover(
+      this.actor,
+      target,
+      () => openPersonaEditor(this.actor),
+    );
   }
 }

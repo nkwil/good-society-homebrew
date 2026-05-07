@@ -16,19 +16,11 @@
 
     <hr class="gs-hairline gs-major-sheet__side-rule">
 
-    <span class="gs-major-sheet__persona-eyebrow">persona</span>
-
-    {{#if personas.length}}
-      <select class="gs-major-sheet__persona-select" name="system.activePersonaId">
-        {{#each personas as |persona|}}
-          <option value="{{persona.id}}" {{#if (eq persona.id ../activePersonaId)}}selected{{/if}}>
-            {{persona.name}}
-          </option>
-        {{/each}}
-      </select>
-    {{else}}
-      <span class="gs-major-sheet__persona-none">— no personas —</span>
-    {{/if}}
+    <span class="gs-persona-picker__eyebrow">{{localize "GOODSOCIETY.personaSwitcher.eyebrow"}}</span>
+    <button type="button" class="gs-persona-picker__trigger" data-action="openPersonaSwitcher"
+            title="{{localize "GOODSOCIETY.personaSwitcher.triggerHint"}}">
+      {{#if activePersonaExplicit}}{{displayName}} ▾{{else}}{{localize "GOODSOCIETY.personaSwitcher.trueIdentity"}} ▾{{/if}}
+    </button>
 
   </div>
 
@@ -37,19 +29,32 @@
 
     <div class="gs-major-sheet__eyebrow">
       <span class="gs-major-sheet__eyebrow-left">major character</span>
-      <span class="gs-major-sheet__eyebrow-right">theme · {{system.theme}}</span>
+      <select class="gs-major-sheet__theme-select" name="system.theme"
+              title="{{localize "GOODSOCIETY.personaSwitcher.themeSelectHint"}}">
+        <option value="rose"    {{#if (eq system.theme "rose"   )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.rose"}}</option>
+        <option value="roger"   {{#if (eq system.theme "roger"  )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.roger"}}</option>
+        <option value="mags"    {{#if (eq system.theme "mags"   )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.mags"}}</option>
+        <option value="avril"   {{#if (eq system.theme "avril"  )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.avril"}}</option>
+        <option value="dixon"   {{#if (eq system.theme "dixon"  )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.dixon"}}</option>
+        <option value="clayton" {{#if (eq system.theme "clayton")}}selected{{/if}}>{{localize "GOODSOCIETY.theme.clayton"}}</option>
+      </select>
     </div>
 
-    {{!-- Display name = persona name if active, else actor name.
-         When a persona is active the input is readonly — the persona's
-         name is owned by the persona record, and editing here would
-         silently rename the actor (not the persona). To rename, clear
-         the persona selection first. --}}
+    {{!-- Display name = persona name if active (including primary-persona fallback
+         when activePersonaId is empty), else actor name. When a persona is driving
+         the displayName, the input is BOTH readonly AND stripped of its name="name"
+         attribute — readonly stops the user typing into it, the missing name
+         attribute stops form-submit from writing the displayed persona name back
+         to actor.name. The earlier check used `activePersonaId` only, which had a
+         hole: when activePersonaId was '' but personas existed, the data-model
+         getter resolved displayName to the primary persona while readonly stayed
+         off, so form-submit silently renamed the actor to the persona's name.
+         To rename the actor, clear the persona via the dropdown first. --}}
     <input class="gs-major-sheet__name"
            type="text"
-           name="name"
+           {{#unless hasActivePersona}}name="name"{{/unless}}
            value="{{displayName}}"
-           {{#if activePersonaId}}readonly{{/if}}
+           {{#if hasActivePersona}}readonly title="To rename the actor, clear the persona selection first."{{/if}}
            placeholder="{{localize 'GOODSOCIETY.sheet.namePlaceholder'}}" />
 
     <p class="gs-major-sheet__role">{{roleTitle}}</p>

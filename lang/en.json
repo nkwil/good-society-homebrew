@@ -663,6 +663,51 @@
       }
     },
 
+    "personaEditor": {
+      "windowTitle":           "Persona Editor",
+      "eyebrowCreate":         "NEW PERSONA",
+      "eyebrowEdit":           "PERSONA EDITOR",
+      "namePlaceholder":       "Persona name",
+      "primaryLabel":          "PRIMARY",
+      "primaryHint":           "Toggle to make this the primary identity. One persona can be primary.",
+      "portrait":              "PORTRAIT",
+      "tokenImage":            "TOKEN IMAGE",
+      "imagePlaceholder":      "path/to/image.webp",
+      "browseHint":            "Browse images…",
+      "tokenName":             "TOKEN NAMEPLATE",
+      "tokenNamePlaceholder":  "Name under the canvas token",
+      "hoverSummary":          "HOVER SUMMARY",
+      "hoverSummaryPlaceholder": "What players see when hovering this persona's token…",
+      "chatColor":             "CHAT COLOR",
+      "chatColorHint":         "Overrides the character theme's brand color for chat cards posted as this persona.",
+      "visibilityOverrides":   "VISIBILITY OVERRIDES · per-identity",
+      "visDesire":             "desire",
+      "visBackstory":          "backstory",
+      "visMagic":              "magic",
+      "delete":                "delete persona",
+      "deletePrimaryHint":     "Set another persona as primary before deleting this one.",
+      "deleteConfirm":         "Delete the persona \"{name}\"? Chat history attributed to it is preserved.",
+      "cancel":                "cancel",
+      "save":                  "save"
+    },
+
+    "personaSwitcher": {
+      "eyebrow":          "PERSONA",
+      "ariaLabel":        "Persona switcher",
+      "triggerHint":      "Click to switch persona or add a new one",
+      "themeSelectHint":  "Character theme — changes palette and typography",
+      "trueIdentity":     "true identity",
+      "trueIdentitySub":  "no persona active",
+      "active":           "ACTIVE",
+      "primary":          "primary",
+      "switchLink":       "switch",
+      "newPersona":       "new persona",
+      "swapFailed":       "Persona swap failed. See the console for details.",
+      "editHint":         "Edit this persona (rename, portrait, delete…)",
+      "oneIdentity":      "1 identity",
+      "nIdentities":      "{n} identities"
+    },
+
     "theme": {
       "rose": "Rose",
       "roger": "Roger",

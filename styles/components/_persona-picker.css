@@ -1,0 +1,32 @@
+/* ── Persona Picker — closed state in the Major sheet side panel ─────────── */
+
+.gs-persona-picker__eyebrow {
+  display: block;
+  font-variant: small-caps;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--gs-brand);
+  text-align: center;
+  margin-top: 8px;
+}
+
+.gs-persona-picker__trigger {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-family: var(--gs-italic);
+  font-size: 13px;
+  color: var(--gs-brand);
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.gs-persona-picker__trigger:hover {
+  opacity: 0.7;
+}
