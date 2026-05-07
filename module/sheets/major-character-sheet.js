@@ -51,6 +51,7 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       openActor: MajorCharacterSheet.#openActor,
       addConnection: MajorCharacterSheet.#addConnection,
       createItem: MajorCharacterSheet.#createItem,
+      deleteItem: MajorCharacterSheet.#deleteItem,
       castSkill: MajorCharacterSheet.#castSkill,
       openPersonaSwitcher: MajorCharacterSheet.#openPersonaSwitcher,
     },
@@ -295,6 +296,14 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     if (target.dataset.itemPolarity) systemDefaults.polarity = target.dataset.itemPolarity;
     const item = await this.actor.createEmbeddedDocuments('Item', [{ type, name: `New ${type}`, system: systemDefaults }]);
     item[0]?.sheet?.render(true);
+  }
+
+  static async #deleteItem(event, target) {
+    const id = target.dataset.itemId;
+    if (!id) return;
+    const item = this.actor.items.get(id);
+    if (!item) return;
+    await this.actor.deleteEmbeddedDocuments('Item', [id]);
   }
 
   // Cast pipeline: if the skill has triggersPersonaSwap, run the swap. Full

@@ -74,6 +74,7 @@
     },
 
     "item": {
+      "done": "Done",
       "reputationTag": {
         "eyebrow": "Reputation tag",
         "namePlaceholder": "Tag name (e.g. Ambitious)",

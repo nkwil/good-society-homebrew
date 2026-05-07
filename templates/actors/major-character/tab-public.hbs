@@ -52,13 +52,20 @@
         </div>
         <div class="gs-major-sheet__tag-list">
           {{#each positiveTags}}
-            <button class="gs-tag-pill gs-tag-pill--positive"
-                    type="button"
-                    data-action="openItem"
-                    data-item-id="{{this.id}}">
-              <span class="gs-polarity-arrow gs-polarity-arrow--positive">▲</span>
-              <span class="gs-tag-pill__name">{{this.name}}</span>
-            </button>
+            <div class="gs-tag-pill gs-tag-pill--positive">
+              <button type="button"
+                      class="gs-tag-pill__open"
+                      data-action="openItem"
+                      data-item-id="{{this.id}}">
+                <span class="gs-polarity-arrow gs-polarity-arrow--positive">▲</span>
+                <span class="gs-tag-pill__name">{{this.name}}</span>
+              </button>
+              <button type="button"
+                      class="gs-tag-pill__delete"
+                      data-action="deleteItem"
+                      data-item-id="{{this.id}}"
+                      title="Remove tag">×</button>
+            </div>
           {{/each}}
         </div>
       </div>
@@ -83,13 +90,20 @@
         </div>
         <div class="gs-major-sheet__tag-list">
           {{#each negativeTags}}
-            <button class="gs-tag-pill gs-tag-pill--negative"
-                    type="button"
-                    data-action="openItem"
-                    data-item-id="{{this.id}}">
-              <span class="gs-polarity-arrow gs-polarity-arrow--negative">▼</span>
-              <span class="gs-tag-pill__name">{{this.name}}</span>
-            </button>
+            <div class="gs-tag-pill gs-tag-pill--negative">
+              <button type="button"
+                      class="gs-tag-pill__open"
+                      data-action="openItem"
+                      data-item-id="{{this.id}}">
+                <span class="gs-polarity-arrow gs-polarity-arrow--negative">▼</span>
+                <span class="gs-tag-pill__name">{{this.name}}</span>
+              </button>
+              <button type="button"
+                      class="gs-tag-pill__delete"
+                      data-action="deleteItem"
+                      data-item-id="{{this.id}}"
+                      title="Remove tag">×</button>
+            </div>
           {{/each}}
         </div>
       </div>
