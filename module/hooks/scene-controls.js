@@ -13,6 +13,7 @@
  */
 
 import { openDashboard } from '../apps/public-info-dashboard.js';
+import { toggleOrganizer } from '../apps/npc-organizer.js';
 
 export function register() {
   Hooks.on('getSceneControlButtons', (controls) => {
@@ -26,9 +27,7 @@ export function register() {
     }
     if (!target?.tools) return;
 
-    // Foundry v13 deprecated `onClick` in favor of `onChange` for SceneControlTool.
-    // Backwards-compatible support is slated for removal in v15.
-    const tool = {
+    const dashboardTool = {
       name: 'gs-dashboard',
       title: 'GOODSOCIETY.dashboard.sceneControlTitle',
       icon: 'fa-solid fa-users',
@@ -37,11 +36,21 @@ export function register() {
       visible: true,
     };
 
+    const organizerTool = {
+      name: 'gs-organizer',
+      title: 'GOODSOCIETY.npcOrganizer.sceneControlTitle',
+      icon: 'fa-solid fa-list',
+      button: true,
+      onChange: () => toggleOrganizer(),
+      visible: game.user?.isGM,
+    };
+
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(tool);
+      target.tools.push(dashboardTool, organizerTool);
     } else {
-      target.tools['gs-dashboard'] = tool;
+      target.tools['gs-dashboard'] = dashboardTool;
+      target.tools['gs-organizer'] = organizerTool;
     }
   });
 }

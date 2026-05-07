@@ -9,6 +9,7 @@ import { register as registerCanvasContext } from './hooks/canvas-context.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
 import { initCycleHud, renderCycleHud } from './apps/cycle-hud.js';
+import { renderOrganizer } from './apps/npc-organizer.js';
 import { initTooltipSystem } from './helpers/rule-tooltip.js';
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
@@ -165,6 +166,22 @@ Hooks.once('init', async function () {
     default: true,
   });
 
+  game.settings.register('good-society-homebrew', 'organizerPlayerVisible', {
+    name: 'GOODSOCIETY.settings.organizerPlayerVisible.name',
+    hint: 'GOODSOCIETY.settings.organizerPlayerVisible.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: false,
+  });
+
+  game.settings.register('good-society-homebrew', 'organizerPosition', {
+    scope: 'client',
+    config: false,
+    type: Object,
+    default: null,
+  });
+
   // Load and register Handlebars partials for shared components.
   const loaded = await loadTemplates(GS_COMPONENT_PARTIALS);
   for (const [name, fn] of Object.entries(loaded)) {
@@ -281,6 +298,12 @@ Hooks.on('deleteActor', () => {
 });
 // Mirror speaker-changed events from the chat-input switcher.
 Hooks.on('goodSociety.activeSpeakerChanged', () => renderDock());
+
+// Re-render the organizer when the token list on the active scene changes.
+Hooks.on('createToken', () => renderOrganizer());
+Hooks.on('deleteToken', () => renderOrganizer());
+Hooks.on('updateToken', () => renderOrganizer());
+Hooks.on('canvasReady', () => renderOrganizer());
 
 // Register hooks that must fire after init.
 registerSpeakingAs();

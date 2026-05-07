@@ -92,6 +92,7 @@
 @import './apps/_cycle-hud.css';
 @import './apps/_reveal-control.css';
 @import './apps/_npc-quick-create.css';
+@import './apps/_npc-organizer.css';
 
 /* B-4 additions (not yet implemented):
  * @import './apps/_letter-composer.css';

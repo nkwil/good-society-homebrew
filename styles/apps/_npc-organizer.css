@@ -1,0 +1,215 @@
+/* NPC Organizer — frameless ApplicationV2 sidebar, 290px wide.
+ * Follows the same frameless positioning rules as _dock.css:
+ * position: fixed, explicit z-index, pointer-events: auto on all surfaces.
+ */
+
+.application.gs-npc-organizer {
+  position: fixed;
+  z-index: 50;
+  pointer-events: auto;
+  width: 290px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid rgba(61, 47, 38, 0.2);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(61, 47, 38, 0.12);
+}
+
+.gs-npc-organizer {
+  display: flex;
+  flex-direction: column;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  font-family: var(--gs-body);
+  width: 100%;
+  min-height: 0;
+  pointer-events: auto;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.gs-npc-organizer__header {
+  padding: 10px 14px 8px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  background: var(--gs-paper);
+  flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.gs-npc-organizer__header-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gs-npc-organizer__eyebrow {
+  font-family: var(--gs-ui);
+  font-size: 0.68rem;
+  font-variant: small-caps;
+  letter-spacing: 0.18em;
+  color: var(--gs-accent-2);
+  flex: 1;
+}
+
+.gs-npc-organizer__total {
+  font-family: var(--gs-ui);
+  font-size: 0.78rem;
+  color: var(--gs-ink);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.gs-npc-organizer__scene-name {
+  font-family: var(--gs-italic);
+  font-size: 0.72rem;
+  color: var(--gs-ink);
+  opacity: 0.6;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+
+.gs-npc-organizer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.gs-npc-organizer__empty {
+  font-family: var(--gs-italic);
+  font-size: 0.78rem;
+  color: var(--gs-ink);
+  opacity: 0.55;
+  text-align: center;
+  padding: 12px 0;
+  margin: 0;
+}
+
+.gs-npc-organizer__section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-npc-organizer__section-eyebrow {
+  font-family: var(--gs-ui);
+  font-size: 0.62rem;
+  font-variant: small-caps;
+  letter-spacing: 0.12em;
+  color: var(--gs-ink);
+  opacity: 0.5;
+  padding: 0 2px;
+}
+
+/* ── Row ─────────────────────────────────────────────────────────────────── */
+
+.gs-npc-organizer__row {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: var(--gs-paper-warm);
+  cursor: pointer;
+  border-left: 2.5px solid var(--gs-brand);
+  pointer-events: auto;
+  transition: opacity 0.15s;
+}
+
+.gs-npc-organizer__row:hover {
+  opacity: 0.82;
+}
+
+.gs-npc-organizer__row-portrait {
+  width: 22px;
+  height: 26px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--gs-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gs-npc-organizer__row-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gs-npc-organizer__row-initial {
+  font-family: var(--gs-display);
+  font-size: 0.65rem;
+  color: var(--gs-brand);
+  line-height: 1;
+  user-select: none;
+}
+
+.gs-npc-organizer__row-name {
+  font-family: var(--gs-display);
+  font-size: 0.78rem;
+  color: var(--gs-brand);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.gs-npc-organizer__footer {
+  padding: 6px 14px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid rgba(61, 47, 38, 0.12);
+  font-family: var(--gs-italic);
+  font-size: 0.68rem;
+  color: var(--gs-ink);
+  opacity: 0.55;
+  text-align: center;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ── Context menu ────────────────────────────────────────────────────────── */
+
+.gs-organizer-ctx {
+  background: var(--gs-paper);
+  border: 0.5px solid rgba(61, 47, 38, 0.25);
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(61, 47, 38, 0.15);
+  padding: 4px 0;
+  min-width: 160px;
+  z-index: 600;
+}
+
+.gs-organizer-ctx__item {
+  display: block;
+  width: 100%;
+  padding: 6px 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-family: var(--gs-body);
+  font-size: 0.85rem;
+  color: var(--gs-ink);
+  cursor: pointer;
+}
+
+.gs-organizer-ctx__item:hover {
+  background: var(--gs-muted);
+}
+
+.gs-organizer-ctx__item--danger {
+  color: var(--gs-danger);
+}

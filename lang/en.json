@@ -506,6 +506,20 @@
       }
     },
 
+    "npcOrganizer": {
+      "sceneControlTitle": "NPC Organizer",
+      "eyebrow":           "SCENE TOKENS",
+      "connectionsLabel":  "Connections",
+      "npcsLabel":         "NPCs",
+      "empty":             "No Connection or NPC tokens on this scene yet. Right-click empty canvas to create one.",
+      "footerHint":        "click to focus · right-click for actions",
+      "ctx": {
+        "openSheet":       "Open sheet",
+        "removeToken":     "Remove from scene",
+        "removeConfirm":   "Remove {name} from this scene? The actor is not deleted."
+      }
+    },
+
     "dashboard": {
       "windowTitle":        "Public Info · Facilitator Dashboard",
       "title":              "Public Info · Facilitator Dashboard",
@@ -580,6 +594,10 @@
       "homebrewMagicEnabled": {
         "name": "Enable Homebrew Magic & Skills",
         "hint": "Show the Magic & Skills tab on Major character sheets and enable VFX casting. Disable for tables playing canonical Good Society without the homebrew additions."
+      },
+      "organizerPlayerVisible": {
+        "name": "NPC Organizer Visible to Players",
+        "hint": "When enabled, players can open the NPC Organizer sidebar from the scene controls. By default only the GM can see it."
       }
     },
 
