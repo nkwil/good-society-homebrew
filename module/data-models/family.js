@@ -1,6 +1,28 @@
 const { StringField, NumberField, ArrayField, SchemaField, HTMLField } = foundry.data.fields;
 
+/**
+ * Valid choices for `heirStatus`. Kept in sync with the StringField below;
+ * also referenced by `migrateData` to coerce legacy values.
+ */
+const HEIR_STATUS_CHOICES = ['named-son', 'named-daughter', 'named-foster', 'vacant', 'contested'];
+
 export class FamilyDataModel extends foundry.abstract.TypeDataModel {
+  /**
+   * Coerce legacy data shapes before validation. Pre-A.6 the field was a
+   * `BooleanField` with `initial: false` — any Family actor authored under that
+   * schema still has `heirStatus: false` on disk, which fails the new enum
+   * validation and breaks actor initialization. Map anything outside the enum
+   * to the new default `'vacant'`. Foundry calls this prior to schema
+   * validation, so the actor loads cleanly and the cleaned value persists on
+   * the next user-driven save.
+   */
+  static migrateData(source) {
+    if (source && !HEIR_STATUS_CHOICES.includes(source.heirStatus)) {
+      source.heirStatus = 'vacant';
+    }
+    return super.migrateData(source);
+  }
+
   static defineSchema() {
     return {
       familyName: new StringField({ initial: '' }),
@@ -10,7 +32,7 @@ export class FamilyDataModel extends foundry.abstract.TypeDataModel {
       }),
       heirStatus: new StringField({
         required: true,
-        choices: ['named-son', 'named-daughter', 'named-foster', 'vacant', 'contested'],
+        choices: HEIR_STATUS_CHOICES,
         initial: 'vacant',
       }),
       establishedYear: new NumberField({ required: false, integer: true, nullable: true, initial: null }),
