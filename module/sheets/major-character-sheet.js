@@ -291,7 +291,9 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
 
   static async #createItem(event, target) {
     const type = target.dataset.itemType;
-    const item = await this.actor.createEmbeddedDocuments('Item', [{ type, name: `New ${type}` }]);
+    const systemDefaults = {};
+    if (target.dataset.itemPolarity) systemDefaults.polarity = target.dataset.itemPolarity;
+    const item = await this.actor.createEmbeddedDocuments('Item', [{ type, name: `New ${type}`, system: systemDefaults }]);
     item[0]?.sheet?.render(true);
   }
 

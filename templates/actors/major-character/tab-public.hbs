@@ -43,6 +43,12 @@
               <span class="gs-rep-meter__pip{{#if this.filled}} gs-rep-meter__pip--filled{{/if}}"></span>
             {{/each}}
           </div>
+          <button type="button"
+                  class="gs-btn gs-btn--ghost gs-btn--sm gs-major-sheet__add-tag-btn"
+                  data-action="createItem"
+                  data-item-type="reputation-tag"
+                  data-item-polarity="positive"
+                  title="{{localize 'GOODSOCIETY.public.addTagPositive'}}">+</button>
         </div>
         <div class="gs-major-sheet__tag-list">
           {{#each positiveTags}}
@@ -54,9 +60,6 @@
               <span class="gs-tag-pill__name">{{this.name}}</span>
             </button>
           {{/each}}
-          <span class="gs-tag-pill gs-tag-pill--placeholder" aria-hidden="true">
-            {{localize "GOODSOCIETY.public.dragTagHere"}}
-          </span>
         </div>
       </div>
 
@@ -71,6 +74,12 @@
               <span class="gs-rep-meter__pip{{#if this.filled}} gs-rep-meter__pip--filled{{/if}}"></span>
             {{/each}}
           </div>
+          <button type="button"
+                  class="gs-btn gs-btn--ghost gs-btn--sm gs-major-sheet__add-tag-btn"
+                  data-action="createItem"
+                  data-item-type="reputation-tag"
+                  data-item-polarity="negative"
+                  title="{{localize 'GOODSOCIETY.public.addTagNegative'}}">+</button>
         </div>
         <div class="gs-major-sheet__tag-list">
           {{#each negativeTags}}
@@ -82,9 +91,6 @@
               <span class="gs-tag-pill__name">{{this.name}}</span>
             </button>
           {{/each}}
-          <span class="gs-tag-pill gs-tag-pill--placeholder" aria-hidden="true">
-            {{localize "GOODSOCIETY.public.dragTagHere"}}
-          </span>
         </div>
       </div>
 

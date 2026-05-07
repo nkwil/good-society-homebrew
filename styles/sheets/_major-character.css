@@ -322,6 +322,16 @@
   margin-bottom: 8px;
 }
 
+.gs-major-sheet__add-tag-btn {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 4px;
+}
+
 .gs-major-sheet__tag-list {
   display: flex;
   flex-wrap: wrap;
