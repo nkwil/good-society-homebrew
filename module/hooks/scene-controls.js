@@ -15,6 +15,7 @@
 import { openDashboard } from '../apps/public-info-dashboard.js';
 import { toggleOrganizer } from '../apps/npc-organizer.js';
 import { openBulkPermissionsPanel } from '../apps/bulk-permissions-panel.js';
+import { openSessionLogPreview } from '../apps/session-log-preview.js';
 
 export function register() {
   Hooks.on('getSceneControlButtons', (controls) => {
@@ -55,13 +56,23 @@ export function register() {
       visible: game.user?.isGM,
     };
 
+    const endSessionTool = {
+      name: 'gs-end-session',
+      title: 'GOODSOCIETY.sessionLog.sceneControlTitle',
+      icon: 'fa-solid fa-book-bookmark',
+      button: true,
+      onChange: () => openSessionLogPreview(),
+      visible: game.user?.isGM,
+    };
+
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(dashboardTool, organizerTool, permissionsTool);
+      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool);
     } else {
       target.tools['gs-dashboard'] = dashboardTool;
       target.tools['gs-organizer'] = organizerTool;
       target.tools['gs-permissions'] = permissionsTool;
+      target.tools['gs-end-session'] = endSessionTool;
     }
   });
 }

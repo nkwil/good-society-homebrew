@@ -77,6 +77,14 @@ export async function switchPersona(actor, toPersonaId) {
     }
   }
 
+  // 3b. Fire session-event hook for persona swap logging.
+  Hooks.callAll('goodSociety.personaSwitched', {
+    actorId:          actor.id,
+    actorName:        actor.name,
+    personaName:      toPersona?.name ?? null,
+    fromPersonaName:  fromPersona?.name ?? null,
+  });
+
   // 4. Optional VFX — Sequencer + JB2A, only when switching TO a persona.
   if (toPersona && game.modules.get('sequencer')?.active) {
     try {

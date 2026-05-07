@@ -112,6 +112,15 @@ export class MonologueEditor extends HandlebarsApplicationMixin(ApplicationV2) {
       whisper: false,
     });
 
+    // Fire session-event hook so session-events.js can log this monologue.
+    const speakerName = this.actor.system?.activePersona?.name ?? this.actor.name;
+    Hooks.callAll('goodSociety.monologuePosted', {
+      actorId:     this.actor.id,
+      actorName:   this.actor.name,
+      speakerName,
+      content:     text,
+    });
+
     this.close();
   }
 

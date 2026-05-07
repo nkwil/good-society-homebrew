@@ -8,6 +8,7 @@ import { register as registerSceneControls } from './hooks/scene-controls.js';
 import { register as registerCanvasContext } from './hooks/canvas-context.js';
 import { register as registerTokenHoverCard } from './hooks/token-hover-card.js';
 import { register as registerUpkeep, onUpkeepPhaseStart } from './hooks/upkeep.js';
+import { register as registerSessionEvents } from './hooks/session-events.js';
 import { checkThresholdAndPrompt } from './helpers/reputation-rules.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
@@ -130,9 +131,17 @@ Hooks.once('init', async function () {
     type: String,
     default: 'pre-cycle',
     onChange: (value) => {
+      Hooks.callAll('goodSociety.cyclePhaseChanged', { newPhase: value });
       renderCycleHud();
       if (value === 'upkeep') onUpkeepPhaseStart();
     },
+  });
+
+  game.settings.register('good-society-homebrew', 'sessionEvents', {
+    scope: 'world',
+    config: false,
+    type: Object,
+    default: [],
   });
 
   game.settings.register('good-society-homebrew', 'cycleNumber', {
@@ -340,3 +349,4 @@ registerSceneControls();
 registerCanvasContext();
 registerTokenHoverCard();
 registerUpkeep();
+registerSessionEvents();

@@ -95,6 +95,7 @@
 
 /* App windows */
 @import './apps/_monologue-editor.css';
+@import './apps/_session-log-preview.css';
 @import './apps/_persona-editor.css';
 @import './apps/_dock.css';
 @import './apps/_dashboard.css';
