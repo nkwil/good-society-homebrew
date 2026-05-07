@@ -1,3 +1,4 @@
+<section class="gs-item-sheet__wrapper">
 <form class="gs-item-sheet__form" autocomplete="off">
   <header class="gs-item-sheet__header">
     <div class="gs-item-sheet__header-row">
@@ -34,12 +35,6 @@
       </div>
     </div>
 
-    {{!-- Description --}}
-    <div class="gs-item-sheet__field">
-      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.tag.description"}}</span>
-      {{editor system.description target="system.description" button=true editable=true}}
-    </div>
-
     {{!-- Source --}}
     <div class="gs-item-sheet__field">
       <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.tag.source"}}</span>
@@ -59,3 +54,4 @@
   </footer>
 
 </form>
+</section>

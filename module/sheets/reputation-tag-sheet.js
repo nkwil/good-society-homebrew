@@ -30,7 +30,14 @@ export class ReputationTagSheet extends HandlebarsApplicationMixin(ItemSheetV2) 
     await this.document.update({ 'system.polarity': target.dataset.polarity });
   }
 
-  static #done() {
+  static async #done() {
+    if (this.isEditable) {
+      const form = this.element?.querySelector('form');
+      if (form) {
+        const fd = new FormDataExtended(form);
+        await this.document.update(foundry.utils.expandObject(fd.object));
+      }
+    }
     this.close();
   }
 }

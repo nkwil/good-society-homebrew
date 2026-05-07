@@ -294,8 +294,22 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     const type = target.dataset.itemType;
     const systemDefaults = {};
     if (target.dataset.itemPolarity) systemDefaults.polarity = target.dataset.itemPolarity;
-    const item = await this.actor.createEmbeddedDocuments('Item', [{ type, name: `New ${type}`, system: systemDefaults }]);
-    item[0]?.sheet?.render(true);
+    const created = await this.actor.createEmbeddedDocuments('Item', [{ type, name: `New ${type}`, system: systemDefaults }]);
+    const item = created[0];
+    if (!item) return;
+
+    // Reputation tags must be registered in positiveTags / negativeTags or they
+    // won't appear in the reputation grid (the sheet only renders IDs in those arrays).
+    if (type === 'reputation-tag') {
+      const polarity = target.dataset.itemPolarity ?? 'positive';
+      const field = polarity === 'negative' ? 'system.reputation.negativeTags' : 'system.reputation.positiveTags';
+      const current = polarity === 'negative'
+        ? (this.actor.system.reputation?.negativeTags ?? [])
+        : (this.actor.system.reputation?.positiveTags ?? []);
+      await this.actor.update({ [field]: [...current, item.id] });
+    }
+
+    item.sheet?.render(true);
   }
 
   static async #deleteItem(event, target) {
@@ -303,6 +317,16 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     if (!id) return;
     const item = this.actor.items.get(id);
     if (!item) return;
+
+    // Remove from positiveTags / negativeTags index before deleting the item.
+    if (item.type === 'reputation-tag') {
+      const rep = this.actor.system.reputation ?? {};
+      await this.actor.update({
+        'system.reputation.positiveTags': (rep.positiveTags ?? []).filter(i => i !== id),
+        'system.reputation.negativeTags': (rep.negativeTags ?? []).filter(i => i !== id),
+      });
+    }
+
     await this.actor.deleteEmbeddedDocuments('Item', [id]);
   }
 
