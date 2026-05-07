@@ -1,0 +1,317 @@
+{{!-- Upkeep Wizard — single-root required by ApplicationV2 PARTS (§16 anti-pattern).
+     All step content lives inside this <section>. Conditionals inside, not at root. --}}
+<section class="gs-upkeep-wizard gs-themed" data-theme="{{themeId}}">
+
+  {{!-- ── Header ─────────────────────────────────────────────────────────── --}}
+  <header class="gs-upkeep-wizard__header">
+    <div class="gs-upkeep-wizard__header-top">
+      <div class="gs-upkeep-wizard__header-left">
+        <span class="gs-upkeep-wizard__eyebrow">{{eyebrow}}</span>
+        <h2 class="gs-upkeep-wizard__name">{{actorName}}</h2>
+      </div>
+      <span class="gs-upkeep-wizard__step-of">{{stepOf}}</span>
+    </div>
+
+    {{!-- Step indicator ribbon --}}
+    <div class="gs-upkeep-wizard__ribbon">
+      {{#each steps}}
+        {{#unless @first}}
+          <div class="gs-upkeep-wizard__connector gs-upkeep-wizard__connector--{{state}}"></div>
+        {{/unless}}
+        <div class="gs-upkeep-wizard__marker gs-upkeep-wizard__marker--{{state}}">
+          <span class="gs-upkeep-wizard__marker-dot"></span>
+          <span class="gs-upkeep-wizard__marker-label">{{label}}</span>
+        </div>
+      {{/each}}
+    </div>
+  </header>
+
+  {{!-- ── Body — step content ────────────────────────────────────────────── --}}
+  <div class="gs-upkeep-wizard__body">
+
+    {{!-- Step 1: Welcome --}}
+    {{#if (eq currentStep 1)}}
+      <h3 class="gs-upkeep-wizard__step-title">
+        {{localize "GOODSOCIETY.upkeepWizard.step1.title"}}
+      </h3>
+      <p class="gs-upkeep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.upkeepWizard.step1.prompt"}}
+      </p>
+      <div class="gs-upkeep-wizard__summary-card">
+        <div class="gs-upkeep-wizard__summary-row">
+          <span class="gs-upkeep-wizard__summary-label">{{localize "GOODSOCIETY.upkeepWizard.step1.resolveLabel"}}</span>
+          <span class="gs-upkeep-wizard__summary-value">{{resolveAtStart.current}} / {{resolveAtStart.max}}</span>
+        </div>
+        <div class="gs-upkeep-wizard__summary-row">
+          <span class="gs-upkeep-wizard__summary-label">{{localize "GOODSOCIETY.upkeepWizard.step1.pendingLabel"}}</span>
+          <span class="gs-upkeep-wizard__summary-value">{{pendingChangesCount}}</span>
+        </div>
+        {{#if hasConflict}}
+          <div class="gs-upkeep-wizard__summary-row">
+            <span class="gs-upkeep-wizard__summary-label">{{localize "GOODSOCIETY.upkeepWizard.step1.conflictLabel"}}</span>
+            <span class="gs-upkeep-wizard__summary-value">
+              {{localize "GOODSOCIETY.upkeepWizard.step1.conflictBoxes" filled=conflictBoxes.filled total=conflictBoxes.total}}
+            </span>
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    {{!-- Step 2: Tokens --}}
+    {{#if (eq currentStep 2)}}
+      <h3 class="gs-upkeep-wizard__step-title">
+        {{localize "GOODSOCIETY.upkeepWizard.step2.title"}}
+      </h3>
+      <p class="gs-upkeep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.upkeepWizard.step2.prompt"}}
+      </p>
+
+      {{!-- Resolve sub-card --}}
+      <div class="gs-upkeep-wizard__sub-card {{#if resolveState}}gs-upkeep-wizard__sub-card--resolved{{/if}}">
+        <div class="gs-upkeep-wizard__sub-card-title">
+          {{localize "GOODSOCIETY.upkeepWizard.step2.resolveCardTitle"}}
+        </div>
+        {{#if (eq resolveState "at_default")}}
+          <p class="gs-upkeep-wizard__sub-status gs-upkeep-wizard__sub-status--ok">
+            {{localize "GOODSOCIETY.upkeepWizard.step2.alreadyAtDefault"}}
+          </p>
+        {{else if (eq resolveState "refreshed")}}
+          <p class="gs-upkeep-wizard__sub-status gs-upkeep-wizard__sub-status--ok">
+            {{localize "GOODSOCIETY.upkeepWizard.step2.refreshed" current=defaultResolve max=maxResolve}}
+          </p>
+        {{else}}
+          <div class="gs-upkeep-wizard__resolve-preview">
+            <div class="gs-upkeep-wizard__resolve-col">
+              <span class="gs-upkeep-wizard__resolve-label">{{localize "GOODSOCIETY.upkeepWizard.step2.resolveCurrentLabel"}}</span>
+              <span class="gs-upkeep-wizard__resolve-value">{{currentResolve}} / {{maxResolve}}</span>
+            </div>
+            <span class="gs-upkeep-wizard__resolve-arrow">→</span>
+            <div class="gs-upkeep-wizard__resolve-col">
+              <span class="gs-upkeep-wizard__resolve-label">{{localize "GOODSOCIETY.upkeepWizard.step2.resolveAfterLabel"}}</span>
+              <span class="gs-upkeep-wizard__resolve-value gs-upkeep-wizard__resolve-value--target">{{defaultResolve}} / {{maxResolve}}</span>
+            </div>
+          </div>
+          <button type="button" class="gs-btn gs-btn--primary gs-upkeep-wizard__sub-btn"
+                  data-action="refreshResolve">
+            {{localize "GOODSOCIETY.upkeepWizard.step2.refreshBtn"}}
+          </button>
+        {{/if}}
+      </div>
+
+      {{!-- Monologue sub-card --}}
+      <div class="gs-upkeep-wizard__sub-card {{#if monologueState}}gs-upkeep-wizard__sub-card--resolved{{/if}}">
+        <div class="gs-upkeep-wizard__sub-card-title">
+          {{localize "GOODSOCIETY.upkeepWizard.step2.monologueCardTitle"}}
+        </div>
+        {{#if (eq monologueState "already_done")}}
+          <p class="gs-upkeep-wizard__sub-status gs-upkeep-wizard__sub-status--ok">
+            {{localize "GOODSOCIETY.upkeepWizard.step2.monologueAlreadyDone"}}
+          </p>
+        {{else if (eq monologueState "posted")}}
+          <p class="gs-upkeep-wizard__sub-status gs-upkeep-wizard__sub-status--ok">
+            {{localize "GOODSOCIETY.upkeepWizard.step2.monologuePosted"}}
+          </p>
+        {{else if (eq monologueState "expired")}}
+          <p class="gs-upkeep-wizard__sub-status gs-upkeep-wizard__sub-status--muted">
+            {{localize "GOODSOCIETY.upkeepWizard.step2.monologueExpired"}}
+          </p>
+        {{else}}
+          <p class="gs-upkeep-wizard__sub-prompt">
+            {{localize "GOODSOCIETY.upkeepWizard.step2.monologueNotTakenText" name=monologueName}}
+          </p>
+          <div class="gs-upkeep-wizard__monologue-actions">
+            <button type="button" class="gs-btn gs-btn--primary gs-upkeep-wizard__sub-btn"
+                    data-action="takeMonologue">
+              {{localize "GOODSOCIETY.upkeepWizard.step2.takeMonologueBtn"}}
+            </button>
+            <button type="button" class="gs-btn gs-btn--secondary gs-upkeep-wizard__sub-btn"
+                    data-action="letExpire">
+              {{localize "GOODSOCIETY.upkeepWizard.step2.letExpireBtn"}}
+            </button>
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    {{!-- Step 3: Notes & Objectives --}}
+    {{#if (eq currentStep 3)}}
+      <h3 class="gs-upkeep-wizard__step-title">
+        {{localize "GOODSOCIETY.upkeepWizard.step3.title"}}
+      </h3>
+      <p class="gs-upkeep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.upkeepWizard.step3.prompt"}}
+      </p>
+      <textarea class="gs-upkeep-wizard__notes-area"
+                data-upkeep-field="notes"
+                placeholder="{{localize "GOODSOCIETY.upkeepWizard.step3.placeholder"}}">{{notesText}}</textarea>
+    {{/if}}
+
+    {{!-- Step 4: Desire --}}
+    {{#if (eq currentStep 4)}}
+      <h3 class="gs-upkeep-wizard__step-title">
+        {{localize "GOODSOCIETY.upkeepWizard.step4.title"}}
+      </h3>
+      <p class="gs-upkeep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.upkeepWizard.step4.prompt"}}
+      </p>
+
+      <div class="gs-upkeep-wizard__desire-card">
+        <div class="gs-upkeep-wizard__desire-eyebrow">
+          {{localize "GOODSOCIETY.upkeepWizard.step4.currentDesireLabel"}}
+        </div>
+        <p class="gs-upkeep-wizard__desire-text">
+          {{#if desire}}"{{desire}}"{{else}}{{localize "GOODSOCIETY.upkeepWizard.step4.noDesire"}}{{/if}}
+        </p>
+        {{#unless desireExpanding}}
+          <button type="button" class="gs-btn gs-btn--secondary gs-upkeep-wizard__change-btn"
+                  data-action="changeDesire">
+            {{localize "GOODSOCIETY.upkeepWizard.step4.changeBtn"}}
+          </button>
+        {{/unless}}
+      </div>
+
+      {{#if desireExpanding}}
+        <div class="gs-upkeep-wizard__desire-new">
+          <textarea class="gs-upkeep-wizard__notes-area"
+                    data-upkeep-field="newDesire"
+                    placeholder="{{localize "GOODSOCIETY.upkeepWizard.step4.newDesirePlaceholder"}}">{{newDesire}}</textarea>
+          <button type="button" class="gs-btn gs-btn--primary"
+                  data-action="confirmDesire">
+            {{localize "GOODSOCIETY.upkeepWizard.step4.saveDesireBtn"}}
+          </button>
+        </div>
+      {{/if}}
+    {{/if}}
+
+    {{!-- Step 5: Reputation Review --}}
+    {{#if (eq currentStep 5)}}
+      <h3 class="gs-upkeep-wizard__step-title">
+        {{localize "GOODSOCIETY.upkeepWizard.step5.title"}}
+      </h3>
+      <p class="gs-upkeep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.upkeepWizard.step5.prompt"}}
+      </p>
+
+      {{#if pendingChanges.length}}
+        <div class="gs-upkeep-wizard__rep-list">
+          {{#each pendingChanges}}
+            <div class="gs-upkeep-wizard__rep-card gs-upkeep-wizard__rep-card--{{kind}}">
+              <div class="gs-upkeep-wizard__rep-stripe"></div>
+              <div class="gs-upkeep-wizard__rep-body">
+                <div class="gs-upkeep-wizard__rep-top">
+                  <span class="gs-upkeep-wizard__rep-polarity">{{#if (eq kind "gained-positive")}}▲{{else if (eq kind "gained-negative")}}▼{{else}}―{{/if}}</span>
+                  <span class="gs-upkeep-wizard__rep-value">{{value}}</span>
+                  <span class="gs-upkeep-wizard__rep-kind">
+                    {{#if (eq kind "removed")}}{{localize "GOODSOCIETY.upkeepWizard.step5.removed"}}{{else}}{{localize "GOODSOCIETY.upkeepWizard.step5.gained"}}{{/if}}
+                  </span>
+                  {{#if scene}}<span class="gs-upkeep-wizard__rep-scene">{{scene}}</span>{{/if}}
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+        <p class="gs-upkeep-wizard__rep-summary">
+          {{localize "GOODSOCIETY.upkeepWizard.step5.summary" n=pendingChanges.length}}
+        </p>
+      {{else}}
+        <p class="gs-upkeep-wizard__sub-status gs-upkeep-wizard__sub-status--muted">
+          {{localize "GOODSOCIETY.upkeepWizard.step5.noChanges"}}
+        </p>
+      {{/if}}
+    {{/if}}
+
+    {{!-- Step 6: Complete --}}
+    {{#if (eq currentStep 6)}}
+      <h3 class="gs-upkeep-wizard__step-title">
+        {{localize "GOODSOCIETY.upkeepWizard.step6.title"}}
+      </h3>
+      <p class="gs-upkeep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.upkeepWizard.step6.prompt"}}
+      </p>
+
+      <ul class="gs-upkeep-wizard__summary-list">
+        {{!-- Resolve --}}
+        <li class="{{#if summary.resolveRefreshed}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
+          {{#if summary.resolveRefreshed}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.resolveRefreshed" current=summary.resolveValues.current max=summary.resolveValues.max}}
+          {{else if summary.resolveAtDefault}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.resolveAlreadyDefault"}}
+          {{else}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.resolveSkipped"}}
+          {{/if}}
+        </li>
+        {{!-- Monologue --}}
+        <li class="{{#if summary.monologuePosted}}gs-upkeep-wizard__summary-done{{else if summary.monologueAlready}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
+          {{#if summary.monologuePosted}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.monologuePosted"}}
+          {{else if summary.monologueAlready}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.monologuePosted"}}
+          {{else if summary.monologueExpired}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.monologueExpired"}}
+          {{else}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.monologueSkipped"}}
+          {{/if}}
+        </li>
+        {{!-- Notes --}}
+        <li class="{{#if summary.notesUpdated}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
+          {{#if summary.notesUpdated}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.notesUpdated"}}
+          {{else}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.notesSkipped"}}
+          {{/if}}
+        </li>
+        {{!-- Desire --}}
+        <li class="{{#if summary.desireChanged}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
+          {{#if summary.desireChanged}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.desireChanged"}}
+          {{else}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.desireKept" desire=summary.desireText}}
+          {{/if}}
+        </li>
+        {{!-- Reputation --}}
+        <li class="{{#if summary.reputationAcknowledged}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
+          {{#if (eq summary.pendingCount 0)}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.reputationNone"}}
+          {{else if summary.reputationAcknowledged}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.reputationAcknowledged" n=summary.pendingCount}}
+          {{else}}
+            {{localize "GOODSOCIETY.upkeepWizard.step6.reputationSkipped"}}
+          {{/if}}
+        </li>
+      </ul>
+
+      {{#if summary.hasConflict}}
+        <p class="gs-upkeep-wizard__conflict-note">
+          {{localize "GOODSOCIETY.upkeepWizard.step6.conflictActive" filled=summary.conflictBoxes.filled total=summary.conflictBoxes.total}}
+        </p>
+      {{/if}}
+    {{/if}}
+
+  </div>{{!-- /.gs-upkeep-wizard__body --}}
+
+  {{!-- ── Footer ─────────────────────────────────────────────────────────── --}}
+  <footer class="gs-upkeep-wizard__footer">
+    <button type="button"
+            class="gs-btn gs-btn--secondary"
+            data-action="wizBack"
+            {{#if backDisabled}}disabled{{/if}}>
+      {{localize "GOODSOCIETY.upkeepWizard.back"}}
+    </button>
+    <div class="gs-upkeep-wizard__footer-right">
+      {{#if showSkip}}
+        <button type="button"
+                class="gs-btn gs-btn--ghost"
+                data-action="wizSkip">
+          {{localize "GOODSOCIETY.upkeepWizard.skip"}}
+        </button>
+      {{/if}}
+      <button type="button"
+              class="gs-btn gs-btn--primary"
+              data-action="wizNext"
+              {{#if nextDisabled}}disabled{{/if}}>
+        {{nextLabel}}
+      </button>
+    </div>
+  </footer>
+
+</section>

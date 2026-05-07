@@ -1,0 +1,202 @@
+/* ── Upkeep Roster — GM view ──────────────────────────────────────────────── */
+
+/* ApplicationV2 frame wrapper */
+.application.gs-upkeep-roster-app {
+  z-index: 200;
+}
+
+/* ── Root section (house-styled — not themed) ──────────────────────────────── */
+
+.gs-upkeep-roster {
+  display: flex;
+  flex-direction: column;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.gs-upkeep-roster__header {
+  padding: 18px 24px 14px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  background: var(--gs-paper);
+  flex-shrink: 0;
+}
+
+.gs-upkeep-roster__eyebrow {
+  display: block;
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--gs-brand);
+  text-transform: lowercase;
+  margin-bottom: 4px;
+}
+
+.gs-upkeep-roster__subtitle {
+  font-family: var(--gs-italic);
+  font-size: 13px;
+  color: var(--gs-accent-2);
+  margin: 0;
+}
+
+/* ── Major rows list ─────────────────────────────────────────────────────── */
+
+.gs-upkeep-roster__list {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.gs-upkeep-roster__empty {
+  font-family: var(--gs-italic);
+  font-size: 13px;
+  color: var(--gs-accent-2);
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+}
+
+/* ── Row ─────────────────────────────────────────────────────────────────── */
+
+.gs-upkeep-roster__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--gs-paper-warm);
+  border-radius: 6px;
+  border-left: 3px solid var(--gs-accent-2);
+  border: 0.5px solid var(--gs-accent-2);
+  border-left-width: 3px;
+}
+
+.gs-upkeep-roster__row--done {
+  border-left-color: var(--gs-positive);
+  opacity: 0.85;
+}
+
+.gs-upkeep-roster__row--in-progress {
+  border-left-color: var(--gs-accent-3);
+}
+
+.gs-upkeep-roster__row--waiting {
+  border-left-color: var(--gs-brand);
+}
+
+.gs-upkeep-roster__row--offline {
+  border-left-color: var(--gs-accent-2);
+  opacity: 0.7;
+}
+
+/* Portrait */
+
+.gs-upkeep-roster__portrait-slot {
+  width: 32px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--gs-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gs-upkeep-roster__portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gs-upkeep-roster__initial {
+  font-family: var(--gs-display);
+  font-size: 16px;
+  color: var(--gs-brand);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Info */
+
+.gs-upkeep-roster__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.gs-upkeep-roster__name {
+  font-family: var(--gs-display);
+  font-size: 15px;
+  color: var(--gs-brand);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gs-upkeep-roster__owner {
+  font-family: var(--gs-italic);
+  font-size: 11px;
+  color: var(--gs-accent-2);
+}
+
+/* Right cluster — status + open-wizard button */
+
+.gs-upkeep-roster__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.gs-upkeep-roster__status {
+  font-family: var(--gs-italic);
+  font-size: 12px;
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.gs-upkeep-roster__status--done        { color: var(--gs-positive); }
+.gs-upkeep-roster__status--in-progress { color: var(--gs-accent-3); }
+.gs-upkeep-roster__status--waiting     { color: var(--gs-brand); }
+.gs-upkeep-roster__status--offline     { color: var(--gs-accent-2); }
+
+.gs-upkeep-roster__time {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.gs-upkeep-roster__open-btn {
+  font-size: 11px;
+  padding: 3px 8px;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.gs-upkeep-roster__row:hover .gs-upkeep-roster__open-btn {
+  opacity: 1;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.gs-upkeep-roster__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+  flex-shrink: 0;
+}
+
+.gs-upkeep-roster__count {
+  font-family: var(--gs-italic);
+  font-size: 12px;
+  color: var(--gs-accent-2);
+}

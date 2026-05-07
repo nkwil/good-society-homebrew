@@ -1,0 +1,63 @@
+{{!-- Upkeep Roster — GM view. Single-root required by ApplicationV2 PARTS. --}}
+<section class="gs-upkeep-roster">
+
+  <header class="gs-upkeep-roster__header">
+    <span class="gs-upkeep-roster__eyebrow">{{eyebrow}}</span>
+    <p class="gs-upkeep-roster__subtitle">{{localize "GOODSOCIETY.upkeepRoster.subtitle"}}</p>
+  </header>
+
+  <div class="gs-upkeep-roster__list">
+    {{#if rows.length}}
+      {{#each rows}}
+        <div class="gs-upkeep-roster__row gs-upkeep-roster__row--{{status}}" data-actor-id="{{actorId}}">
+          <div class="gs-upkeep-roster__portrait-slot">
+            {{#if portraitUrl}}
+              <img class="gs-upkeep-roster__portrait" src="{{portraitUrl}}" alt="" />
+            {{else}}
+              <span class="gs-upkeep-roster__initial">{{initial}}</span>
+            {{/if}}
+          </div>
+          <div class="gs-upkeep-roster__info">
+            <span class="gs-upkeep-roster__name">{{name}}</span>
+            <span class="gs-upkeep-roster__owner">{{ownerName}}</span>
+          </div>
+          <div class="gs-upkeep-roster__right">
+            <span class="gs-upkeep-roster__status gs-upkeep-roster__status--{{status}}">
+              {{#if (eq status "done")}}
+                {{localize "GOODSOCIETY.upkeepRoster.statusDone"}}
+                {{#if completedAt}}<span class="gs-upkeep-roster__time">{{completedAt}}</span>{{/if}}
+              {{else if (eq status "in-progress")}}
+                {{localize "GOODSOCIETY.upkeepRoster.statusInProgress"}}
+              {{else if (eq status "offline")}}
+                {{localize "GOODSOCIETY.upkeepRoster.statusOffline"}}
+              {{else}}
+                {{localize "GOODSOCIETY.upkeepRoster.statusWaiting"}}
+              {{/if}}
+            </span>
+            {{#unless (eq status "done")}}
+              <button type="button"
+                      class="gs-btn gs-btn--ghost gs-upkeep-roster__open-btn"
+                      data-action="openWizard">
+                {{localize "GOODSOCIETY.upkeepRoster.openWizardLink"}}
+              </button>
+            {{/unless}}
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <p class="gs-upkeep-roster__empty">{{localize "GOODSOCIETY.upkeepRoster.noMajors"}}</p>
+    {{/if}}
+  </div>
+
+  <footer class="gs-upkeep-roster__footer">
+    <span class="gs-upkeep-roster__count">
+      {{localize "GOODSOCIETY.upkeepRoster.footerSummary" done=doneCount total=totalCount}}
+    </span>
+    <button type="button"
+            class="gs-btn gs-btn--primary"
+            data-action="advanceCycle">
+      {{localize "GOODSOCIETY.upkeepRoster.advanceBtn"}}
+    </button>
+  </footer>
+
+</section>

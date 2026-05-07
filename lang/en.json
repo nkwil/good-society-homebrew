@@ -526,6 +526,8 @@
       "npcsLabel":         "NPCs",
       "empty":             "No Connection or NPC tokens on this scene yet. Right-click empty canvas to create one.",
       "footerHint":        "click to focus · right-click for actions",
+      "minimize":          "Minimize organizer",
+      "expand":            "Expand organizer",
       "ctx": {
         "openSheet":       "Open sheet",
         "removeToken":     "Remove from scene",
@@ -633,6 +635,10 @@
         "name": "Show Rule Tooltips",
         "hint": "Hover any section header (marked with a small ?) to see a paraphrased rule explanation. Disable to hide the ? glyphs and suppress all tooltip hovers."
       },
+      "upkeepWizardEnabled": {
+        "name": "Enable Upkeep Wizard",
+        "hint": "When the cycle advances to Upkeep, open a guided wizard for each of your Major characters. Disable to skip the wizard and handle Upkeep manually on the character sheet."
+      },
       "applyFoundryChrome": {
         "name": "Apply Foundry Chrome Theme",
         "hint": "Re-themes Foundry's surrounding chrome (titlebars, sidebar, chat log, scene navigation, form controls, notifications, player list, hotbar) to match the Good Society house style. Toggles instantly without a page reload."
@@ -722,6 +728,115 @@
       "connection-grey": "Connection — Grey",
       "npc": "NPC"
     }
+  ,
+
+  "upkeepWizard": {
+    "windowTitle": "Upkeep",
+    "eyebrow": "Upkeep · cycle {n} close",
+    "stepOf": "step {step} of 6",
+    "steps": {
+      "welcome":    "welcome",
+      "tokens":     "tokens",
+      "notes":      "notes",
+      "desire":     "desire",
+      "reputation": "reputation",
+      "complete":   "done"
+    },
+    "back": "← back",
+    "skip": "skip",
+    "btn": {
+      "begin":          "begin ↗",
+      "next":           "next ↗",
+      "keep":           "keep ↗",
+      "acknowledge":    "acknowledge ↗",
+      "completeUpkeep": "complete upkeep ↗"
+    },
+    "step1": {
+      "title":         "It is Upkeep.",
+      "prompt":        "A breath between cycles. Let us tend to the close together.",
+      "resolveLabel":  "Resolve",
+      "pendingLabel":  "Pending reputation changes",
+      "conflictLabel": "Inner conflict",
+      "conflictBoxes": "{filled} of {total} boxes"
+    },
+    "step2": {
+      "title":                 "Tokens",
+      "prompt":                "Resolve is restored. The cycle begins again.",
+      "resolveCardTitle":      "RESOLVE",
+      "resolveCurrentLabel":   "current:",
+      "resolveAfterLabel":     "after refresh:",
+      "refreshBtn":            "refresh resolve",
+      "alreadyAtDefault":      "Already at default. Continue.",
+      "refreshed":             "✓ Refreshed to {current} of {max}",
+      "monologueCardTitle":    "MONOLOGUE TOKEN",
+      "monologueNotTakenText": "{name} has not yet taken their monologue this cycle. The token expires on advance.",
+      "takeMonologueBtn":      "take monologue now",
+      "letExpireBtn":          "let it expire",
+      "monologuePosted":       "✓ Monologue posted.",
+      "monologueExpired":      "○ Token expired (no monologue this cycle).",
+      "monologueAlreadyDone":  "✓ Monologue already taken this cycle.",
+      "skipConfirm":           "Skip this step? Resolve will not be refreshed."
+    },
+    "step3": {
+      "title":       "Notes & Objectives",
+      "prompt":      "Where are you, in yourself? What do you want to do next?",
+      "placeholder": "Write notes and plans for the next cycle..."
+    },
+    "step4": {
+      "title":                "Desire",
+      "prompt":               "Has your desire shifted? Or does it still drive you?",
+      "currentDesireLabel":   "CURRENT DESIRE",
+      "noDesire":             "(no desire recorded)",
+      "changeBtn":            "change desire",
+      "newDesirePlaceholder": "Write your new desire...",
+      "saveDesireBtn":        "save new desire",
+      "desireArchiveCard":    "{name} has set aside their desire \"{oldDesire}\" and now seeks \"{newDesire}\"."
+    },
+    "step5": {
+      "title":     "Reputation since the last Upkeep",
+      "prompt":    "A small audit of how the world has come to think of you. Acknowledge each change.",
+      "noChanges": "No reputation changes this cycle. Nothing to review.",
+      "gained":    "gained",
+      "removed":   "removed",
+      "summary":   "{n} changes this cycle."
+    },
+    "step6": {
+      "title":                  "Upkeep complete.",
+      "prompt":                 "Until the cycle resumes.",
+      "resolveRefreshed":       "✓ Resolve refreshed to {current} of {max}",
+      "resolveAlreadyDefault":  "✓ Resolve already at default",
+      "resolveSkipped":         "○ Resolve not refreshed",
+      "monologuePosted":        "✓ Monologue posted to chat",
+      "monologueExpired":       "○ Monologue token expired",
+      "monologueSkipped":       "○ Monologue step skipped",
+      "notesUpdated":           "✓ Notes & Objectives updated",
+      "notesSkipped":           "○ Notes unchanged",
+      "desireChanged":          "✓ Desire changed",
+      "desireKept":             "○ Desire unchanged (\"{desire}\")",
+      "reputationAcknowledged": "✓ {n} reputation changes acknowledged",
+      "reputationNone":         "○ No reputation changes this cycle",
+      "reputationSkipped":      "○ Reputation changes left pending",
+      "conflictActive":         "Inner conflict standing: {filled} of {total} boxes filled",
+      "completionCard":         "{name} has completed Upkeep."
+    }
+  },
+
+  "upkeepRoster": {
+    "windowTitle":       "Upkeep Roster",
+    "eyebrow":           "Upkeep · cycle {n} close",
+    "subtitle":          "Track everyone's progress before advancing.",
+    "statusDone":        "✓ done",
+    "statusInProgress":  "◉ in progress",
+    "statusWaiting":     "○ waiting",
+    "statusOffline":     "○ user offline",
+    "footerSummary":     "{done} of {total} complete",
+    "advanceBtn":        "advance to next cycle ↗",
+    "advanceConfirm":    "{pending} player(s) haven't completed Upkeep. Advance anyway?",
+    "openWizardLink":    "open wizard ↗",
+    "openWizardConfirm": "Open Upkeep wizard for {name}? Changes will be attributed to you.",
+    "noMajors":          "No Major characters found.",
+    "cycleAdvanceCard":  "Cycle {n} has ended. Cycle {next} begins."
+  }
   },
 
   "TYPES": {

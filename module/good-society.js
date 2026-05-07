@@ -7,6 +7,7 @@ import { register as registerSpeakingAs } from './hooks/speaking-as.js';
 import { register as registerSceneControls } from './hooks/scene-controls.js';
 import { register as registerCanvasContext } from './hooks/canvas-context.js';
 import { register as registerTokenHoverCard } from './hooks/token-hover-card.js';
+import { register as registerUpkeep, onUpkeepPhaseStart } from './hooks/upkeep.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
 import { initCycleHud, renderCycleHud } from './apps/cycle-hud.js';
@@ -81,6 +82,13 @@ Hooks.once('init', async function () {
     default: false,
   });
 
+  game.settings.register('good-society-homebrew', 'organizerMinimized', {
+    scope: 'client',
+    config: false,
+    type: Boolean,
+    default: false,
+  });
+
   game.settings.register('good-society-homebrew', 'tooltipsEnabled', {
     name: 'GOODSOCIETY.settings.tooltipsEnabled.name',
     hint: 'GOODSOCIETY.settings.tooltipsEnabled.hint',
@@ -91,6 +99,15 @@ Hooks.once('init', async function () {
     onChange: (value) => {
       document.body.classList.toggle('gs-tooltips-disabled', !value);
     },
+  });
+
+  game.settings.register('good-society-homebrew', 'upkeepWizardEnabled', {
+    name: 'GOODSOCIETY.settings.upkeepWizardEnabled.name',
+    hint: 'GOODSOCIETY.settings.upkeepWizardEnabled.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
   });
 
   game.settings.register('good-society-homebrew', 'applyFoundryChrome', {
@@ -111,7 +128,10 @@ Hooks.once('init', async function () {
     config: false,
     type: String,
     default: 'pre-cycle',
-    onChange: () => renderCycleHud(),
+    onChange: (value) => {
+      renderCycleHud();
+      if (value === 'upkeep') onUpkeepPhaseStart();
+    },
   });
 
   game.settings.register('good-society-homebrew', 'cycleNumber', {
@@ -311,3 +331,4 @@ registerSpeakingAs();
 registerSceneControls();
 registerCanvasContext();
 registerTokenHoverCard();
+registerUpkeep();
