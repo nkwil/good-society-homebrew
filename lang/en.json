@@ -790,7 +790,8 @@
       "changeBtn":            "change desire",
       "newDesirePlaceholder": "Write your new desire...",
       "saveDesireBtn":        "save new desire",
-      "desireArchiveCard":    "{name} has set aside their desire \"{oldDesire}\" and now seeks \"{newDesire}\"."
+      "desireArchiveCard":    "{name} has set aside their desire \"{oldDesire}\" and now seeks \"{newDesire}\".",
+      "desireFirstSetCard":   "{name} has set their desire to \"{newDesire}\"."
     },
     "step5": {
       "title":     "Reputation since the last Upkeep",
@@ -819,6 +820,24 @@
       "conflictActive":         "Inner conflict standing: {filled} of {total} boxes filled",
       "completionCard":         "{name} has completed Upkeep."
     }
+  },
+
+  "conditionPicker": {
+    "windowTitle":      "Reputation Threshold",
+    "eyebrow":          "Reputation Threshold",
+    "polarityPositive": "positive",
+    "polarityNegative": "negative",
+    "thresholdPositive": "The world has begun to notice you.",
+    "thresholdNegative": "The world has begun to talk.",
+    "prompt":           "Three tags this cycle. Society has formed an opinion. Choose a Reputation Condition to mark it, or dismiss to handle later.",
+    "canonical":        "canonical",
+    "pickBtn":          "pick ↗",
+    "laterBtn":         "later",
+    "noneBtn":          "no condition",
+    "sourceTagsLabel":  "Source Tags",
+    "noConditions":     "No conditions available. Check that a conditions compendium is loaded.",
+    "gainedCard":       "{name} has gained the Reputation Condition: {condition}.",
+    "createError":      "Failed to create condition — see console."
   },
 
   "upkeepRoster": {

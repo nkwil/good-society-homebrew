@@ -8,6 +8,7 @@ import { register as registerSceneControls } from './hooks/scene-controls.js';
 import { register as registerCanvasContext } from './hooks/canvas-context.js';
 import { register as registerTokenHoverCard } from './hooks/token-hover-card.js';
 import { register as registerUpkeep, onUpkeepPhaseStart } from './hooks/upkeep.js';
+import { checkThresholdAndPrompt } from './helpers/reputation-rules.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
 import { initCycleHud, renderCycleHud } from './apps/cycle-hud.js';
@@ -302,6 +303,13 @@ Hooks.once('ready', () => {
 
   // Wire hover-tooltip system for all [data-tooltip-key] elements.
   initTooltipSystem();
+});
+
+// Reputation threshold check — fires when a reputation-tag is embedded on a Major.
+Hooks.on('createItem', (item) => {
+  if (item.type !== 'reputation-tag') return;
+  if (item.parent?.type !== 'major-character') return;
+  checkThresholdAndPrompt(item.parent, item.system?.polarity ?? 'positive');
 });
 
 // Re-render the dock and dashboard whenever actor data changes.

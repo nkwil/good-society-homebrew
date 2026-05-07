@@ -1,0 +1,91 @@
+{{!-- Condition Picker — single-root required by ApplicationV2 PARTS (§16 anti-pattern). --}}
+<section class="gs-condition-picker gs-themed" data-theme="{{themeId}}">
+
+  {{!-- ── Header ─────────────────────────────────────────────────────────── --}}
+  <header class="gs-condition-picker__header">
+    <div class="gs-condition-picker__eyebrow-row">
+      <span class="gs-condition-picker__eyebrow">
+        {{localize "GOODSOCIETY.conditionPicker.eyebrow"}} · {{actorName}}
+      </span>
+      <span class="gs-condition-picker__polarity-pill gs-condition-picker__polarity-pill--{{polarity}}">
+        {{polarityArrow}} 3 {{polarityLabel}}
+      </span>
+    </div>
+    <h2 class="gs-condition-picker__title">{{title}}</h2>
+    <p class="gs-condition-picker__prompt">
+      {{localize "GOODSOCIETY.conditionPicker.prompt"}}
+    </p>
+  </header>
+
+  {{!-- ── Body — condition list ──────────────────────────────────────────── --}}
+  <div class="gs-condition-picker__body">
+    {{#if hasConditions}}
+      {{#each conditions}}
+        <div class="gs-condition-picker__card gs-condition-picker__card--{{polarity}}">
+          <div class="gs-condition-picker__card-stripe"></div>
+          <div class="gs-condition-picker__card-content">
+            <div class="gs-condition-picker__card-left">
+              <div class="gs-condition-picker__card-title-row">
+                <span class="gs-condition-picker__card-arrow">{{../polarityArrow}}</span>
+                <span class="gs-condition-picker__card-name">{{name}}</span>
+                {{#if isHomebrew}}
+                  <span class="gs-condition-picker__card-provenance gs-condition-picker__card-provenance--homebrew">
+                    homebrew · {{source}}
+                  </span>
+                {{else}}
+                  <span class="gs-condition-picker__card-provenance gs-condition-picker__card-provenance--canonical">
+                    {{localize "GOODSOCIETY.conditionPicker.canonical"}}
+                  </span>
+                {{/if}}
+              </div>
+              {{#if description}}
+                <p class="gs-condition-picker__card-desc">{{description}}</p>
+              {{/if}}
+            </div>
+            <div class="gs-condition-picker__card-right">
+              <button type="button"
+                      class="gs-btn {{#if @first}}gs-btn--primary{{else}}gs-btn--secondary{{/if}} gs-condition-picker__pick-btn"
+                      data-action="pickCondition"
+                      data-condition-index="{{@index}}">
+                {{localize "GOODSOCIETY.conditionPicker.pickBtn"}}
+              </button>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <p class="gs-condition-picker__empty">
+        {{localize "GOODSOCIETY.conditionPicker.noConditions"}}
+      </p>
+    {{/if}}
+  </div>
+
+  {{!-- ── Footer ─────────────────────────────────────────────────────────── --}}
+  <footer class="gs-condition-picker__footer">
+    <div class="gs-condition-picker__source-tags">
+      <span class="gs-condition-picker__source-label">
+        {{localize "GOODSOCIETY.conditionPicker.sourceTagsLabel"}}
+      </span>
+      <div class="gs-condition-picker__source-pills">
+        {{#each sourceTags}}
+          <span class="gs-condition-picker__source-pill">
+            {{../polarityArrow}} {{name}}
+          </span>
+        {{/each}}
+      </div>
+    </div>
+    <div class="gs-condition-picker__footer-actions">
+      <button type="button"
+              class="gs-btn gs-btn--secondary"
+              data-action="dismissLater">
+        {{localize "GOODSOCIETY.conditionPicker.laterBtn"}}
+      </button>
+      <button type="button"
+              class="gs-btn gs-btn--ghost"
+              data-action="dismissNone">
+        {{localize "GOODSOCIETY.conditionPicker.noneBtn"}}
+      </button>
+    </div>
+  </footer>
+
+</section>

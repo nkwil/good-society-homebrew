@@ -85,7 +85,20 @@ export async function postSystemCard({ content, context = '' }) {
     timestamp: _ts(),
   });
   const html = `<div class="gs-chat-card gs-chat-card--system">${inner}</div>`;
-  await ChatMessage.create({ content: html, flags: _flags('system') });
+  // Explicit system speaker — without this, Foundry falls back to the user's
+  // selected character (or the speaking-as switcher's actor), which makes
+  // system events look like the GM's character is announcing them. The card
+  // already has its own internal "SYSTEM · {context}" eyebrow; the speaker
+  // line just needs a neutral alias so Foundry doesn't supply one.
+  const systemAlias = (() => {
+    try { return game.i18n.localize('GOODSOCIETY.dashboard.systemAlias') || 'Good Society'; }
+    catch { return 'Good Society'; }
+  })();
+  await ChatMessage.create({
+    content: html,
+    speaker: { scene: null, actor: null, token: null, alias: systemAlias },
+    flags: _flags('system'),
+  });
 }
 
 // ── 2. In-character card ────────────────────────────────────────────────────

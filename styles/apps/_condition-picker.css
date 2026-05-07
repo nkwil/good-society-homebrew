@@ -1,0 +1,251 @@
+/* ── Condition Picker ─────────────────────────────────────────────────────── */
+
+/* ApplicationV2 frame wrapper — sits above sheets */
+.application.gs-condition-picker-app {
+  z-index: 200;
+}
+
+/* ── Root section (themed) ──────────────────────────────────────────────────── */
+
+.gs-condition-picker {
+  display: flex;
+  flex-direction: column;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.gs-condition-picker__header {
+  padding: 18px 26px 14px;
+  border-bottom: 0.5px solid var(--gs-accent-3);
+  background: var(--gs-paper);
+  flex-shrink: 0;
+}
+
+.gs-condition-picker__eyebrow-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.gs-condition-picker__eyebrow {
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--gs-brand);
+  text-transform: lowercase;
+}
+
+/* Polarity pill — positive or negative */
+
+.gs-condition-picker__polarity-pill {
+  font-family: var(--gs-italic);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 0.5px solid;
+  flex-shrink: 0;
+}
+
+.gs-condition-picker__polarity-pill--positive {
+  color: var(--gs-positive);
+  border-color: var(--gs-positive);
+  background: var(--gs-paper);
+}
+
+.gs-condition-picker__polarity-pill--negative {
+  color: var(--gs-danger);
+  border-color: var(--gs-danger);
+  background: var(--gs-paper);
+}
+
+/* Title and prompt */
+
+.gs-condition-picker__title {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  color: var(--gs-brand);
+  margin: 0 0 6px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.gs-condition-picker__prompt {
+  font-family: var(--gs-italic);
+  font-size: 13px;
+  color: var(--gs-ink);
+  margin: 0;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+
+.gs-condition-picker__body {
+  padding: 14px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.gs-condition-picker__empty {
+  font-family: var(--gs-italic);
+  font-size: 13px;
+  color: var(--gs-accent-2);
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+}
+
+/* ── Condition card ──────────────────────────────────────────────────────── */
+
+.gs-condition-picker__card {
+  display: grid;
+  grid-template-columns: 2.5px 1fr;
+  background: var(--gs-paper-warm);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 0.5px solid var(--gs-accent-2);
+  cursor: default;
+}
+
+.gs-condition-picker__card-stripe {
+  width: 2.5px;
+}
+
+.gs-condition-picker__card--positive .gs-condition-picker__card-stripe {
+  background: var(--gs-positive);
+}
+
+.gs-condition-picker__card--negative .gs-condition-picker__card-stripe {
+  background: var(--gs-danger);
+}
+
+.gs-condition-picker__card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.gs-condition-picker__card-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-condition-picker__card-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.gs-condition-picker__card-arrow {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.gs-condition-picker__card--positive .gs-condition-picker__card-arrow { color: var(--gs-positive); }
+.gs-condition-picker__card--negative .gs-condition-picker__card-arrow { color: var(--gs-danger); }
+
+.gs-condition-picker__card-name {
+  font-family: var(--gs-display);
+  font-size: 17px;
+  color: var(--gs-ink);
+}
+
+.gs-condition-picker__card-provenance {
+  font-family: var(--gs-italic);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.gs-condition-picker__card-provenance--canonical {
+  color: var(--gs-accent-3);
+}
+
+.gs-condition-picker__card-provenance--homebrew {
+  color: var(--gs-brand);
+}
+
+.gs-condition-picker__card-desc {
+  font-family: var(--gs-italic);
+  font-size: 12px;
+  color: var(--gs-ink);
+  opacity: 0.75;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.gs-condition-picker__card-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.gs-condition-picker__pick-btn {
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.gs-condition-picker__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 22px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-3);
+  flex-shrink: 0;
+}
+
+/* Source tags */
+
+.gs-condition-picker__source-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.gs-condition-picker__source-label {
+  font-variant: small-caps;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--gs-accent-3);
+  text-transform: lowercase;
+}
+
+.gs-condition-picker__source-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.gs-condition-picker__source-pill {
+  font-family: var(--gs-body);
+  font-size: 10px;
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 100px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+/* Footer action buttons */
+
+.gs-condition-picker__footer-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}

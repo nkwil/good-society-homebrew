@@ -256,10 +256,15 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     this._desireAction   = 'change';
     this._desireExpanding = false;
 
-    // Archive chat card
+    // Archive chat card — when oldDesire is empty, use a "first set" framing
+    // instead of "set aside their desire \"\" and now seeks ..." which reads
+    // weirdly with the empty quotes.
     try {
+      const cardKey = oldDesire.trim()
+        ? 'GOODSOCIETY.upkeepWizard.step4.desireArchiveCard'
+        : 'GOODSOCIETY.upkeepWizard.step4.desireFirstSetCard';
       await postSystemCard({
-        content: game.i18n.format('GOODSOCIETY.upkeepWizard.step4.desireArchiveCard', {
+        content: game.i18n.format(cardKey, {
           name: this._actor.name, oldDesire, newDesire: text,
         }),
         context: game.i18n.format('GOODSOCIETY.upkeepWizard.eyebrow', {

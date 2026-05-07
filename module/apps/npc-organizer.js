@@ -74,6 +74,13 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
     ctx.connections = connections;
     ctx.npcs = npcs;
     ctx.total = connections.length + npcs.length;
+
+    // Persisted collapsed state — same pattern as the dock's dockMinimized.
+    ctx.minimized = (() => {
+      try { return game.settings.get('good-society-homebrew', 'organizerMinimized'); }
+      catch { return false; }
+    })();
+
     return ctx;
   }
 
@@ -83,6 +90,31 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
     super._onRender?.(context, options);
     this._wireInteractions();
     this._makeDraggable();
+    this._wireMinimize();
+  }
+
+  /** Minimize button — collapses body + footer, persists state.
+   *  Mirrors the dock's _wireMinimize pattern. */
+  _wireMinimize() {
+    const root = this.element;
+    const btn = root?.querySelector('[data-action="toggle-minimize"]');
+    if (!btn || btn._gsOrgMinBound) return;
+    btn._gsOrgMinBound = true;
+
+    btn.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const section = root.querySelector('.gs-npc-organizer');
+      if (!section) return;
+      const willMinimize = !section.classList.contains('is-minimized');
+      section.classList.toggle('is-minimized', willMinimize);
+      btn.textContent = willMinimize ? '+' : '−';
+      try {
+        await game.settings.set('good-society-homebrew', 'organizerMinimized', willMinimize);
+      } catch (e) {
+        console.warn('[good-society organizer] could not persist minimized state:', e);
+      }
+    });
   }
 
   // ── Row interactions ───────────────────────────────────────────────────────

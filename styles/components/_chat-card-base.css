@@ -148,9 +148,16 @@
 }
 
 /* ── Meta / timestamp ── */
-.gs-chat-card__meta {
+/* Both __meta and __timestamp need nowrap + flex-shrink:0 so the timestamp
+ * doesn't get squeezed to ~0 width by a long sibling eyebrow in the flex
+ * header. Without nowrap+flex-shrink, the timestamp wraps character-by-
+ * character (Foundry's chat CSS uses word-break: break-all on tight columns).
+ * Keep both classes in sync — templates may use either. */
+.gs-chat-card__meta,
+.gs-chat-card__timestamp {
   font-family: var(--gs-ui);
   font-size: 10px;
   color: var(--gs-accent-2, #708060);
   white-space: nowrap;
+  flex-shrink: 0;
 }

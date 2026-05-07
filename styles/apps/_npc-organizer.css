@@ -1,11 +1,26 @@
 /* NPC Organizer — frameless ApplicationV2 sidebar, 290px wide.
  * Follows the same frameless positioning rules as _dock.css:
  * position: fixed, explicit z-index, pointer-events: auto on all surfaces.
+ *
+ * Targeting by ID as well as by .application.* class because Foundry v13's
+ * frameless ApplicationV2 wrappers don't reliably get the `application`
+ * class. Without the ID selector, the rule below never matches and the
+ * wrapper renders flat in document flow with no positioning at all (the
+ * organizer is in the DOM but invisible). Same workaround as the dock.
+ * The `!important` on position/z-index defends against any overriding
+ * style that ApplicationV2 might inject. Also include a backstop top/left
+ * so the panel is visible even if inline positioning isn't applied.
  */
 
+#gs-npc-organizer,
 .application.gs-npc-organizer {
-  position: fixed;
-  z-index: 50;
+  position: fixed !important;
+  /* Backstop position — inline left/top from ApplicationV2 should override,
+   * but if they don't (frameless quirks), these defaults keep the organizer
+   * visible to the right of the dock and below the scene navigation. */
+  left: 380px;
+  top: 100px;
+  z-index: 50 !important;
   pointer-events: auto;
   width: 290px;
   max-height: 80vh;
@@ -71,6 +86,43 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Minimize button — mirrors .gs-dock__minimize */
+.gs-npc-organizer__minimize {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--gs-accent-2);
+  font-family: var(--gs-display);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gs-npc-organizer__minimize:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: var(--gs-paper-warm);
+}
+
+/* Minimized state — body + footer collapse, only header remains.
+ * The wrapper (#gs-npc-organizer / .application.gs-npc-organizer) keeps its
+ * fixed positioning, so the collapsed header stays put on screen. */
+.gs-npc-organizer.is-minimized .gs-npc-organizer__body,
+.gs-npc-organizer.is-minimized .gs-npc-organizer__footer {
+  display: none;
+}
+
+.gs-npc-organizer.is-minimized .gs-npc-organizer__header {
+  border-bottom: 0;
 }
 
 /* ── Body ────────────────────────────────────────────────────────────────── */

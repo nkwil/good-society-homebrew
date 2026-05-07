@@ -1,9 +1,16 @@
-<section class="gs-npc-organizer">
+<section class="gs-npc-organizer {{#if minimized}}is-minimized{{/if}}">
   <header class="gs-npc-organizer__header">
     <div class="gs-npc-organizer__header-top">
       <span class="gs-gm-pill">GM</span>
       <span class="gs-npc-organizer__eyebrow">{{localize "GOODSOCIETY.npcOrganizer.eyebrow"}}</span>
       <span class="gs-npc-organizer__total">{{total}}</span>
+      <button type="button"
+              class="gs-npc-organizer__minimize"
+              data-action="toggle-minimize"
+              aria-label="{{#if minimized}}{{localize 'GOODSOCIETY.npcOrganizer.expand'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.minimize'}}{{/if}}"
+              title="{{#if minimized}}{{localize 'GOODSOCIETY.npcOrganizer.expand'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.minimize'}}{{/if}}">
+        {{#if minimized}}+{{else}}−{{/if}}
+      </button>
     </div>
     {{#if sceneName}}
     <div class="gs-npc-organizer__scene-name">{{sceneName}}</div>
