@@ -72,8 +72,13 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
 
     // ── Portrait + identity ──────────────────────────────────────────────────
     const activePersona = system.activePersona;
+    // Display name = active persona's name when one is active, else actor's
+    // canonical name. The editable input below is still bound to actor.name
+    // (so renaming via the input changes the actor's true name); the display
+    // here is the at-a-glance identity that follows the active persona.
+    const displayName = activePersona?.name || this.actor.name;
     const portraitUrl = activePersona?.portraitUrl || system.bio?.portraitUrl || this.actor.img || '';
-    const portraitInitial = (this.actor.name?.[0] ?? '?').toUpperCase();
+    const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
 
     const familyActor = system.familyId ? game.actors?.get(system.familyId) : null;
     const peerageLabel = PEERAGE_LABELS[system.bio?.peerage] ?? '';
@@ -161,6 +166,7 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       // Identity
       portraitUrl,
       portraitInitial,
+      displayName,
       roleTitle,
       peerageLabel,
       personas: system.personas ?? [],

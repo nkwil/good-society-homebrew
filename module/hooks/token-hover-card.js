@@ -1,0 +1,320 @@
+/**
+ * Token Hover Card — transient DOM card shown when hovering a canvas token.
+ *
+ * Per docs/design/17-token-hover-card.md.
+ *
+ * Architecture: pure vanilla DOM (no ApplicationV2). Hover cards are
+ * transient overlays with no lifecycle needs — ApplicationV2 adds framing
+ * overhead that would be dead weight here. Same pattern as rule-tooltip.js.
+ *
+ * Trigger: Hooks.on('hoverToken', ...). On hovered=false, a 200ms grace
+ * period allows the pointer to enter the card before dismissing — otherwise
+ * the card disappears the moment the pointer crosses from the PIXI token
+ * to the DOM card floating above the canvas.
+ *
+ * Visibility filtering: all filtering is done in _buildCardData() before
+ * any HTML is generated. The DOM never contains data the viewer shouldn't see.
+ * Non-owners see the active persona's name only; the actor's true name is
+ * never present in the HTML.
+ */
+
+import { themedWrap } from '../helpers/themed-wrap.js';
+
+const DISMISS_GRACE_MS = 200;
+const FADE_MS = 100;
+const CURSOR_OFFSET_X = 14; // card placed to the right of the cursor by this much
+const CURSOR_OFFSET_Y = 14; // card placed below the cursor by this much
+
+let _card = null;
+let _dismissTimer = null;
+let _lastMouseX = 0;
+let _lastMouseY = 0;
+
+// ── Public API ────────────────────────────────────────────────────────────────
+
+export function register() {
+  // Track cursor position globally so the hover card can position itself
+  // relative to where the user is actually pointing — bypasses every
+  // canvas-coordinate-conversion gotcha (zoom, pan, board offset, etc).
+  document.addEventListener('mousemove', (ev) => {
+    _lastMouseX = ev.clientX;
+    _lastMouseY = ev.clientY;
+    // While the card is visible, follow the cursor for a "sticky" feel.
+    if (_card && _card.isConnected) _positionCard(_card);
+  }, { passive: true });
+
+  Hooks.on('hoverToken', _onHoverToken);
+}
+
+// ── Hook handler ──────────────────────────────────────────────────────────────
+
+function _onHoverToken(placeable, hovered) {
+  if (hovered) {
+    _cancelDismiss();
+    _clearCard();
+    const data = _buildCardData(placeable);
+    if (data) _showCard(placeable, data);
+  } else {
+    _scheduleDismiss();
+  }
+}
+
+// ── Data preparation (visibility filtering happens here) ───────────────────────
+
+function _buildCardData(placeable) {
+  const actor = placeable.actor;
+
+  if (!actor) {
+    return {
+      actor: null,
+      displayName: placeable.document?.name || game.i18n.localize('GOODSOCIETY.hoverCard.unknownToken'),
+      portraitUrl: placeable.document?.texture?.src || '',
+      portraitInitial: (placeable.document?.name?.[0] ?? '?').toUpperCase(),
+      roleLabel: game.i18n.localize('GOODSOCIETY.hoverCard.unlinkedToken'),
+      roleLabelStyle: 'muted',
+      secretPersonaNote: null,
+      hoverSummary: '',
+      publicTags: [],
+      reputationTags: [],
+    };
+  }
+
+  const isGM = game.user?.isGM;
+
+  // Resolve active persona (same logic as activePersona getter on the data model).
+  const activePersonaId = actor.system?.activePersonaId;
+  const personas = actor.system?.personas ?? [];
+  const activePersona = activePersonaId
+    ? personas.find(p => p.id === activePersonaId)
+    : (personas.find(p => p.isPrimary) ?? personas[0]);
+
+  // GM note: flag when the active persona's name diverges from the actor's true name.
+  const personaName = activePersona?.name;
+  const namesDiverge = personaName && personaName !== actor.name;
+  const secretPersonaNote = (isGM && namesDiverge)
+    ? game.i18n.localize('GOODSOCIETY.hoverCard.secretPersona')
+    : null;
+
+  // Display name: always show active persona's name (or actor name as fallback).
+  // Non-owners never see the actor's true name when a persona is active — the
+  // persona name IS what they see. This is the key persona-protection safeguard.
+  const displayName = personaName || actor.name;
+
+  // Portrait: persona overrides actor-level.
+  const portraitUrl = activePersona?.portraitUrl
+    || actor.system?.bio?.portraitUrl
+    || actor.img
+    || '';
+  const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
+
+  // Role label: type-specific format.
+  let roleLabel, roleLabelStyle;
+  if (actor.type === 'major-character') {
+    const peerageKey = {
+      'heir':        'GOODSOCIETY.hoverCard.peerageHeir',
+      'new-arrival': 'GOODSOCIETY.hoverCard.peerageNewArrival',
+      'foreign':     'GOODSOCIETY.hoverCard.peerageForeign',
+    }[actor.system?.bio?.peerage];
+    roleLabel = peerageKey ? game.i18n.localize(peerageKey) : '';
+    roleLabelStyle = 'branded';
+  } else if (actor.type === 'connection') {
+    const rel = actor.system?.bio?.relationshipLabel?.trim();
+    roleLabel = rel
+      ? game.i18n.format('GOODSOCIETY.hoverCard.connectionRole', { role: rel })
+      : game.i18n.localize('GOODSOCIETY.hoverCard.connection');
+    roleLabelStyle = 'branded';
+  } else if (actor.type === 'npc') {
+    const role = actor.system?.bio?.role?.trim();
+    roleLabel = role
+      ? game.i18n.format('GOODSOCIETY.hoverCard.npcRole', { role })
+      : game.i18n.localize('GOODSOCIETY.hoverCard.npc');
+    roleLabelStyle = 'muted';
+  } else {
+    roleLabel = '';
+    roleLabelStyle = 'muted';
+  }
+
+  // Hover summary: persona overrides actor-level.
+  const hoverSummary = (
+    activePersona?.hoverSummary
+    || actor.system?.sceneInfo?.hoverSummary
+    || ''
+  ).trim();
+
+  // Public tags: persona overrides actor-level.
+  const publicTags = (
+    activePersona?.publicTags?.length
+      ? activePersona.publicTags
+      : (actor.system?.sceneInfo?.publicTags ?? [])
+  ).filter(Boolean);
+
+  // Reputation tags: Majors only, max 4 (2 positive + 2 negative).
+  let reputationTags = [];
+  if (actor.type === 'major-character') {
+    const posItems = (actor.system?.reputation?.positiveTags ?? [])
+      .slice(0, 2)
+      .map(id => actor.items.get(id))
+      .filter(Boolean)
+      .map(item => ({ label: '▲ ' + item.name, polarity: 'positive' }));
+    const negItems = (actor.system?.reputation?.negativeTags ?? [])
+      .slice(0, 2)
+      .map(id => actor.items.get(id))
+      .filter(Boolean)
+      .map(item => ({ label: '▼ ' + item.name, polarity: 'negative' }));
+    reputationTags = [...posItems, ...negItems].slice(0, 4);
+  }
+
+  return {
+    actor,
+    displayName,
+    portraitUrl,
+    portraitInitial,
+    roleLabel,
+    roleLabelStyle,
+    secretPersonaNote,
+    hoverSummary,
+    publicTags,
+    reputationTags,
+  };
+}
+
+// ── Card HTML builder ─────────────────────────────────────────────────────────
+
+/** Escape a value for safe HTML insertion. */
+function _esc(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function _buildInnerHtml(data) {
+  // Portrait
+  const portraitInner = data.portraitUrl
+    ? `<img class="gs-token-hover-card__portrait-img" src="${_esc(data.portraitUrl)}" alt="" />`
+    : `<span class="gs-token-hover-card__portrait-initial">${_esc(data.portraitInitial)}</span>`;
+
+  // Role line
+  const roleLabelHtml = data.roleLabel
+    ? `<div class="gs-token-hover-card__role gs-token-hover-card__role--${data.roleLabelStyle}">${_esc(data.roleLabel)}</div>`
+    : '';
+
+  // GM-only secret persona note
+  const secretNoteHtml = data.secretPersonaNote
+    ? `<div class="gs-token-hover-card__secret-note">${_esc(data.secretPersonaNote)}</div>`
+    : '';
+
+  // Summary — only rendered when non-empty
+  const summaryHtml = data.hoverSummary
+    ? `<div class="gs-token-hover-card__summary">${_esc(data.hoverSummary)}</div>`
+    : '';
+
+  // Tags: reputation pills + public tag pills
+  const repHtml = data.reputationTags
+    .map(t => `<span class="gs-token-hover-card__tag gs-token-hover-card__tag--${t.polarity}">${_esc(t.label)}</span>`)
+    .join('');
+  const pubHtml = data.publicTags
+    .map(t => `<span class="gs-token-hover-card__tag">${_esc(t)}</span>`)
+    .join('');
+  const allTagsHtml = repHtml + pubHtml;
+  const tagsHtml = allTagsHtml
+    ? `<div class="gs-token-hover-card__tags">${allTagsHtml}</div>`
+    : '';
+
+  return `<header class="gs-token-hover-card__header"><div class="gs-token-hover-card__portrait">${portraitInner}</div><div class="gs-token-hover-card__identity"><div class="gs-token-hover-card__name">${_esc(data.displayName)}</div>${roleLabelHtml}${secretNoteHtml}</div></header>${summaryHtml}${tagsHtml}`;
+}
+
+// ── Show / hide ───────────────────────────────────────────────────────────────
+
+function _showCard(placeable, data) {
+  const innerHtml = _buildInnerHtml(data);
+  // themedWrap handles null actor gracefully (falls back to theme "npc").
+  const html = themedWrap(data.actor, innerHtml, ['gs-token-hover-card']);
+
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  const cardEl = temp.firstElementChild;
+  if (!cardEl) return;
+
+  // Start offscreen so offsetHeight is measurable but card is invisible.
+  cardEl.style.left = '-9999px';
+  cardEl.style.top = '-9999px';
+  document.body.appendChild(cardEl);
+  _card = cardEl;
+
+  // Wire card interactivity.
+  cardEl.addEventListener('mouseover', _cancelDismiss);
+  cardEl.addEventListener('mouseout', (ev) => {
+    if (!cardEl.contains(ev.relatedTarget)) _scheduleDismiss();
+  });
+  cardEl.addEventListener('click', () => {
+    data.actor?.sheet?.render(true);
+    _clearCard();
+  });
+
+  // Position relative to the cursor (tracked globally via mousemove).
+  _positionCard(cardEl);
+}
+
+/**
+ * Place the card relative to the user's cursor. Default is to the right and
+ * slightly below the pointer; flips to the left or above if there's no room.
+ *
+ * Cursor-relative (rather than token-relative) because:
+ *   1. The cursor IS on the token when hovering, so this still feels
+ *      "anchored to the token" without doing canvas-coord math.
+ *   2. Canvas-coord-to-viewport conversion is fragile across zoom/pan/sidebar
+ *      configurations; using ev.clientX/Y bypasses all of that.
+ *   3. Matches the convention of native browser tooltips (which is what
+ *      Natalie said she expected when first reviewing this).
+ */
+function _positionCard(cardEl) {
+  if (!cardEl.isConnected) return;
+
+  const cardW = cardEl.offsetWidth;
+  const cardH = cardEl.offsetHeight;
+  const vpW   = window.innerWidth;
+  const vpH   = window.innerHeight;
+  const PAD   = 8;
+
+  // Default: right and below the cursor.
+  let left = _lastMouseX + CURSOR_OFFSET_X;
+  let top  = _lastMouseY + CURSOR_OFFSET_Y;
+
+  // Right clip → flip to the left of the cursor.
+  if (left + cardW > vpW - PAD) {
+    left = _lastMouseX - cardW - CURSOR_OFFSET_X;
+  }
+  // Bottom clip → flip above the cursor.
+  if (top + cardH > vpH - PAD) {
+    top = _lastMouseY - cardH - CURSOR_OFFSET_Y;
+  }
+
+  // Final clamp to keep the card on-screen if the cursor is in a corner.
+  left = Math.max(PAD, Math.min(left, vpW - cardW - PAD));
+  top  = Math.max(PAD, Math.min(top,  vpH - cardH - PAD));
+
+  cardEl.style.left = `${Math.round(left)}px`;
+  cardEl.style.top  = `${Math.round(top)}px`;
+}
+
+function _scheduleDismiss() {
+  _cancelDismiss();
+  _dismissTimer = setTimeout(_clearCard, DISMISS_GRACE_MS);
+}
+
+function _cancelDismiss() {
+  if (_dismissTimer) { clearTimeout(_dismissTimer); _dismissTimer = null; }
+}
+
+function _clearCard() {
+  _cancelDismiss();
+  if (!_card) return;
+  const card = _card;
+  _card = null;
+  card.classList.add('gs-token-hover-card--dismissing');
+  card.addEventListener('transitionend', () => card.remove(), { once: true });
+  // Fallback removal if transitionend never fires (hidden element, etc.).
+  setTimeout(() => card.remove(), FADE_MS + 60);
+}

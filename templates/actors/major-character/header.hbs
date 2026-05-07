@@ -4,7 +4,7 @@
   <div class="gs-major-sheet__side">
 
     {{#if portraitUrl}}
-      <img class="gs-major-sheet__portrait" src="{{portraitUrl}}" alt="{{actor.name}}" />
+      <img class="gs-major-sheet__portrait" src="{{portraitUrl}}" alt="{{displayName}}" />
     {{else}}
       <div class="gs-major-sheet__portrait-fallback">{{portraitInitial}}</div>
     {{/if}}
@@ -40,10 +40,16 @@
       <span class="gs-major-sheet__eyebrow-right">theme · {{system.theme}}</span>
     </div>
 
+    {{!-- Display name = persona name if active, else actor name.
+         When a persona is active the input is readonly — the persona's
+         name is owned by the persona record, and editing here would
+         silently rename the actor (not the persona). To rename, clear
+         the persona selection first. --}}
     <input class="gs-major-sheet__name"
            type="text"
            name="name"
-           value="{{actor.name}}"
+           value="{{displayName}}"
+           {{#if activePersonaId}}readonly{{/if}}
            placeholder="{{localize 'GOODSOCIETY.sheet.namePlaceholder'}}" />
 
     <p class="gs-major-sheet__role">{{roleTitle}}</p>

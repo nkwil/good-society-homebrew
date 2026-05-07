@@ -65,10 +65,14 @@ function _ownerOnline(actor) {
 function _buildRowData(actor) {
   const sys = actor.system;
 
-  // Portrait: active persona first, then actor img
+  // Portrait + display name: active persona first, then actor fields.
+  // Persona name overrides actor name in displays (the actor's true name is
+  // editable on the sheet via the name input, but everywhere else the
+  // active persona's name is what users should see).
   const persona = sys.activePersona;
+  const displayName = persona?.name || actor.name;
   const portraitUrl = persona?.portraitUrl || actor.img || '';
-  const initial = (actor.name || '?')[0].toUpperCase();
+  const initial = (displayName || '?')[0].toUpperCase();
 
   // Role subtitle: localized peerage
   const peerageLabelKey = `GOODSOCIETY.major.peerage.${sys.bio?.peerage ?? 'new-arrival'}`;
@@ -102,7 +106,7 @@ function _buildRowData(actor) {
 
   return {
     id: actor.id,
-    name: actor.name,
+    name: displayName,
     theme: sys.theme || 'clayton',
     portraitUrl,
     initial,
