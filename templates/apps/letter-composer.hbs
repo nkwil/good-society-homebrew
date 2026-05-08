@@ -15,7 +15,7 @@
       <div class="gs-letter-composer__control">
         <select class="gs-letter-composer__actor-select" name="fromActorId">
           {{#each ownedActors}}
-            <option value="{{id}}" {{#if selected}}selected{{/if}}>{{displayName}} ({{subtitle}})</option>
+            <option value="{{id}}" {{#if selected}}selected{{/if}}>{{displayName}}</option>
           {{/each}}
           {{#unless ownedActors}}
             <option value="" disabled>{{localize "GOODSOCIETY.letterComposer.noOwnedActors"}}</option>
