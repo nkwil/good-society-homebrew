@@ -44,6 +44,11 @@ export class MajorCharacterDataModel extends foundry.abstract.TypeDataModel {
         pendingChanges: new ArrayField(new SchemaField({
           kind: new StringField({ initial: '' }),
           value: new StringField({ initial: '' }),
+          // tagId — source reputation-tag's ID; used by the updateItem hook
+          // in session-events.js to re-sync `value` when a tag is renamed
+          // after creation. Older entries (pre this field) default to '' and
+          // simply won't get rename-synced — graceful.
+          tagId: new StringField({ initial: '' }),
           scene: new StringField({ initial: '' }),
           ts: new NumberField({ integer: true, initial: 0 }),
         })),

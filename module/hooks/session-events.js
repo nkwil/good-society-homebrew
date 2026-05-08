@@ -18,7 +18,7 @@
  * actor.system.reputation.pendingChanges (populated by the same hooks here).
  */
 
-import { appendPendingChange, buildSceneLabel } from '../helpers/pending-changes.js';
+import { appendPendingChange, buildSceneLabel, syncPendingChangeName } from '../helpers/pending-changes.js';
 
 const NS = 'good-society-homebrew';
 const KEY = 'sessionEvents';
@@ -75,6 +75,7 @@ export function register() {
         polarity === 'positive' ? 'gained-positive' : 'gained-negative',
         item.name,
         buildSceneLabel(),
+        item.id,  // tagId for rename-sync via updateItem hook below
       );
     } else if (item.type === 'reputation-condition') {
       await appendSessionEvent({
@@ -87,6 +88,20 @@ export function register() {
         },
       });
     }
+  });
+
+  // Tag renames — re-sync any pendingChanges entry whose `value` was captured
+  // at creation time with the placeholder name "New reputation-tag". The
+  // createItem hook fires immediately, before the user has typed the real
+  // name on the item sheet, so the entry is born stale. Listen on updateItem
+  // and rewrite by tagId. GM-only (single-writer; matches appendPendingChange).
+  Hooks.on('updateItem', async (item, change) => {
+    if (item.type !== 'reputation-tag') return;
+    if (item.parent?.type !== 'major-character') return;
+    // Only react to name changes — other system field updates don't affect
+    // pendingChanges value.
+    if (!Object.prototype.hasOwnProperty.call(change, 'name')) return;
+    await syncPendingChangeName(item.parent, item.id, item.name);
   });
 
   Hooks.on('deleteItem', async (item) => {

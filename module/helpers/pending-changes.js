@@ -45,21 +45,54 @@ export function buildSceneLabel() {
 /**
  * Append one pending reputation change to a Major actor's log.
  *
+ * `tagId` lets a later updateItem hook re-sync `value` when the source tag
+ * gets renamed after creation (the createItem hook fires while the tag still
+ * has its placeholder name "New reputation-tag", before the user has typed
+ * the real name on the item sheet). When tagId is omitted (e.g. the entry
+ * doesn't correspond to a single source item) the rename-sync simply skips it.
+ *
  * @param {Actor}  actor      Must be type 'major-character'.
  * @param {string} kind       'gained-positive' | 'gained-negative' | 'removed'
- * @param {string} tagName    Display name of the tag.
+ * @param {string} tagName    Display name of the tag at append time.
  * @param {string} sceneLabel Human-readable context (from buildSceneLabel()).
+ * @param {string} [tagId]    Optional — the source reputation-tag's ID.
  */
-export async function appendPendingChange(actor, kind, tagName, sceneLabel) {
+export async function appendPendingChange(actor, kind, tagName, sceneLabel, tagId = '') {
   if (!game.user?.isGM) return;
   if (actor.type !== 'major-character') return;
   const current = actor.system.reputation?.pendingChanges ?? [];
   await actor.update({
     'system.reputation.pendingChanges': [
       ...current,
-      { kind, value: tagName, scene: sceneLabel, ts: Date.now() },
+      { kind, value: tagName, tagId, scene: sceneLabel, ts: Date.now() },
     ],
   });
+}
+
+/**
+ * Re-sync the `value` field of every pendingChange entry whose `tagId`
+ * matches the given reputation-tag item. Called from session-events.js's
+ * updateItem hook when a tag's name changes after creation. GM-only.
+ *
+ * @param {Actor}  actor       Major Character actor.
+ * @param {string} tagId       The renamed item's ID.
+ * @param {string} newTagName  New display name to write.
+ */
+export async function syncPendingChangeName(actor, tagId, newTagName) {
+  if (!game.user?.isGM) return;
+  if (actor.type !== 'major-character') return;
+  if (!tagId) return;
+  const current = actor.system.reputation?.pendingChanges ?? [];
+  let dirty = false;
+  const next = current.map(entry => {
+    if (entry.tagId === tagId && entry.value !== newTagName) {
+      dirty = true;
+      return { ...entry, value: newTagName };
+    }
+    return entry;
+  });
+  if (!dirty) return;
+  await actor.update({ 'system.reputation.pendingChanges': next });
 }
 
 /**
