@@ -680,6 +680,10 @@
       "isFinalCycle": {
         "name": "Final cycle (skip Rumour & Scandal + 2nd Reputation)",
         "hint": "When enabled, the cycle skips Rumour & Scandal (position 3) and the second Reputation phase (position 6); the second Epistolary becomes the epilogue. Per Good Society rulebook p.114-115. Toggleable from the Cycle HUD too."
+      },
+      "reputationPhaseWizardEnabled": {
+        "name": "Reputation Phase Wizard",
+        "hint": "When enabled, automatically opens the Reputation Phase Wizard when the phase advances to Reputation. GM only."
       }
     },
     "personaEditor": {
@@ -896,6 +900,90 @@
       "compactSuffix": {
         "first": "",
         "second": " ²"
+      }
+    },
+    "reputationPhaseWizard": {
+      "windowTitle": "Reputation Phase",
+      "eyebrow": "Cycle {n} — Reputation Phase",
+      "stepOf": "Step {step} of {total}",
+      "back": "Back",
+      "beginBtn": "Begin →",
+      "nextStepBtn": "Next Step →",
+      "completeBtn": "Complete Phase",
+      "playerToast": "The Reputation phase has started. Your facilitator will lead the table.",
+      "steps": {
+        "roster": "Roster",
+        "createTags": "Create Tags",
+        "triggerConditions": "Trigger Conditions",
+        "clearConditions": "Clear Conditions",
+        "complete": "Complete"
+      },
+      "rail": {
+        "noneQualify": "No characters qualify for this step.",
+        "allDone": "All done."
+      },
+      "step1": {
+        "title": "Reputation Phase — Roster",
+        "prompt": "Select which major characters are active in this cycle.",
+        "noMajors": "No major characters have been created yet.",
+        "overviewTitle": "This phase has four steps:",
+        "overview1": "Create new reputation tags based on what each character did this chapter.",
+        "overview2": "Trigger any new reputation conditions for characters who hit 3+ tags.",
+        "overview3": "Clear conditions for characters who dropped below 3 tags.",
+        "overview4": "Post a summary and close the wizard."
+      },
+      "step2": {
+        "prompt": "Review this character's criteria. What did they do this chapter?",
+        "positiveCriteriaHeading": "Positive criteria",
+        "negativeCriteriaHeading": "Negative criteria",
+        "criterion": {
+          "dutyVsDesire": "Chose duty over desire",
+          "conventionDespiteHardship": "Upheld social convention despite hardship",
+          "familyPositive": "Family criteria (positive)",
+          "contravenedConvention": "Openly contravened social convention",
+          "desireVsDuty": "Chose desire over duty or morality",
+          "familyNegative": "Family criteria (negative)"
+        },
+        "currentTagsLabel": "{name}'s current tags",
+        "addTagTitle": "Add a new tag",
+        "positive": "Positive",
+        "negative": "Negative",
+        "tagNamePlaceholder": "Tag name, e.g. Selfless",
+        "addBtn": "+",
+        "removeTagTitle": "Remove tag",
+        "markedDone": "Done with {name}.",
+        "doneWithNext": "Done with {name} → {next}",
+        "doneLast": "Done with {name}",
+        "selectCharacter": "Select a character from the list to begin."
+      },
+      "step3": {
+        "title": "Trigger Conditions",
+        "prompt": "{name} has reached the tag threshold. Choose a condition.",
+        "polarityLabel": "tags",
+        "tagsLabel": "tags",
+        "conditionResolved": "Condition handled.",
+        "openPickerBtn": "Choose Condition…",
+        "noneQualify": "No characters currently qualify for a new condition.",
+        "selectCharacter": "Select a character from the list."
+      },
+      "step4": {
+        "title": "Clear Conditions",
+        "prompt": "{name}'s tag count has dropped below 3. Their condition clears.",
+        "tagCount": "{n} tags",
+        "clearBtn": "Clear Condition",
+        "allCleared": "All conditions cleared for {name}.",
+        "noneQualify": "No conditions need clearing this phase.",
+        "selectCharacter": "Select a character from the list.",
+        "conditionClearedCard": "{name}'s reputation condition \"{condition}\" has cleared — their tag count dropped below 3."
+      },
+      "step5": {
+        "title": "Phase Complete",
+        "prompt": "The reputation phase is wrapped up. A summary will be posted to the chat log.",
+        "tagsCreated": "{n} reputation tag(s) created this phase.",
+        "conditionsCleared": "{n} condition(s) cleared this phase.",
+        "charactersReviewed": "{n} character(s) reviewed.",
+        "advanceNote": "Advance the cycle phase manually via the Cycle HUD when ready.",
+        "completionCard": "Reputation phase complete — {tagsCreated} tag(s) created, {conditionsCleared} condition(s) cleared."
       }
     }
   },

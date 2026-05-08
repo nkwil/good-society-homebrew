@@ -8,6 +8,7 @@ import { register as registerSceneControls } from './hooks/scene-controls.js';
 import { register as registerCanvasContext } from './hooks/canvas-context.js';
 import { register as registerTokenHoverCard } from './hooks/token-hover-card.js';
 import { register as registerUpkeep, onUpkeepPhaseStart } from './hooks/upkeep.js';
+import { register as registerReputationPhase, onReputationPhaseStart } from './hooks/reputation-phase.js';
 import { register as registerSessionEvents } from './hooks/session-events.js';
 import { checkThresholdAndPrompt } from './helpers/reputation-rules.js';
 import { renderDock } from './apps/my-characters-dock.js';
@@ -113,6 +114,15 @@ Hooks.once('init', async function () {
     default: true,
   });
 
+  game.settings.register('good-society-homebrew', 'reputationPhaseWizardEnabled', {
+    name: 'GOODSOCIETY.settings.reputationPhaseWizardEnabled.name',
+    hint: 'GOODSOCIETY.settings.reputationPhaseWizardEnabled.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
   game.settings.register('good-society-homebrew', 'applyFoundryChrome', {
     name: 'GOODSOCIETY.settings.applyFoundryChrome.name',
     hint: 'GOODSOCIETY.settings.applyFoundryChrome.hint',
@@ -135,6 +145,7 @@ Hooks.once('init', async function () {
       Hooks.callAll('goodSociety.cyclePhaseChanged', { newPhase: value });
       renderCycleHud();
       if (value === 'upkeep') onUpkeepPhaseStart();
+      if (value === 'reputation') onReputationPhaseStart();
     },
   });
 
@@ -389,4 +400,5 @@ registerSceneControls();
 registerCanvasContext();
 registerTokenHoverCard();
 registerUpkeep();
+registerReputationPhase();
 registerSessionEvents();
