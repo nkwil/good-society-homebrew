@@ -1,0 +1,305 @@
+/* Rumour & Scandal Wizard — house style.
+ * Per docs/design/32-rumour-wizard.md.
+ */
+
+.gs-rumour-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px;
+  font-family: var(--gs-body);
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+  min-width: 0;
+}
+
+.gs-rumour-wizard__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 10px;
+  border-bottom: 0.5px solid var(--gs-muted);
+}
+
+.gs-rumour-wizard__title {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--gs-brand);
+  margin: 0;
+}
+
+.gs-rumour-wizard__subtitle {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--gs-accent-2);
+  margin: 0;
+}
+
+/* ── Active rumour list (shared header chunk) ─────────────────────────── */
+
+.gs-rumour-wizard__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gs-rumour-wizard__row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 4px;
+}
+
+.gs-rumour-wizard__row--spread { border-color: var(--gs-accent-1); }
+.gs-rumour-wizard__row--fading { opacity: 0.7; }
+
+.gs-rumour-wizard__token {
+  color: var(--gs-accent-1);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.gs-rumour-wizard__fade {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.gs-rumour-wizard__row-text {
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 14px;
+}
+
+.gs-rumour-wizard__empty {
+  font-style: italic;
+  color: var(--gs-accent-2);
+  text-align: center;
+  margin: 8px 0;
+}
+
+/* ── Setup view ───────────────────────────────────────────────────────── */
+
+.gs-rumour-wizard__setup-eyebrow {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+}
+
+.gs-rumour-wizard__setup-help {
+  font-size: 12px;
+  color: var(--gs-ink);
+  margin: 4px 0 8px 0;
+}
+
+.gs-rumour-wizard__setup-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-rumour-wizard__setup-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 3px;
+}
+
+.gs-rumour-wizard__setup-row--excluded {
+  opacity: 0.5;
+}
+
+.gs-rumour-wizard__setup-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.gs-rumour-wizard__setup-name {
+  font-size: 13px;
+}
+
+.gs-rumour-wizard__setup-tag {
+  display: inline-block;
+  padding: 0 4px;
+  background: var(--gs-accent-3);
+  color: var(--gs-ink);
+  font-family: var(--gs-ui);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.gs-rumour-wizard__setup-move {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.gs-rumour-wizard__icon-btn {
+  background: none;
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 10px;
+  color: var(--gs-accent-2);
+  cursor: pointer;
+}
+
+.gs-rumour-wizard__icon-btn:hover:not([disabled]) {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+}
+
+.gs-rumour-wizard__icon-btn[disabled] {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.gs-rumour-wizard__setup-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* ── Active view ──────────────────────────────────────────────────────── */
+
+.gs-rumour-wizard__active {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gs-rumour-wizard__turn-indicator {
+  text-align: center;
+  font-family: var(--gs-display);
+  font-size: 14px;
+  font-style: italic;
+  padding: 8px 12px;
+  background: var(--gs-paper-warm);
+  border-radius: 4px;
+  color: var(--gs-accent-2);
+}
+
+.gs-rumour-wizard__turn-indicator--mine {
+  background: var(--gs-accent-1);
+  color: var(--gs-paper);
+  font-weight: 600;
+  font-style: normal;
+}
+
+.gs-rumour-wizard__action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 4px;
+}
+
+.gs-rumour-wizard__action-eyebrow {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+}
+
+.gs-rumour-wizard__action-help {
+  font-size: 11px;
+  color: var(--gs-accent-2);
+  font-style: italic;
+  margin: 0;
+}
+
+.gs-rumour-wizard__textarea {
+  font-family: var(--gs-body);
+  font-size: 14px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 3px;
+  color: var(--gs-ink);
+  padding: 6px 10px;
+  width: 100%;
+  resize: vertical;
+  min-height: 48px;
+}
+
+.gs-rumour-wizard__row-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.gs-rumour-wizard__spread-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-rumour-wizard__spread-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--gs-paper-warm);
+  border-radius: 3px;
+}
+
+.gs-rumour-wizard__spread-text {
+  flex: 1;
+  font-size: 13px;
+  font-family: var(--gs-display);
+  font-style: italic;
+}
+
+.gs-rumour-wizard__must-create {
+  font-style: italic;
+  color: var(--gs-accent-2);
+  margin: 0;
+  font-size: 12px;
+}
+
+.gs-rumour-wizard__gm-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 0.5px dashed var(--gs-muted);
+}
+
+/* ── Fadeout view ────────────────────────────────────────────────────── */
+
+.gs-rumour-wizard__fadeout {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.gs-rumour-wizard__fadeout-help {
+  font-size: 12px;
+  color: var(--gs-ink);
+  margin: 0 0 12px 0;
+}
+
+.gs-rumour-wizard__player-toast {
+  text-align: center;
+  font-style: italic;
+  color: var(--gs-accent-2);
+  margin: 12px 0;
+}

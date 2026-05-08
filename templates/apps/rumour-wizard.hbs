@@ -1,0 +1,130 @@
+{{!-- Rumour & Scandal wizard — single root <section> required.
+     Three states: setup (GM picks turn order) / active (round-robin) / fadeout. --}}
+<section class="gs-rumour-wizard">
+
+  <header class="gs-rumour-wizard__header">
+    <h2 class="gs-rumour-wizard__title">{{localize "GOODSOCIETY.rumourWizard.heading"}}</h2>
+    <p class="gs-rumour-wizard__subtitle">
+      {{#if isSetup}}
+        {{localize "GOODSOCIETY.rumourWizard.subtitleSetup"}}
+      {{else if isActive}}
+        {{roundLabel}}
+      {{else if isFadeout}}
+        {{localize "GOODSOCIETY.rumourWizard.subtitleFadeout"}}
+      {{/if}}
+    </p>
+  </header>
+
+  {{!-- ── Active rumour list (always shown) ─────────────────────────── --}}
+  <div class="gs-rumour-wizard__list">
+    {{#if activeRumours.length}}
+      {{#each activeRumours}}
+        <div class="gs-rumour-wizard__row gs-rumour-wizard__row--{{state}}" data-rumour-id="{{id}}">
+          {{#if (eq state "spread")}}<span class="gs-rumour-wizard__token" title="{{stateLabel}}">●</span>{{/if}}
+          {{#if (eq state "fading")}}<span class="gs-rumour-wizard__fade" title="{{stateLabel}}">📉</span>{{/if}}
+          <span class="gs-rumour-wizard__row-text">{{text}}</span>
+        </div>
+      {{/each}}
+    {{else}}
+      <p class="gs-rumour-wizard__empty">{{localize "GOODSOCIETY.rumourWizard.noRumoursYet"}}</p>
+    {{/if}}
+  </div>
+
+  {{!-- ── Setup view (GM, phase=idle) ───────────────────────────────── --}}
+  {{#if isSetup}}
+    <div class="gs-rumour-wizard__setup">
+      {{#if isGM}}
+        <div class="gs-rumour-wizard__setup-eyebrow">{{localize "GOODSOCIETY.rumourWizard.setupEyebrow"}}</div>
+        <p class="gs-rumour-wizard__setup-help">{{localize "GOODSOCIETY.rumourWizard.setupHelp"}}</p>
+        <ol class="gs-rumour-wizard__setup-list">
+          {{#each setupRows}}
+            <li class="gs-rumour-wizard__setup-row {{#unless included}}gs-rumour-wizard__setup-row--excluded{{/unless}}">
+              <label class="gs-rumour-wizard__setup-check">
+                <input type="checkbox" {{#if included}}checked{{/if}} data-action="toggleTurnUser" data-user-id="{{id}}" />
+                <span class="gs-rumour-wizard__setup-name">{{name}}{{#if isGM}} <span class="gs-rumour-wizard__setup-tag">GM</span>{{/if}}</span>
+              </label>
+              <div class="gs-rumour-wizard__setup-move">
+                <button type="button" class="gs-rumour-wizard__icon-btn" data-action="moveUserUp" data-user-id="{{id}}" {{#unless canMoveUp}}disabled{{/unless}}>▲</button>
+                <button type="button" class="gs-rumour-wizard__icon-btn" data-action="moveUserDown" data-user-id="{{id}}" {{#unless canMoveDown}}disabled{{/unless}}>▼</button>
+              </div>
+            </li>
+          {{/each}}
+        </ol>
+        <div class="gs-rumour-wizard__setup-actions">
+          <button type="button" class="gs-btn gs-btn--primary" data-action="beginPhase" {{#unless canBegin}}disabled{{/unless}}>
+            {{localize "GOODSOCIETY.rumourWizard.beginBtn"}}
+          </button>
+        </div>
+      {{else}}
+        <p class="gs-rumour-wizard__player-toast">{{localize "GOODSOCIETY.rumourWizard.waitingForGMSetup"}}</p>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{!-- ── Active view (round 1 or 2) ────────────────────────────────── --}}
+  {{#if isActive}}
+    <div class="gs-rumour-wizard__active">
+      <div class="gs-rumour-wizard__turn-indicator {{#if myTurn}}gs-rumour-wizard__turn-indicator--mine{{/if}}">
+        {{#if myTurn}}
+          {{localize "GOODSOCIETY.rumourWizard.yourTurn"}}
+        {{else}}
+          {{localize "GOODSOCIETY.rumourWizard.waitingFor" name=turnUserName}}
+        {{/if}}
+      </div>
+
+      {{#if myTurn}}
+        <div class="gs-rumour-wizard__action-group">
+          <div class="gs-rumour-wizard__action-eyebrow">{{localize "GOODSOCIETY.rumourWizard.actionCreate"}}</div>
+          <textarea data-rw-field="newRumour" class="gs-rumour-wizard__textarea" rows="2" placeholder="{{localize "GOODSOCIETY.rumourWizard.newRumourPlaceholder"}}"></textarea>
+          <div class="gs-rumour-wizard__row-actions">
+            <button type="button" class="gs-btn gs-btn--primary" data-action="submitCreate">
+              {{localize "GOODSOCIETY.rumourWizard.createBtn"}}
+            </button>
+          </div>
+        </div>
+
+        {{#if hasSpreadable}}
+          <div class="gs-rumour-wizard__action-group">
+            <div class="gs-rumour-wizard__action-eyebrow">{{localize "GOODSOCIETY.rumourWizard.actionSpread"}}</div>
+            <p class="gs-rumour-wizard__action-help">{{localize "GOODSOCIETY.rumourWizard.actionSpreadHelp"}}</p>
+            <ul class="gs-rumour-wizard__spread-list">
+              {{#each spreadable}}
+                <li class="gs-rumour-wizard__spread-row">
+                  <span class="gs-rumour-wizard__spread-text">{{text}}</span>
+                  <button type="button" class="gs-btn gs-btn--sm gs-btn--outline" data-action="submitSpread" data-rumour-id="{{id}}">
+                    {{localize "GOODSOCIETY.rumourWizard.spreadBtn"}}
+                  </button>
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+        {{else}}
+          <p class="gs-rumour-wizard__must-create">{{localize "GOODSOCIETY.rumourWizard.mustCreateNote"}}</p>
+        {{/if}}
+      {{/if}}
+
+      {{#if isGM}}
+        <div class="gs-rumour-wizard__gm-controls">
+          <button type="button" class="gs-btn gs-btn--ghost gs-btn--sm" data-action="gmAdvance">
+            {{localize "GOODSOCIETY.rumourWizard.skipTurnBtn"}}
+          </button>
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{!-- ── Fadeout view (GM only) ────────────────────────────────────── --}}
+  {{#if isFadeout}}
+    <div class="gs-rumour-wizard__fadeout">
+      {{#if isGM}}
+        <p class="gs-rumour-wizard__fadeout-help">{{localize "GOODSOCIETY.rumourWizard.fadeoutHelp"}}</p>
+        <button type="button" class="gs-btn gs-btn--primary" data-action="runFadeout">
+          {{localize "GOODSOCIETY.rumourWizard.runFadeoutBtn"}}
+        </button>
+      {{else}}
+        <p class="gs-rumour-wizard__player-toast">{{localize "GOODSOCIETY.rumourWizard.waitingForGMFadeout"}}</p>
+      {{/if}}
+    </div>
+  {{/if}}
+
+</section>

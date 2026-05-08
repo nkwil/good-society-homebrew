@@ -1,0 +1,71 @@
+{{!-- Rumour Board — single root <section>. Read-only for players except for
+     spending the resolve token on a 'spread' rumour. GM has admin actions. --}}
+<section class="gs-rumour-board">
+
+  <header class="gs-rumour-board__header">
+    <h2 class="gs-rumour-board__title">{{localize "GOODSOCIETY.rumourBoard.heading"}}</h2>
+    <p class="gs-rumour-board__subtitle">{{localize "GOODSOCIETY.rumourBoard.subtitle"}}</p>
+  </header>
+
+  {{#if hasActive}}
+    <ul class="gs-rumour-board__list">
+      {{#each active}}
+        <li class="gs-rumour-board__row {{stateClass}}" data-rumour-id="{{id}}">
+          {{#if isEditing}}
+            <div class="gs-rumour-board__edit">
+              <input type="text" class="gs-rumour-board__edit-input" data-rb-field="text" data-rumour-id="{{id}}" value="{{text}}" />
+              <div class="gs-rumour-board__edit-actions">
+                <button type="button" class="gs-btn gs-btn--sm gs-btn--ghost" data-action="cancelEditRumour">{{localize "GOODSOCIETY.rumourBoard.cancel"}}</button>
+                <button type="button" class="gs-btn gs-btn--sm gs-btn--primary" data-action="saveEditRumour" data-rumour-id="{{id}}">{{localize "GOODSOCIETY.rumourBoard.save"}}</button>
+              </div>
+            </div>
+          {{else}}
+            <div class="gs-rumour-board__row-marker">
+              {{#if isSpread}}
+                <button type="button" class="gs-rumour-board__token gs-rumour-board__token--spent-action" data-action="useRumour" data-rumour-id="{{id}}" title="{{localize "GOODSOCIETY.rumourBoard.useTokenHint"}}" aria-label="{{localize "GOODSOCIETY.rumourBoard.useToken"}}">●</button>
+              {{else if isFading}}
+                <span class="gs-rumour-board__fade-marker" title="{{stateLabel}}">📉</span>
+              {{else}}
+                <span class="gs-rumour-board__bullet">·</span>
+              {{/if}}
+            </div>
+            <span class="gs-rumour-board__text">{{text}}</span>
+            <span class="gs-rumour-board__state-label">{{stateLabel}}</span>
+            {{#if canEdit}}
+              <div class="gs-rumour-board__row-admin">
+                <button type="button" class="gs-rumour-board__icon-btn" data-action="editRumour" data-rumour-id="{{id}}" title="{{localize "GOODSOCIETY.rumourBoard.editHint"}}">✎</button>
+                <button type="button" class="gs-rumour-board__icon-btn gs-rumour-board__icon-btn--danger" data-action="deleteRumour" data-rumour-id="{{id}}" title="{{localize "GOODSOCIETY.rumourBoard.deleteHint"}}">✕</button>
+              </div>
+            {{/if}}
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p class="gs-rumour-board__empty">{{localize "GOODSOCIETY.rumourBoard.empty"}}</p>
+  {{/if}}
+
+  {{#if archivedCount}}
+    <div class="gs-rumour-board__archived-section">
+      <button type="button" class="gs-rumour-board__archived-toggle" data-action="toggleArchived">
+        {{#if showArchived}}
+          {{localize "GOODSOCIETY.rumourBoard.collapseArchived"}} ({{archivedCount}})
+        {{else}}
+          {{localize "GOODSOCIETY.rumourBoard.expandArchived"}} ({{archivedCount}})
+        {{/if}}
+      </button>
+      {{#if showArchived}}
+        <ul class="gs-rumour-board__list gs-rumour-board__list--archived">
+          {{#each archived}}
+            <li class="gs-rumour-board__row {{stateClass}}" data-rumour-id="{{id}}">
+              <span class="gs-rumour-board__bullet">·</span>
+              <span class="gs-rumour-board__text gs-rumour-board__text--archived">{{text}}</span>
+              <span class="gs-rumour-board__state-label">{{stateLabel}}</span>
+            </li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    </div>
+  {{/if}}
+
+</section>

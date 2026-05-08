@@ -10,6 +10,8 @@ import { register as registerTokenHoverCard } from './hooks/token-hover-card.js'
 import { register as registerUpkeep, onUpkeepPhaseStart } from './hooks/upkeep.js';
 import { register as registerReputationPhase, onReputationPhaseStart } from './hooks/reputation-phase.js';
 import { register as registerSessionEvents } from './hooks/session-events.js';
+import { register as registerRumourPhase, onRumourPhaseStart } from './hooks/rumour-phase.js';
+import { register as registerRumourSocket } from './hooks/rumour-socket.js';
 import { checkThresholdAndPrompt } from './helpers/reputation-rules.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
@@ -156,6 +158,7 @@ Hooks.once('init', async function () {
       renderCycleHud();
       if (value === 'upkeep') onUpkeepPhaseStart();
       if (value === 'reputation') onReputationPhaseStart();
+      if (value === 'rumour-scandal') onRumourPhaseStart();
     },
   });
 
@@ -189,6 +192,31 @@ Hooks.once('init', async function () {
     config: false,
     type: Object,
     default: [],
+  });
+
+  // Rumour & Scandal phase storage — per docs/design/32-rumour-wizard.md.
+  // Two world-scoped settings; player-driven turn handoff goes through the
+  // system socket (system.json socket: true) since players can't write world
+  // settings. Setting onChange triggers re-renders of any open wizard/board.
+  game.settings.register('good-society-homebrew', 'rumours', {
+    scope: 'world',
+    config: false,
+    type: Object,
+    default: [],
+    onChange: () => {
+      import('./apps/rumour-wizard.js').then(m => m.refreshRumourWizard?.()).catch(() => {});
+      import('./apps/rumour-board.js').then(m => m.refreshRumourBoard?.()).catch(() => {});
+    },
+  });
+
+  game.settings.register('good-society-homebrew', 'rumourPhaseState', {
+    scope: 'world',
+    config: false,
+    type: Object,
+    default: { phase: 'idle', round: 0, turnOrder: [], currentIdx: 0, startedAtCycle: 0 },
+    onChange: () => {
+      import('./apps/rumour-wizard.js').then(m => m.refreshRumourWizard?.()).catch(() => {});
+    },
   });
 
   // Event Timeline (in-fiction calendar) — per docs/design/31-event-timeline.md.
@@ -432,4 +460,6 @@ registerCanvasContext();
 registerTokenHoverCard();
 registerUpkeep();
 registerReputationPhase();
+registerRumourPhase();
+registerRumourSocket();
 registerSessionEvents();

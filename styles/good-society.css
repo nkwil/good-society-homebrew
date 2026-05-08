@@ -115,5 +115,7 @@
 @import './apps/_actions-cheat-sheet.css';
 @import './apps/_player-reputation-phase-wizard.css';
 @import './apps/_event-timeline.css';
+@import './apps/_rumour-wizard.css';
+@import './apps/_rumour-board.css';
 
 @import './apps/_letter-composer.css';

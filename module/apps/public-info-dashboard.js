@@ -19,6 +19,7 @@ import { advanceCyclePhase } from '../helpers/cycle-advance.js';
 import { openRevealControl } from './reveal-control.js';
 import { openBulkPermissionsPanel } from './bulk-permissions-panel.js';
 import { openEventTimeline } from './event-timeline.js';
+import { openRumourBoard } from './rumour-board.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 } = foundry.applications.api;
@@ -39,7 +40,7 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
       'clear-monologues': PublicInfoDashboard.#clearMonologues,
       'reveal-desires':   PublicInfoDashboard.#revealDesires,
       'advance-phase':    PublicInfoDashboard.#advancePhase,
-      'stub-rumour':      PublicInfoDashboard.#stubRumour,
+      'open-rumour':      PublicInfoDashboard.#openRumour,
       'open-permissions': PublicInfoDashboard.#openPermissions,
       'open-calendar':    PublicInfoDashboard.#openCalendar,
     },
@@ -199,8 +200,8 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
     _instance?.refreshAndReset?.();
   }
 
-  static #stubRumour(ev, target) {
-    ui.notifications.info(game.i18n.localize('GOODSOCIETY.dashboard.bulk.rumourStub'));
+  static #openRumour(ev, target) {
+    openRumourBoard();
   }
 
   static #openPermissions() {
