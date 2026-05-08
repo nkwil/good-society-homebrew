@@ -66,10 +66,17 @@ export class InnerConflictSheet extends HandlebarsApplicationMixin(ItemSheetV2) 
 
     await this.document.update(update);
 
-    // Fire the completion ceremony card when the conflict resolves.
+    // When completing, move ID from active → completed on the actor, then post card.
     if (update['system.completed']) {
       const actor = this.document.parent;
       if (actor) {
+        const id = this.document.id;
+        const activeIds = (actor.system.innerConflictsActiveIds ?? []).filter(i => i !== id);
+        const completedIds = [...(actor.system.innerConflictsCompletedIds ?? []), id];
+        await actor.update({
+          'system.innerConflictsActiveIds': activeIds,
+          'system.innerConflictsCompletedIds': completedIds,
+        });
         await postCompletionCard({
           actor,
           conflict: this.document,

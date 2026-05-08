@@ -148,7 +148,9 @@
       "promoteToConnection": "+ promote to connection",
       "grantToPlayer": "grant to player",
       "promoteTitle": "Promote to Connection?",
-      "promoteConfirm": "Promote {name} to Connection? They'll gain a resolve track, impressions, and a theme. Bio, description, scene info, and personas are preserved."
+      "promoteConfirm": "Promote {name} to Connection? They'll gain a resolve track, impressions, and a theme. Bio, description, scene info, and personas are preserved.",
+      "promoteSuccess": "{name} has been promoted to a Connection actor.",
+      "promoteFailed": "Failed to create the Connection actor. Please try again."
     },
     "family": {
       "eyebrow": "Family",
@@ -180,7 +182,11 @@
       "memberMajors": "Member Majors",
       "membersHelper": "click any to open",
       "noMembers": "No Major characters linked to this family yet.",
-      "noTheme": "no theme assigned"
+      "noTheme": "no theme assigned",
+      "linkMajorTitle": "Link a Major",
+      "linkMajorSelect": "Select a Major character to add to this family.",
+      "linkMajorConfirm": "Link",
+      "noMajorsToLink": "No unlinked Major characters found in this world."
     },
     "connection": {
       "eyebrow": "Connection",
@@ -198,7 +204,14 @@
       "hoverSummary": "Hover summary",
       "hoverSummaryPlaceholder": "What appears when a player mouses over this connection's token.",
       "personas": "Personas",
-      "noPersonas": "no alternate identities"
+      "noPersonas": "no alternate identities",
+      "addImpressionTitle": "Add Impression",
+      "addImpressionMajor": "Which Major character does this Connection have an impression of?",
+      "addImpressionConfirm": "Add Impression",
+      "noMajorsForImpression": "No Major characters exist in this world yet.",
+      "editImpressionTitle": "Edit Impression",
+      "editImpressionText": "Impression text",
+      "editImpressionConfirm": "Save"
     },
     "public": {
       "reputationCriteria": "Reputation Criteria",
@@ -1049,11 +1062,11 @@
       "completeBtn": "Complete",
       "noOwnedMajors": "You have no major characters to review.",
       "steps": {
-        "welcome":    "Overview",
-        "criteria":   "Criteria",
-        "tags":       "Tags",
+        "welcome": "Overview",
+        "criteria": "Criteria",
+        "tags": "Tags",
         "conditions": "Conditions",
-        "complete":   "Complete"
+        "complete": "Complete"
       },
       "step1": {
         "title": "Reputation Phase",
@@ -1113,6 +1126,11 @@
         "conditionsCleared": "{n} condition(s) cleared",
         "completionCard": "{name} completed the Reputation phase. Tags added: {tagsAdded}. Conditions triggered: {conditionsTriggered}. Conditions cleared: {conditionsCleared}."
       }
+    },
+    "sceneTag": {
+      "addTitle": "Add Scene Tag",
+      "label": "Tag text",
+      "confirm": "Add"
     }
   },
   "TYPES": {

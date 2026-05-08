@@ -2,6 +2,9 @@
  * @typedef {import('@league-of-foundry-developers/foundry-vtt-types').Actor} Actor
  */
 
+import { switchPersona } from '../helpers/persona-swap.js';
+import { openPersonaEditor } from '../apps/persona-editor.js';
+
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
@@ -126,23 +129,67 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   static async #switchPersona(event, target) {
-    await this.actor.update({ 'system.activePersonaId': target.dataset.personaId });
+    await switchPersona(this.actor, target.dataset.personaId ?? '');
   }
 
-  // Stubs — full picker / editor UI in B-5.
   static async #addImpression() {
-    ui.notifications?.info('Impression picker coming in a future session.');
+    const majors = game.actors?.filter(a => a.type === 'major-character') ?? [];
+    if (!majors.length) {
+      ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.connection.noMajorsForImpression'));
+      return;
+    }
+    const options = majors
+      .map(a => `<option value="${a.id}">${foundry.utils.escapeHTML(a.name)}</option>`)
+      .join('');
+    const majorId = await foundry.applications.api.DialogV2.prompt({
+      window: { title: game.i18n.localize('GOODSOCIETY.connection.addImpressionTitle') },
+      content: `<label style="display:block;margin-bottom:6px">${game.i18n.localize('GOODSOCIETY.connection.addImpressionMajor')}<select name="majorId" style="width:100%;margin-top:4px">${options}</select></label>`,
+      ok: {
+        label: game.i18n.localize('GOODSOCIETY.connection.addImpressionConfirm'),
+        callback: (_ev, button) => button.form.elements.majorId.value,
+      },
+    });
+    if (!majorId) return;
+    const impressions = foundry.utils.deepClone(this.actor.system.impressions ?? []);
+    impressions.push({ majorId, text: '' });
+    await this.actor.update({ 'system.impressions': impressions });
   }
 
   static async #editImpression(event, target) {
-    console.log('editImpression stub | index:', target.dataset.index);
+    const index = Number(target.dataset.index);
+    const impressions = foundry.utils.deepClone(this.actor.system.impressions ?? []);
+    const imp = impressions[index];
+    if (!imp) return;
+
+    const escaped = foundry.utils.escapeHTML(imp.text ?? '');
+    const result = await foundry.applications.api.DialogV2.prompt({
+      window: { title: game.i18n.localize('GOODSOCIETY.connection.editImpressionTitle') },
+      content: `<label style="display:block;margin-bottom:6px">${game.i18n.localize('GOODSOCIETY.connection.editImpressionText')}<textarea name="text" rows="5" style="width:100%;margin-top:4px">${escaped}</textarea></label>`,
+      ok: {
+        label: game.i18n.localize('GOODSOCIETY.connection.editImpressionConfirm'),
+        callback: (_ev, button) => button.form.elements.text.value,
+      },
+    });
+    if (result === null || result === undefined) return;
+    impressions[index] = { ...imp, text: result };
+    await this.actor.update({ 'system.impressions': impressions });
   }
 
   static async #addPublicTag() {
-    ui.notifications?.info('Public tag editor coming in a future session.');
+    const tag = await foundry.applications.api.DialogV2.prompt({
+      window: { title: game.i18n.localize('GOODSOCIETY.sceneTag.addTitle') },
+      content: `<label style="display:block;margin-bottom:6px">${game.i18n.localize('GOODSOCIETY.sceneTag.label')}<input type="text" name="tag" style="width:100%;margin-top:4px" /></label>`,
+      ok: {
+        label: game.i18n.localize('GOODSOCIETY.sceneTag.confirm'),
+        callback: (_ev, button) => button.form.elements.tag.value.trim(),
+      },
+    });
+    if (!tag) return;
+    const current = this.actor.system.sceneInfo?.publicTags ?? [];
+    await this.actor.update({ 'system.sceneInfo.publicTags': [...current, tag] });
   }
 
   static async #addPersona() {
-    ui.notifications?.info('Persona editor coming in Session B-5.');
+    openPersonaEditor(this.actor);
   }
 }

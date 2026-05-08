@@ -8,6 +8,8 @@ import { openPersonaSwitcherPopover } from '../apps/persona-switcher-popover.js'
 import { openActionsCheatSheet } from '../apps/actions-cheat-sheet.js';
 import { openPersonaEditor } from '../apps/persona-editor.js';
 import { switchPersona } from '../helpers/persona-swap.js';
+import { isConflictComplete, checkThresholdAndPrompt } from '../helpers/reputation-rules.js';
+import { postCompletionCard } from '../helpers/chat-cards.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -235,6 +237,51 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     }
   }
 
+  // ── Drop handler ──────────────────────────────────────────────────────────
+
+  async _onDrop(event) {
+    const data = TextEditor.getDragEventData(event);
+    if (!data) return super._onDrop(event);
+
+    if (data.type === 'Item') {
+      const item = data.uuid ? await fromUuid(data.uuid) : null;
+      if (item?.type === 'reputation-tag') {
+        // Skip if this tag is already embedded on this actor.
+        if (item.parent?.id === this.actor.id) return;
+        const polarity = item.system?.polarity ?? 'positive';
+        const [newItem] = await this.actor.createEmbeddedDocuments('Item', [{
+          type: 'reputation-tag',
+          name: item.name,
+          system: foundry.utils.deepClone(item.system),
+        }]);
+        if (!newItem) return;
+        const field = polarity === 'negative'
+          ? 'system.reputation.negativeTags'
+          : 'system.reputation.positiveTags';
+        const current = polarity === 'negative'
+          ? (this.actor.system.reputation?.negativeTags ?? [])
+          : (this.actor.system.reputation?.positiveTags ?? []);
+        await this.actor.update({ [field]: [...current, newItem.id] });
+        await checkThresholdAndPrompt(this.actor, polarity);
+        return;
+      }
+      return super._onDrop(event);
+    }
+
+    if (data.type === 'Actor') {
+      const dropped = data.uuid ? await fromUuid(data.uuid) : null;
+      if (dropped?.type === 'connection') {
+        const current = this.actor.system.connections ?? [];
+        if (!current.includes(dropped.id)) {
+          await this.actor.update({ 'system.connections': [...current, dropped.id] });
+        }
+        return;
+      }
+    }
+
+    return super._onDrop(event);
+  }
+
   // ── Action handlers ────────────────────────────────────────────────────────
 
   // Toggle a single resolve pip. Click the highest-filled pip to lower by one;
@@ -258,10 +305,42 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     new MonologueEditor(this.actor).render(true);
   }
 
-  // Stub — full toggle logic ships with B-1 automation (item update on embedded InnerConflict).
   static async #toggleBox(event, target) {
-    console.log('toggleBox stub | item:', target.dataset.itemId,
-      'side:', target.dataset.side, 'index:', target.dataset.index);
+    const itemId = target.dataset.itemId;
+    const side = target.dataset.side;
+    const index = parseInt(target.dataset.index, 10);
+
+    const item = this.actor.items.get(itemId);
+    if (!item || item.system.completed) return;
+
+    const sys = item.system;
+    const leftBoxes = [...(sys.leftBoxes ?? [false, false, false, false, false])];
+    const rightBoxes = [...(sys.rightBoxes ?? [false, false, false, false, false])];
+
+    if (side === 'left') leftBoxes[index] = !leftBoxes[index];
+    else rightBoxes[index] = !rightBoxes[index];
+
+    const leftCount = leftBoxes.filter(Boolean).length;
+    const rightCount = rightBoxes.filter(Boolean).length;
+    const nowComplete = isConflictComplete(leftBoxes, rightBoxes);
+
+    const update = { 'system.leftBoxes': leftBoxes, 'system.rightBoxes': rightBoxes };
+    if (nowComplete) {
+      update['system.completed'] = true;
+      update['system.completedSide'] = leftCount >= 5 ? 'left' : rightCount >= 5 ? 'right' : null;
+    }
+
+    await item.update(update);
+
+    if (nowComplete) {
+      const activeIds = (this.actor.system.innerConflictsActiveIds ?? []).filter(id => id !== itemId);
+      const completedIds = [...(this.actor.system.innerConflictsCompletedIds ?? []), itemId];
+      await this.actor.update({
+        'system.innerConflictsActiveIds': activeIds,
+        'system.innerConflictsCompletedIds': completedIds,
+      });
+      await postCompletionCard({ actor: this.actor, conflict: item, resolvedSide: update['system.completedSide'] });
+    }
   }
 
   static async #openItem(event, target) {

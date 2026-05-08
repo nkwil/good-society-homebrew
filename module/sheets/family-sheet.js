@@ -69,7 +69,36 @@ export class FamilySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   static async #linkMajor() {
-    ui.notifications?.info('Major linking coming in a future session.');
+    const alreadyLinked = new Set(this.actor.system.memberMajorIds ?? []);
+    const majors = (game.actors?.filter(a => a.type === 'major-character') ?? [])
+      .filter(a => !alreadyLinked.has(a.id));
+
+    if (!majors.length) {
+      ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.family.noMajorsToLink'));
+      return;
+    }
+
+    const options = majors
+      .map(a => `<option value="${a.id}">${foundry.utils.escapeHTML(a.name)}</option>`)
+      .join('');
+    const majorId = await foundry.applications.api.DialogV2.prompt({
+      window: { title: game.i18n.localize('GOODSOCIETY.family.linkMajorTitle') },
+      content: `<label style="display:block;margin-bottom:6px">${game.i18n.localize('GOODSOCIETY.family.linkMajorSelect')}<select name="majorId" style="width:100%;margin-top:4px">${options}</select></label>`,
+      ok: {
+        label: game.i18n.localize('GOODSOCIETY.family.linkMajorConfirm'),
+        callback: (_ev, button) => button.form.elements.majorId.value,
+      },
+    });
+    if (!majorId) return;
+
+    const major = game.actors?.get(majorId);
+    if (!major) return;
+
+    // Two-way link: add to family memberMajorIds + set familyId on the Major.
+    await this.actor.update({
+      'system.memberMajorIds': [...(this.actor.system.memberMajorIds ?? []), majorId],
+    });
+    await major.update({ 'system.familyId': this.actor.id });
   }
 
   static async #toggleVisibility(event, target) {
