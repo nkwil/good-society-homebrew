@@ -1,0 +1,183 @@
+/* Letter Composer — house-styled chrome wrapping the sender-themed preview zone.
+ * Per docs/design/05-epistolary-ui.md §"Composer layout spec".
+ */
+
+/* ── Wrapper ──────────────────────────────────────────────────────────────── */
+
+.gs-letter-composer__wrapper {
+  display: flex;
+  flex-direction: column;
+  background: var(--gs-paper);
+}
+
+/* ── Form zone ────────────────────────────────────────────────────────────── */
+
+.gs-letter-composer__form {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--gs-paper);
+  border-bottom: 0.5px solid var(--gs-accent-2, #708060);
+}
+
+.gs-letter-composer__form-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.gs-letter-composer__cycle-label {
+  font-family: var(--gs-body, Georgia, serif);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2, #708060);
+}
+
+/* ── Field row ────────────────────────────────────────────────────────────── */
+
+.gs-letter-composer__row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.gs-letter-composer__row--body {
+  align-items: start;
+}
+
+.gs-letter-composer__label {
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.16em;
+  color: var(--gs-brand, #2A3A2D);
+  white-space: nowrap;
+}
+
+/* ── Inputs ───────────────────────────────────────────────────────────────── */
+
+.gs-letter-composer__input,
+.gs-letter-composer__actor-select,
+.gs-letter-composer__textarea {
+  font-family: var(--gs-body, Georgia, serif);
+  font-size: 14px;
+  color: var(--gs-ink, #3D2F26);
+  background: var(--gs-paper-warm, #F4ECD8);
+  border: 0.5px solid var(--gs-accent-2, #708060);
+  border-radius: 4px;
+  padding: 6px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.gs-letter-composer__input:focus,
+.gs-letter-composer__actor-select:focus,
+.gs-letter-composer__textarea:focus {
+  outline: 1.5px solid var(--gs-brand, #2A3A2D);
+  outline-offset: -1px;
+}
+
+.gs-letter-composer__actor-select {
+  cursor: pointer;
+}
+
+.gs-letter-composer__textarea {
+  min-height: 92px;
+  resize: vertical;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* ── Seal picker ──────────────────────────────────────────────────────────── */
+
+.gs-letter-composer__seal-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gs-letter-composer__seal-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: border-color 0.1s, box-shadow 0.1s;
+}
+
+.gs-letter-composer__seal-circle:hover {
+  border-color: var(--gs-ink, #3D2F26);
+}
+
+.gs-letter-composer__seal-circle--selected {
+  border-color: var(--gs-brand, #2A3A2D);
+  box-shadow: 0 0 0 2px var(--gs-paper, #EFE6D2);
+  outline: 1.5px solid var(--gs-brand, #2A3A2D);
+}
+
+.gs-letter-composer__seal-label {
+  font-family: var(--gs-body, Georgia, serif);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2, #708060);
+  margin-left: 4px;
+}
+
+/* ── Preview eyebrow ──────────────────────────────────────────────────────── */
+
+.gs-letter-composer__preview-eyebrow {
+  background: var(--gs-paper-warm, #F4ECD8);
+  border-top: 0.5px solid var(--gs-accent-2, #708060);
+  border-bottom: 0.5px solid var(--gs-accent-2, #708060);
+  padding: 10px 28px;
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.16em;
+  color: var(--gs-accent-2, #708060);
+}
+
+/* ── Preview zone ─────────────────────────────────────────────────────────── */
+
+.gs-letter-composer__preview-zone {
+  background: var(--gs-paper, #EFE6D2);
+  padding: 24px 28px;
+  /* themed wrapper inside is isolated; house bg shows as the mat around the card */
+}
+
+/* ── Action bar ───────────────────────────────────────────────────────────── */
+
+.gs-letter-composer__action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 28px;
+  background: var(--gs-paper, #EFE6D2);
+  border-top: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+}
+
+.gs-letter-composer__status {
+  font-family: var(--gs-body, Georgia, serif);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2, #708060);
+}
+
+.gs-letter-composer__buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Disabled send button */
+.gs-letter-composer__buttons .gs-btn--primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

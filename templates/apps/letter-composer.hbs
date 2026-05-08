@@ -1,0 +1,99 @@
+{{!-- Letter Composer — two-zone layout: house chrome (form) + sender-themed preview.
+     Single root required by ApplicationV2 PARTS. <form> is nested, not the root.
+     Per docs/design/05-epistolary-ui.md. --}}
+<section class="gs-letter-composer__wrapper">
+
+  {{!-- Form zone (house-styled) --}}
+  <form class="gs-letter-composer__form" autocomplete="off" id="gs-letter-composer-form">
+    <div class="gs-letter-composer__form-header">
+      <span class="gs-letter-composer__cycle-label">{{cycleLabel}}</span>
+    </div>
+
+    {{!-- FROM --}}
+    <div class="gs-letter-composer__row">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.from"}}</label>
+      <div class="gs-letter-composer__control">
+        <select class="gs-letter-composer__actor-select" name="fromActorId">
+          {{#each ownedActors}}
+            <option value="{{id}}" {{#if selected}}selected{{/if}}>{{displayName}} ({{subtitle}})</option>
+          {{/each}}
+          {{#unless ownedActors}}
+            <option value="" disabled>{{localize "GOODSOCIETY.letterComposer.noOwnedActors"}}</option>
+          {{/unless}}
+        </select>
+      </div>
+    </div>
+
+    {{!-- TO --}}
+    <div class="gs-letter-composer__row">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.to"}}</label>
+      <input class="gs-letter-composer__input"
+             type="text"
+             name="toName"
+             value="{{state.toName}}"
+             placeholder="{{localize "GOODSOCIETY.letterComposer.toPlaceholder"}}" />
+    </div>
+
+    {{!-- SUBJECT --}}
+    <div class="gs-letter-composer__row">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.subject"}}</label>
+      <input class="gs-letter-composer__input"
+             type="text"
+             name="subject"
+             value="{{state.subject}}"
+             placeholder="{{localize "GOODSOCIETY.letterComposer.subjectPlaceholder"}}" />
+    </div>
+
+    {{!-- BODY --}}
+    <div class="gs-letter-composer__row gs-letter-composer__row--body">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.body"}}</label>
+      <textarea class="gs-letter-composer__textarea" name="body" rows="5">{{state.body}}</textarea>
+    </div>
+
+    {{!-- SEAL --}}
+    <div class="gs-letter-composer__row">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.seal"}}</label>
+      <div class="gs-letter-composer__seal-row">
+        {{#each seals}}
+          <button type="button"
+                  class="gs-letter-composer__seal-circle{{#if selected}} gs-letter-composer__seal-circle--selected{{/if}}"
+                  data-action="selectSeal"
+                  data-seal-id="{{id}}"
+                  title="{{label}}"
+                  style="background-color: {{color}};"></button>
+        {{/each}}
+        <span class="gs-letter-composer__seal-label">{{sealLabel}}</span>
+      </div>
+    </div>
+  </form>
+
+  {{!-- Preview eyebrow --}}
+  <div class="gs-letter-composer__preview-eyebrow">
+    {{localize "GOODSOCIETY.letterComposer.previewLabel"}}
+  </div>
+
+  {{!-- Preview zone (sender-themed via themedWrap) --}}
+  <div class="gs-letter-composer__preview-zone" id="gs-letter-preview-zone">
+    {{{previewHtml}}}
+  </div>
+
+  {{!-- Action bar --}}
+  <div class="gs-letter-composer__action-bar">
+    <span class="gs-letter-composer__status">{{statusText}}</span>
+    <div class="gs-letter-composer__buttons">
+      <button type="button" class="gs-btn gs-btn--secondary" data-action="cancel">
+        {{localize "GOODSOCIETY.letterComposer.cancel"}}
+      </button>
+      <button type="button" class="gs-btn gs-btn--secondary" data-action="saveDraft">
+        {{localize "GOODSOCIETY.letterComposer.saveDraft"}}
+      </button>
+      <button type="button"
+              class="gs-btn gs-btn--primary"
+              data-action="send"
+              {{#unless canSend}}disabled{{/unless}}>
+        {{localize "GOODSOCIETY.letterComposer.send"}}
+      </button>
+    </div>
+  </div>
+
+</section>

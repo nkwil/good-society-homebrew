@@ -27,7 +27,7 @@
         <span class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.visibilityLabel"}}</span>
         {{#each choices}}
           <label class="gs-event-timeline__radio">
-            <input type="radio" data-evt-field="visibility" data-event-id="{{../id}}" value="{{value}}" {{#if (eq value ../visibility)}}checked{{/if}} />
+            <input type="radio" name="gs-evt-edit-visibility-{{../id}}" data-evt-field="visibility" data-event-id="{{../id}}" value="{{value}}" {{#if (eq value ../visibility)}}checked{{/if}} />
             <span>{{label}}</span>
           </label>
         {{/each}}

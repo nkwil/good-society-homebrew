@@ -1195,6 +1195,32 @@
       "cancel": "Cancel",
       "castCard": "{actor} casts {skill}.",
       "cardContext": "magic"
+    },
+    "letterComposer": {
+      "windowTitle": "Compose a Letter",
+      "sceneControlTitle": "Write a Letter",
+      "epistolary": "epistolary",
+      "cycle": "cycle",
+      "as": "as",
+      "from": "From",
+      "to": "To",
+      "toPlaceholder": "Recipient name…",
+      "subject": "Subject",
+      "subjectPlaceholder": "On a matter of…",
+      "body": "Body",
+      "seal": "Seal",
+      "previewLabel": "PREVIEW · how the letter will appear in chat",
+      "send": "Send ↗",
+      "saveDraft": "Save Draft",
+      "cancel": "Cancel",
+      "draftStatus": "drafts save automatically",
+      "draftSaved": "Draft saved.",
+      "noSender": "Select a sender before sending.",
+      "noBody": "Write something before sending.",
+      "noOwnedActors": "No owned actors — ask your GM to assign ownership.",
+      "discardTitle": "Discard Letter?",
+      "discardBody": "You have unsaved changes. Discard the current letter?",
+      "unknownRecipient": "unknown recipient"
     }
   },
   "TYPES": {
