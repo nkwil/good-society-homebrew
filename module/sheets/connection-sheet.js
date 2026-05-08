@@ -42,7 +42,10 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     // Portrait: active persona > bio.portraitUrl > actor.img
     const activePersona = system.activePersona;
     const portraitUrl = activePersona?.portraitUrl || system.bio?.portraitUrl || this.actor.img || '';
-    const portraitInitial = (this.actor.name?.[0] ?? '?').toUpperCase();
+    // Initial follows the displayed name (active persona name preferred over
+    // actor.name) so it stays consistent when a persona is in play.
+    const displayName = activePersona?.name || this.actor.name;
+    const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
 
     // Linked Major
     const linkedMajor = system.linkedMajorId ? game.actors?.get(system.linkedMajorId) : null;

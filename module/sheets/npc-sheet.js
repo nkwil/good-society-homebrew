@@ -35,7 +35,10 @@ export class NpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     const activePersona = system.activePersona;
     const portraitUrl = activePersona?.portraitUrl || system.bio?.portraitUrl || this.actor.img || '';
-    const portraitInitial = (this.actor.name?.[0] ?? '?').toUpperCase();
+    // Initial follows displayed name (active persona name preferred over
+    // actor.name) so it stays consistent when a persona is in play.
+    const displayName = activePersona?.name || this.actor.name;
+    const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
 
     return {
       ...ctx,

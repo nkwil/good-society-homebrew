@@ -598,7 +598,8 @@
       "finalCycleToggleHint": "Mark this as the final cycle. Skips Rumour & Scandal and the second Reputation phase; the second Epistolary becomes the epilogue.",
       "finalCyclePosted": "The Facilitator declares this the final cycle of the story.",
       "finalCycleClearedPosted": "The Facilitator unmarks the final cycle. Play continues.",
-      "skippedHint": "Skipped during the final cycle."
+      "skippedHint": "Skipped during the final cycle.",
+      "gmOnlyAdvance": "Only the Facilitator can advance the cycle phase."
     },
     "npcOrganizer": {
       "sceneControlTitle": "NPC Organizer",

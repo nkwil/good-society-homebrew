@@ -304,7 +304,9 @@ Hooks.once('init', async function () {
   });
 
   // Load and register Handlebars partials for shared components.
-  const loaded = await loadTemplates(GS_COMPONENT_PARTIALS);
+  // Use the v13 namespaced helper — bare global is deprecated in v13 and
+  // removed in v15 (CLAUDE.md §16).
+  const loaded = await foundry.applications.handlebars.loadTemplates(GS_COMPONENT_PARTIALS);
   for (const [name, fn] of Object.entries(loaded)) {
     Handlebars.registerPartial(name, fn);
   }

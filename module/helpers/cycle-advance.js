@@ -74,6 +74,13 @@ export function getCycleState() {
  * world-scoped settings.set call rejects.
  */
 export async function advanceCyclePhase() {
+  // GM-only — non-GM clients can't write the world-scoped cycle settings.
+  // Without this guard the call would still fail, but with a confusing
+  // settings-rejection error rather than a clean no-op.
+  if (!game.user?.isGM) {
+    ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.hud.gmOnlyAdvance'));
+    return;
+  }
   const { position, isFinalCycle, cycleNumber } = getCycleState();
 
   // Compute next state (skips, wraps, end).

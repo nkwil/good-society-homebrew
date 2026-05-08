@@ -134,6 +134,10 @@ export class UpkeepRoster extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static async #advanceCycle(ev, target) {
+    // Defense-in-depth: the roster is GM-only opened, but explicitly guard
+    // the advance path so a non-GM caller would no-op cleanly rather than
+    // hit a settings-rejection error.
+    if (!game.user?.isGM) return;
     const ctx = await this._prepareContext({});
     if (ctx.pendingCount > 0) {
       const confirmed = window.confirm(
