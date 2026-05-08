@@ -17,6 +17,7 @@ import { toggleOrganizer } from '../apps/npc-organizer.js';
 import { openBulkPermissionsPanel } from '../apps/bulk-permissions-panel.js';
 import { openSessionLogPreview } from '../apps/session-log-preview.js';
 import { openEventTimeline } from '../apps/event-timeline.js';
+import { openLetterComposer } from '../apps/letter-composer.js';
 
 export function register() {
   Hooks.on('getSceneControlButtons', (controls) => {
@@ -76,15 +77,25 @@ export function register() {
       visible: true,
     };
 
+    const letterTool = {
+      name: 'gs-letter',
+      title: 'GOODSOCIETY.letterComposer.sceneControlTitle',
+      icon: 'fa-solid fa-envelope',
+      button: true,
+      onChange: () => openLetterComposer(),
+      visible: true,
+    };
+
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool);
+      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool);
     } else {
-      target.tools['gs-dashboard'] = dashboardTool;
-      target.tools['gs-organizer'] = organizerTool;
+      target.tools['gs-dashboard']  = dashboardTool;
+      target.tools['gs-organizer']  = organizerTool;
       target.tools['gs-permissions'] = permissionsTool;
       target.tools['gs-end-session'] = endSessionTool;
-      target.tools['gs-calendar']    = calendarTool;
+      target.tools['gs-calendar']   = calendarTool;
+      target.tools['gs-letter']     = letterTool;
     }
   });
 }

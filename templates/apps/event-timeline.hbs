@@ -1,29 +1,12 @@
 {{!-- Event Timeline — single root <section> required by ApplicationV2 PARTS.
-     House-styled (no character theming — communal calendar surface). --}}
+     Stage-based bucketing (coming-soon → today → past); GM moves events
+     manually. House-styled — no character theming. --}}
 <section class="gs-event-timeline">
 
   {{!-- ── Header ─────────────────────────────────────────────────────── --}}
   <header class="gs-event-timeline__header">
     <h2 class="gs-event-timeline__title">{{localize "GOODSOCIETY.eventTimeline.heading"}}</h2>
-    <div class="gs-event-timeline__current-row">
-      <span class="gs-event-timeline__current-label">{{localize "GOODSOCIETY.eventTimeline.currentDateLabel"}}</span>
-      {{#if editingDate}}
-        <div class="gs-event-timeline__date-editor">
-          <input type="number" data-date-field="year" value="{{currentDate.year}}" min="1000" max="9999" class="gs-event-timeline__num gs-event-timeline__num--year" />
-          <input type="number" data-date-field="month" value="{{currentDate.month}}" min="1" max="12" class="gs-event-timeline__num" />
-          <input type="number" data-date-field="day" value="{{currentDate.day}}" min="1" max="31" class="gs-event-timeline__num" />
-          <button type="button" class="gs-btn gs-btn--sm gs-btn--primary" data-action="setDateSave">{{localize "GOODSOCIETY.eventTimeline.save"}}</button>
-          <button type="button" class="gs-btn gs-btn--sm gs-btn--ghost" data-action="setDateCancel">{{localize "GOODSOCIETY.eventTimeline.cancel"}}</button>
-        </div>
-      {{else}}
-        <span class="gs-event-timeline__current-date">{{currentDateLong}}</span>
-        {{#if isGM}}
-          <button type="button" class="gs-event-timeline__edit-link" data-action="setDateOpen" title="{{localize "GOODSOCIETY.eventTimeline.setDateHint"}}">
-            {{localize "GOODSOCIETY.eventTimeline.editDate"}}
-          </button>
-        {{/if}}
-      {{/if}}
-    </div>
+    <p class="gs-event-timeline__subtitle">{{localize "GOODSOCIETY.eventTimeline.subtitle"}}</p>
   </header>
 
   {{!-- ── Empty state ───────────────────────────────────────────────── --}}
@@ -37,22 +20,22 @@
     </p>
   {{/unless}}
 
-  {{!-- ── Upcoming ──────────────────────────────────────────────────── --}}
-  {{#if upcoming.length}}
-    <div class="gs-event-timeline__group">
-      <div class="gs-event-timeline__group-eyebrow">{{localize "GOODSOCIETY.eventTimeline.upcoming"}}</div>
-      {{#each upcoming}}
-        {{> evt-row this editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
+  {{!-- ── Today ─────────────────────────────────────────────────────── --}}
+  {{#if today.length}}
+    <div class="gs-event-timeline__group gs-event-timeline__group--today">
+      <div class="gs-event-timeline__group-eyebrow gs-event-timeline__group-eyebrow--today">{{localize "GOODSOCIETY.eventTimeline.bucket.today"}}</div>
+      {{#each today}}
+        {{> evt-row this stage="today" editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
       {{/each}}
     </div>
   {{/if}}
 
-  {{!-- ── Today ─────────────────────────────────────────────────────── --}}
-  {{#if today.length}}
+  {{!-- ── Coming Soon ───────────────────────────────────────────────── --}}
+  {{#if comingSoon.length}}
     <div class="gs-event-timeline__group">
-      <div class="gs-event-timeline__group-eyebrow gs-event-timeline__group-eyebrow--today">{{localize "GOODSOCIETY.eventTimeline.today"}}</div>
-      {{#each today}}
-        {{> evt-row this editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
+      <div class="gs-event-timeline__group-eyebrow">{{localize "GOODSOCIETY.eventTimeline.bucket.comingSoon"}}</div>
+      {{#each comingSoon}}
+        {{> evt-row this stage="coming-soon" editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
       {{/each}}
     </div>
   {{/if}}
@@ -69,7 +52,7 @@
       </button>
       {{#if showPast}}
         {{#each past}}
-          {{> evt-row this editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
+          {{> evt-row this stage="past" editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
         {{/each}}
       {{/if}}
     </div>
@@ -84,11 +67,9 @@
             <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.titleLabel"}}</label>
             <input type="text" data-evt-field="title" class="gs-event-timeline__input" placeholder="{{localize "GOODSOCIETY.eventTimeline.titlePlaceholder"}}" />
           </div>
-          <div class="gs-event-timeline__form-row gs-event-timeline__form-row--inline">
-            <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.dateLabel"}}</label>
-            <input type="number" data-evt-field="year" value="{{currentDate.year}}" min="1000" max="9999" class="gs-event-timeline__num gs-event-timeline__num--year" />
-            <input type="number" data-evt-field="month" value="{{currentDate.month}}" min="1" max="12" class="gs-event-timeline__num" />
-            <input type="number" data-evt-field="day" value="{{currentDate.day}}" min="1" max="31" class="gs-event-timeline__num" />
+          <div class="gs-event-timeline__form-row">
+            <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.dateLabelLabel"}}</label>
+            <input type="text" data-evt-field="dateLabel" class="gs-event-timeline__input" placeholder="{{localize "GOODSOCIETY.eventTimeline.dateLabelPlaceholder"}}" />
           </div>
           <div class="gs-event-timeline__form-row">
             <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.descriptionLabel"}}</label>
@@ -104,7 +85,7 @@
             {{/each}}
           </div>
           <div class="gs-event-timeline__form-actions">
-            <button type="button" class="gs-btn gs-btn--ghost" data-action="addEventCancel">{{localize "GOODSOCIETY.eventTimeline.cancel"}}</button>
+            <button type="button" class="gs-btn gs-btn--ghost"   data-action="addEventCancel">{{localize "GOODSOCIETY.eventTimeline.cancel"}}</button>
             <button type="button" class="gs-btn gs-btn--primary" data-action="addEventSave">{{localize "GOODSOCIETY.eventTimeline.saveEvent"}}</button>
           </div>
         </div>

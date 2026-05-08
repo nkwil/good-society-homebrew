@@ -1,30 +1,34 @@
 /**
- * EventTimeline — in-fiction calendar of dated events.
- * Per docs/design/31-event-timeline.md.
+ * EventTimeline — in-fiction event log with stage-based bucketing.
+ * Per docs/design/31-event-timeline.md (rev. 2026-05-08).
  *
- * Framed ApplicationV2 singleton. Two modes:
- *   - GM: full read/write — add, edit, delete events; set current date.
- *   - Player: read-only — sees only events visible under the visibility filter.
+ * Three buckets driven by manual GM movement:
+ *   coming-soon → today (with optional scene link) → past
  *
- * Storage in two world settings (calendarEvents + currentInGameDate),
- * registered in good-society.js. Foundry's setting onChange replicates writes
- * across clients automatically; we re-render on every change.
+ * Two-mode rendering:
+ *   - GM: full read/write — add, edit, promote, conclude, revert, delete.
+ *   - Player: read-only — sees only `public` events.
+ *
+ * Storage in one world setting (`calendarEvents`) registered in
+ * good-society.js. Foundry's setting onChange replicates writes across all
+ * clients automatically.
  */
 
 import {
   getEvents,
-  getCurrentDate,
-  getVisibleEvents,
-  compareDate,
-  formatDate,
+  getGroupedEvents,
   addEvent,
   updateEvent,
   removeEvent,
-  setCurrentDate,
+  promoteEvent,
+  concludeEvent,
+  revertToComingSoon,
 } from '../helpers/event-timeline.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
+
+const VISIBILITY_OPTIONS = ['public', 'gm-only'];
 
 // ── Singleton ─────────────────────────────────────────────────────────────
 
@@ -39,14 +43,12 @@ export function openEventTimeline() {
   getEventTimeline().render({ force: true });
 }
 
-/** Called from settings onChange — re-renders if the window is open. */
+/** Called from setting onChange — re-renders if the window is open. */
 export function refreshEventTimeline() {
   if (_instance?.rendered) _instance.render();
 }
 
 // ── App ───────────────────────────────────────────────────────────────────
-
-const VISIBILITY_OPTIONS = ['public', 'gm-only', 'revealed-on-date'];
 
 export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
@@ -66,10 +68,11 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
       editEventCancel: EventTimeline.#editEventCancel,
       editEventSave:   EventTimeline.#editEventSave,
       deleteEvent:     EventTimeline.#deleteEvent,
-      setDateOpen:     EventTimeline.#setDateOpen,
-      setDateCancel:   EventTimeline.#setDateCancel,
-      setDateSave:     EventTimeline.#setDateSave,
+      promoteEventBtn: EventTimeline.#promoteEventBtn,
+      concludeEventBtn:EventTimeline.#concludeEventBtn,
+      revertEventBtn:  EventTimeline.#revertEventBtn,
       togglePast:      EventTimeline.#togglePast,
+      openScene:       EventTimeline.#openScene,
     },
   };
 
@@ -81,47 +84,30 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
 
   constructor(options = {}) {
     super(options);
-    this._addingEvent  = false;            // boolean — inline add form open
-    this._editingId    = null;             // event id currently being edited (null = none)
-    this._editingDate  = false;            // current-date editor open
-    this._showPast     = false;            // past events expanded
+    this._addingEvent = false;
+    this._editingId   = null;
+    this._showPast    = false;
   }
 
   /** @override */
   async _prepareContext(options) {
     const ctx = await super._prepareContext(options);
     const isGM = game.user?.isGM ?? false;
-    const currentDate = getCurrentDate();
 
-    // ── Filter (server-side defense): non-GM never receives gm-only events.
-    const visible = isGM ? _sortAll(getEvents()) : getVisibleEvents(false);
-
-    const past = [];
-    const today = [];
-    const upcoming = [];
-    for (const e of visible) {
-      const cmp = compareDate(e, currentDate);
-      if (cmp < 0)  past.push(_decorateEvent(e, isGM, currentDate));
-      else if (cmp === 0) today.push(_decorateEvent(e, isGM, currentDate));
-      else upcoming.push(_decorateEvent(e, isGM, currentDate));
-    }
+    const grouped = getGroupedEvents(isGM);
+    const decorate = (e) => _decorateEvent(e, isGM);
 
     return {
       ...ctx,
       isGM,
-      currentDate,
-      currentDateLong: formatDate(currentDate, 'long'),
-      upcoming,
-      today,
-      past,
-      pastCount: past.length,
-      hasAny: visible.length > 0,
-      // Inline form state:
-      addingEvent:  this._addingEvent,
-      editingId:    this._editingId,
-      editingDate:  this._editingDate,
-      showPast:     this._showPast,
-      // Visibility radio options
+      comingSoon: grouped.comingSoon.map(decorate),
+      today:      grouped.today.map(decorate),
+      past:       grouped.past.map(decorate),
+      pastCount:  grouped.past.length,
+      hasAny:     (grouped.comingSoon.length + grouped.today.length + grouped.past.length) > 0,
+      addingEvent: this._addingEvent,
+      editingId:   this._editingId,
+      showPast:    this._showPast,
       visibilityChoices: VISIBILITY_OPTIONS.map(v => ({
         value: v,
         label: game.i18n.localize(`GOODSOCIETY.eventTimeline.visibility.${_visKey(v)}`),
@@ -129,12 +115,12 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
     };
   }
 
-  // ── Actions: add ─────────────────────────────────────────────────────────
+  // ── Add ──────────────────────────────────────────────────────────────────
 
   static async #addEventOpen() {
     if (!game.user?.isGM) return;
     this._addingEvent = true;
-    this._editingId = null;
+    this._editingId   = null;
     this.render();
   }
 
@@ -146,8 +132,8 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
   static async #addEventSave() {
     if (!game.user?.isGM) return;
     const root = this.element;
-    const get = (name) => root.querySelector(`[data-evt-field="${name}"]`)?.value ?? '';
-    const visEl = root.querySelector('[data-evt-field="visibility"]:checked');
+    const get = (name) => root.querySelector(`[data-evt-field="${name}"]:not([data-event-id])`)?.value ?? '';
+    const visEl = root.querySelector('[data-evt-field="visibility"]:not([data-event-id]):checked');
 
     const title = (get('title') || '').trim();
     if (!title) {
@@ -156,37 +142,21 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     const created = await addEvent({
-      year:  Number(get('year')),
-      month: Number(get('month')),
-      day:   Number(get('day')),
       title,
+      dateLabel:   get('dateLabel'),
       description: get('description'),
-      visibility: visEl?.value ?? 'public',
+      visibility:  visEl?.value ?? 'public',
     });
     if (!created) {
       ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventTimeline.errorAdd'));
       return;
     }
 
-    // Optional public announcement card (decided per scope doc §"Open questions" #3).
-    if (created.visibility === 'public') {
-      try {
-        const { postSystemCard } = await import('../helpers/chat-cards.js');
-        await postSystemCard({
-          content: game.i18n.format('GOODSOCIETY.eventTimeline.publicEventCard', {
-            title: created.title,
-            date:  formatDate(created, 'long'),
-          }),
-          context: 'calendar',
-        });
-      } catch (err) { console.warn('GS | event timeline announce card failed:', err); }
-    }
-
     this._addingEvent = false;
     this.render();
   }
 
-  // ── Actions: edit ────────────────────────────────────────────────────────
+  // ── Edit ─────────────────────────────────────────────────────────────────
 
   static async #editEventOpen(ev, target) {
     if (!game.user?.isGM) return;
@@ -208,12 +178,10 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!id) return;
     const root = this.element;
     const get = (name) =>
-      root.querySelector(`[data-evt-field="${name}"][data-event-id="${id}"]`)?.value
-      ?? root.querySelector(`[data-evt-field="${name}"]`)?.value
-      ?? '';
-    const visEl =
-      root.querySelector(`[data-evt-field="visibility"][data-event-id="${id}"]:checked`)
-      ?? root.querySelector('[data-evt-field="visibility"]:checked');
+      root.querySelector(`[data-evt-field="${name}"][data-event-id="${id}"]`)?.value ?? '';
+    const visEl = root.querySelector(
+      `[data-evt-field="visibility"][data-event-id="${id}"]:checked`,
+    );
 
     const title = (get('title') || '').trim();
     if (!title) {
@@ -222,19 +190,17 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     await updateEvent(id, {
-      year:  Number(get('year')),
-      month: Number(get('month')),
-      day:   Number(get('day')),
       title,
+      dateLabel:   get('dateLabel'),
       description: get('description'),
-      visibility: visEl?.value ?? 'public',
+      visibility:  visEl?.value ?? 'public',
     });
 
     this._editingId = null;
     this.render();
   }
 
-  // ── Actions: delete ──────────────────────────────────────────────────────
+  // ── Delete ──────────────────────────────────────────────────────────────
 
   static async #deleteEvent(ev, target) {
     if (!game.user?.isGM) return;
@@ -247,37 +213,86 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
     this.render();
   }
 
-  // ── Actions: set current date ────────────────────────────────────────────
+  // ── Promote (Coming Soon → Today) ───────────────────────────────────────
 
-  static async #setDateOpen() {
+  static async #promoteEventBtn(ev, target) {
     if (!game.user?.isGM) return;
-    this._editingDate = true;
+    const id = target.dataset.eventId;
+    if (!id) return;
+
+    // Scene picker — pulled from game.scenes. Optional (GM may pick "no scene").
+    const sceneId = await _pickSceneDialog();
+    if (sceneId === undefined) return; // cancelled
+
+    const event = getEvents().find(e => e.id === id);
+    const wasGmOnly = event?.visibility === 'gm-only';
+
+    await promoteEvent(id, sceneId);
+
+    if (wasGmOnly) {
+      ui.notifications?.info(game.i18n.localize('GOODSOCIETY.eventTimeline.autoRevealedNotice'));
+    }
+
+    // Optional public announcement.
+    try {
+      const fresh = getEvents().find(e => e.id === id);
+      if (fresh?.visibility === 'public') {
+        const { postSystemCard } = await import('../helpers/chat-cards.js');
+        await postSystemCard({
+          content: game.i18n.format('GOODSOCIETY.eventTimeline.promotedCard', {
+            title: fresh.title,
+          }),
+          context: 'calendar',
+        });
+      }
+    } catch (err) { console.warn('GS | promote announcement failed:', err); }
+
     this.render();
   }
 
-  static async #setDateCancel() {
-    this._editingDate = false;
-    this.render();
-  }
+  // ── Conclude (Today → Past) ─────────────────────────────────────────────
 
-  static async #setDateSave() {
+  static async #concludeEventBtn(ev, target) {
     if (!game.user?.isGM) return;
-    const root = this.element;
-    const get = (name) => root.querySelector(`[data-date-field="${name}"]`)?.value ?? '';
-    await setCurrentDate({
-      year:  Number(get('year')),
-      month: Number(get('month')),
-      day:   Number(get('day')),
-    });
-    this._editingDate = false;
+    const id = target.dataset.eventId;
+    if (!id) return;
+    await concludeEvent(id);
     this.render();
   }
 
-  // ── Actions: toggle past ─────────────────────────────────────────────────
+  // ── Revert (Today → Coming Soon) ────────────────────────────────────────
+
+  static async #revertEventBtn(ev, target) {
+    if (!game.user?.isGM) return;
+    const id = target.dataset.eventId;
+    if (!id) return;
+    const ok = window.confirm(game.i18n.localize('GOODSOCIETY.eventTimeline.revertConfirm'));
+    if (!ok) return;
+    await revertToComingSoon(id);
+    this.render();
+  }
+
+  // ── Toggle past ─────────────────────────────────────────────────────────
 
   static async #togglePast() {
     this._showPast = !this._showPast;
     this.render();
+  }
+
+  // ── Open scene ──────────────────────────────────────────────────────────
+
+  /** Click the scene link on a today/past row → activate that scene. */
+  static async #openScene(ev, target) {
+    const sceneId = target.dataset.sceneId;
+    if (!sceneId) return;
+    const scene = game.scenes?.get(sceneId);
+    if (!scene) {
+      ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventTimeline.sceneMissing'));
+      return;
+    }
+    // GM activates the scene; non-GMs view it.
+    if (game.user?.isGM) await scene.activate();
+    else await scene.view();
   }
 
   /** @override */
@@ -289,34 +304,61 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function _decorateEvent(e, isGM, currentDate) {
-  const longDate = formatDate(e, 'long');
+function _decorateEvent(e, isGM) {
   const isHidden = e.visibility !== 'public';
+  const scene = e.sceneId ? game.scenes?.get(e.sceneId) : null;
   return {
     ...e,
-    longDate,
     visibilityLabel: isGM
       ? game.i18n.localize(`GOODSOCIETY.eventTimeline.visibility.${_visKey(e.visibility)}`)
       : '',
-    isPast:    compareDate(e, currentDate) < 0,
-    isToday:   compareDate(e, currentDate) === 0,
-    isHidden,  // GM badge: shown when visibility != public
-    canEdit:   isGM,
+    isHidden,
+    canEdit:    isGM,
+    sceneName:  scene?.name ?? '',
+    sceneFound: !!scene,
+    showsDateLabel: !!e.dateLabel,
   };
 }
 
-function _sortAll(events) {
-  return [...events].sort((a, b) => {
-    const c = compareDate(a, b);
-    if (c !== 0) return c;
-    return (a.createdAt ?? 0) - (b.createdAt ?? 0);
-  });
+function _visKey(v) {
+  return ({ 'public': 'public', 'gm-only': 'gmOnly' })[v] ?? 'public';
 }
 
-function _visKey(v) {
-  return ({
-    'public':           'public',
-    'gm-only':          'gmOnly',
-    'revealed-on-date': 'revealedOnDate',
-  })[v] ?? 'public';
+/**
+ * Show a small scene picker dialog (DialogV2). Returns the chosen sceneId
+ * (string, possibly empty if user picked "(none)") or undefined if cancelled.
+ */
+async function _pickSceneDialog() {
+  const scenes = (game.scenes?.contents ?? []).slice().sort((a, b) =>
+    (a.name || '').localeCompare(b.name || ''),
+  );
+
+  const optionsHtml = [
+    `<option value="">${game.i18n.localize('GOODSOCIETY.eventTimeline.scenePicker.none')}</option>`,
+    ...scenes.map(s =>
+      `<option value="${s.id}"${s.active ? ' selected' : ''}>${foundry.utils.escapeHTML?.(s.name) ?? s.name}</option>`),
+  ].join('');
+
+  const content = `
+    <div class="gs-event-timeline__scene-picker">
+      <p>${game.i18n.localize('GOODSOCIETY.eventTimeline.scenePicker.prompt')}</p>
+      <select name="sceneId" autofocus style="width:100%; margin-top:8px;">
+        ${optionsHtml}
+      </select>
+    </div>`;
+
+  try {
+    const choice = await foundry.applications.api.DialogV2.prompt({
+      window: { title: game.i18n.localize('GOODSOCIETY.eventTimeline.scenePicker.title') },
+      content,
+      ok: {
+        label: game.i18n.localize('GOODSOCIETY.eventTimeline.scenePicker.confirm'),
+        callback: (event, button) => button.form.elements.sceneId.value,
+      },
+      rejectClose: false,
+    });
+    return choice ?? '';  // null/undefined treated as cancel? we return as ''
+  } catch {
+    return undefined; // explicit cancel
+  }
 }

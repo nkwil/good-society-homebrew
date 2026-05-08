@@ -33,50 +33,12 @@
   letter-spacing: 0.01em;
 }
 
-.gs-event-timeline__current-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px;
-  font-size: 13px;
-}
-
-.gs-event-timeline__current-label {
-  font-family: var(--gs-ui);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--gs-accent-2);
-}
-
-.gs-event-timeline__current-date {
-  font-family: var(--gs-display);
+.gs-event-timeline__subtitle {
+  font-size: 12px;
   font-style: italic;
-  color: var(--gs-ink);
-}
-
-.gs-event-timeline__edit-link {
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: var(--gs-ui);
-  font-size: 11px;
-  color: var(--gs-accent-1);
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-thickness: 0.5px;
-  text-underline-offset: 2px;
-}
-
-.gs-event-timeline__edit-link:hover {
-  color: var(--gs-brand);
-}
-
-.gs-event-timeline__date-editor {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
+  color: var(--gs-accent-2);
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* ── Empty ──────────────────────────────────────────────────────────────── */
@@ -144,14 +106,72 @@
   border-radius: 4px;
 }
 
+/* Stage modifiers — match grouped-by-stage rendering */
 .gs-event-timeline__row--past {
-  opacity: 0.6;
+  opacity: 0.62;
   background: transparent;
 }
 
 .gs-event-timeline__row--today {
   border-color: var(--gs-accent-1);
   border-width: 1px;
+  background: var(--gs-paper);
+}
+
+.gs-event-timeline__row--coming-soon {
+  /* default styling */
+}
+
+/* Stage actions row — buttons under the description on coming-soon + today rows */
+.gs-event-timeline__row-stage-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 0.5px dashed var(--gs-muted);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* Scene chip on today + past rows */
+.gs-event-timeline__row-scene {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.gs-event-timeline__row-scene-label {
+  font-family: var(--gs-ui);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+}
+
+.gs-event-timeline__row-scene-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-accent-1);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 2px;
+}
+
+.gs-event-timeline__row-scene-link:hover {
+  color: var(--gs-brand);
+}
+
+.gs-event-timeline__row-scene-missing {
+  font-style: italic;
+  color: var(--gs-accent-2);
+  font-size: 12px;
 }
 
 .gs-event-timeline__row--hidden {

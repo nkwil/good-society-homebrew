@@ -1,8 +1,10 @@
 # 31 — Event Timeline (in-fiction calendar)
 
-**Status:** Drafted, ready for Claude Code implementation
+**Status:** Shipped (B-11). Stage-based model after B-11.1 revision (2026-05-08).
 **Date opened:** 2026-05-07
-**Covers:** A GM-authored, player-readable calendar of dated in-fiction events. Suggested as **Session B-11**.
+**Covers:** A GM-authored, player-readable timeline of in-fiction events. Stage-based bucketing (Coming Soon → Today → Past) since Good Society play uses loose in-fiction time; date is an optional free-text label, not a numeric driver of the UI.
+
+> **B-11.1 revision note:** The original spec used numeric dates (`year/month/day`) with a `currentInGameDate` setting and a `revealed-on-date` visibility flag. In testing, that strict-date model didn't fit how the table runs. Replaced with manual stage movement plus optional Foundry Scene linkage. Migrations are handled transparently on read (`_normalizeEvent` in `module/helpers/event-timeline.js`).
 
 ## Why
 

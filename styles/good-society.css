@@ -116,6 +116,4 @@
 @import './apps/_player-reputation-phase-wizard.css';
 @import './apps/_event-timeline.css';
 
-/* B-4 additions (not yet implemented):
- * @import './apps/_letter-composer.css';
- */
+@import './apps/_letter-composer.css';

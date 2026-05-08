@@ -88,6 +88,14 @@ Hooks.once('init', async function () {
     default: false,
   });
 
+  // Per-user draft auto-saved by LetterComposer every 10s; restored on re-open.
+  game.settings.register('good-society-homebrew', 'letterDraft', {
+    scope: 'client',
+    config: false,
+    type: Object,
+    default: null,
+  });
+
   game.settings.register('good-society-homebrew', 'organizerMinimized', {
     scope: 'client',
     config: false,
@@ -184,23 +192,15 @@ Hooks.once('init', async function () {
   });
 
   // Event Timeline (in-fiction calendar) — per docs/design/31-event-timeline.md.
-  // World-scoped settings; Foundry replicates onChange across all clients,
-  // so any open EventTimeline instance re-renders on data change.
+  // Stage-based bucketing model (rev. 2026-05-08): GM manually moves events
+  // through coming-soon → today → past. No date-based auto-bucketing — Good
+  // Society play uses loose in-fiction time. The legacy `currentInGameDate`
+  // setting is no longer registered; if a world has it, it's harmless.
   game.settings.register('good-society-homebrew', 'calendarEvents', {
     scope: 'world',
     config: false,
     type: Object,
     default: [],
-    onChange: () => {
-      import('./apps/event-timeline.js').then(m => m.refreshEventTimeline()).catch(() => {});
-    },
-  });
-
-  game.settings.register('good-society-homebrew', 'currentInGameDate', {
-    scope: 'world',
-    config: false,
-    type: Object,
-    default: { year: 1815, month: 1, day: 1 },
     onChange: () => {
       import('./apps/event-timeline.js').then(m => m.refreshEventTimeline()).catch(() => {});
     },

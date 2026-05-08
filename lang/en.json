@@ -1139,11 +1139,6 @@
       "windowTitle": "Event Timeline",
       "heading": "Event Timeline",
       "sceneControlTitle": "Open Event Timeline",
-      "currentDateLabel": "today",
-      "editDate": "change",
-      "setDateHint": "Edit the current in-fiction date. Affects which \"revealed-on-date\" events have flipped to visible.",
-      "upcoming": "Upcoming",
-      "today": "Today",
       "expandPast": "Show past events",
       "collapsePast": "Hide past events",
       "addEvent": "Add event",
@@ -1157,18 +1152,39 @@
       "deleteConfirm": "Delete this event? This cannot be undone.",
       "titleLabel": "Title",
       "titlePlaceholder": "Lady Thorn’s ball",
-      "dateLabel": "Date (year / month / day)",
       "descriptionLabel": "Description",
       "visibilityLabel": "Visibility",
       "emptyGM": "No events yet. Add one below to begin building the timeline.",
       "emptyPlayer": "No events have been shared yet.",
       "errorNoTitle": "Please give the event a title.",
       "errorAdd": "Could not add the event.",
-      "publicEventCard": "{title} — scheduled for {date}.",
       "visibility": {
         "public": "Public",
-        "gmOnly": "GM only",
-        "revealedOnDate": "Revealed on date"
+        "gmOnly": "GM only"
+      },
+      "subtitle": "Move events from Coming Soon to Today, link them to a scene, then conclude when the scene ends.",
+      "bucket": {
+        "today": "Today",
+        "comingSoon": "Coming Soon",
+        "past": "Past"
+      },
+      "dateLabelLabel": "When (free text — optional)",
+      "dateLabelPlaceholder": "next month, after the harvest, etc.",
+      "promoteBtn": "Move to Today",
+      "concludeBtn": "Conclude",
+      "revertBtn": "back to Coming Soon",
+      "revertHint": "Move this event back to Coming Soon.",
+      "revertConfirm": "Move this event back to Coming Soon? Its scene link will be cleared.",
+      "promotedCard": "{title} is happening now.",
+      "autoRevealedNotice": "This event was hidden; players can now see it.",
+      "sceneLabel": "Scene",
+      "sceneMissing": "(scene removed)",
+      "openSceneHint": "Open this scene.",
+      "scenePicker": {
+        "title": "Link to a scene",
+        "prompt": "Which scene depicts this event?",
+        "confirm": "Move to Today",
+        "none": "(none — link later)"
       }
     },
     "castSkill": {
