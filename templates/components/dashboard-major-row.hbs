@@ -55,4 +55,30 @@
     {{/if}}
   </div>
 
+  {{!-- Reputation tags + conditions — full-width sub-row, collapses when empty --}}
+  {{#if hasReputation}}
+    <div class="gs-dashboard__row-reputation">
+      {{#if hasPosReputation}}
+        <div class="gs-dashboard__row-rep-line">
+          {{#each positiveTags}}
+            <span class="gs-dashboard__row-rep-tag gs-dashboard__row-rep-tag--positive">▲ {{name}}</span>
+          {{/each}}
+          {{#each positiveConditions}}
+            <span class="gs-dashboard__row-rep-condition gs-dashboard__row-rep-condition--positive">◆ {{name}}</span>
+          {{/each}}
+        </div>
+      {{/if}}
+      {{#if hasNegReputation}}
+        <div class="gs-dashboard__row-rep-line">
+          {{#each negativeTags}}
+            <span class="gs-dashboard__row-rep-tag gs-dashboard__row-rep-tag--negative">▼ {{name}}</span>
+          {{/each}}
+          {{#each negativeConditions}}
+            <span class="gs-dashboard__row-rep-condition gs-dashboard__row-rep-condition--negative">◆ {{name}}</span>
+          {{/each}}
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+
 </div>

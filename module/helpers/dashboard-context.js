@@ -222,6 +222,25 @@ function _buildRowData(actor) {
 
   const ownerOnline = _ownerOnline(actor);
 
+  // Reputation tags (always public per rulebook p.92)
+  const positiveTags = actor.items.filter(
+    i => i.type === 'reputation-tag' && i.system?.polarity === 'positive',
+  ).map(t => ({ id: t.id, name: t.name }));
+  const negativeTags = actor.items.filter(
+    i => i.type === 'reputation-tag' && i.system?.polarity === 'negative',
+  ).map(t => ({ id: t.id, name: t.name }));
+
+  // Active reputation conditions
+  const positiveConditions = actor.items.filter(
+    i => i.type === 'reputation-condition' && i.system?.polarity === 'positive' && i.system?.active,
+  ).map(c => ({ id: c.id, name: c.name }));
+  const negativeConditions = actor.items.filter(
+    i => i.type === 'reputation-condition' && i.system?.polarity === 'negative' && i.system?.active,
+  ).map(c => ({ id: c.id, name: c.name }));
+
+  const hasPosReputation = positiveTags.length > 0 || positiveConditions.length > 0;
+  const hasNegReputation = negativeTags.length > 0 || negativeConditions.length > 0;
+
   // Accessible aria-label
   const desireDesc = desireVis === 'public' && desireText
     ? `Desire: ${desireText}`
@@ -250,6 +269,13 @@ function _buildRowData(actor) {
     desireText,
     ownerOnline,
     ariaLabel,
+    positiveTags,
+    negativeTags,
+    positiveConditions,
+    negativeConditions,
+    hasPosReputation,
+    hasNegReputation,
+    hasReputation: hasPosReputation || hasNegReputation,
   };
 }
 

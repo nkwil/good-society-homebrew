@@ -365,11 +365,17 @@ Hooks.once('ready', async () => {
   initTooltipSystem();
 });
 
-// Reputation threshold check — fires when a reputation-tag is embedded on a Major.
+// Reputation threshold check + dashboard refresh when a tag/condition changes on a Major.
 Hooks.on('createItem', (item) => {
-  if (item.type !== 'reputation-tag') return;
   if (item.parent?.type !== 'major-character') return;
-  checkThresholdAndPrompt(item.parent, item.system?.polarity ?? 'positive');
+  if (item.type === 'reputation-tag') {
+    checkThresholdAndPrompt(item.parent, item.system?.polarity ?? 'positive');
+  }
+  getDashboard()?.rendered && getDashboard().refreshAndReset();
+});
+Hooks.on('deleteItem', (item) => {
+  if (item.parent?.type !== 'major-character') return;
+  getDashboard()?.rendered && getDashboard().refreshAndReset();
 });
 
 // Re-render the dock and dashboard whenever actor data changes.
