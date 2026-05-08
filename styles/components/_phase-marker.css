@@ -15,6 +15,20 @@
   vertical-align: middle;
 }
 
+/* The upkeep marker is interactive — clicking it re-opens the Upkeep wizard
+ * (or the GM's UpkeepRoster). Subtle hover so the affordance is discoverable
+ * without making every marker look clickable.
+ */
+.gs-phase-marker[data-phase="upkeep"] {
+  cursor: pointer;
+}
+
+.gs-phase-marker[data-phase="upkeep"]:hover .gs-phase-marker__label {
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 2px;
+}
+
 /* ── Shared dot ──────────────────────────────────────────────────────────── */
 
 .gs-phase-marker__dot {

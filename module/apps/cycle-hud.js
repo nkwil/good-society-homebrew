@@ -27,6 +27,7 @@ import {
   FINAL_CYCLE_SKIP,
 } from '../helpers/dashboard-context.js';
 import { advanceCyclePhase, markFinalCycle } from '../helpers/cycle-advance.js';
+import { reopenUpkeepFlow } from '../hooks/upkeep.js';
 
 const NS = 'good-society-homebrew';
 const HUD_ID = 'gs-cycle-hud';
@@ -272,8 +273,20 @@ function _attachListeners() {
 
   // Capture-phase delegation — survives re-renders (CLAUDE.md §16 anti-pattern).
   document.addEventListener('click', (ev) => {
-    if (!_isGM()) return;
     if (!(ev.target instanceof HTMLElement)) return;
+
+    // Upkeep marker click — anyone (GM or player) can re-open the upkeep flow.
+    // Marker carries data-phase="upkeep". Lives outside the GM-only branch so
+    // players can re-open their own wizard after closing it accidentally.
+    const upkeepMarker = ev.target.closest('.gs-phase-marker[data-phase="upkeep"]');
+    if (upkeepMarker) {
+      ev.preventDefault();
+      reopenUpkeepFlow();
+      return;
+    }
+
+    // Remaining controls are GM-only.
+    if (!_isGM()) return;
 
     const advance = ev.target.closest('[data-action="gs-advance-phase"]');
     if (advance) {

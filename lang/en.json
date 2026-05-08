@@ -828,7 +828,9 @@
         "reputationSkipped": "○ Reputation changes left pending",
         "conflictActive": "Inner conflict standing: {filled} of {total} boxes filled",
         "completionCard": "{name} has completed Upkeep."
-      }
+      },
+      "disabled": "The Upkeep Wizard is disabled in your settings.",
+      "noOwnedMajors": "You don't own any Major characters to walk through Upkeep."
     },
     "conditionPicker": {
       "windowTitle": "Reputation Threshold",

@@ -41,6 +41,44 @@ export function onUpkeepPhaseStart() {
 }
 
 /**
+ * Re-open the Upkeep flow on demand (e.g. user clicked the 'upk' marker in
+ * the Cycle HUD to revisit the wizard). Unlike onUpkeepPhaseStart(), this
+ * does NOT skip actors that already have an upkeepCompletedAt flag — the
+ * user explicitly asked to re-enter, so let them.
+ *
+ * GM gets the Roster; players get the per-Major wizard queue for every owned
+ * Major. No-op when the user has no qualifying actors.
+ */
+export function reopenUpkeepFlow() {
+  if (game.user.isGM) {
+    openUpkeepRoster();
+    return;
+  }
+
+  const enabled = (() => {
+    try { return game.settings.get('good-society-homebrew', 'upkeepWizardEnabled'); }
+    catch { return true; }
+  })();
+  if (!enabled) {
+    ui.notifications?.info(
+      game.i18n.localize('GOODSOCIETY.upkeepWizard.disabled')
+    );
+    return;
+  }
+
+  const owned = (game.actors?.contents ?? [])
+    .filter(a => a.type === 'major-character' && a.isOwner);
+  if (owned.length === 0) {
+    ui.notifications?.info(
+      game.i18n.localize('GOODSOCIETY.upkeepWizard.noOwnedMajors')
+    );
+    return;
+  }
+
+  _openSequential(owned);
+}
+
+/**
  * Register hook — call from good-society.js Hooks.once('ready').
  * If the world is already in Upkeep when the user connects, open their wizard.
  */
