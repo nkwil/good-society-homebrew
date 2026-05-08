@@ -76,14 +76,28 @@ export class UpkeepRoster extends HandlebarsApplicationMixin(ApplicationV2) {
         ? new Date(completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         : null;
 
+      // Admin surface: primary name is the actor's true identity (so the GM
+      // can scan "Avril, Fin, MC, MC3, MC5" — the canonical roster). Persona
+      // name surfaces in the subtitle ("as Public Self · Player2") so the GM
+      // still sees which face the character is currently wearing. This
+      // intentionally inverts the normal display rule (CLAUDE.md §16: persona
+      // overrides actor name in DISPLAY surfaces) — the roster is an
+      // admin/management surface, not a display one.
+      const persona = actor.system?.activePersona;
+      const personaSuffix = persona?.name && persona.name !== actor.name
+        ? game.i18n.format('GOODSOCIETY.upkeepRoster.personaSuffix', { name: persona.name })
+        : '';
+      const ownerName = ownerUser?.name ?? '';
+      const subtitle = [personaSuffix, ownerName].filter(Boolean).join(' · ');
+
       return {
         actorId:      actor.id,
-        name:         actor.system?.activePersona?.name || actor.name,
+        name:         actor.name,
+        subtitle,
         themeId:      actor.system?.theme ?? 'npc',
-        portraitUrl:  actor.system?.bio?.portraitUrl ?? actor.img ?? '',
+        portraitUrl:  persona?.portraitUrl || actor.system?.bio?.portraitUrl || actor.img || '',
         initial:      (actor.name?.[0] ?? '?').toUpperCase(),
         status,
-        ownerName:    ownerUser?.name ?? '—',
         completedAt:  completedTime,
       };
     });

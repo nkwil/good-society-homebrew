@@ -863,7 +863,8 @@
       "openWizardLink": "open wizard ↗",
       "openWizardConfirm": "Open Upkeep wizard for {name}? Changes will be attributed to you.",
       "noMajors": "No Major characters found.",
-      "cycleAdvanceCard": "Cycle {n} has ended. Cycle {next} begins."
+      "cycleAdvanceCard": "Cycle {n} has ended. Cycle {next} begins.",
+      "personaSuffix": "as {name}"
     },
     "sessionLog": {
       "windowTitle": "Session Log",
