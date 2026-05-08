@@ -124,7 +124,8 @@
         "soundUrl": "Sound URL",
         "soundUrlPlaceholder": "sounds/magic/sparkle.ogg",
         "cast": "cast",
-        "castNote": "Triggers VFX and sound on all clients."
+        "castNote": "Triggers VFX and sound on all clients.",
+        "castNoteNoSequencer": "Sequencer not installed — chat-only cast."
       },
       "backstoryAction": {
         "eyebrow": "Backstory action",
@@ -652,7 +653,9 @@
         "advancePhaseConfirm": "Advance to the next cycle phase?",
         "advancePhasePosted": "Cycle advanced to: {phase}.",
         "permissionsLink": "permissions ↗",
-        "permissionsLinkHint": "Open the Bulk Permissions panel to set actor ownership for all users."
+        "permissionsLinkHint": "Open the Bulk Permissions panel to set actor ownership for all users.",
+        "calendar": "calendar",
+        "calendarHint": "Open the in-fiction event timeline."
       },
       "footer": {
         "of": "of",
@@ -1131,6 +1134,51 @@
       "addTitle": "Add Scene Tag",
       "label": "Tag text",
       "confirm": "Add"
+    },
+    "eventTimeline": {
+      "windowTitle": "Event Timeline",
+      "heading": "Event Timeline",
+      "sceneControlTitle": "Open Event Timeline",
+      "currentDateLabel": "today",
+      "editDate": "change",
+      "setDateHint": "Edit the current in-fiction date. Affects which \"revealed-on-date\" events have flipped to visible.",
+      "upcoming": "Upcoming",
+      "today": "Today",
+      "expandPast": "Show past events",
+      "collapsePast": "Hide past events",
+      "addEvent": "Add event",
+      "saveEvent": "Save event",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "editHint": "Edit this event",
+      "delete": "Delete",
+      "deleteHint": "Delete this event",
+      "deleteConfirm": "Delete this event? This cannot be undone.",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Lady Thorn’s ball",
+      "dateLabel": "Date (year / month / day)",
+      "descriptionLabel": "Description",
+      "visibilityLabel": "Visibility",
+      "emptyGM": "No events yet. Add one below to begin building the timeline.",
+      "emptyPlayer": "No events have been shared yet.",
+      "errorNoTitle": "Please give the event a title.",
+      "errorAdd": "Could not add the event.",
+      "publicEventCard": "{title} — scheduled for {date}.",
+      "visibility": {
+        "public": "Public",
+        "gmOnly": "GM only",
+        "revealedOnDate": "Revealed on date"
+      }
+    },
+    "castSkill": {
+      "revealTitle": "Cast {skill} — visibility confirm",
+      "revealBody": "Casting {skill} will play a visible animation on your token. All players will see it. Proceed?",
+      "castPublic": "Cast publicly",
+      "castSecret": "Cast secretly (whisper to GM)",
+      "cancel": "Cancel",
+      "castCard": "{actor} casts {skill}.",
+      "cardContext": "magic"
     }
   },
   "TYPES": {

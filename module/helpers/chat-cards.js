@@ -78,7 +78,7 @@ function _possessive(pronouns = '') {
  * @param {string} opts.content - Body text (plain text or minimal HTML).
  * @param {string} [opts.context=''] - Eyebrow context (e.g. "cycle 3", "upkeep").
  */
-export async function postSystemCard({ content, context = '' }) {
+export async function postSystemCard({ content, context = '', whisper = [] }) {
   const inner = await foundry.applications.handlebars.renderTemplate(`${T}/system.hbs`, {
     content,
     context,
@@ -98,6 +98,7 @@ export async function postSystemCard({ content, context = '' }) {
     content: html,
     speaker: { scene: null, actor: null, token: null, alias: systemAlias },
     flags: _flags('system'),
+    ...(whisper.length ? { whisper } : {}),
   });
 }
 

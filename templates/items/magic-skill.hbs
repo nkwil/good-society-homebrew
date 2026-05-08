@@ -64,7 +64,11 @@
   </div>
 
   <footer class="gs-item-sheet__footer">
-    <span class="gs-item-sheet__footer-note">{{localize "GOODSOCIETY.item.magicSkill.castNote"}}</span>
+    {{#if sequencerActive}}
+      <span class="gs-item-sheet__footer-note">{{localize "GOODSOCIETY.item.magicSkill.castNote"}}</span>
+    {{else}}
+      <span class="gs-item-sheet__footer-note gs-item-sheet__footer-note--warning">{{localize "GOODSOCIETY.item.magicSkill.castNoteNoSequencer"}}</span>
+    {{/if}}
     <button type="button" class="gs-btn gs-btn--primary" data-action="cast">
       {{localize "GOODSOCIETY.item.magicSkill.cast"}}
     </button>

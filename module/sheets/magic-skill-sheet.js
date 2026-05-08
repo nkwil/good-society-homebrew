@@ -1,3 +1,5 @@
+import { castMagicSkill } from '../helpers/cast-magic.js';
+
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
 
@@ -23,6 +25,7 @@ export class MagicSkillSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     ctx.system = this.document.system;
     ctx.document = this.document;
     ctx.triggersSwap = !!this.document.system.triggersPersonaSwap?.targetPersonaId;
+    ctx.sequencerActive = !!game.modules.get('sequencer')?.active;
     return ctx;
   }
 
@@ -30,8 +33,7 @@ export class MagicSkillSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     await this.document.update({ 'system.hidden': !this.document.system.hidden });
   }
 
-  // Stub — Sequencer VFX implementation deferred to Phase 8.
   static async #cast() {
-    console.log('[Good Society] Cast stub:', this.document.name, this.document.system);
+    await castMagicSkill(this.document, this.document.parent ?? null);
   }
 }

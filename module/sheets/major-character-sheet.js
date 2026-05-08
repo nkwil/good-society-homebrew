@@ -10,6 +10,7 @@ import { openPersonaEditor } from '../apps/persona-editor.js';
 import { switchPersona } from '../helpers/persona-swap.js';
 import { isConflictComplete, checkThresholdAndPrompt } from '../helpers/reputation-rules.js';
 import { postCompletionCard } from '../helpers/chat-cards.js';
+import { castMagicSkill } from '../helpers/cast-magic.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -411,18 +412,10 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     await this.actor.deleteEmbeddedDocuments('Item', [id]);
   }
 
-  // Cast pipeline: if the skill has triggersPersonaSwap, run the swap. Full
-  // VFX-only cast pipeline (visibility-aware confirm + Sequencer for non-swap
-  // skills) ships in a future session.
   static async #castSkill(event, target) {
     const item = this.actor.items.get(target.dataset.itemId);
     if (!item) return;
-    const swapTargetId = item.system?.triggersPersonaSwap?.targetPersonaId;
-    if (swapTargetId) {
-      await switchPersona(this.actor, swapTargetId);
-    } else {
-      ui.notifications?.info(`Cast pipeline for "${item.name}" coming in a future session.`);
-    }
+    await castMagicSkill(item, this.actor);
   }
 
   static #openPersonaSwitcher(event, target) {
