@@ -5,6 +5,7 @@
 import { MonologueEditor } from '../apps/monologue-editor.js';
 import { openRevealControl } from '../apps/reveal-control.js';
 import { openPersonaSwitcherPopover } from '../apps/persona-switcher-popover.js';
+import { openActionsCheatSheet } from '../apps/actions-cheat-sheet.js';
 import { openPersonaEditor } from '../apps/persona-editor.js';
 import { switchPersona } from '../helpers/persona-swap.js';
 
@@ -53,7 +54,8 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       createItem: MajorCharacterSheet.#createItem,
       deleteItem: MajorCharacterSheet.#deleteItem,
       castSkill: MajorCharacterSheet.#castSkill,
-      openPersonaSwitcher: MajorCharacterSheet.#openPersonaSwitcher,
+      openPersonaSwitcher:      MajorCharacterSheet.#openPersonaSwitcher,
+      openActionsCheatSheet:    MajorCharacterSheet.#openActionsCheatSheet,
     },
   };
 
@@ -350,5 +352,9 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       target,
       () => openPersonaEditor(this.actor),
     );
+  }
+
+  static #openActionsCheatSheet() {
+    openActionsCheatSheet();
   }
 }

@@ -16,6 +16,8 @@
  *     are ignored — only the canonical chat input inside `#chat` gets a bar.
  */
 
+import { openActionsCheatSheet } from '../apps/actions-cheat-sheet.js';
+
 const TEMPLATE = 'systems/good-society-homebrew/templates/components/speaking-as.hbs';
 const LOG_PREFIX = '[good-society Speaking-As]';
 
@@ -140,6 +142,15 @@ function _attachDelegatedListeners() {
       // mirror the speaker selection can re-render. Per docs/design/09 §"Synced
       // with My Characters Dock".
       Hooks.callAll('goodSociety.activeSpeakerChanged', { actorId, personaId });
+      return;
+    }
+
+    // Click on the help button — open Actions cheat sheet.
+    const helpBtn = t.closest('.gs-speaking-as__help-btn');
+    if (helpBtn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      openActionsCheatSheet();
       return;
     }
 

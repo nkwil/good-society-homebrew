@@ -416,6 +416,60 @@
       "actorAriaLabel": "Select speaking character",
       "personaAriaLabel": "Select persona"
     },
+    "actionsCheatSheet": {
+      "windowTitle": "Actions You Can Take",
+      "btnTitle": "Actions You Can Take (quick reference)",
+      "tocHeading": "Contents",
+      "s1": {
+        "tocLabel": "Trade Tags",
+        "heading": "Trade Reputation Tags",
+        "pageRef": "Rulebook · p. 36",
+        "body": "During any scene you share with another Major Character, you may offer to trade a Reputation Tag — giving one of your tags to them, or receiving one of theirs.",
+        "positive": "Positive tags can only be traded for positive tags.",
+        "negative": "Negative tags can only be traded for negative tags."
+      },
+      "s2": {
+        "tocLabel": "Spend Tokens",
+        "heading": "Spend Resolve Tokens",
+        "pageRef": "Rulebook · p. 38",
+        "intro": "Spend one Resolve Token to do any of the following:",
+        "bullet1": "Erase one of your Reputation Tags (any polarity).",
+        "bullet2": "Prevent a Negative Reputation Tag from being placed on you.",
+        "bullet3": "Claim a second action in a scene.",
+        "bullet4": "Take a Monologue (once per cycle — see section 6).",
+        "noToken": "You cannot spend a token you don't have. Check the strip before spending."
+      },
+      "s3": {
+        "tocLabel": "Negotiate",
+        "heading": "Negotiate a Scene Outcome",
+        "pageRef": "Rulebook · p. 41",
+        "triggers": "Any player may call for negotiation when a scene outcome would place a Reputation Tag on their character.",
+        "responses": "The other player(s) involved must respond: they may agree, modify the tag's wording, or refuse.",
+        "refused": "If refused, the original tag stands. You may spend a Resolve Token to prevent it entirely."
+      },
+      "s4": {
+        "tocLabel": "Earn Tags",
+        "heading": "Earn Reputation Tags",
+        "pageRef": "Rulebook · p. 33",
+        "bullet1": "Perform an action witnessed by others in a public scene.",
+        "bullet2": "Declare an intention that another character can report on.",
+        "bullet3": "Be the subject of a rumour (Rumour & Scandal phase).",
+        "bullet4": "Receive a tag from another character via trade."
+      },
+      "s5": {
+        "tocLabel": "Conditions",
+        "heading": "Trigger a Condition",
+        "pageRef": "Rulebook · p. 44",
+        "body": "When you accumulate 3 or more Reputation Tags of the same polarity, a Condition is triggered. The facilitator and the player choose one together from the available list.",
+        "noCancel": "Conditions cannot be removed mid-phase. They clear during Upkeep if the triggering tag count drops below 3."
+      },
+      "s6": {
+        "tocLabel": "Monologue",
+        "heading": "Take a Monologue",
+        "pageRef": "Rulebook · p. 50",
+        "body": "Once per cycle, spend a Resolve Token to take a Monologue: a private in-character reflection that only your player reads aloud. The monologue dot on your strip marks it spent. It resets at the start of each new cycle."
+      }
+    },
     "monologueEditor": {
       "title": "Inner Monologue",
       "cycleLabel": "cycle",

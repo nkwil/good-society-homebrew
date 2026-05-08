@@ -36,7 +36,7 @@
 
   </div>
 
-  {{!-- Right cluster: cycle indicator + Take Monologue action --}}
+  {{!-- Right cluster: cycle indicator + Take Monologue action + Actions help --}}
   <div class="gs-major-sheet__strip-right">
     <span class="gs-major-sheet__cycle-info">
       {{localize "GOODSOCIETY.strip.cycle"}} {{cycleNumber}} · {{cyclePhase}}
@@ -47,6 +47,10 @@
             {{#if system.tokens.monologuedThisCycle}}disabled{{/if}}>
       {{localize "GOODSOCIETY.strip.takeMonologue"}}
     </button>
+    <button type="button"
+            class="gs-btn gs-btn-ghost gs-btn-sm gs-major-sheet__help-btn"
+            data-action="openActionsCheatSheet"
+            title="{{localize "GOODSOCIETY.actionsCheatSheet.btnTitle"}}">?</button>
   </div>
 
 </div>

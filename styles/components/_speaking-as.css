@@ -132,3 +132,28 @@
 .gs-speaking-as__option--persona.is-active {
   color: var(--gs-brand, #2A3A2D);
 }
+
+.gs-speaking-as__help-btn {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gs-accent-2, #708060);
+  background: transparent;
+  border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  border-radius: 50%;
+  cursor: pointer;
+  line-height: 1;
+  pointer-events: auto;
+}
+
+.gs-speaking-as__help-btn:hover {
+  color: var(--gs-brand, #2A3A2D);
+  border-color: var(--gs-brand, #2A3A2D);
+}

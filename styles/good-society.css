@@ -112,6 +112,7 @@
 @import './apps/_npc-quick-create.css';
 @import './apps/_npc-organizer.css';
 @import './apps/_bulk-permissions-panel.css';
+@import './apps/_actions-cheat-sheet.css';
 
 /* B-4 additions (not yet implemented):
  * @import './apps/_letter-composer.css';

@@ -1,0 +1,146 @@
+/* ── Actions You Can Take cheat sheet ───────────────────────────────────── */
+/* House-styled printed gameplay aid. Two columns: TOC left, content right. */
+
+.gs-cheat-sheet {
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  font-family: var(--gs-body);
+}
+
+.gs-cheat-sheet__layout {
+  display: flex;
+  gap: 0;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+/* ── TOC (left) ──────────────────────────────────────────────────────────── */
+
+.gs-cheat-sheet__toc {
+  flex: 0 0 140px;
+  border-right: 0.5px solid rgba(61, 47, 38, 0.15);
+  background: var(--gs-paper-warm);
+  padding: 18px 14px;
+  overflow-y: auto;
+}
+
+.gs-cheat-sheet__toc-heading {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-brand);
+  opacity: 0.65;
+  margin: 0 0 12px;
+}
+
+.gs-cheat-sheet__toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  counter-reset: toc-counter;
+}
+
+.gs-cheat-sheet__toc-list li {
+  counter-increment: toc-counter;
+}
+
+.gs-cheat-sheet__toc-list a {
+  display: block;
+  font-family: var(--gs-body);
+  font-size: 12px;
+  color: var(--gs-ink);
+  text-decoration: none;
+  opacity: 0.7;
+  padding: 3px 0;
+  transition: opacity 0.1s, color 0.1s;
+}
+
+.gs-cheat-sheet__toc-list a:hover {
+  opacity: 1;
+  color: var(--gs-brand);
+}
+
+.gs-cheat-sheet__toc-list a::before {
+  content: counter(toc-counter) ". ";
+  font-size: 10px;
+  color: var(--gs-accent-2);
+  opacity: 0.8;
+}
+
+/* ── Content body (right) ────────────────────────────────────────────────── */
+
+.gs-cheat-sheet__body {
+  flex: 1 1 auto;
+  padding: 18px 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.gs-cheat-sheet__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 18px;
+  border-bottom: 0.5px solid rgba(61, 47, 38, 0.1);
+}
+
+.gs-cheat-sheet__section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.gs-cheat-sheet__section-heading {
+  font-family: var(--gs-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gs-cheat-sheet__page-ref {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  font-variant: small-caps;
+  color: var(--gs-accent-3);
+  opacity: 0.85;
+}
+
+.gs-cheat-sheet__section p {
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0;
+  color: var(--gs-ink);
+}
+
+.gs-cheat-sheet__section ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-cheat-sheet__section ul li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gs-ink);
+}
+
+.gs-cheat-sheet__aside {
+  font-style: italic;
+  opacity: 0.7;
+  font-size: 12px !important;
+}
