@@ -226,6 +226,21 @@
   margin: 0;
 }
 
+.gs-rumour-wizard__cost-note {
+  font-size: 11px;
+  color: var(--gs-ink);
+  margin: 4px 0 0 0;
+  padding: 4px 8px;
+  background: var(--gs-paper-warm);
+  border-left: 2px solid var(--gs-accent-3);
+  border-radius: 0 3px 3px 0;
+}
+
+.gs-rumour-wizard__cost-note--blocked {
+  color: var(--gs-danger);
+  border-left-color: var(--gs-danger);
+}
+
 .gs-rumour-wizard__textarea {
   font-family: var(--gs-body);
   font-size: 14px;

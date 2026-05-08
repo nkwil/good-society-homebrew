@@ -87,11 +87,20 @@
           <div class="gs-rumour-wizard__action-group">
             <div class="gs-rumour-wizard__action-eyebrow">{{localize "GOODSOCIETY.rumourWizard.actionSpread"}}</div>
             <p class="gs-rumour-wizard__action-help">{{localize "GOODSOCIETY.rumourWizard.actionSpreadHelp"}}</p>
+            {{#unless isGM}}
+              <p class="gs-rumour-wizard__cost-note {{#unless canSpend}}gs-rumour-wizard__cost-note--blocked{{/unless}}">
+                {{#if canSpend}}
+                  {{localize "GOODSOCIETY.rumourWizard.spreadCostHint" name=myMajorName n=myResolve}}
+                {{else}}
+                  {{localize "GOODSOCIETY.rumourWizard.spreadCostBlocked" name=myMajorName}}
+                {{/if}}
+              </p>
+            {{/unless}}
             <ul class="gs-rumour-wizard__spread-list">
               {{#each spreadable}}
                 <li class="gs-rumour-wizard__spread-row">
                   <span class="gs-rumour-wizard__spread-text">{{text}}</span>
-                  <button type="button" class="gs-btn gs-btn--sm gs-btn--outline" data-action="submitSpread" data-rumour-id="{{id}}">
+                  <button type="button" class="gs-btn gs-btn--sm gs-btn--outline" data-action="submitSpread" data-rumour-id="{{id}}" {{#unless ../canSpend}}disabled{{/unless}}>
                     {{localize "GOODSOCIETY.rumourWizard.spreadBtn"}}
                   </button>
                 </li>

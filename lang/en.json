@@ -1241,7 +1241,7 @@
       "newRumourPlaceholder": "Henry has been disinherited…",
       "createBtn": "Create rumour",
       "actionSpread": "Or spread an existing rumour",
-      "actionSpreadHelp": "Spreading attaches a resolve token. Anyone can later spend it during a novel chapter or epistolary phase.",
+      "actionSpreadHelp": "Spreading costs your Major Character 1 resolve and attaches that token to the rumour. Anyone can later spend it during a novel chapter or epistolary phase.",
       "spreadBtn": "Spread",
       "mustCreateNote": "No spreadable rumours — your only option is to create a new one.",
       "skipTurnBtn": "Skip this turn",
@@ -1258,7 +1258,11 @@
         "fading": "fading",
         "faded": "faded",
         "used": "used"
-      }
+      },
+      "spreadCostHint": "Spreading costs {name} 1 resolve. Currently {n} available.",
+      "spreadCostBlocked": "{name} has no resolve to spend — you must create a rumour instead.",
+      "errorNoMajor": "You don't own a Major Character to spend resolve from.",
+      "errorNoResolve": "{name} has no resolve to spend."
     },
     "rumourBoard": {
       "windowTitle": "Rumours",

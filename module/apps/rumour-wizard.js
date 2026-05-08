@@ -123,6 +123,18 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     // spread again to save them).
     const spreadable = active.filter(r => r.state === 'unspread' || r.state === 'fading');
 
+    // Homebrew rule: spreading deducts 1 resolve from the player's own MC.
+    // GM uses the general supply (no cost). Compute the user's MC + current
+    // resolve so the template can warn / disable Spread buttons.
+    let myMajor = null;
+    let myResolve = null;          // null when not applicable (GM, no MC)
+    let canSpend = isGM;           // GM can always spread; players need ≥1 resolve
+    if (!isGM) {
+      myMajor = game.actors?.find(a => a.type === 'major-character' && a.isOwner) ?? null;
+      myResolve = myMajor?.system?.tokens?.resolve?.current ?? 0;
+      canSpend = myResolve >= 1;
+    }
+
     return {
       ...ctx,
       isGM,
@@ -149,6 +161,10 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       archivedCount: archived.length,
       spreadable:    spreadable.map(_decorate),
       hasSpreadable: spreadable.length > 0,
+      myMajorName:   myMajor?.name ?? '',
+      myResolve,
+      canSpend,
+      hasMyMajor:    !!myMajor || isGM,
     };
   }
 
@@ -170,17 +186,23 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
   _attachWatchers() {
     if (this._watchers) return;
     // The setting onChange callbacks already trigger refreshRumourWizard().
-    // We additionally listen for goodSociety.cyclePhaseChanged in case the GM
-    // advances out of rumour-scandal — close cleanly then.
+    // Additional listeners:
+    //   - goodSociety.cyclePhaseChanged → close if we leave rumour-scandal.
+    //   - updateActor → re-render when our MC's resolve changes (so the
+    //     "you have N resolve" hint stays current).
     const phaseHook = Hooks.on('goodSociety.cyclePhaseChanged', ({ newPhase }) => {
       if (newPhase !== 'rumour-scandal') this.close();
     });
-    this._watchers = [phaseHook];
+    const actorHook = Hooks.on('updateActor', (actor) => {
+      if (actor?.type === 'major-character' && actor.isOwner) this.render();
+    });
+    this._watchers = [phaseHook, actorHook];
   }
 
   _detachWatchers() {
     if (!this._watchers) return;
     Hooks.off('goodSociety.cyclePhaseChanged', this._watchers[0]);
+    Hooks.off('updateActor',                   this._watchers[1]);
     this._watchers = null;
   }
 
@@ -238,6 +260,26 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!isCurrentTurnUser()) return;
     const rumourId = target.dataset.rumourId;
     if (!rumourId) return;
+
+    // Homebrew rule: spread costs the player 1 resolve from their MC.
+    // Validate locally so the player gets immediate feedback rather than
+    // a silent failure on the GM side. GM bypasses (general supply).
+    if (!game.user?.isGM) {
+      const myMajor = game.actors?.find(a => a.type === 'major-character' && a.isOwner);
+      if (!myMajor) {
+        ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.rumourWizard.errorNoMajor'));
+        return;
+      }
+      const current = myMajor.system?.tokens?.resolve?.current ?? 0;
+      if (current < 1) {
+        ui.notifications?.warn(game.i18n.format(
+          'GOODSOCIETY.rumourWizard.errorNoResolve',
+          { name: myMajor.name },
+        ));
+        return;
+      }
+    }
+
     await requestSpreadRumour({ rumourId, advanceTurn: true });
   }
 

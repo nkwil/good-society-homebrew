@@ -220,6 +220,29 @@ async function _handleSpread({ rumourId, advanceTurn, requestedBy }) {
   const r = all[idx];
   if (r.state !== 'unspread' && r.state !== 'fading') return null; // can't spread a spread/used/faded
 
+  // Homebrew rule: spreading costs the requesting player 1 resolve from
+  // their owned Major Character. GM uses the general supply per rulebook
+  // p.127, so GM-driven spreads don't deduct. Players without an owned
+  // Major or with 0 resolve can't spread (the wizard validates client-
+  // side too, so this is defense-in-depth for socket-emitted requests).
+  const requestingUser = requestedBy ? game.users?.get(requestedBy) : null;
+  if (requestingUser && !requestingUser.isGM) {
+    const ownerLevel = CONST.DOCUMENT_OWNERSHIP_LEVELS?.OWNER ?? 3;
+    const myMajor = game.actors?.find(a =>
+      a.type === 'major-character' &&
+      a.getUserLevel(requestingUser) >= ownerLevel,
+    );
+    if (!myMajor) return null;
+    const current = myMajor.system?.tokens?.resolve?.current ?? 0;
+    if (current < 1) return null;
+    try {
+      await myMajor.update({ 'system.tokens.resolve.current': current - 1 });
+    } catch (err) {
+      console.warn('GS | rumour spread resolve deduction failed:', err);
+      return null;
+    }
+  }
+
   const next = [...all];
   next[idx] = { ...r, state: 'spread', spreadAt: Date.now() };
   await game.settings.set(NS, 'rumours', next);
