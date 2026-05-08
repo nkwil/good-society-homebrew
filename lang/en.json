@@ -1274,7 +1274,8 @@
       "cancel": "Cancel",
       "expandArchived": "Show archived rumours",
       "collapseArchived": "Hide archived rumours",
-      "empty": "No rumours yet. Drama awaits."
+      "empty": "No rumours yet. Drama awaits.",
+      "sceneControlTitle": "Open Rumour Board"
     },
     "gmPill": "GM"
   },

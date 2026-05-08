@@ -18,6 +18,7 @@ import { openBulkPermissionsPanel } from '../apps/bulk-permissions-panel.js';
 import { openSessionLogPreview } from '../apps/session-log-preview.js';
 import { openEventTimeline } from '../apps/event-timeline.js';
 import { openLetterComposer } from '../apps/letter-composer.js';
+import { openRumourBoard } from '../apps/rumour-board.js';
 
 export function register() {
   Hooks.on('getSceneControlButtons', (controls) => {
@@ -86,9 +87,20 @@ export function register() {
       visible: true,
     };
 
+    const rumourTool = {
+      name: 'gs-rumours',
+      title: 'GOODSOCIETY.rumourBoard.sceneControlTitle',
+      icon: 'fa-solid fa-comments',
+      button: true,
+      onChange: () => openRumourBoard(),
+      // Visible to all — the board itself enforces read-only mode for non-GMs.
+      // Players need an always-available path to see what rumours are at play.
+      visible: true,
+    };
+
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool);
+      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool, rumourTool);
     } else {
       target.tools['gs-dashboard']  = dashboardTool;
       target.tools['gs-organizer']  = organizerTool;
@@ -96,6 +108,7 @@ export function register() {
       target.tools['gs-end-session'] = endSessionTool;
       target.tools['gs-calendar']   = calendarTool;
       target.tools['gs-letter']     = letterTool;
+      target.tools['gs-rumours']    = rumourTool;
     }
   });
 }
