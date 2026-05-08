@@ -27,11 +27,17 @@
     {{!-- TO --}}
     <div class="gs-letter-composer__row">
       <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.to"}}</label>
-      <input class="gs-letter-composer__input"
-             type="text"
-             name="toName"
-             value="{{state.toName}}"
-             placeholder="{{localize "GOODSOCIETY.letterComposer.toPlaceholder"}}" />
+      <div class="gs-letter-composer__control">
+        <select class="gs-letter-composer__actor-select" name="toActorId">
+          {{#if recipientActors}}
+            {{#each recipientActors}}
+              <option value="{{id}}" {{#if selected}}selected{{/if}}>{{displayName}} ({{typeLabel}})</option>
+            {{/each}}
+          {{else}}
+            <option value="" disabled>{{localize "GOODSOCIETY.letterComposer.noRecipientActors"}}</option>
+          {{/if}}
+        </select>
+      </div>
     </div>
 
     {{!-- SUBJECT --}}

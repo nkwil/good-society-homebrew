@@ -1218,6 +1218,8 @@
       "noSender": "Select a sender before sending.",
       "noBody": "Write something before sending.",
       "noOwnedActors": "No owned actors — ask your GM to assign ownership.",
+      "noRecipientActors": "No recipients visible — ask your GM.",
+      "noRecipient": "Select a recipient before sending.",
       "discardTitle": "Discard Letter?",
       "discardBody": "You have unsaved changes. Discard the current letter?",
       "unknownRecipient": "unknown recipient"
