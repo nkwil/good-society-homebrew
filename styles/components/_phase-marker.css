@@ -1,5 +1,8 @@
 /* Phase Marker — dot / pill primitive for the Cycle Phase HUD track.
- * Three states: --complete (filled dot), --current (terracotta pill), --future (outlined dot).
+ * Five states: --complete, --current, --future, --skipped, --ended.
+ * --skipped is for final-cycle positions (Rumour & Scandal + 2nd Reputation
+ *   per rulebook p.114-115) that are bypassed on advance.
+ * --ended is the post-game state (final-cycle epilogue complete).
  * May be reused in the Upkeep wizard.
  * Design: docs/design/08-cycle-phase-hud.md §"Marker states"
  */
@@ -74,6 +77,48 @@
 
 .gs-phase-marker--future .gs-phase-marker__label {
   opacity: 0.65;
+}
+
+/* ── Skipped: dashed dot, struck-through label, dim ──────────────────────── */
+/* Final-cycle bypass markers — present in the track for visual context but
+ * clearly not part of this cycle's flow. Hover tooltip explains why.
+ */
+
+.gs-phase-marker--skipped .gs-phase-marker__dot {
+  background: transparent;
+  border: 1px dashed var(--gs-accent-2);
+  opacity: 0.45;
+}
+
+.gs-phase-marker--skipped .gs-phase-marker__label {
+  text-decoration: line-through;
+  text-decoration-color: var(--gs-accent-2);
+  opacity: 0.55;
+}
+
+/* ── Ended: gold-accented pill, no animation ─────────────────────────────── */
+/* Final-cycle epilogue complete — the game is done. Renders after the track.
+ */
+
+.gs-phase-marker--ended {
+  background: var(--gs-accent-3);
+  border-radius: 100px;
+  padding: 4px 12px;
+  gap: 6px;
+}
+
+.gs-phase-marker--ended .gs-phase-marker__dot {
+  background: var(--gs-paper);
+  border: none;
+}
+
+.gs-phase-marker--ended .gs-phase-marker__label {
+  font-style: normal;
+  font-size: 12px;
+  font-family: var(--gs-display);
+  color: var(--gs-ink);
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 /* ── Pill appear animation ───────────────────────────────────────────────── */

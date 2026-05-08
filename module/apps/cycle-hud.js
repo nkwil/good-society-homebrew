@@ -21,7 +21,12 @@
  * is deferred to a follow-up; CSS overflow: hidden prevents layout breakage.
  */
 
-import { CYCLE_PHASES, NEXT_PHASE } from '../helpers/dashboard-context.js';
+import {
+  CYCLE_POSITIONS,
+  POSITION_OCCURRENCE,
+  FINAL_CYCLE_SKIP,
+} from '../helpers/dashboard-context.js';
+import { advanceCyclePhase, markFinalCycle } from '../helpers/cycle-advance.js';
 
 const NS = 'good-society-homebrew';
 const HUD_ID = 'gs-cycle-hud';
@@ -35,6 +40,7 @@ const STRIP_LABEL_KEY = {
   'rumour-scandal': 'GOODSOCIETY.hud.phase.rumourScandal',
   'epistolary':     'GOODSOCIETY.hud.phase.epistolary',
   'upkeep':         'GOODSOCIETY.hud.phase.upkeep',
+  'ended':          'GOODSOCIETY.hud.phase.ended',
 };
 
 /** Full canonical name keys, used for the current-phase pill and chat cards. */
@@ -45,6 +51,7 @@ const FULL_LABEL_KEY = {
   'rumour-scandal': 'GOODSOCIETY.cyclePhase.rumourScandal',
   'epistolary':     'GOODSOCIETY.cyclePhase.epistolary',
   'upkeep':         'GOODSOCIETY.cyclePhase.upkeep',
+  'ended':          'GOODSOCIETY.cyclePhase.ended',
 };
 
 let _debounceTimer = null;
@@ -62,81 +69,134 @@ function _isGM() {
   return game.user?.isGM ?? false;
 }
 
-function _fullPhaseName(phaseId) {
+function _fullPhaseName(phaseId, position) {
   const key = FULL_LABEL_KEY[phaseId];
-  return key ? game.i18n.localize(key) : phaseId;
+  const base = key ? game.i18n.localize(key) : phaseId;
+  const occurrence = position != null ? POSITION_OCCURRENCE[position] : null;
+  if (!occurrence) return base;
+  const sKey = `GOODSOCIETY.cyclePosition.suffix.${occurrence}`;
+  const suffix = game.i18n.localize(sKey);
+  if (suffix === sKey) return base;
+  return `${base} ${suffix}`;
 }
 
-function _stripPhaseLabel(phaseId) {
+function _stripPhaseLabel(phaseId, position) {
   const key = STRIP_LABEL_KEY[phaseId];
-  return key ? game.i18n.localize(key) : phaseId;
+  const base = key ? game.i18n.localize(key) : phaseId;
+  const occurrence = position != null ? POSITION_OCCURRENCE[position] : null;
+  if (!occurrence) return base;
+  // Compact suffix on the strip — "Novel ²" rather than "Novel (2nd)".
+  const compactKey = `GOODSOCIETY.cyclePosition.compactSuffix.${occurrence}`;
+  const compact = game.i18n.localize(compactKey);
+  if (compact === compactKey) return base;
+  return `${base}${compact}`;
 }
 
 // ── HTML builder ──────────────────────────────────────────────────────────────
 
 function _buildHtml() {
-  const cycleNumber = _readSetting('cycleNumber', 1);
+  const cycleNumber  = _readSetting('cycleNumber', 1);
+  const currentPos   = _readSetting('cyclePosition', 0);
+  const isFinalCycle = _readSetting('isFinalCycle', false);
   const currentPhase = _readSetting('cyclePhase', 'pre-cycle');
   const isGM = _isGM();
+  const ended = currentPhase === 'ended' || currentPos === 9;
 
   const cycleLabel = game.i18n.localize('GOODSOCIETY.hud.cycleLabel');
+  const finalBadge = isFinalCycle && !ended
+    ? `<span class="gs-cycle-hud__final-badge" title="${game.i18n.localize('GOODSOCIETY.hud.finalCycleBadgeHint')}">${game.i18n.localize('GOODSOCIETY.hud.finalCycleBadge')}</span>`
+    : '';
   const counterHtml = `
     <div class="gs-cycle-hud__counter">
       <span class="gs-cycle-hud__counter-label">${cycleLabel}</span>
       <span class="gs-cycle-hud__counter-number">${cycleNumber}</span>
+      ${finalBadge}
     </div>`.trim();
 
-  const currentIndex = CYCLE_PHASES.indexOf(currentPhase);
-
+  // Render 8 positional markers (1-8). Position 0 (pre-cycle) and 9 (ended)
+  // are conveyed by the current-phase styling: when currentPos is 0, every
+  // marker is rendered as 'future'; when currentPos is 9, every marker is
+  // rendered as 'complete' and an 'ended' pill follows the track.
   let trackInner = '';
-  for (let i = 0; i < CYCLE_PHASES.length; i++) {
-    const phase = CYCLE_PHASES[i];
+  for (let pos = 1; pos <= 8; pos++) {
+    const phase = CYCLE_POSITIONS[pos];
+    const skipped = isFinalCycle && FINAL_CYCLE_SKIP.has(pos);
 
-    // Connector before each phase (except first).
-    if (i > 0) {
-      // Connector is "complete" if it leads into a completed or current marker.
-      const connComplete = i <= currentIndex;
-      const connClass = connComplete
-        ? 'gs-cycle-hud__connector--complete'
-        : 'gs-cycle-hud__connector--future';
+    // Connector before each marker (except first).
+    if (pos > 1) {
+      let connClass;
+      if (currentPos >= pos)        connClass = 'gs-cycle-hud__connector--complete';
+      else if (currentPos === pos - 1) connClass = 'gs-cycle-hud__connector--current';
+      else                          connClass = 'gs-cycle-hud__connector--future';
       trackInner += `<span class="gs-cycle-hud__connector ${connClass}" aria-hidden="true"></span>`;
     }
 
-    if (i < currentIndex) {
-      // Completed marker — filled dot, abbreviated label.
-      const label = _stripPhaseLabel(phase);
-      trackInner += `<span class="gs-phase-marker gs-phase-marker--complete" data-phase="${phase}">
-  <span class="gs-phase-marker__dot" aria-hidden="true"></span>
-  <span class="gs-phase-marker__label">${label}</span>
-</span>`;
-    } else if (i === currentIndex) {
-      // Current marker — terracotta pill, full name.
-      const label = _fullPhaseName(phase);
-      trackInner += `<span class="gs-phase-marker gs-phase-marker--current" data-phase="${phase}" aria-current="step">
-  <span class="gs-phase-marker__dot" aria-hidden="true"></span>
-  <span class="gs-phase-marker__label">${label}</span>
-</span>`;
+    let stateClass;
+    let label;
+    if (ended || pos < currentPos) {
+      // Already passed this position (or game ended) — render as complete even
+      // if the position would have been skipped under the current final-cycle
+      // flag. The flag may have been toggled mid-cycle, in which case the
+      // "skipped" position actually ran before the toggle.
+      stateClass = 'gs-phase-marker--complete';
+      label = _stripPhaseLabel(phase, pos);
+    } else if (pos === currentPos) {
+      stateClass = 'gs-phase-marker--current';
+      label = _fullPhaseName(phase, pos);
+    } else if (skipped) {
+      // Future position, marked for skip on advance.
+      stateClass = 'gs-phase-marker--skipped';
+      label = _stripPhaseLabel(phase, pos);
     } else {
-      // Future marker — outlined dot, abbreviated label.
-      const label = _stripPhaseLabel(phase);
-      trackInner += `<span class="gs-phase-marker gs-phase-marker--future" data-phase="${phase}">
+      stateClass = 'gs-phase-marker--future';
+      label = _stripPhaseLabel(phase, pos);
+    }
+
+    const ariaCurrent = (pos === currentPos && !ended) ? ' aria-current="step"' : '';
+    const skippedHint = skipped
+      ? ` title="${game.i18n.localize('GOODSOCIETY.hud.skippedHint')}"`
+      : '';
+    trackInner += `<span class="gs-phase-marker ${stateClass}" data-phase="${phase}" data-position="${pos}"${ariaCurrent}${skippedHint}>
   <span class="gs-phase-marker__dot" aria-hidden="true"></span>
   <span class="gs-phase-marker__label">${label}</span>
 </span>`;
-    }
   }
 
-  const currentFullName = _fullPhaseName(currentPhase);
-  const trackHtml = `<div class="gs-cycle-hud__track" role="list" aria-label="${game.i18n.localize('GOODSOCIETY.hud.trackAriaLabel')}">${trackInner}</div>`;
+  // 'Ended' pill rendered after the track when the game is over.
+  const endedPillHtml = ended
+    ? `<span class="gs-phase-marker gs-phase-marker--ended" aria-current="step">
+  <span class="gs-phase-marker__dot" aria-hidden="true"></span>
+  <span class="gs-phase-marker__label">${game.i18n.localize('GOODSOCIETY.cyclePhase.ended')}</span>
+</span>`
+    : '';
 
-  const advanceLabel = game.i18n.localize('GOODSOCIETY.hud.advancePhase');
-  const advanceHtml = isGM
-    ? `<div class="gs-cycle-hud__advance">
-  <button class="gs-cycle-hud__advance-btn" data-action="gs-advance-phase" type="button">${advanceLabel}</button>
-</div>`
-    : '<div class="gs-cycle-hud__advance gs-cycle-hud__advance--player"></div>';
+  const currentFullName = ended
+    ? game.i18n.localize('GOODSOCIETY.cyclePhase.ended')
+    : _fullPhaseName(currentPhase, currentPos);
+  const trackHtml = `<div class="gs-cycle-hud__track" role="list" aria-label="${game.i18n.localize('GOODSOCIETY.hud.trackAriaLabel')}">${trackInner}${endedPillHtml}</div>`;
 
-  return `<div id="${HUD_ID}" class="gs-cycle-hud" role="status" aria-label="${game.i18n.format('GOODSOCIETY.hud.ariaLabel', { cycle: cycleNumber, phase: currentFullName })}">
+  // GM controls: advance button + final-cycle toggle pill.
+  let advanceHtml;
+  if (isGM) {
+    const advanceLabel = game.i18n.localize('GOODSOCIETY.hud.advancePhase');
+    const advanceDisabled = ended ? 'disabled' : '';
+    const finalToggleLabel = game.i18n.localize('GOODSOCIETY.hud.finalCycleToggle');
+    const finalToggleHint  = game.i18n.localize('GOODSOCIETY.hud.finalCycleToggleHint');
+    const finalActiveClass = isFinalCycle ? 'gs-cycle-hud__final-toggle--on' : '';
+    advanceHtml = `<div class="gs-cycle-hud__advance">
+  <button class="gs-cycle-hud__final-toggle ${finalActiveClass}" data-action="gs-toggle-final-cycle" type="button" title="${finalToggleHint}" aria-pressed="${isFinalCycle ? 'true' : 'false'}">
+    <span class="gs-cycle-hud__final-toggle-dot" aria-hidden="true"></span>
+    <span class="gs-cycle-hud__final-toggle-label">${finalToggleLabel}</span>
+  </button>
+  <button class="gs-cycle-hud__advance-btn" data-action="gs-advance-phase" type="button" ${advanceDisabled}>${advanceLabel}</button>
+</div>`;
+  } else {
+    advanceHtml = '<div class="gs-cycle-hud__advance gs-cycle-hud__advance--player"></div>';
+  }
+
+  const ariaLabel = game.i18n.format('GOODSOCIETY.hud.ariaLabel', { cycle: cycleNumber, phase: currentFullName });
+  const endedClass = ended ? ' gs-cycle-hud--ended' : '';
+  return `<div id="${HUD_ID}" class="gs-cycle-hud${endedClass}" role="status" aria-label="${ariaLabel}">
   ${counterHtml}
   ${trackHtml}
   ${advanceHtml}
@@ -181,41 +241,14 @@ function _rerender() {
   if (newEl) existing.replaceWith(newEl);
 }
 
-// ── Advance Phase ─────────────────────────────────────────────────────────────
+// ── Advance Phase + Final Cycle Toggle ────────────────────────────────────────
+// Both actions delegate to module/helpers/cycle-advance.js so the Public Info
+// Dashboard's identical buttons share the same logic.
 
-async function _doAdvancePhase() {
-  const current = _readSetting('cyclePhase', 'pre-cycle');
-  const next = NEXT_PHASE[current] ?? 'novel';
-  const currentName = _fullPhaseName(current);
-  const nextName = _fullPhaseName(next);
-
-  const confirmed = window.confirm(
-    game.i18n.format('GOODSOCIETY.hud.advanceConfirm', { current: currentName, next: nextName })
-  );
-  if (!confirmed) return;
-
-  const updates = [game.settings.set(NS, 'cyclePhase', next)];
-
-  if (current === 'upkeep') {
-    const cycleNum = _readSetting('cycleNumber', 1);
-    updates.push(game.settings.set(NS, 'cycleNumber', cycleNum + 1));
-  }
-
-  await Promise.all(updates);
-
-  // Reset monologuedThisCycle when wrapping upkeep → novel, if setting is on.
-  if (current === 'upkeep' && _readSetting('autoRefreshOnUpkeep', true)) {
-    const majors = game.actors?.filter(a => a.type === 'major-character') ?? [];
-    for (const actor of majors) {
-      await actor.update({ 'system.tokens.monologuedThisCycle': false });
-    }
-  }
-
-  await ChatMessage.create({
-    content: `<div class="gs-chat-system"><p>${game.i18n.format('GOODSOCIETY.hud.advancePosted', { phase: nextName })}</p></div>`,
-    style: CONST.CHAT_MESSAGE_STYLES.OTHER,
-    speaker: { alias: game.i18n.localize('GOODSOCIETY.dashboard.systemAlias') },
-  });
+async function _onToggleFinalCycle() {
+  if (!_isGM()) return;
+  const current = _readSetting('isFinalCycle', false);
+  await markFinalCycle(!current);
 }
 
 // ── Observer — re-inject if Foundry strips the HUD ───────────────────────────
@@ -240,12 +273,20 @@ function _attachListeners() {
   // Capture-phase delegation — survives re-renders (CLAUDE.md §16 anti-pattern).
   document.addEventListener('click', (ev) => {
     if (!_isGM()) return;
-    const btn = ev.target instanceof HTMLElement
-      ? ev.target.closest('[data-action="gs-advance-phase"]')
-      : null;
-    if (!btn) return;
-    ev.preventDefault();
-    _doAdvancePhase();
+    if (!(ev.target instanceof HTMLElement)) return;
+
+    const advance = ev.target.closest('[data-action="gs-advance-phase"]');
+    if (advance) {
+      ev.preventDefault();
+      advanceCyclePhase();
+      return;
+    }
+
+    const finalToggle = ev.target.closest('[data-action="gs-toggle-final-cycle"]');
+    if (finalToggle) {
+      ev.preventDefault();
+      _onToggleFinalCycle();
+    }
   }, { capture: true });
 }
 

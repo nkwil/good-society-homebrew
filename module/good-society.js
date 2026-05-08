@@ -15,6 +15,7 @@ import { getDashboard } from './apps/public-info-dashboard.js';
 import { initCycleHud, renderCycleHud } from './apps/cycle-hud.js';
 import { renderOrganizer } from './apps/npc-organizer.js';
 import { initTooltipSystem } from './helpers/rule-tooltip.js';
+import { deriveInitialPosition } from './helpers/dashboard-context.js';
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
 import { InnerConflictDataModel } from './data-models/inner-conflict.js';
@@ -135,6 +136,31 @@ Hooks.once('init', async function () {
       renderCycleHud();
       if (value === 'upkeep') onUpkeepPhaseStart();
     },
+  });
+
+  // cyclePosition (1-8 within a cycle, 0 = pre-cycle, 9 = ended). Drives the
+  // 8-position cycle structure per rulebook p.112. cyclePhase is kept in sync
+  // by the centralized advance helper (module/helpers/cycle-advance.js).
+  // See docs/design/08-cycle-phase-hud.md and the running log for rationale.
+  game.settings.register('good-society-homebrew', 'cyclePosition', {
+    scope: 'world',
+    config: false,
+    type: Number,
+    default: 0,
+    onChange: () => renderCycleHud(),
+  });
+
+  // isFinalCycle — GM-toggleable. When true, advance logic skips positions
+  // 3 (Rumour & Scandal) and 6 (2nd Reputation), then ends the game after
+  // position 7 (the epilogue epistolary). Per rulebook p.114-115.
+  game.settings.register('good-society-homebrew', 'isFinalCycle', {
+    name: 'GOODSOCIETY.settings.isFinalCycle.name',
+    hint: 'GOODSOCIETY.settings.isFinalCycle.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: false,
+    onChange: () => renderCycleHud(),
   });
 
   game.settings.register('good-society-homebrew', 'sessionEvents', {
@@ -297,12 +323,26 @@ Hooks.once('init', async function () {
   });
 });
 
-Hooks.once('ready', () => {
+Hooks.once('ready', async () => {
   const chromeEnabled = game.settings.get('good-society-homebrew', 'applyFoundryChrome');
   document.body.classList.toggle('gs-chrome-themed', chromeEnabled);
 
   const tooltipsEnabled = game.settings.get('good-society-homebrew', 'tooltipsEnabled');
   document.body.classList.toggle('gs-tooltips-disabled', !tooltipsEnabled);
+
+  // One-time migration: derive cyclePosition from cyclePhase for worlds that
+  // pre-date the cyclePosition setting (added with the 8-position cycle work).
+  // Idempotent: a world already on cyclePosition >= 1 is left alone. GM-only
+  // because the setting is world-scoped.
+  if (game.user?.isGM) {
+    try {
+      const pos   = game.settings.get('good-society-homebrew', 'cyclePosition');
+      const phase = game.settings.get('good-society-homebrew', 'cyclePhase');
+      if ((pos === 0 || pos == null) && phase && phase !== 'pre-cycle') {
+        await game.settings.set('good-society-homebrew', 'cyclePosition', deriveInitialPosition(phase));
+      }
+    } catch (err) { console.warn('GS | cyclePosition migration failed:', err); }
+  }
 
   // Open the My Characters Dock if the user owns any actors.
   renderDock();

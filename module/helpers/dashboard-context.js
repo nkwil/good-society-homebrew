@@ -12,6 +12,11 @@ function _readSetting(key, fallback) {
   catch { return fallback; }
 }
 
+/**
+ * Distinct phase TYPES — the enum values stored on `cyclePhase` setting and
+ * matched by every phase-aware hook (Reputation Phase Wizard, Upkeep Wizard,
+ * Letter composer, etc.).
+ */
 export const CYCLE_PHASES = [
   'pre-cycle',
   'novel',
@@ -19,8 +24,131 @@ export const CYCLE_PHASES = [
   'rumour-scandal',
   'epistolary',
   'upkeep',
+  'ended',
 ];
 
+/**
+ * Canonical 8-position cycle structure per rulebook p.112.
+ * Index 0 is pre-cycle (game hasn't started); 1-8 are the in-cycle positions;
+ * index 9 is the post-game 'ended' state (final-cycle epilogue complete).
+ *
+ * Each entry is the phase TYPE that runs at that position. Some types appear
+ * twice (Novel positions 1+5, Reputation 2+6, Epistolary 4+7) — same hooks
+ * fire on both occurrences, so phase-aware code that switches on phase TYPE
+ * keeps working without modification.
+ */
+export const CYCLE_POSITIONS = [
+  null,             // 0 — pre-cycle (no in-cycle position yet)
+  'novel',          // 1
+  'reputation',     // 2
+  'rumour-scandal', // 3
+  'epistolary',     // 4
+  'novel',          // 5 — second novel chapter
+  'reputation',     // 6 — second reputation
+  'epistolary',     // 7 — second epistolary (or final-cycle epilogue)
+  'upkeep',         // 8
+  // 9 reserved for 'ended' state (final-cycle epilogue done).
+];
+
+/**
+ * Final-cycle skip set: positions to skip when isFinalCycle is true.
+ * Per rulebook p.114-115, the final cycle skips Rumour & Scandal (3) and
+ * the second Reputation (6); the second Epistolary (7) becomes the epilogue.
+ */
+export const FINAL_CYCLE_SKIP = new Set([3, 6]);
+
+/**
+ * "Which-occurrence" suffix for repeated phase types within one cycle.
+ * Used by the HUD to render "Novel (1st)" vs "Novel (2nd)". Position 0 and
+ * positions where the phase type appears only once map to null (no suffix).
+ */
+export const POSITION_OCCURRENCE = {
+  1: 'first',  // novel
+  2: 'first',  // reputation
+  4: 'first',  // epistolary
+  5: 'second', // novel
+  6: 'second', // reputation
+  7: 'second', // epistolary
+  // 3 (rumour-scandal) and 8 (upkeep) appear only once — no suffix.
+};
+
+/**
+ * Compute the next cycle position. Handles final-cycle skips, end-of-cycle
+ * wrap, and game completion. Returns an object describing the transition so
+ * callers can update both `cyclePosition` and `cyclePhase` (and `cycleNumber`
+ * on wrap, and clear `isFinalCycle` on game completion) in one go.
+ *
+ * @param {number}  pos           Current cyclePosition (0-9).
+ * @param {boolean} isFinalCycle  Whether this is the final cycle.
+ * @returns {{ nextPos:number, nextPhase:string, wrapsCycle:boolean, gameEnds:boolean, skippedPos:number|null }}
+ */
+export function advanceFromPosition(pos, isFinalCycle) {
+  // 0 (pre-cycle) → 1
+  if (pos === 0) {
+    return { nextPos: 1, nextPhase: CYCLE_POSITIONS[1], wrapsCycle: false, gameEnds: false, skippedPos: null };
+  }
+
+  // 9 (ended) → no advance.
+  if (pos === 9) {
+    return { nextPos: 9, nextPhase: 'ended', wrapsCycle: false, gameEnds: true, skippedPos: null };
+  }
+
+  // 8 (upkeep) → next cycle position 1, increment cycle number.
+  // (Final-cycle never reaches position 8 — it ends after position 7's epilogue.)
+  if (pos === 8) {
+    return { nextPos: 1, nextPhase: CYCLE_POSITIONS[1], wrapsCycle: true, gameEnds: false, skippedPos: null };
+  }
+
+  // Final cycle: after epilogue (position 7), game ends.
+  if (isFinalCycle && pos === 7) {
+    return { nextPos: 9, nextPhase: 'ended', wrapsCycle: false, gameEnds: true, skippedPos: null };
+  }
+
+  // Standard advance: pos+1, but skip 3/6 if final cycle.
+  let next = pos + 1;
+  let skipped = null;
+  if (isFinalCycle && FINAL_CYCLE_SKIP.has(next)) {
+    skipped = next;
+    next += 1;
+  }
+
+  return {
+    nextPos: next,
+    nextPhase: CYCLE_POSITIONS[next] ?? 'pre-cycle',
+    wrapsCycle: false,
+    gameEnds: false,
+    skippedPos: skipped,
+  };
+}
+
+/**
+ * Derive a starting cyclePosition from a stored cyclePhase value, used in
+ * the one-time migration for worlds that pre-date the cyclePosition setting.
+ * Maps each phase type to its first occurrence in the cycle.
+ */
+export function deriveInitialPosition(phase) {
+  switch (phase) {
+    case 'novel':          return 1;
+    case 'reputation':     return 2;
+    case 'rumour-scandal': return 3;
+    case 'epistolary':     return 4;
+    case 'upkeep':         return 8;
+    case 'ended':          return 9;
+    case 'pre-cycle':
+    default:               return 0;
+  }
+}
+
+/**
+ * @deprecated Kept temporarily for backwards-compat with old call sites that
+ * advanced by phase TYPE alone (e.g. NEXT_PHASE['novel'] === 'reputation').
+ * That assumption is broken now that 'novel' appears at two positions and
+ * advances differently from each. Use advanceFromPosition() instead.
+ *
+ * For the sole legacy lookup that still uses this (the dashboard's
+ * advancePhase before the cycle-advance helper landed), it returns the
+ * first-occurrence successor. Callers should migrate.
+ */
 export const NEXT_PHASE = {
   'pre-cycle':     'novel',
   'novel':         'reputation',
@@ -28,6 +156,7 @@ export const NEXT_PHASE = {
   'rumour-scandal':'epistolary',
   'epistolary':    'upkeep',
   'upkeep':        'novel',
+  'ended':         'ended',
 };
 
 const PHASE_I18N = {
@@ -37,6 +166,7 @@ const PHASE_I18N = {
   'rumour-scandal': 'GOODSOCIETY.cyclePhase.rumourScandal',
   'epistolary':     'GOODSOCIETY.cyclePhase.epistolary',
   'upkeep':         'GOODSOCIETY.cyclePhase.upkeep',
+  'ended':          'GOODSOCIETY.cyclePhase.ended',
 };
 
 /** Strip HTML tags from an HTMLField value to get plain text. */

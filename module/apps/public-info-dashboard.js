@@ -14,7 +14,8 @@
  *   - All bulk actions post a system ChatMessage so non-GM players see changes.
  */
 
-import { buildDashboardContext, NEXT_PHASE } from '../helpers/dashboard-context.js';
+import { buildDashboardContext } from '../helpers/dashboard-context.js';
+import { advanceCyclePhase } from '../helpers/cycle-advance.js';
 import { openRevealControl } from './reveal-control.js';
 import { openBulkPermissionsPanel } from './bulk-permissions-panel.js';
 
@@ -189,33 +190,10 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
   }
 
   static async #advancePhase(ev, target) {
-    const confirmed = window.confirm(
-      game.i18n.localize('GOODSOCIETY.dashboard.bulk.advancePhaseConfirm')
-    );
-    if (!confirmed) return;
-
-    const current = (() => {
-      try { return game.settings.get(NS, 'cyclePhase'); }
-      catch { return 'pre-cycle'; }
-    })();
-    const next = NEXT_PHASE[current] ?? 'novel';
-    const updates = [game.settings.set(NS, 'cyclePhase', next)];
-
-    // Increment cycle number when looping from upkeep back to novel.
-    if (current === 'upkeep') {
-      const cycleNum = (() => {
-        try { return game.settings.get(NS, 'cycleNumber'); }
-        catch { return 1; }
-      })();
-      updates.push(game.settings.set(NS, 'cycleNumber', cycleNum + 1));
-    }
-    await Promise.all(updates);
-
-    const nextLabel = game.i18n.localize(`GOODSOCIETY.cyclePhase.${_phaseKey(next)}`);
-    _postSystemCard(game.i18n.format(
-      'GOODSOCIETY.dashboard.bulk.advancePhasePosted',
-      { phase: nextLabel }
-    ));
+    // Delegates to the shared cycle-advance helper so position math, final-
+    // cycle skips, end-of-game state, and chat card emission all live in one
+    // place. The helper handles its own confirm dialog.
+    await advanceCyclePhase();
     _instance?.refreshAndReset?.();
   }
 
@@ -229,19 +207,6 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Convert phase id to the camelCase key used in GOODSOCIETY.cyclePhase.* */
-function _phaseKey(phaseId) {
-  const map = {
-    'pre-cycle':      'preCycle',
-    'novel':          'novel',
-    'reputation':     'reputation',
-    'rumour-scandal': 'rumourScandal',
-    'epistolary':     'epistolary',
-    'upkeep':         'upkeep',
-  };
-  return map[phaseId] ?? 'novel';
-}
 
 /** Post a system-styled chat card for GM bulk action feedback. */
 async function _postSystemCard(content) {

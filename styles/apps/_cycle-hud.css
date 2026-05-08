@@ -113,3 +113,79 @@
   background: var(--gs-brand);
   color: var(--gs-paper);
 }
+
+.gs-cycle-hud__advance-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--gs-paper);
+  color: var(--gs-brand);
+}
+
+/* ── Final cycle: counter badge + GM toggle pill ─────────────────────────── */
+
+.gs-cycle-hud__final-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  background: var(--gs-accent-3);
+  color: var(--gs-ink);
+  font-family: var(--gs-ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.gs-cycle-hud__final-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  color: var(--gs-accent-2);
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  margin-right: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  line-height: 1.2;
+}
+
+.gs-cycle-hud__final-toggle:hover {
+  border-color: var(--gs-accent-3);
+  color: var(--gs-ink);
+}
+
+.gs-cycle-hud__final-toggle-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid currentColor;
+  flex-shrink: 0;
+}
+
+.gs-cycle-hud__final-toggle--on {
+  background: var(--gs-accent-3);
+  border-color: var(--gs-accent-3);
+  color: var(--gs-ink);
+}
+
+.gs-cycle-hud__final-toggle--on .gs-cycle-hud__final-toggle-dot {
+  background: var(--gs-ink);
+  border-color: var(--gs-ink);
+}
+
+/* ── Ended state on the HUD root ─────────────────────────────────────────── */
+/* Subtle visual signal that the game is complete — slightly desaturated track. */
+
+.gs-cycle-hud--ended .gs-cycle-hud__track {
+  opacity: 0.85;
+}
