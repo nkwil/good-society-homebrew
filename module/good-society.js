@@ -46,6 +46,8 @@ const GS_COMPONENT_PARTIALS = {
     'systems/good-society-homebrew/templates/components/dock-connection-row.hbs',
   'dashboard-major-row':
     'systems/good-society-homebrew/templates/components/dashboard-major-row.hbs',
+  'evt-row':
+    'systems/good-society-homebrew/templates/components/evt-row.hbs',
 };
 
 Hooks.once('init', async function () {
@@ -179,6 +181,29 @@ Hooks.once('init', async function () {
     config: false,
     type: Object,
     default: [],
+  });
+
+  // Event Timeline (in-fiction calendar) — per docs/design/31-event-timeline.md.
+  // World-scoped settings; Foundry replicates onChange across all clients,
+  // so any open EventTimeline instance re-renders on data change.
+  game.settings.register('good-society-homebrew', 'calendarEvents', {
+    scope: 'world',
+    config: false,
+    type: Object,
+    default: [],
+    onChange: () => {
+      import('./apps/event-timeline.js').then(m => m.refreshEventTimeline()).catch(() => {});
+    },
+  });
+
+  game.settings.register('good-society-homebrew', 'currentInGameDate', {
+    scope: 'world',
+    config: false,
+    type: Object,
+    default: { year: 1815, month: 1, day: 1 },
+    onChange: () => {
+      import('./apps/event-timeline.js').then(m => m.refreshEventTimeline()).catch(() => {});
+    },
   });
 
   game.settings.register('good-society-homebrew', 'cycleNumber', {

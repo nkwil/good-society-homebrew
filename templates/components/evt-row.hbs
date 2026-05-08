@@ -1,0 +1,56 @@
+{{!-- Event Timeline row partial. Receives the event as `this`, plus explicit
+     partial params: editingId, isGM, choices. --}}
+{{#if (eq id editingId)}}
+  {{!-- Edit form (GM only — non-GM never has editingId set) --}}
+  <div class="gs-event-timeline__row gs-event-timeline__row--editing" data-event-id="{{id}}">
+    <div class="gs-event-timeline__form">
+      <div class="gs-event-timeline__form-row">
+        <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.titleLabel"}}</label>
+        <input type="text" data-evt-field="title" data-event-id="{{id}}" value="{{title}}" class="gs-event-timeline__input" />
+      </div>
+      <div class="gs-event-timeline__form-row gs-event-timeline__form-row--inline">
+        <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.dateLabel"}}</label>
+        <input type="number" data-evt-field="year"  data-event-id="{{id}}" value="{{year}}"  min="1000" max="9999" class="gs-event-timeline__num gs-event-timeline__num--year" />
+        <input type="number" data-evt-field="month" data-event-id="{{id}}" value="{{month}}" min="1" max="12" class="gs-event-timeline__num" />
+        <input type="number" data-evt-field="day"   data-event-id="{{id}}" value="{{day}}"   min="1" max="31" class="gs-event-timeline__num" />
+      </div>
+      <div class="gs-event-timeline__form-row">
+        <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.descriptionLabel"}}</label>
+        <textarea data-evt-field="description" data-event-id="{{id}}" class="gs-event-timeline__textarea" rows="3">{{description}}</textarea>
+      </div>
+      <div class="gs-event-timeline__form-row gs-event-timeline__form-row--vis">
+        <span class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.visibilityLabel"}}</span>
+        {{#each choices}}
+          <label class="gs-event-timeline__radio">
+            <input type="radio" data-evt-field="visibility" data-event-id="{{../id}}" value="{{value}}" {{#if (eq value ../visibility)}}checked{{/if}} />
+            <span>{{label}}</span>
+          </label>
+        {{/each}}
+      </div>
+      <div class="gs-event-timeline__form-actions">
+        <button type="button" class="gs-btn gs-btn--ghost"   data-action="editEventCancel">{{localize "GOODSOCIETY.eventTimeline.cancel"}}</button>
+        <button type="button" class="gs-btn gs-btn--primary" data-action="editEventSave" data-event-id="{{id}}">{{localize "GOODSOCIETY.eventTimeline.save"}}</button>
+      </div>
+    </div>
+  </div>
+{{else}}
+  {{!-- Display row --}}
+  <div class="gs-event-timeline__row {{#if isPast}}gs-event-timeline__row--past{{/if}} {{#if isToday}}gs-event-timeline__row--today{{/if}} {{#if isHidden}}gs-event-timeline__row--hidden{{/if}}" data-event-id="{{id}}">
+    <div class="gs-event-timeline__row-header">
+      <span class="gs-event-timeline__row-date">{{longDate}}</span>
+      {{#if isHidden}}
+        <span class="gs-event-timeline__row-vis-badge">{{visibilityLabel}}</span>
+      {{/if}}
+      {{#if isGM}}
+        <div class="gs-event-timeline__row-actions">
+          <button type="button" class="gs-event-timeline__icon-btn" data-action="editEventOpen" data-event-id="{{id}}" title="{{localize "GOODSOCIETY.eventTimeline.editHint"}}" aria-label="{{localize "GOODSOCIETY.eventTimeline.edit"}}">▲</button>
+          <button type="button" class="gs-event-timeline__icon-btn gs-event-timeline__icon-btn--danger" data-action="deleteEvent" data-event-id="{{id}}" title="{{localize "GOODSOCIETY.eventTimeline.deleteHint"}}" aria-label="{{localize "GOODSOCIETY.eventTimeline.delete"}}">✕</button>
+        </div>
+      {{/if}}
+    </div>
+    <div class="gs-event-timeline__row-title">{{title}}</div>
+    {{#if description}}
+      <p class="gs-event-timeline__row-description">{{description}}</p>
+    {{/if}}
+  </div>
+{{/if}}

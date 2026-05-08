@@ -1,0 +1,334 @@
+/* Event Timeline app — in-fiction calendar.
+ * House-styled (no character theme); communal surface.
+ * Per docs/design/31-event-timeline.md.
+ */
+
+.gs-event-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px;
+  font-family: var(--gs-body);
+  color: var(--gs-ink);
+  background: var(--gs-paper);
+  min-width: 0;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.gs-event-timeline__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 0.5px solid var(--gs-muted);
+}
+
+.gs-event-timeline__title {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--gs-brand);
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.gs-event-timeline__current-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.gs-event-timeline__current-label {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+}
+
+.gs-event-timeline__current-date {
+  font-family: var(--gs-display);
+  font-style: italic;
+  color: var(--gs-ink);
+}
+
+.gs-event-timeline__edit-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--gs-ui);
+  font-size: 11px;
+  color: var(--gs-accent-1);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 2px;
+}
+
+.gs-event-timeline__edit-link:hover {
+  color: var(--gs-brand);
+}
+
+.gs-event-timeline__date-editor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Empty ──────────────────────────────────────────────────────────────── */
+
+.gs-event-timeline__empty {
+  font-style: italic;
+  color: var(--gs-accent-2);
+  text-align: center;
+  margin: 24px 0;
+}
+
+/* ── Groups ─────────────────────────────────────────────────────────────── */
+
+.gs-event-timeline__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gs-event-timeline__group-eyebrow {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+  margin-top: 4px;
+}
+
+.gs-event-timeline__group-eyebrow--today {
+  color: var(--gs-accent-1);
+  font-weight: 600;
+}
+
+.gs-event-timeline__group--past {
+  opacity: 0.92;
+}
+
+.gs-event-timeline__past-toggle {
+  background: none;
+  border: 0.5px dashed var(--gs-muted);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-family: var(--gs-ui);
+  font-size: 11px;
+  color: var(--gs-accent-2);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.gs-event-timeline__past-toggle:hover {
+  border-color: var(--gs-accent-1);
+  color: var(--gs-brand);
+}
+
+/* ── Row ────────────────────────────────────────────────────────────────── */
+
+.gs-event-timeline__row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 4px;
+}
+
+.gs-event-timeline__row--past {
+  opacity: 0.6;
+  background: transparent;
+}
+
+.gs-event-timeline__row--today {
+  border-color: var(--gs-accent-1);
+  border-width: 1px;
+}
+
+.gs-event-timeline__row--hidden {
+  border-style: dashed;
+}
+
+.gs-event-timeline__row--editing {
+  background: var(--gs-paper);
+  border-color: var(--gs-brand);
+}
+
+.gs-event-timeline__row-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gs-event-timeline__row-date {
+  font-family: var(--gs-display);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--gs-accent-2);
+  letter-spacing: 0.02em;
+}
+
+.gs-event-timeline__row-vis-badge {
+  font-family: var(--gs-ui);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-accent-1);
+  border: 0.5px solid var(--gs-accent-1);
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+.gs-event-timeline__row-actions {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.gs-event-timeline__icon-btn {
+  background: none;
+  border: 0.5px solid transparent;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 11px;
+  color: var(--gs-accent-2);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.gs-event-timeline__icon-btn:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+}
+
+.gs-event-timeline__icon-btn--danger:hover {
+  border-color: var(--gs-danger);
+  color: var(--gs-danger);
+}
+
+.gs-event-timeline__row-title {
+  font-family: var(--gs-display);
+  font-size: 16px;
+  color: var(--gs-ink);
+  font-weight: 500;
+}
+
+.gs-event-timeline__row-description {
+  font-size: 13px;
+  color: var(--gs-ink);
+  margin: 4px 0 0 0;
+  line-height: 1.5;
+}
+
+/* ── Form (add + edit) ──────────────────────────────────────────────────── */
+
+.gs-event-timeline__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 4px;
+}
+
+.gs-event-timeline__form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-event-timeline__form-row--inline,
+.gs-event-timeline__form-row--vis {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.gs-event-timeline__label {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+}
+
+.gs-event-timeline__input,
+.gs-event-timeline__textarea {
+  font-family: var(--gs-body);
+  font-size: 14px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 3px;
+  color: var(--gs-ink);
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.gs-event-timeline__input:focus,
+.gs-event-timeline__textarea:focus,
+.gs-event-timeline__num:focus {
+  outline: none;
+  border-color: var(--gs-brand);
+}
+
+.gs-event-timeline__textarea {
+  resize: vertical;
+  min-height: 56px;
+  font-family: var(--gs-body);
+  line-height: 1.4;
+}
+
+.gs-event-timeline__num {
+  font-family: var(--gs-body);
+  font-size: 14px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-muted);
+  border-radius: 3px;
+  color: var(--gs-ink);
+  padding: 4px 6px;
+  width: 60px;
+  text-align: center;
+}
+
+.gs-event-timeline__num--year {
+  width: 80px;
+}
+
+.gs-event-timeline__radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.gs-event-timeline__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* ── Add row footer ─────────────────────────────────────────────────────── */
+
+.gs-event-timeline__add-row {
+  margin-top: 8px;
+  border-top: 0.5px solid var(--gs-muted);
+  padding-top: 12px;
+}
+
+.gs-event-timeline__add-btn {
+  align-self: flex-start;
+}

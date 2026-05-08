@@ -18,6 +18,7 @@ import { buildDashboardContext } from '../helpers/dashboard-context.js';
 import { advanceCyclePhase } from '../helpers/cycle-advance.js';
 import { openRevealControl } from './reveal-control.js';
 import { openBulkPermissionsPanel } from './bulk-permissions-panel.js';
+import { openEventTimeline } from './event-timeline.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 } = foundry.applications.api;
@@ -40,6 +41,7 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
       'advance-phase':    PublicInfoDashboard.#advancePhase,
       'stub-rumour':      PublicInfoDashboard.#stubRumour,
       'open-permissions': PublicInfoDashboard.#openPermissions,
+      'open-calendar':    PublicInfoDashboard.#openCalendar,
     },
   };
 
@@ -203,6 +205,10 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
 
   static #openPermissions() {
     openBulkPermissionsPanel();
+  }
+
+  static #openCalendar() {
+    openEventTimeline();
   }
 }
 
