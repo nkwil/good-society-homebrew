@@ -445,7 +445,10 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
       await postSystemCard({
         content: game.i18n.format(
           'GOODSOCIETY.reputationPhaseWizard.step4.conditionClearedCard',
-          { name: actor.name, condition: condition.name },
+          {
+            name: actor.system?.activePersona?.name || actor.name,
+            condition: condition.name,
+          },
         ),
         context: 'reputation',
       });

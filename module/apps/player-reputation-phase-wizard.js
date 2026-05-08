@@ -335,7 +335,10 @@ export class PlayerReputationPhaseWizard extends HandlebarsApplicationMixin(Appl
       await postSystemCard({
         content: game.i18n.format(
           'GOODSOCIETY.playerReputationPhaseWizard.step4.conditionClearedCard',
-          { name: actor.name, condition: condition.name },
+          {
+            name: actor.system?.activePersona?.name || actor.name,
+            condition: condition.name,
+          },
         ),
         context: 'reputation',
       });
@@ -357,7 +360,7 @@ export class PlayerReputationPhaseWizard extends HandlebarsApplicationMixin(Appl
         content: game.i18n.format(
           'GOODSOCIETY.playerReputationPhaseWizard.step5.completionCard',
           {
-            name:                 actor.name,
+            name:                 actor.system?.activePersona?.name || actor.name,
             tagsAdded:            this._tagsAdded,
             conditionsTriggered:  this._conditionsTriggered,
             conditionsCleared:    this._conditionsCleared,

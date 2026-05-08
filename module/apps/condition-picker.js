@@ -124,7 +124,7 @@ export class ConditionPicker extends HandlebarsApplicationMixin(ApplicationV2) {
     try {
       await postSystemCard({
         content: game.i18n.format('GOODSOCIETY.conditionPicker.gainedCard', {
-          name:      actor.name,
+          name:      actor.system?.activePersona?.name || actor.name,
           condition: condition.name,
         }),
         context: 'reputation',

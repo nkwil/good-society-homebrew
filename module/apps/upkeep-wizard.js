@@ -287,7 +287,9 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
         : 'GOODSOCIETY.upkeepWizard.step4.desireFirstSetCard';
       await postSystemCard({
         content: game.i18n.format(cardKey, {
-          name: this._actor.name, oldDesire, newDesire: text,
+          name: this._actor.system?.activePersona?.name || this._actor.name,
+          oldDesire,
+          newDesire: text,
         }),
         context: game.i18n.format('GOODSOCIETY.upkeepWizard.eyebrow', {
           n: _getSetting('cycleNumber', 1),
@@ -332,7 +334,7 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     try {
       await postSystemCard({
         content: game.i18n.format('GOODSOCIETY.upkeepWizard.step6.completionCard', {
-          name: actor.name,
+          name: actor.system?.activePersona?.name || actor.name,
         }),
         context: 'upkeep',
       });

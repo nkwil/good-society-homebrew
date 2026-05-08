@@ -20,6 +20,7 @@ import { openRevealControl } from './reveal-control.js';
 import { openBulkPermissionsPanel } from './bulk-permissions-panel.js';
 import { openEventTimeline } from './event-timeline.js';
 import { openRumourBoard } from './rumour-board.js';
+import { postSystemCard } from '../helpers/chat-cards.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 } = foundry.applications.api;
@@ -215,13 +216,11 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-/** Post a system-styled chat card for GM bulk action feedback. */
+/** Post a system-styled chat card for GM bulk action feedback.
+ *  Routes through postSystemCard so the cardType flag is set — without it,
+ *  the speaking-as preCreateChatMessage hook would clobber the speaker. */
 async function _postSystemCard(content) {
-  await ChatMessage.create({
-    content: `<div class="gs-chat-system"><p>${content}</p></div>`,
-    style: CONST.CHAT_MESSAGE_STYLES.OTHER,
-    speaker: { alias: game.i18n.localize('GOODSOCIETY.dashboard.systemAlias') },
-  });
+  await postSystemCard({ content, context: 'dashboard' });
 }
 
 // ── Singleton ───────────────────────────────────────────────────────────────

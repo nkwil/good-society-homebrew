@@ -161,10 +161,16 @@ async function _doConfirm(actor, field, nextState) {
       ? 'GOODSOCIETY.revealControl.postedRedacted'
       : 'GOODSOCIETY.revealControl.postedSecret';
 
-  await ChatMessage.create({
-    content: `<div class="gs-chat-system"><p>${game.i18n.format(chatKey, { name: actor.name, field: fieldLbl })}</p></div>`,
-    style:   CONST.CHAT_MESSAGE_STYLES.OTHER,
-    speaker: { alias: game.i18n.localize('GOODSOCIETY.dashboard.systemAlias') },
+  // Route through postSystemCard so the cardType flag is set — without it,
+  // the speaking-as preCreateChatMessage hook would rewrite the speaker if
+  // the GM has an active speaker selected. (CLAUDE.md §16.)
+  // Display name resolves through the active persona to keep persona-swapped
+  // characters' chat output consistent with the rest of the system.
+  const displayName = actor.system?.activePersona?.name || actor.name;
+  const { postSystemCard } = await import('../helpers/chat-cards.js');
+  await postSystemCard({
+    content: game.i18n.format(chatKey, { name: displayName, field: fieldLbl }),
+    context: 'reveal',
   });
 }
 

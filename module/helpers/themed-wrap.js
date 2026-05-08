@@ -22,3 +22,20 @@ export function themedWrap(actor, content, extraClasses = []) {
   const classList = ['gs-themed', ...extraClasses].join(' ');
   return `<div class="${classList}" data-theme="${themeId}"${styleAttr}>${content}</div>`;
 }
+
+/**
+ * Resolve the display name for an actor, preferring the active persona's
+ * name when one is set. Use this anywhere a user-facing surface refers to
+ * the actor by name — chat cards, journal entries, dock rows, hover cards
+ * — to keep persona-swapped characters consistent.
+ *
+ * Per CLAUDE.md §16: "Don't use actor.name directly in display surfaces…
+ * when the actor has personas."
+ *
+ * @param {Actor|null} actor
+ * @returns {string} display name or empty string when actor is missing
+ */
+export function displayNameOf(actor) {
+  if (!actor) return '';
+  return actor.system?.activePersona?.name || actor.name || '';
+}
