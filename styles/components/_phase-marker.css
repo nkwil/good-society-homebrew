@@ -29,6 +29,20 @@
   text-underline-offset: 2px;
 }
 
+/* The reputation marker is interactive — clicking it re-opens the Reputation
+ * Phase wizard (GM wizard or player queue). Both cycle positions (2 + 6)
+ * share data-phase="reputation". Same hover pattern as the upkeep marker.
+ */
+.gs-phase-marker[data-phase="reputation"] {
+  cursor: pointer;
+}
+
+.gs-phase-marker[data-phase="reputation"]:hover .gs-phase-marker__label {
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 2px;
+}
+
 /* ── Shared dot ──────────────────────────────────────────────────────────── */
 
 .gs-phase-marker__dot {

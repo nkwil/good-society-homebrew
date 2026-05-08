@@ -1,0 +1,304 @@
+{{!-- Player Reputation Phase Wizard — single root required by ApplicationV2 PARTS (§16 anti-pattern).
+     Per docs/design/30-player-reputation-phase-wizard.md.
+     Themed wrapper (.gs-themed) applied to the body only; header + footer stay house-styled. --}}
+<section class="gs-player-rep-wizard">
+
+  {{!-- ── Header ──────────────────────────────────────────────────────────── --}}
+  <header class="gs-player-rep-wizard__header">
+    <div class="gs-player-rep-wizard__header-top">
+      <span class="gs-player-rep-wizard__eyebrow">{{eyebrow}}</span>
+      <span class="gs-player-rep-wizard__step-of">{{stepOf}}</span>
+    </div>
+    <div class="gs-player-rep-wizard__ribbon">
+      {{#each steps}}
+        {{#unless @first}}
+          <div class="gs-player-rep-wizard__connector gs-player-rep-wizard__connector--{{state}}"></div>
+        {{/unless}}
+        <div class="gs-player-rep-wizard__marker gs-player-rep-wizard__marker--{{state}}">
+          <span class="gs-player-rep-wizard__marker-dot"></span>
+          <span class="gs-player-rep-wizard__marker-label">{{label}}</span>
+        </div>
+      {{/each}}
+    </div>
+  </header>
+
+  {{!-- ── Themed body ─────────────────────────────────────────────────────── --}}
+  <div class="gs-themed gs-player-rep-wizard__body" data-theme="{{themeId}}">
+
+    {{!-- ── Step 1: Welcome ──────────────────────────────────────────────── --}}
+    {{#if (eq step 1)}}
+      <h3 class="gs-player-rep-wizard__step-title">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.title"}}
+      </h3>
+      <p class="gs-player-rep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.prompt" name=actorName}}
+      </p>
+
+      <div class="gs-player-rep-wizard__summary-card">
+        <div class="gs-player-rep-wizard__summary-row">
+          <span class="gs-player-rep-wizard__summary-label">
+            {{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.positiveTags"}}
+          </span>
+          <span class="gs-player-rep-wizard__summary-value gs-player-rep-wizard__summary-value--positive">
+            {{welcome.tagCount.positive}}
+          </span>
+        </div>
+        <div class="gs-player-rep-wizard__summary-row">
+          <span class="gs-player-rep-wizard__summary-label">
+            {{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.negativeTags"}}
+          </span>
+          <span class="gs-player-rep-wizard__summary-value gs-player-rep-wizard__summary-value--negative">
+            {{welcome.tagCount.negative}}
+          </span>
+        </div>
+        {{#if welcome.hasConditions}}
+          <div class="gs-player-rep-wizard__summary-row gs-player-rep-wizard__summary-row--conditions">
+            <span class="gs-player-rep-wizard__summary-label">
+              {{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.activeConditions"}}
+            </span>
+            <span class="gs-player-rep-wizard__summary-value">
+              {{#each welcome.conditions}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
+            </span>
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="gs-player-rep-wizard__overview">
+        <h4 class="gs-player-rep-wizard__overview-heading">
+          {{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.overviewTitle"}}
+        </h4>
+        <ol class="gs-player-rep-wizard__overview-list">
+          <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.overview1" name=actorName}}</li>
+          <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.overview2"}}</li>
+          <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.overview3"}}</li>
+          <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step1.overview4"}}</li>
+        </ol>
+      </div>
+    {{/if}}
+
+    {{!-- ── Step 2: Criteria ──────────────────────────────────────────────── --}}
+    {{#if (eq step 2)}}
+      <h3 class="gs-player-rep-wizard__step-title">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.title"}}
+      </h3>
+      <p class="gs-player-rep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.prompt" name=actorName}}
+      </p>
+
+      <div class="gs-player-rep-wizard__criteria">
+        <div class="gs-player-rep-wizard__criteria-col gs-player-rep-wizard__criteria-col--positive">
+          <h4 class="gs-player-rep-wizard__criteria-heading">
+            {{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.positiveCriteriaHeading"}}
+          </h4>
+          <ul class="gs-player-rep-wizard__criteria-list">
+            <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.criterion.dutyVsDesire"}}</li>
+            <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.criterion.conventionDespiteHardship"}}</li>
+            {{#if criteria.familyCriterion}}
+              <li class="gs-player-rep-wizard__criterion--family">
+                {{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.criterion.familyPositive"}}:
+                {{criteria.familyCriterion}}
+              </li>
+            {{/if}}
+          </ul>
+        </div>
+        <div class="gs-player-rep-wizard__criteria-col gs-player-rep-wizard__criteria-col--negative">
+          <h4 class="gs-player-rep-wizard__criteria-heading">
+            {{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.negativeCriteriaHeading"}}
+          </h4>
+          <ul class="gs-player-rep-wizard__criteria-list">
+            <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.criterion.contravenedConvention"}}</li>
+            <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.criterion.desireVsDuty"}}</li>
+            {{#if criteria.familyCriterion}}
+              <li class="gs-player-rep-wizard__criterion--family">
+                {{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.criterion.familyNegative"}}:
+                {{criteria.familyCriterion}}
+              </li>
+            {{/if}}
+          </ul>
+        </div>
+      </div>
+
+      {{#unless criteria.hasFamily}}
+        <p class="gs-player-rep-wizard__no-family">
+          {{localize "GOODSOCIETY.playerReputationPhaseWizard.step2.noFamily"}}
+        </p>
+      {{/unless}}
+    {{/if}}
+
+    {{!-- ── Step 3: Tags ──────────────────────────────────────────────────── --}}
+    {{#if (eq step 3)}}
+      <h3 class="gs-player-rep-wizard__step-title">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.title"}}
+      </h3>
+      <p class="gs-player-rep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.prompt" name=actorName}}
+      </p>
+
+      {{#if tags.hasTags}}
+        <div class="gs-player-rep-wizard__tag-chips">
+          {{#each tags.posTags}}
+            <span class="gs-player-rep-wizard__tag-chip gs-player-rep-wizard__tag-chip--positive">
+              ▲ {{name}}
+              <button type="button"
+                      class="gs-player-rep-wizard__tag-remove"
+                      data-action="removeTag"
+                      data-tag-id="{{id}}"
+                      title="{{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.removeTagTitle"}}">×</button>
+            </span>
+          {{/each}}
+          {{#each tags.negTags}}
+            <span class="gs-player-rep-wizard__tag-chip gs-player-rep-wizard__tag-chip--negative">
+              ▼ {{name}}
+              <button type="button"
+                      class="gs-player-rep-wizard__tag-remove"
+                      data-action="removeTag"
+                      data-tag-id="{{id}}"
+                      title="{{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.removeTagTitle"}}">×</button>
+            </span>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="gs-player-rep-wizard__empty">
+          {{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.noTags"}}
+        </p>
+      {{/if}}
+
+      <div class="gs-player-rep-wizard__add-tag">
+        <h4 class="gs-player-rep-wizard__add-tag-heading">
+          {{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.addTagTitle"}}
+        </h4>
+        <div class="gs-player-rep-wizard__add-tag-row">
+          <label class="gs-player-rep-wizard__polarity-label">
+            <input type="radio" name="prpw-polarity" data-prpw-field="tagPolarity"
+                   value="positive" checked />
+            ▲ {{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.positive"}}
+          </label>
+          <label class="gs-player-rep-wizard__polarity-label">
+            <input type="radio" name="prpw-polarity" data-prpw-field="tagPolarity"
+                   value="negative" />
+            ▼ {{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.negative"}}
+          </label>
+          <input type="text"
+                 class="gs-player-rep-wizard__tag-input"
+                 data-prpw-field="tagName"
+                 placeholder="{{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.tagNamePlaceholder"}}" />
+          <button type="button"
+                  class="gs-btn gs-btn--primary gs-player-rep-wizard__add-btn"
+                  data-action="addTag">
+            {{localize "GOODSOCIETY.playerReputationPhaseWizard.step3.addBtn"}}
+          </button>
+        </div>
+      </div>
+    {{/if}}
+
+    {{!-- ── Step 4: Conditions ─────────────────────────────────────────────── --}}
+    {{#if (eq step 4)}}
+      <h3 class="gs-player-rep-wizard__step-title">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.title"}}
+      </h3>
+
+      {{#if conditions.nothingToDo}}
+        <p class="gs-player-rep-wizard__sub-status gs-player-rep-wizard__sub-status--ok">
+          ✓ {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.nothingToDo"}}
+        </p>
+      {{else}}
+
+        {{!-- Trigger section --}}
+        {{#if conditions.triggerItems.length}}
+          <h4 class="gs-player-rep-wizard__conditions-heading">
+            {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.triggerHeading"}}
+          </h4>
+          {{#each conditions.triggerItems}}
+            <div class="gs-player-rep-wizard__condition-block gs-player-rep-wizard__condition-block--{{polarity}}">
+              <p class="gs-player-rep-wizard__step-prompt">
+                {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.triggerPrompt"
+                  name=../actorName polarity=polarity}}
+                ({{tagCount}} {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.tagsLabel"}})
+              </p>
+              <div class="gs-player-rep-wizard__tag-chips gs-player-rep-wizard__tag-chips--small">
+                {{#each tags}}
+                  <span class="gs-player-rep-wizard__tag-chip gs-player-rep-wizard__tag-chip--{{../polarity}}">
+                    {{#if ../isPositive}}▲{{else}}▼{{/if}} {{name}}
+                  </span>
+                {{/each}}
+              </div>
+              <button type="button"
+                      class="gs-btn gs-btn--primary"
+                      data-action="triggerCondition"
+                      data-polarity="{{polarity}}">
+                {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.openPickerBtn"}}
+              </button>
+            </div>
+          {{/each}}
+        {{/if}}
+
+        {{!-- Clear section --}}
+        {{#if conditions.clearItems.length}}
+          <h4 class="gs-player-rep-wizard__conditions-heading">
+            {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.clearHeading"}}
+          </h4>
+          {{#each conditions.clearItems}}
+            <div class="gs-player-rep-wizard__condition-block gs-player-rep-wizard__condition-block--{{polarity}}">
+              <div class="gs-player-rep-wizard__condition-clear-row">
+                <div>
+                  <h4 class="gs-player-rep-wizard__condition-name">
+                    {{#if isPositive}}▲{{else}}▼{{/if}} {{name}}
+                  </h4>
+                  <p class="gs-player-rep-wizard__condition-count">
+                    {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.tagCount" n=tagCount}}
+                  </p>
+                </div>
+                <button type="button"
+                        class="gs-btn gs-btn--secondary"
+                        data-action="clearCondition"
+                        data-condition-id="{{id}}">
+                  {{localize "GOODSOCIETY.playerReputationPhaseWizard.step4.clearBtn"}}
+                </button>
+              </div>
+            </div>
+          {{/each}}
+        {{/if}}
+
+      {{/if}}
+    {{/if}}
+
+    {{!-- ── Step 5: Complete ───────────────────────────────────────────────── --}}
+    {{#if (eq step 5)}}
+      <h3 class="gs-player-rep-wizard__step-title">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step5.title"}}
+      </h3>
+      <p class="gs-player-rep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.step5.prompt" name=actorName}}
+      </p>
+      <ul class="gs-player-rep-wizard__summary-list">
+        <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step5.tagsAdded"
+          n=summary.tagsAdded}}</li>
+        <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step5.conditionsTriggered"
+          n=summary.conditionsTriggered}}</li>
+        <li>{{localize "GOODSOCIETY.playerReputationPhaseWizard.step5.conditionsCleared"
+          n=summary.conditionsCleared}}</li>
+      </ul>
+    {{/if}}
+
+  </div>{{!-- /.gs-themed.gs-player-rep-wizard__body --}}
+
+  {{!-- ── Footer ────────────────────────────────────────────────────────────── --}}
+  <footer class="gs-player-rep-wizard__footer">
+    <button type="button"
+            class="gs-btn gs-btn--secondary"
+            data-action="wizBack"
+            {{#if (eq step 1)}}disabled{{/if}}>
+      {{localize "GOODSOCIETY.playerReputationPhaseWizard.back"}}
+    </button>
+    <button type="button"
+            class="gs-btn gs-btn--primary"
+            data-action="wizNext">
+      {{#if isLastStep}}
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.completeBtn"}}
+      {{else}}
+        {{localize "GOODSOCIETY.playerReputationPhaseWizard.nextStepBtn"}}
+      {{/if}}
+    </button>
+  </footer>
+
+</section>

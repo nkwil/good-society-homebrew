@@ -48,6 +48,49 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
     this._step2Done        = new Set();
     this._tagsCreated      = 0;
     this._conditionsCleared = 0;
+    this._watchers         = null;
+  }
+
+  // ── Real-time sync (actor item watchers) ────────────────────────────────────
+
+  /** @override */
+  _onRender(context, options) {
+    super._onRender?.(context, options);
+    this._attachActorWatchers();
+  }
+
+  /** @override */
+  async _onClose(options) {
+    this._detachActorWatchers();
+    return super._onClose(options);
+  }
+
+  _attachActorWatchers() {
+    if (this._watchers) return;
+    const onChange = (item) => {
+      if (item.parent?.type !== 'major-character') return;
+      if (!this._isInScope(item.parent)) return;
+      if (item.type !== 'reputation-tag' && item.type !== 'reputation-condition') return;
+      this.render({ force: false });
+    };
+    this._watchers = [
+      Hooks.on('createItem', onChange),
+      Hooks.on('updateItem', onChange),
+      Hooks.on('deleteItem', onChange),
+    ];
+  }
+
+  _detachActorWatchers() {
+    if (!this._watchers) return;
+    Hooks.off('createItem', this._watchers[0]);
+    Hooks.off('updateItem', this._watchers[1]);
+    Hooks.off('deleteItem', this._watchers[2]);
+    this._watchers = null;
+  }
+
+  _isInScope(actor) {
+    if (!this._activeCharacters) return false;
+    return this._activeCharacters.has(actor.id);
   }
 
   // ── Context preparation ─────────────────────────────────────────────────────

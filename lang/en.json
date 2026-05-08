@@ -1039,6 +1039,80 @@
         "advanceNote": "Advance the cycle phase manually via the Cycle HUD when ready.",
         "completionCard": "Reputation phase complete — {tagsCreated} tag(s) created, {conditionsCleared} condition(s) cleared."
       }
+    },
+    "playerReputationPhaseWizard": {
+      "windowTitle": "Reputation Phase",
+      "eyebrow": "Cycle {n} — {name}",
+      "stepOf": "Step {step} of {total}",
+      "back": "Back",
+      "nextStepBtn": "Next →",
+      "completeBtn": "Complete",
+      "noOwnedMajors": "You have no major characters to review.",
+      "steps": {
+        "welcome":    "Overview",
+        "criteria":   "Criteria",
+        "tags":       "Tags",
+        "conditions": "Conditions",
+        "complete":   "Complete"
+      },
+      "step1": {
+        "title": "Reputation Phase",
+        "prompt": "This wizard guides you through the Reputation phase for {name}. Review the steps before you begin.",
+        "positiveTags": "Positive tags",
+        "negativeTags": "Negative tags",
+        "activeConditions": "Active conditions",
+        "overviewTitle": "This phase has four steps:",
+        "overview1": "Review the reputation criteria and how {name} acted this chapter.",
+        "overview2": "Add or remove reputation tags based on what happened.",
+        "overview3": "Trigger any new conditions if you have 3 or more tags of the same type.",
+        "overview4": "Clear conditions that no longer apply."
+      },
+      "step2": {
+        "title": "Criteria",
+        "prompt": "Did {name} meet any of these criteria this chapter? Reflect before adding tags in the next step.",
+        "positiveCriteriaHeading": "▲ Positive",
+        "negativeCriteriaHeading": "▼ Negative",
+        "criterion": {
+          "dutyVsDesire": "Chose duty over desire",
+          "conventionDespiteHardship": "Upheld social convention despite hardship",
+          "familyPositive": "Family criteria (positive)",
+          "contravenedConvention": "Openly contravened social convention",
+          "desireVsDuty": "Chose desire over duty or morality",
+          "familyNegative": "Family criteria (negative)"
+        },
+        "noFamily": "No family linked — no unique criteria."
+      },
+      "step3": {
+        "title": "Add Tags",
+        "prompt": "Add or remove reputation tags for {name} based on what happened this chapter.",
+        "noTags": "No tags yet. Add one below.",
+        "addTagTitle": "Add a new tag",
+        "positive": "Positive",
+        "negative": "Negative",
+        "tagNamePlaceholder": "Tag name, e.g. Selfless",
+        "addBtn": "+",
+        "removeTagTitle": "Remove tag"
+      },
+      "step4": {
+        "title": "Conditions",
+        "triggerHeading": "Trigger a condition",
+        "triggerPrompt": "{name} has {polarity} tags at or above the threshold.",
+        "tagsLabel": "tags",
+        "openPickerBtn": "Choose Condition…",
+        "clearHeading": "Clear a condition",
+        "clearBtn": "Clear Condition",
+        "tagCount": "{n} tags remaining",
+        "conditionClearedCard": "{name}'s reputation condition \"{condition}\" has cleared — tag count dropped below 3.",
+        "nothingToDo": "No conditions to trigger or clear. Move on."
+      },
+      "step5": {
+        "title": "Done",
+        "prompt": "You have completed the Reputation phase for {name}.",
+        "tagsAdded": "{n} tag(s) added",
+        "conditionsTriggered": "{n} condition(s) triggered",
+        "conditionsCleared": "{n} condition(s) cleared",
+        "completionCard": "{name} completed the Reputation phase. Tags added: {tagsAdded}. Conditions triggered: {conditionsTriggered}. Conditions cleared: {conditionsCleared}."
+      }
     }
   },
   "TYPES": {

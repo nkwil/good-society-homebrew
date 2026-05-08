@@ -28,6 +28,7 @@ import {
 } from '../helpers/dashboard-context.js';
 import { advanceCyclePhase, markFinalCycle } from '../helpers/cycle-advance.js';
 import { reopenUpkeepFlow } from '../hooks/upkeep.js';
+import { reopenReputationPhaseFlow } from '../hooks/reputation-phase.js';
 
 const NS = 'good-society-homebrew';
 const HUD_ID = 'gs-cycle-hud';
@@ -282,6 +283,15 @@ function _attachListeners() {
     if (upkeepMarker) {
       ev.preventDefault();
       reopenUpkeepFlow();
+      return;
+    }
+
+    // Reputation marker click — both occurrences (positions 2 + 6) carry
+    // data-phase="reputation", so one handler covers both. Anyone can click.
+    const repMarker = ev.target.closest('.gs-phase-marker[data-phase="reputation"]');
+    if (repMarker) {
+      ev.preventDefault();
+      reopenReputationPhaseFlow();
       return;
     }
 
