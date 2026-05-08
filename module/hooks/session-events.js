@@ -9,10 +9,16 @@
  * Only GM clients append events. Non-GM users do not have world-setting write
  * access, so all appendSessionEvent calls are guarded by game.user.isGM.
  *
+ * This module also calls appendPendingChange (from helpers/pending-changes.js)
+ * to populate the per-actor reputation log that the Upkeep Wizard reads. That
+ * call is also GM-gated (same single-writer rationale).
+ *
  * Anti-pattern reminder (CLAUDE.md §16): events live on the world setting, NOT
  * on actor flags. Each actor's per-cycle reputation changes live on
  * actor.system.reputation.pendingChanges (populated by the same hooks here).
  */
+
+import { appendPendingChange, buildSceneLabel } from '../helpers/pending-changes.js';
 
 const NS = 'good-society-homebrew';
 const KEY = 'sessionEvents';
@@ -53,16 +59,23 @@ export function register() {
   Hooks.on('createItem', async (item) => {
     if (item.parent?.type !== 'major-character') return;
     if (item.type === 'reputation-tag') {
+      const polarity = item.system?.polarity ?? 'positive';
       await appendSessionEvent({
         type: 'tagAdded',
         actorId: item.parent.id,
         actorName: item.parent.name,
         details: {
           tagName: item.name,
-          polarity: item.system?.polarity ?? 'positive',
+          polarity,
           source: item.system?.source ?? '',
         },
       });
+      await appendPendingChange(
+        item.parent,
+        polarity === 'positive' ? 'gained-positive' : 'gained-negative',
+        item.name,
+        buildSceneLabel(),
+      );
     } else if (item.type === 'reputation-condition') {
       await appendSessionEvent({
         type: 'conditionAdded',
@@ -88,6 +101,7 @@ export function register() {
         polarity: item.system?.polarity ?? 'positive',
       },
     });
+    await appendPendingChange(item.parent, 'removed', item.name, buildSceneLabel());
   });
 
   // Monologues — fired from monologue-editor.js after posting the chat card

@@ -14,6 +14,7 @@
 
 import { MonologueEditor } from './monologue-editor.js';
 import { postSystemCard } from '../helpers/chat-cards.js';
+import { clearPendingChanges } from '../helpers/pending-changes.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
@@ -292,7 +293,7 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     // Clear acknowledged reputation changes
     if (this._reputationAcknowledged) {
       try {
-        await actor.update({ 'system.reputation.pendingChanges': [] });
+        await clearPendingChanges(actor);
       } catch (err) { console.warn('GS | pending changes clear failed:', err); }
     }
 

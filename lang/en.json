@@ -1,12 +1,30 @@
 {
   "BOILERPLATE": {
     "Ability": {
-      "Str": { "long": "Strength", "abbr": "str" },
-      "Con": { "long": "Constitution", "abbr": "con" },
-      "Dex": { "long": "Dexterity", "abbr": "dex" },
-      "Int": { "long": "Intelligence", "abbr": "int" },
-      "Wis": { "long": "Wisdom", "abbr": "wis" },
-      "Cha": { "long": "Charisma", "abbr": "cha" }
+      "Str": {
+        "long": "Strength",
+        "abbr": "str"
+      },
+      "Con": {
+        "long": "Constitution",
+        "abbr": "con"
+      },
+      "Dex": {
+        "long": "Dexterity",
+        "abbr": "dex"
+      },
+      "Int": {
+        "long": "Intelligence",
+        "abbr": "int"
+      },
+      "Wis": {
+        "long": "Wisdom",
+        "abbr": "wis"
+      },
+      "Cha": {
+        "long": "Charisma",
+        "abbr": "cha"
+      }
     },
     "SheetLabels": {
       "Actor": "Good Society Actor Sheet",
@@ -26,7 +44,6 @@
       "Inactive": "Inactive Effects"
     }
   },
-
   "GOODSOCIETY": {
     "sheets": {
       "stub": "Good Society Actor Sheet (placeholder)",
@@ -40,16 +57,13 @@
       "magicSkill": "Magic / Skill Sheet",
       "backstoryAction": "Backstory Action Sheet"
     },
-
     "tab": {
       "public": "Public",
       "private": "Private"
     },
-
     "sheet": {
       "namePlaceholder": "Character name"
     },
-
     "strip": {
       "resolve": "resolve",
       "mtTitle": "Major Token — click to toggle",
@@ -59,20 +73,17 @@
       "cycle": "cycle",
       "takeMonologue": "Take Monologue"
     },
-
     "polarity": {
       "label": "Polarity",
       "positive": "Positive (▲)",
       "negative": "Negative (▼)"
     },
-
     "tag": {
       "namePlaceholder": "Tag name (e.g. Ambitious)",
       "polarity": "Polarity",
       "description": "Description",
       "source": "Source"
     },
-
     "item": {
       "done": "Done",
       "reputationTag": {
@@ -129,7 +140,6 @@
         "noSourceConflict": "No inner conflict linked."
       }
     },
-
     "npc": {
       "eyebrow": "NPC · ambient cast",
       "namePlaceholder": "NPC name",
@@ -140,7 +150,6 @@
       "promoteTitle": "Promote to Connection?",
       "promoteConfirm": "Promote {name} to Connection? They'll gain a resolve track, impressions, and a theme. Bio, description, scene info, and personas are preserved."
     },
-
     "family": {
       "eyebrow": "Family",
       "namePlaceholder": "Family name",
@@ -173,7 +182,6 @@
       "noMembers": "No Major characters linked to this family yet.",
       "noTheme": "no theme assigned"
     },
-
     "connection": {
       "eyebrow": "Connection",
       "namePlaceholder": "Connection name",
@@ -192,16 +200,15 @@
       "personas": "Personas",
       "noPersonas": "no alternate identities"
     },
-
     "public": {
       "reputationCriteria": "Reputation Criteria",
       "noFamily": "No family assigned.",
       "criteriaEmpty": "No reputation criteria set for this family.",
       "positive": "Positive",
       "negative": "Negative",
-      "dragTagHere":     "drag tag here",
-      "addTagPositive":  "Add positive tag",
-      "addTagNegative":  "Add negative tag",
+      "dragTagHere": "drag tag here",
+      "addTagPositive": "Add positive tag",
+      "addTagNegative": "Add negative tag",
       "activeConditions": "Active Conditions",
       "noConditions": "None. Her reputation holds.",
       "innerConflict": "Inner Conflict",
@@ -210,7 +217,6 @@
       "beginConflict": "Begin a conflict",
       "completedConflicts": "Completed Conflicts"
     },
-
     "private": {
       "age": "years",
       "appearancePlaceholder": "gentle, composed…",
@@ -226,7 +232,6 @@
       "adventurerSentiment": "Adventurer Sentiment",
       "adventurerSentimentPlaceholder": "A dashing adventurer, secretly…"
     },
-
     "tooltips": {
       "reputationCriteria": {
         "body": "Family-specific judgment the world applies to all members of this house. Set on the Family sheet — read-only here.",
@@ -368,7 +373,6 @@
         "pageRef": "Rulebook · p. 103"
       }
     },
-
     "chatCard": {
       "system": {
         "label": "SYSTEM"
@@ -405,7 +409,6 @@
         "sealedIn": "sealed in"
       }
     },
-
     "speakingAs": {
       "label": "speaking as",
       "none": "myself",
@@ -413,7 +416,6 @@
       "actorAriaLabel": "Select speaking character",
       "personaAriaLabel": "Select persona"
     },
-
     "monologueEditor": {
       "title": "Inner Monologue",
       "cycleLabel": "cycle",
@@ -425,7 +427,6 @@
       "emptyWarning": "Write something before posting your monologue.",
       "pageName": "Monologue"
     },
-
     "dock": {
       "title": "My Characters",
       "majorEyebrow": "Major",
@@ -439,7 +440,6 @@
       "minimize": "Minimize dock",
       "expand": "Expand dock"
     },
-
     "major": {
       "peerage": {
         "heir": "Heir",
@@ -447,192 +447,199 @@
         "foreign": "Foreign"
       }
     },
-
     "cyclePhase": {
-      "preCycle":     "Pre-Cycle",
-      "novel":        "Novel Chapter",
-      "reputation":   "Reputation Phase",
-      "rumourScandal":"Rumour & Scandal",
-      "epistolary":   "Epistolary Phase",
-      "upkeep":       "Upkeep"
+      "preCycle": "Pre-Cycle",
+      "novel": "Novel Chapter",
+      "reputation": "Reputation Phase",
+      "rumourScandal": "Rumour & Scandal",
+      "epistolary": "Epistolary Phase",
+      "upkeep": "Upkeep",
+      "ended": "Epilogue"
     },
-
     "hoverCard": {
-      "unknownToken":      "Unknown",
-      "unlinkedToken":     "(unlinked token)",
-      "secretPersona":     "(secret persona)",
-      "connection":        "Connection",
-      "connectionRole":    "Connection · {role}",
-      "npc":               "NPC",
-      "npcRole":           "NPC · {role}",
-      "peerageHeir":       "The Heir",
+      "unknownToken": "Unknown",
+      "unlinkedToken": "(unlinked token)",
+      "secretPersona": "(secret persona)",
+      "connection": "Connection",
+      "connectionRole": "Connection · {role}",
+      "npc": "NPC",
+      "npcRole": "NPC · {role}",
+      "peerageHeir": "The Heir",
       "peerageNewArrival": "New Arrival",
-      "peerageForeign":    "Foreign Guest"
+      "peerageForeign": "Foreign Guest"
     },
-
     "revealControl": {
-      "title":                 "REVEAL CONTROL",
-      "ariaLabel":             "Reveal Control",
-      "gridField":             "FIELD",
-      "gridCurrent":           "CURRENT",
-      "gridFlipTo":            "FLIP TO",
-      "irreversibleFeel":      "(irreversible feel)",
-      "consequencePublic":     "This will reveal {name}'s {field} to all players. The reveal posts a chat card and is logged. Continue?",
-      "consequenceRedacted":   "This will replace {name}'s {field} with a redaction bar visible to all players. Continue?",
-      "consequenceSecret":     "This will hide {name}'s {field} from all players.",
-      "btnCancel":             "cancel",
-      "btnPublic":             "reveal to all ↗",
-      "btnRedacted":           "redact",
-      "btnSecret":             "make secret",
-      "postedPublic":          "GM revealed {name}'s {field} to all players.",
-      "postedRedacted":        "GM redacted {name}'s {field}.",
-      "postedSecret":          "GM made {name}'s {field} secret."
+      "title": "REVEAL CONTROL",
+      "ariaLabel": "Reveal Control",
+      "gridField": "FIELD",
+      "gridCurrent": "CURRENT",
+      "gridFlipTo": "FLIP TO",
+      "irreversibleFeel": "(irreversible feel)",
+      "consequencePublic": "This will reveal {name}'s {field} to all players. The reveal posts a chat card and is logged. Continue?",
+      "consequenceRedacted": "This will replace {name}'s {field} with a redaction bar visible to all players. Continue?",
+      "consequenceSecret": "This will hide {name}'s {field} from all players.",
+      "btnCancel": "cancel",
+      "btnPublic": "reveal to all ↗",
+      "btnRedacted": "redact",
+      "btnSecret": "make secret",
+      "postedPublic": "GM revealed {name}'s {field} to all players.",
+      "postedRedacted": "GM redacted {name}'s {field}.",
+      "postedSecret": "GM made {name}'s {field} secret."
     },
-
     "npcQuickCreate": {
-      "windowTitle":          "Drop NPC",
-      "scenePrefix":          "Scene:",
-      "nameLabel":            "Name",
-      "namePlaceholder":      "Leave blank to use role as name",
-      "roleLabel":            "Role",
-      "customRoleLabel":      "Custom role",
-      "customRolePlaceholder":"e.g. Card sharp, Dancing master",
-      "defaultRole":          "Anonymous NPC",
-      "browsePortrait":       "Browse portrait…",
-      "portraitAlt":          "NPC portrait",
-      "cancel":               "cancel",
-      "drop":                 "drop NPC ↓",
-      "created":              "NPC \"{name}\" dropped onto the scene."
+      "windowTitle": "Drop NPC",
+      "scenePrefix": "Scene:",
+      "nameLabel": "Name",
+      "namePlaceholder": "Leave blank to use role as name",
+      "roleLabel": "Role",
+      "customRoleLabel": "Custom role",
+      "customRolePlaceholder": "e.g. Card sharp, Dancing master",
+      "defaultRole": "Anonymous NPC",
+      "browsePortrait": "Browse portrait…",
+      "portraitAlt": "NPC portrait",
+      "cancel": "cancel",
+      "drop": "drop NPC ↓",
+      "created": "NPC \"{name}\" dropped onto the scene."
     },
-
     "hud": {
-      "cycleLabel":     "cycle",
-      "advancePhase":   "advance phase →",
+      "cycleLabel": "cycle",
+      "advancePhase": "advance phase →",
       "advanceConfirm": "Advance from {current} to {next}?",
-      "advancePosted":  "Cycle advanced to: {phase}.",
+      "advancePosted": "Cycle advanced to: {phase}.",
       "trackAriaLabel": "Phase progression",
-      "ariaLabel":      "Cycle {cycle} · {phase}",
+      "ariaLabel": "Cycle {cycle} · {phase}",
       "phase": {
-        "preCycle":      "pre",
-        "novel":         "novel",
-        "reputation":    "rep.",
+        "preCycle": "pre",
+        "novel": "novel",
+        "reputation": "rep.",
         "rumourScandal": "rumour",
-        "epistolary":    "epi.",
-        "upkeep":        "upk."
-      }
+        "epistolary": "epi.",
+        "upkeep": "upk.",
+        "ended": "ended"
+      },
+      "advanceConfirmWithSkip": "Advance from {current} to {next}? (Skipping {skipped} — final cycle.)",
+      "advanceConfirmWrap": "End cycle and advance from {current} to {next} (Cycle {cycle})?",
+      "advanceConfirmEnd": "Advance from {current} to {next}? This will end the game.",
+      "advancePostedSkip": "Cycle advanced to: {phase}. ({skipped} skipped — final cycle.)",
+      "advancePostedWrap": "Cycle {cycle} begins. Advanced to: {phase}.",
+      "advancePostedEnd": "The game is complete. {phase}.",
+      "gameAlreadyEnded": "The game has ended.",
+      "finalCycleBadge": "Final",
+      "finalCycleBadgeHint": "This is the final cycle. Rumour & Scandal and the second Reputation phase are skipped; the second Epistolary serves as the epilogue.",
+      "finalCycleToggle": "Final cycle",
+      "finalCycleToggleHint": "Mark this as the final cycle. Skips Rumour & Scandal and the second Reputation phase; the second Epistolary becomes the epilogue.",
+      "finalCyclePosted": "The Facilitator declares this the final cycle of the story.",
+      "finalCycleClearedPosted": "The Facilitator unmarks the final cycle. Play continues.",
+      "skippedHint": "Skipped during the final cycle."
     },
-
     "npcOrganizer": {
       "sceneControlTitle": "NPC Organizer",
-      "eyebrow":           "SCENE TOKENS",
-      "connectionsLabel":  "Connections",
-      "npcsLabel":         "NPCs",
-      "empty":             "No Connection or NPC tokens on this scene yet. Right-click empty canvas to create one.",
-      "footerHint":        "click to focus · right-click for actions",
-      "minimize":          "Minimize organizer",
-      "expand":            "Expand organizer",
+      "eyebrow": "SCENE TOKENS",
+      "connectionsLabel": "Connections",
+      "npcsLabel": "NPCs",
+      "empty": "No Connection or NPC tokens on this scene yet. Right-click empty canvas to create one.",
+      "footerHint": "click to focus · right-click for actions",
+      "minimize": "Minimize organizer",
+      "expand": "Expand organizer",
       "ctx": {
-        "openSheet":       "Open sheet",
-        "removeToken":     "Remove from scene",
-        "removeConfirm":   "Remove {name} from this scene? The actor is not deleted."
+        "openSheet": "Open sheet",
+        "removeToken": "Remove from scene",
+        "removeConfirm": "Remove {name} from this scene? The actor is not deleted."
       }
     },
-
     "dashboard": {
-      "windowTitle":        "Public Info · Facilitator Dashboard",
-      "title":              "Public Info · Facilitator Dashboard",
-      "subtitle":           "All Major characters at a glance · GM controls below · individual sheets remain authoritative.",
-      "cycleLabel":         "cycle",
-      "sceneControlTitle":  "Public Info Dashboard",
-      "systemAlias":        "Good Society",
-      "majorsEyebrow":      "Major Characters",
-      "noMajors":           "No Major characters yet. Create one in the actors sidebar.",
-      "lastUpdated":        "updated {n}s ago",
-      "desireFieldTitle":   "Desire",
-      "desireEmpty":        "(no desire written)",
-      "desireSecret":       "— secret —",
-      "desireRedacted":     "redacted",
+      "windowTitle": "Public Info · Facilitator Dashboard",
+      "title": "Public Info · Facilitator Dashboard",
+      "subtitle": "All Major characters at a glance · GM controls below · individual sheets remain authoritative.",
+      "cycleLabel": "cycle",
+      "sceneControlTitle": "Public Info Dashboard",
+      "systemAlias": "Good Society",
+      "majorsEyebrow": "Major Characters",
+      "noMajors": "No Major characters yet. Create one in the actors sidebar.",
+      "lastUpdated": "updated {n}s ago",
+      "desireFieldTitle": "Desire",
+      "desireEmpty": "(no desire written)",
+      "desireSecret": "— secret —",
+      "desireRedacted": "redacted",
       "bulk": {
-        "eyebrow":                    "GM ·",
-        "refreshResolve":             "refresh resolve",
-        "refreshResolveHint":         "Reset every Major's resolve to the default starting value.",
-        "refreshResolveConfirm":      "Reset resolve to {n} for all Major characters?",
-        "refreshResolvePosted":       "Resolve refreshed to {n} for {count} Major characters.",
-        "clearMonologues":            "clear monologues",
-        "clearMonologuesHint":        "Clear the monologue-spent flag on all Majors for a new cycle.",
-        "clearMonologuesConfirm":     "Clear monologue flags for all Major characters?",
-        "clearMonologuesPosted":      "Monologue flags cleared for {count} Major characters.",
-        "revealDesires":              "reveal desires",
-        "revealDesiresHint":          "Toggle all Major desires between public and secret.",
-        "revealDesireConfirm":        "Make all Major desires public? This is a dramatic move — the table will see them.",
-        "revealDesirePosted":         "All Major desires are now public.",
-        "hideDesireConfirm":          "Hide all Major desires? They will return to secret.",
-        "hideDesirePosted":           "All Major desires are now secret.",
-        "rumour":                     "roll rumour",
-        "rumourHint":                 "Open the Rumour & Scandal generator.",
-        "rumourStub":                 "The Rumour & Scandal generator is not yet implemented.",
-        "advancePhase":               "advance phase",
-        "advancePhaseHint":           "Advance the world cycle to the next phase.",
-        "advancePhaseConfirm":        "Advance to the next cycle phase?",
-        "advancePhasePosted":         "Cycle advanced to: {phase}.",
-        "permissionsLink":            "permissions ↗",
-        "permissionsLinkHint":        "Open the Bulk Permissions panel to set actor ownership for all users."
+        "eyebrow": "GM ·",
+        "refreshResolve": "refresh resolve",
+        "refreshResolveHint": "Reset every Major's resolve to the default starting value.",
+        "refreshResolveConfirm": "Reset resolve to {n} for all Major characters?",
+        "refreshResolvePosted": "Resolve refreshed to {n} for {count} Major characters.",
+        "clearMonologues": "clear monologues",
+        "clearMonologuesHint": "Clear the monologue-spent flag on all Majors for a new cycle.",
+        "clearMonologuesConfirm": "Clear monologue flags for all Major characters?",
+        "clearMonologuesPosted": "Monologue flags cleared for {count} Major characters.",
+        "revealDesires": "reveal desires",
+        "revealDesiresHint": "Toggle all Major desires between public and secret.",
+        "revealDesireConfirm": "Make all Major desires public? This is a dramatic move — the table will see them.",
+        "revealDesirePosted": "All Major desires are now public.",
+        "hideDesireConfirm": "Hide all Major desires? They will return to secret.",
+        "hideDesirePosted": "All Major desires are now secret.",
+        "rumour": "roll rumour",
+        "rumourHint": "Open the Rumour & Scandal generator.",
+        "rumourStub": "The Rumour & Scandal generator is not yet implemented.",
+        "advancePhase": "advance phase",
+        "advancePhaseHint": "Advance the world cycle to the next phase.",
+        "advancePhaseConfirm": "Advance to the next cycle phase?",
+        "advancePhasePosted": "Cycle advanced to: {phase}.",
+        "permissionsLink": "permissions ↗",
+        "permissionsLinkHint": "Open the Bulk Permissions panel to set actor ownership for all users."
       },
       "footer": {
-        "of":          "of",
-        "majorsActive":"majors active",
-        "offline":     "offline",
-        "allActive":   "majors present"
+        "of": "of",
+        "majorsActive": "majors active",
+        "offline": "offline",
+        "allActive": "majors present"
       }
     },
-
     "bulkPermissions": {
-      "windowTitle":       "Bulk Permissions",
-      "eyebrow":           "BULK PERMISSIONS",
-      "counts":            "{actors} actors · {users} users",
+      "windowTitle": "Bulk Permissions",
+      "eyebrow": "BULK PERMISSIONS",
+      "counts": "{actors} actors · {users} users",
       "searchPlaceholder": "search actors...",
-      "colActor":          "ACTOR",
-      "colGM":             "GM",
-      "colQuickSetHint":   "Set all actors for this user",
-      "rowQuickSetHint":   "Set all users for this actor",
-      "quickSet":          "set all",
-      "strandedHint":      "No player has owner access to this actor",
-      "noActors":          "No actors found in this world.",
+      "colActor": "ACTOR",
+      "colGM": "GM",
+      "colQuickSetHint": "Set all actors for this user",
+      "rowQuickSetHint": "Set all users for this actor",
+      "quickSet": "set all",
+      "strandedHint": "No player has owner access to this actor",
+      "noActors": "No actors found in this world.",
       "sceneControlTitle": "Bulk Permissions",
       "filter": {
-        "all":         "all types",
-        "majors":      "Majors only",
+        "all": "all types",
+        "majors": "Majors only",
         "connections": "Connections only",
-        "family":      "Family only",
-        "npcs":        "NPCs only"
+        "family": "Family only",
+        "npcs": "NPCs only"
       },
       "section": {
-        "majors":        "Majors",
-        "connections":   "Connections",
-        "family":        "Family",
-        "npcs":          "NPCs",
-        "reset":         "reset",
-        "resetHint":     "Reset this section to default permission levels",
-        "resetConfirm":  "Reset all {section} permissions to default ({level})? This overwrites any explicit grants.",
-        "empty":         "No actors match your filter."
+        "majors": "Majors",
+        "connections": "Connections",
+        "family": "Family",
+        "npcs": "NPCs",
+        "reset": "reset",
+        "resetHint": "Reset this section to default permission levels",
+        "resetConfirm": "Reset all {section} permissions to default ({level})? This overwrites any explicit grants.",
+        "empty": "No actors match your filter."
       },
       "cell": {
         "ariaLabel": "{actor}, {user}, {level}. Click to change.",
-        "changed":   "changed"
+        "changed": "changed"
       },
       "footer": {
-        "noPending":    "No changes",
-        "pendingPill":  "{n} PENDING",
-        "andMore":      "and {n} more",
-        "discard":      "discard changes",
-        "saveBtn":      "save {n} changes ↗",
+        "noPending": "No changes",
+        "pendingPill": "{n} PENDING",
+        "andMore": "and {n} more",
+        "discard": "discard changes",
+        "saveBtn": "save {n} changes ↗",
         "saveBtnEmpty": "save changes",
-        "saveConfirm":  "Apply {n} permission change(s)? Ownership will update immediately.",
-        "saveSuccess":  "Permissions updated for {n} actors.",
-        "saveError":    "Save failed. {error} Please try again."
+        "saveConfirm": "Apply {n} permission change(s)? Ownership will update immediately.",
+        "saveSuccess": "Permissions updated for {n} actors.",
+        "saveError": "Save failed. {error} Please try again."
       }
     },
-
     "settings": {
       "tooltipsEnabled": {
         "name": "Show Rule Tooltips",
@@ -669,54 +676,55 @@
       "organizerPlayerVisible": {
         "name": "NPC Organizer Visible to Players",
         "hint": "When enabled, players can open the NPC Organizer sidebar from the scene controls. By default only the GM can see it."
+      },
+      "isFinalCycle": {
+        "name": "Final cycle (skip Rumour & Scandal + 2nd Reputation)",
+        "hint": "When enabled, the cycle skips Rumour & Scandal (position 3) and the second Reputation phase (position 6); the second Epistolary becomes the epilogue. Per Good Society rulebook p.114-115. Toggleable from the Cycle HUD too."
       }
     },
-
     "personaEditor": {
-      "windowTitle":           "Persona Editor",
-      "eyebrowCreate":         "NEW PERSONA",
-      "eyebrowEdit":           "PERSONA EDITOR",
-      "namePlaceholder":       "Persona name",
-      "primaryLabel":          "PRIMARY",
-      "primaryHint":           "Toggle to make this the primary identity. One persona can be primary.",
-      "portrait":              "PORTRAIT",
-      "tokenImage":            "TOKEN IMAGE",
-      "imagePlaceholder":      "path/to/image.webp",
-      "browseHint":            "Browse images…",
-      "tokenName":             "TOKEN NAMEPLATE",
-      "tokenNamePlaceholder":  "Name under the canvas token",
-      "hoverSummary":          "HOVER SUMMARY",
+      "windowTitle": "Persona Editor",
+      "eyebrowCreate": "NEW PERSONA",
+      "eyebrowEdit": "PERSONA EDITOR",
+      "namePlaceholder": "Persona name",
+      "primaryLabel": "PRIMARY",
+      "primaryHint": "Toggle to make this the primary identity. One persona can be primary.",
+      "portrait": "PORTRAIT",
+      "tokenImage": "TOKEN IMAGE",
+      "imagePlaceholder": "path/to/image.webp",
+      "browseHint": "Browse images…",
+      "tokenName": "TOKEN NAMEPLATE",
+      "tokenNamePlaceholder": "Name under the canvas token",
+      "hoverSummary": "HOVER SUMMARY",
       "hoverSummaryPlaceholder": "What players see when hovering this persona's token…",
-      "chatColor":             "CHAT COLOR",
-      "chatColorHint":         "Overrides the character theme's brand color for chat cards posted as this persona.",
-      "visibilityOverrides":   "VISIBILITY OVERRIDES · per-identity",
-      "visDesire":             "desire",
-      "visBackstory":          "backstory",
-      "visMagic":              "magic",
-      "delete":                "delete persona",
-      "deletePrimaryHint":     "Set another persona as primary before deleting this one.",
-      "deleteConfirm":         "Delete the persona \"{name}\"? Chat history attributed to it is preserved.",
-      "cancel":                "cancel",
-      "save":                  "save"
+      "chatColor": "CHAT COLOR",
+      "chatColorHint": "Overrides the character theme's brand color for chat cards posted as this persona.",
+      "visibilityOverrides": "VISIBILITY OVERRIDES · per-identity",
+      "visDesire": "desire",
+      "visBackstory": "backstory",
+      "visMagic": "magic",
+      "delete": "delete persona",
+      "deletePrimaryHint": "Set another persona as primary before deleting this one.",
+      "deleteConfirm": "Delete the persona \"{name}\"? Chat history attributed to it is preserved.",
+      "cancel": "cancel",
+      "save": "save"
     },
-
     "personaSwitcher": {
-      "eyebrow":          "PERSONA",
-      "ariaLabel":        "Persona switcher",
-      "triggerHint":      "Click to switch persona or add a new one",
-      "themeSelectHint":  "Character theme — changes palette and typography",
-      "trueIdentity":     "true identity",
-      "trueIdentitySub":  "no persona active",
-      "active":           "ACTIVE",
-      "primary":          "primary",
-      "switchLink":       "switch",
-      "newPersona":       "new persona",
-      "swapFailed":       "Persona swap failed. See the console for details.",
-      "editHint":         "Edit this persona (rename, portrait, delete…)",
-      "oneIdentity":      "1 identity",
-      "nIdentities":      "{n} identities"
+      "eyebrow": "PERSONA",
+      "ariaLabel": "Persona switcher",
+      "triggerHint": "Click to switch persona or add a new one",
+      "themeSelectHint": "Character theme — changes palette and typography",
+      "trueIdentity": "true identity",
+      "trueIdentitySub": "no persona active",
+      "active": "ACTIVE",
+      "primary": "primary",
+      "switchLink": "switch",
+      "newPersona": "new persona",
+      "swapFailed": "Persona swap failed. See the console for details.",
+      "editHint": "Edit this persona (rename, portrait, delete…)",
+      "oneIdentity": "1 identity",
+      "nIdentities": "{n} identities"
     },
-
     "theme": {
       "rose": "Rose",
       "roger": "Roger",
@@ -730,156 +738,163 @@
       "connection-yellow": "Connection — Yellow",
       "connection-grey": "Connection — Grey",
       "npc": "NPC"
+    },
+    "upkeepWizard": {
+      "windowTitle": "Upkeep",
+      "eyebrow": "Upkeep · cycle {n} close",
+      "stepOf": "step {step} of 6",
+      "steps": {
+        "welcome": "welcome",
+        "tokens": "tokens",
+        "notes": "notes",
+        "desire": "desire",
+        "reputation": "reputation",
+        "complete": "done"
+      },
+      "back": "← back",
+      "skip": "skip",
+      "btn": {
+        "begin": "begin ↗",
+        "next": "next ↗",
+        "keep": "keep ↗",
+        "acknowledge": "acknowledge ↗",
+        "completeUpkeep": "complete upkeep ↗"
+      },
+      "step1": {
+        "title": "It is Upkeep.",
+        "prompt": "A breath between cycles. Let us tend to the close together.",
+        "resolveLabel": "Resolve",
+        "pendingLabel": "Pending reputation changes",
+        "conflictLabel": "Inner conflict",
+        "conflictBoxes": "{filled} of {total} boxes"
+      },
+      "step2": {
+        "title": "Tokens",
+        "prompt": "Resolve is restored. The cycle begins again.",
+        "resolveCardTitle": "RESOLVE",
+        "resolveCurrentLabel": "current:",
+        "resolveAfterLabel": "after refresh:",
+        "refreshBtn": "refresh resolve",
+        "alreadyAtDefault": "Already at default. Continue.",
+        "refreshed": "✓ Refreshed to {current} of {max}",
+        "monologueCardTitle": "MONOLOGUE TOKEN",
+        "monologueNotTakenText": "{name} has not yet taken their monologue this cycle. The token expires on advance.",
+        "takeMonologueBtn": "take monologue now",
+        "letExpireBtn": "let it expire",
+        "monologuePosted": "✓ Monologue posted.",
+        "monologueExpired": "○ Token expired (no monologue this cycle).",
+        "monologueAlreadyDone": "✓ Monologue already taken this cycle.",
+        "skipConfirm": "Skip this step? Resolve will not be refreshed."
+      },
+      "step3": {
+        "title": "Notes & Objectives",
+        "prompt": "Where are you, in yourself? What do you want to do next?",
+        "placeholder": "Write notes and plans for the next cycle..."
+      },
+      "step4": {
+        "title": "Desire",
+        "prompt": "Has your desire shifted? Or does it still drive you?",
+        "currentDesireLabel": "CURRENT DESIRE",
+        "noDesire": "(no desire recorded)",
+        "changeBtn": "change desire",
+        "newDesirePlaceholder": "Write your new desire...",
+        "saveDesireBtn": "save new desire",
+        "desireArchiveCard": "{name} has set aside their desire \"{oldDesire}\" and now seeks \"{newDesire}\".",
+        "desireFirstSetCard": "{name} has set their desire to \"{newDesire}\"."
+      },
+      "step5": {
+        "title": "Reputation since the last Upkeep",
+        "prompt": "A small audit of how the world has come to think of you. Acknowledge each change.",
+        "noChanges": "No reputation changes this cycle. Nothing to review.",
+        "gained": "gained",
+        "removed": "removed",
+        "summary": "{n} changes this cycle."
+      },
+      "step6": {
+        "title": "Upkeep complete.",
+        "prompt": "Until the cycle resumes.",
+        "resolveRefreshed": "✓ Resolve refreshed to {current} of {max}",
+        "resolveAlreadyDefault": "✓ Resolve already at default",
+        "resolveSkipped": "○ Resolve not refreshed",
+        "monologuePosted": "✓ Monologue posted to chat",
+        "monologueExpired": "○ Monologue token expired",
+        "monologueSkipped": "○ Monologue step skipped",
+        "notesUpdated": "✓ Notes & Objectives updated",
+        "notesSkipped": "○ Notes unchanged",
+        "desireChanged": "✓ Desire changed",
+        "desireKept": "○ Desire unchanged (\"{desire}\")",
+        "reputationAcknowledged": "✓ {n} reputation changes acknowledged",
+        "reputationNone": "○ No reputation changes this cycle",
+        "reputationSkipped": "○ Reputation changes left pending",
+        "conflictActive": "Inner conflict standing: {filled} of {total} boxes filled",
+        "completionCard": "{name} has completed Upkeep."
+      }
+    },
+    "conditionPicker": {
+      "windowTitle": "Reputation Threshold",
+      "eyebrow": "Reputation Threshold",
+      "polarityPositive": "positive",
+      "polarityNegative": "negative",
+      "thresholdPositive": "The world has begun to notice you.",
+      "thresholdNegative": "The world has begun to talk.",
+      "prompt": "Three tags this cycle. Society has formed an opinion. Choose a Reputation Condition to mark it, or dismiss to handle later.",
+      "canonical": "canonical",
+      "pickBtn": "pick ↗",
+      "laterBtn": "later",
+      "noneBtn": "no condition",
+      "sourceTagsLabel": "Source Tags",
+      "noConditions": "No conditions available. Check that a conditions compendium is loaded.",
+      "gainedCard": "{name} has gained the Reputation Condition: {condition}.",
+      "createError": "Failed to create condition — see console."
+    },
+    "upkeepRoster": {
+      "windowTitle": "Upkeep Roster",
+      "eyebrow": "Upkeep · cycle {n} close",
+      "subtitle": "Track everyone's progress before advancing.",
+      "statusDone": "✓ done",
+      "statusInProgress": "◉ in progress",
+      "statusWaiting": "○ waiting",
+      "statusOffline": "○ user offline",
+      "footerSummary": "{done} of {total} complete",
+      "advanceBtn": "advance to next cycle ↗",
+      "advanceConfirm": "{pending} player(s) haven't completed Upkeep. Advance anyway?",
+      "openWizardLink": "open wizard ↗",
+      "openWizardConfirm": "Open Upkeep wizard for {name}? Changes will be attributed to you.",
+      "noMajors": "No Major characters found.",
+      "cycleAdvanceCard": "Cycle {n} has ended. Cycle {next} begins."
+    },
+    "sessionLog": {
+      "windowTitle": "Session Log",
+      "sceneControlTitle": "End Session",
+      "eyebrow": "SESSION LOG · PREVIEW",
+      "autogenerated": "auto-generated",
+      "emptyBody": "No mechanical events this session.",
+      "editBtn": "edit before saving",
+      "previewBtn": "back to preview",
+      "cancelBtn": "cancel",
+      "saveBtn": "save log ↗",
+      "savedNotification": "Session log saved: {title}",
+      "sections": {
+        "phaseChange": "CYCLE PHASES",
+        "monologue": "MONOLOGUES",
+        "reputation": "REPUTATION",
+        "personaSwap": "PERSONA SWITCHES"
+      }
+    },
+    "cycle": {
+      "label": "Cycle"
+    },
+    "cyclePosition": {
+      "suffix": {
+        "first": "(1st)",
+        "second": "(2nd)"
+      },
+      "compactSuffix": {
+        "first": "",
+        "second": " ²"
+      }
     }
-  ,
-
-  "upkeepWizard": {
-    "windowTitle": "Upkeep",
-    "eyebrow": "Upkeep · cycle {n} close",
-    "stepOf": "step {step} of 6",
-    "steps": {
-      "welcome":    "welcome",
-      "tokens":     "tokens",
-      "notes":      "notes",
-      "desire":     "desire",
-      "reputation": "reputation",
-      "complete":   "done"
-    },
-    "back": "← back",
-    "skip": "skip",
-    "btn": {
-      "begin":          "begin ↗",
-      "next":           "next ↗",
-      "keep":           "keep ↗",
-      "acknowledge":    "acknowledge ↗",
-      "completeUpkeep": "complete upkeep ↗"
-    },
-    "step1": {
-      "title":         "It is Upkeep.",
-      "prompt":        "A breath between cycles. Let us tend to the close together.",
-      "resolveLabel":  "Resolve",
-      "pendingLabel":  "Pending reputation changes",
-      "conflictLabel": "Inner conflict",
-      "conflictBoxes": "{filled} of {total} boxes"
-    },
-    "step2": {
-      "title":                 "Tokens",
-      "prompt":                "Resolve is restored. The cycle begins again.",
-      "resolveCardTitle":      "RESOLVE",
-      "resolveCurrentLabel":   "current:",
-      "resolveAfterLabel":     "after refresh:",
-      "refreshBtn":            "refresh resolve",
-      "alreadyAtDefault":      "Already at default. Continue.",
-      "refreshed":             "✓ Refreshed to {current} of {max}",
-      "monologueCardTitle":    "MONOLOGUE TOKEN",
-      "monologueNotTakenText": "{name} has not yet taken their monologue this cycle. The token expires on advance.",
-      "takeMonologueBtn":      "take monologue now",
-      "letExpireBtn":          "let it expire",
-      "monologuePosted":       "✓ Monologue posted.",
-      "monologueExpired":      "○ Token expired (no monologue this cycle).",
-      "monologueAlreadyDone":  "✓ Monologue already taken this cycle.",
-      "skipConfirm":           "Skip this step? Resolve will not be refreshed."
-    },
-    "step3": {
-      "title":       "Notes & Objectives",
-      "prompt":      "Where are you, in yourself? What do you want to do next?",
-      "placeholder": "Write notes and plans for the next cycle..."
-    },
-    "step4": {
-      "title":                "Desire",
-      "prompt":               "Has your desire shifted? Or does it still drive you?",
-      "currentDesireLabel":   "CURRENT DESIRE",
-      "noDesire":             "(no desire recorded)",
-      "changeBtn":            "change desire",
-      "newDesirePlaceholder": "Write your new desire...",
-      "saveDesireBtn":        "save new desire",
-      "desireArchiveCard":    "{name} has set aside their desire \"{oldDesire}\" and now seeks \"{newDesire}\".",
-      "desireFirstSetCard":   "{name} has set their desire to \"{newDesire}\"."
-    },
-    "step5": {
-      "title":     "Reputation since the last Upkeep",
-      "prompt":    "A small audit of how the world has come to think of you. Acknowledge each change.",
-      "noChanges": "No reputation changes this cycle. Nothing to review.",
-      "gained":    "gained",
-      "removed":   "removed",
-      "summary":   "{n} changes this cycle."
-    },
-    "step6": {
-      "title":                  "Upkeep complete.",
-      "prompt":                 "Until the cycle resumes.",
-      "resolveRefreshed":       "✓ Resolve refreshed to {current} of {max}",
-      "resolveAlreadyDefault":  "✓ Resolve already at default",
-      "resolveSkipped":         "○ Resolve not refreshed",
-      "monologuePosted":        "✓ Monologue posted to chat",
-      "monologueExpired":       "○ Monologue token expired",
-      "monologueSkipped":       "○ Monologue step skipped",
-      "notesUpdated":           "✓ Notes & Objectives updated",
-      "notesSkipped":           "○ Notes unchanged",
-      "desireChanged":          "✓ Desire changed",
-      "desireKept":             "○ Desire unchanged (\"{desire}\")",
-      "reputationAcknowledged": "✓ {n} reputation changes acknowledged",
-      "reputationNone":         "○ No reputation changes this cycle",
-      "reputationSkipped":      "○ Reputation changes left pending",
-      "conflictActive":         "Inner conflict standing: {filled} of {total} boxes filled",
-      "completionCard":         "{name} has completed Upkeep."
-    }
   },
-
-  "conditionPicker": {
-    "windowTitle":      "Reputation Threshold",
-    "eyebrow":          "Reputation Threshold",
-    "polarityPositive": "positive",
-    "polarityNegative": "negative",
-    "thresholdPositive": "The world has begun to notice you.",
-    "thresholdNegative": "The world has begun to talk.",
-    "prompt":           "Three tags this cycle. Society has formed an opinion. Choose a Reputation Condition to mark it, or dismiss to handle later.",
-    "canonical":        "canonical",
-    "pickBtn":          "pick ↗",
-    "laterBtn":         "later",
-    "noneBtn":          "no condition",
-    "sourceTagsLabel":  "Source Tags",
-    "noConditions":     "No conditions available. Check that a conditions compendium is loaded.",
-    "gainedCard":       "{name} has gained the Reputation Condition: {condition}.",
-    "createError":      "Failed to create condition — see console."
-  },
-
-  "upkeepRoster": {
-    "windowTitle":       "Upkeep Roster",
-    "eyebrow":           "Upkeep · cycle {n} close",
-    "subtitle":          "Track everyone's progress before advancing.",
-    "statusDone":        "✓ done",
-    "statusInProgress":  "◉ in progress",
-    "statusWaiting":     "○ waiting",
-    "statusOffline":     "○ user offline",
-    "footerSummary":     "{done} of {total} complete",
-    "advanceBtn":        "advance to next cycle ↗",
-    "advanceConfirm":    "{pending} player(s) haven't completed Upkeep. Advance anyway?",
-    "openWizardLink":    "open wizard ↗",
-    "openWizardConfirm": "Open Upkeep wizard for {name}? Changes will be attributed to you.",
-    "noMajors":          "No Major characters found.",
-    "cycleAdvanceCard":  "Cycle {n} has ended. Cycle {next} begins."
-  },
-
-  "sessionLog": {
-    "windowTitle":       "Session Log",
-    "sceneControlTitle": "End Session",
-    "eyebrow":           "SESSION LOG · PREVIEW",
-    "autogenerated":     "auto-generated",
-    "emptyBody":         "No mechanical events this session.",
-    "editBtn":           "edit before saving",
-    "previewBtn":        "back to preview",
-    "cancelBtn":         "cancel",
-    "saveBtn":           "save log ↗",
-    "savedNotification": "Session log saved: {title}",
-    "sections": {
-      "phaseChange":  "CYCLE PHASES",
-      "monologue":    "MONOLOGUES",
-      "reputation":   "REPUTATION",
-      "personaSwap":  "PERSONA SWITCHES"
-    }
-  }
-  },
-
   "TYPES": {
     "Actor": {
       "character": "Character",
