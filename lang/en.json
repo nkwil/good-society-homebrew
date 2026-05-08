@@ -808,7 +808,8 @@
         "noChanges": "No reputation changes this cycle. Nothing to review.",
         "gained": "gained",
         "removed": "removed",
-        "summary": "{n} changes this cycle."
+        "summary": "{n} changes this cycle.",
+        "unnamedTag": "(unnamed tag)"
       },
       "step6": {
         "title": "Upkeep complete.",

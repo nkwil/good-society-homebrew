@@ -116,8 +116,29 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     // Step 4: next disabled if textarea is expanding (use in-step save instead)
     const step4Blocked = this._step === 4 && this._desireExpanding;
 
-    // Pending reputation changes
-    const pendingChanges = system.reputation?.pendingChanges ?? [];
+    // Pending reputation changes — resolve display name at render time.
+    // Each entry stores `value` (the tag name at append time) plus optionally
+    // `tagId` (the source item's id). Rules:
+    //   1. If the entry has a tagId AND the item still exists on the actor,
+    //      prefer the live current name. Catches the common case where the
+    //      tag was created with the placeholder name and renamed afterward.
+    //   2. Otherwise, fall back to the snapshot value.
+    //   3. If the snapshot is the literal placeholder "New reputation-tag"
+    //      (entries from before the tagId/sync work shipped, or removals of
+    //      tags that were never renamed), substitute "(unnamed)" so the
+    //      wizard reads as something useful instead of the developer string.
+    const PLACEHOLDER_TAG_NAME = 'New reputation-tag';
+    const pendingChanges = (system.reputation?.pendingChanges ?? []).map(entry => {
+      let displayValue = entry.value;
+      if (entry.tagId) {
+        const item = actor.items?.get(entry.tagId);
+        if (item?.name) displayValue = item.name;
+      }
+      if (displayValue === PLACEHOLDER_TAG_NAME) {
+        displayValue = game.i18n.localize('GOODSOCIETY.upkeepWizard.step5.unnamedTag');
+      }
+      return { ...entry, value: displayValue };
+    });
 
     // Active inner conflicts
     const conflicts = actor.items?.filter(i => i.type === 'inner-conflict' && !i.system?.completed) ?? [];
