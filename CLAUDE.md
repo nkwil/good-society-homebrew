@@ -977,7 +977,7 @@ Discord: Foundry's official Discord, `#system-development` channel.
 
 ## 14. Build phase status
 
-**Currently in:** Session B-9 complete — moving to B-10
+**Currently in:** B-10 + B-12 substantially complete — pending in-world QA + 0.1.0 tag
 
 **Done:**
 - Phase 0: fork, rename, verify load
@@ -1057,8 +1057,10 @@ Discord: Foundry's official Discord, `#system-development` channel.
   - `letterDraft` client setting registered in `good-society.js`.
   - `GOODSOCIETY.letterComposer.*` lang keys added (20 keys).
 
+- Session B-10: Release prep ✓ (substantially complete) — README rewrite + system.json cleanup (`f9f1cc3`); chat card hygiene + persona-aware names (`4d43a55`); namespaced loadTemplates + GM guards + persona initials (`842fae5`); boilerplate scaffolding deletion + theme migrateData + speaking-as log trim (`0c7e6cb`); CHANGELOG rewrite (`755f1c8`). All 15 audit items from `docs/B-10-audit-findings.md` resolved. Remaining: in-world QA pass through every player-facing feature, settings UI spot-check, then tag 0.1.0.
+
 **Next:**
-- Session B-10 — Release prep: README rewrite (install steps, module dependencies, screenshots, link to design docs); settings UI pass (every `config: true` setting has descriptive name + hint); final QA test path through every player-facing feature; tag release.
+- 0.1.0 release: in-world QA, tag, push.
 
 **Cut from scope:**
 - Compendium packs / canonical conditions / archetype inner conflicts (cut 2026-05-07; user direction). Conditions sourced from any world packs the user creates manually.
