@@ -1,7 +1,20 @@
 const { StringField, NumberField, ArrayField, SchemaField, EmbeddedDataField } = foundry.data.fields;
 import { PersonaModel } from './persona.js';
 
+const CONNECTION_THEMES = [
+  'connection-green', 'connection-purple', 'connection-blue',
+  'connection-yellow', 'connection-grey',
+];
+
 export class ConnectionDataModel extends foundry.abstract.TypeDataModel {
+  /** Defensive: ensure pre-A.5 connections without `theme` get a valid one. */
+  static migrateData(source) {
+    if (source && !CONNECTION_THEMES.includes(source.theme)) {
+      source.theme = 'connection-green';
+    }
+    return super.migrateData(source);
+  }
+
   static defineSchema() {
     return {
       bio: new SchemaField({

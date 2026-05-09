@@ -21,8 +21,6 @@ import { openActionsCheatSheet } from '../apps/actions-cheat-sheet.js';
 const TEMPLATE = 'systems/good-society-homebrew/templates/components/speaking-as.hbs';
 const LOG_PREFIX = '[good-society Speaking-As]';
 
-console.log(`${LOG_PREFIX} module loaded — version 2026-05-06-d (popover)`);
-
 let _injectInFlight = Promise.resolve();
 let _delegationAttached = false;
 let _observerAttached = false;
@@ -77,10 +75,7 @@ function _refresh(reason = 'unknown') {
 
 async function _doInject(reason) {
   const target = _findChatInput();
-  if (!target) {
-    console.log(`${LOG_PREFIX} _doInject skipped (${reason}) — no canonical chat input`);
-    return;
-  }
+  if (!target) return;
 
   const ctx = _buildContext();
   const rendered = await foundry.applications.handlebars.renderTemplate(TEMPLATE, ctx);
@@ -95,7 +90,6 @@ async function _doInject(reason) {
   // Tag the chat-input bar so the dock's MutationObserver / strip logic can
   // distinguish it from the dock-footer copy.
   target.previousElementSibling?.setAttribute('data-variant', 'chat-input');
-  console.log(`${LOG_PREFIX} injected (${reason}) before`, target);
 }
 
 /** Document-level event delegation — survives any re-render of the bar. */
@@ -123,7 +117,6 @@ function _attachDelegatedListeners() {
         popover.removeAttribute('hidden');
         pill.setAttribute('aria-expanded', 'true');
       }
-      console.log(`${LOG_PREFIX} pill toggled →`, isOpen ? 'closed' : 'open');
       return;
     }
 
@@ -134,7 +127,6 @@ function _attachDelegatedListeners() {
       ev.stopPropagation();
       const actorId = option.dataset.actorId || '';
       const personaId = option.dataset.personaId || '';
-      console.log(`${LOG_PREFIX} option chosen → actor=${actorId} persona=${personaId}`);
       await game.settings.set('good-society-homebrew', 'activeSpeakerActorId', actorId);
       await game.settings.set('good-society-homebrew', 'activeSpeakerPersonaId', personaId);
       _refresh('option click');
@@ -162,8 +154,6 @@ function _attachDelegatedListeners() {
       openBar.querySelector('.gs-speaking-as__pill')?.setAttribute('aria-expanded', 'false');
     }
   }, true);
-
-  console.log(`${LOG_PREFIX} delegated listeners attached`);
 }
 
 /** Watch for chat-input mounts/re-mounts and ensure the bar is present. */
@@ -185,7 +175,6 @@ function _attachMutationObserver() {
     _refresh('mutation-observer');
   });
   observer.observe(document.body, { childList: true, subtree: true });
-  console.log(`${LOG_PREFIX} mutation observer attached`);
 }
 
 /**
@@ -208,14 +197,11 @@ function _onPreCreateChatMessage(message, data) {
     try { return game.settings.get('good-society-homebrew', 'activeSpeakerActorId') || ''; }
     catch { return ''; }
   })();
-  if (!actorId) {
-    console.log(`${LOG_PREFIX} preCreateChatMessage — no active speaker, leaving as-is`);
-    return;
-  }
+  if (!actorId) return;
 
   const actor = game.actors?.get(actorId);
   if (!actor) {
-    console.log(`${LOG_PREFIX} preCreateChatMessage — actor ${actorId} not found`);
+    console.warn(`${LOG_PREFIX} active speaker actor ${actorId} not found — leaving message speaker as-is`);
     return;
   }
 
@@ -229,10 +215,7 @@ function _onPreCreateChatMessage(message, data) {
   // speaker via the chat-cards.js pipeline; rewriting would clobber it. Detect
   // by the presence of any cardType flag in our namespace.
   const gsCardType = data.flags?.['good-society-homebrew']?.cardType;
-  if (gsCardType) {
-    console.log(`${LOG_PREFIX} preCreateChatMessage — skipping rewrite for managed card (cardType=${gsCardType})`);
-    return;
-  }
+  if (gsCardType) return;
 
   const personaId = (() => {
     try { return game.settings.get('good-society-homebrew', 'activeSpeakerPersonaId') || ''; }
@@ -255,7 +238,6 @@ function _onPreCreateChatMessage(message, data) {
       alias,
     },
   });
-  console.log(`${LOG_PREFIX} rewrote speaker → ${alias} (actor ${actor.id})`);
 }
 
 export function register() {
@@ -268,7 +250,6 @@ export function register() {
   Hooks.on('preCreateChatMessage', _onPreCreateChatMessage);
 
   Hooks.once('ready', () => {
-    console.log(`${LOG_PREFIX} ready — wiring delegated listeners + observer`);
     _attachDelegatedListeners();
     _attachMutationObserver();
     _refresh('ready hook');

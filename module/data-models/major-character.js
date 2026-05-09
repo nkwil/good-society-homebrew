@@ -4,7 +4,24 @@ const {
 } = foundry.data.fields;
 import { PersonaModel } from './persona.js';
 
+/** Valid theme choices for Major Characters — kept in sync with the schema. */
+const MAJOR_THEMES = ['rose', 'roger', 'mags', 'avril', 'dixon', 'clayton'];
+
 export class MajorCharacterDataModel extends foundry.abstract.TypeDataModel {
+  /**
+   * Coerce legacy data shapes before validation. Pre-A.5 majors had no
+   * `theme` field. New StringField has `initial: 'clayton'` which Foundry
+   * normally applies for missing values, but defensive migration here
+   * guarantees the field exists with a valid choice for any actor written
+   * before the field was added.
+   */
+  static migrateData(source) {
+    if (source && !MAJOR_THEMES.includes(source.theme)) {
+      source.theme = 'clayton';
+    }
+    return super.migrateData(source);
+  }
+
   static defineSchema() {
     return {
       bio: new SchemaField({

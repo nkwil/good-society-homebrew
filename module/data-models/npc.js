@@ -2,6 +2,14 @@ const { StringField, ArrayField, SchemaField, EmbeddedDataField } = foundry.data
 import { PersonaModel } from './persona.js';
 
 export class NpcDataModel extends foundry.abstract.TypeDataModel {
+  /** Defensive: ensure pre-A.5 NPCs without `theme` get the only valid choice. */
+  static migrateData(source) {
+    if (source && source.theme !== 'npc') {
+      source.theme = 'npc';
+    }
+    return super.migrateData(source);
+  }
+
   static defineSchema() {
     return {
       bio: new SchemaField({
