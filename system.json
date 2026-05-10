@@ -16,6 +16,9 @@
     "minimum": 13,
     "verified": "13"
   },
+  "url": "https://github.com/nkwil/good-society-homebrew",
+  "manifest": "https://raw.githubusercontent.com/nkwil/good-society-homebrew/main/system.json",
+  "download": "https://github.com/nkwil/good-society-homebrew/archive/refs/heads/main.zip",
   "esmodules": ["module/good-society.js"],
   "documentTypes": {
     "Actor": {
