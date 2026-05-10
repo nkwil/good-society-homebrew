@@ -19,6 +19,8 @@ import { openSessionLogPreview } from '../apps/session-log-preview.js';
 import { openEventTimeline } from '../apps/event-timeline.js';
 import { openLetterComposer } from '../apps/letter-composer.js';
 import { openRumourBoard } from '../apps/rumour-board.js';
+import { openNovelReader } from '../apps/novel-reader.js';
+import { openEventCommandCenter } from '../apps/event-command-center.js';
 
 export function register() {
   Hooks.on('getSceneControlButtons', (controls) => {
@@ -98,17 +100,39 @@ export function register() {
       visible: true,
     };
 
+    // Post-MVP §13.3 — Novel Reader entry point. Visible to all.
+    const novelReaderTool = {
+      name: 'gs-novel-reader',
+      title: 'GOODSOCIETY.novel.sceneControlTitle',
+      icon: 'fa-solid fa-book-open',
+      button: true,
+      onChange: () => openNovelReader(),
+      visible: true,
+    };
+
+    // Random-event GM command center — GM-only.
+    const eventsTool = {
+      name: 'gs-events',
+      title: 'GOODSOCIETY.eventCommandCenter.sceneControlTitle',
+      icon: 'fa-solid fa-bolt',
+      button: true,
+      onChange: () => openEventCommandCenter(),
+      visible: game.user?.isGM,
+    };
+
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool, rumourTool);
+      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool, rumourTool, novelReaderTool, eventsTool);
     } else {
-      target.tools['gs-dashboard']  = dashboardTool;
-      target.tools['gs-organizer']  = organizerTool;
-      target.tools['gs-permissions'] = permissionsTool;
-      target.tools['gs-end-session'] = endSessionTool;
-      target.tools['gs-calendar']   = calendarTool;
-      target.tools['gs-letter']     = letterTool;
-      target.tools['gs-rumours']    = rumourTool;
+      target.tools['gs-dashboard']    = dashboardTool;
+      target.tools['gs-organizer']    = organizerTool;
+      target.tools['gs-permissions']  = permissionsTool;
+      target.tools['gs-end-session']  = endSessionTool;
+      target.tools['gs-calendar']     = calendarTool;
+      target.tools['gs-letter']       = letterTool;
+      target.tools['gs-rumours']      = rumourTool;
+      target.tools['gs-novel-reader'] = novelReaderTool;
+      target.tools['gs-events']       = eventsTool;
     }
   });
 }

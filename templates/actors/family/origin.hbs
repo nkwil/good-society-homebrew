@@ -9,9 +9,11 @@
     <div class="gs-family-sheet__status-value">
       <span class="gs-family-sheet__dot gs-family-sheet__dot--origin-{{system.origin}}"></span>
       <select name="system.origin" class="gs-family-sheet__select">
-        <option value="heir"        {{#if (eq system.origin "heir")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.heir"}}</option>
-        <option value="new-arrival" {{#if (eq system.origin "new-arrival")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.newArrival"}}</option>
-        <option value="foreign"     {{#if (eq system.origin "foreign")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.foreign"}}</option>
+        <option value="royalty"      {{#if (eq system.origin "royalty")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.royalty"}}</option>
+        <option value="nobility"     {{#if (eq system.origin "nobility")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.nobility"}}</option>
+        <option value="gentry"       {{#if (eq system.origin "gentry")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.gentry"}}</option>
+        <option value="commoner"     {{#if (eq system.origin "commoner")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.commoner"}}</option>
+        <option value="impoverished" {{#if (eq system.origin "impoverished")}}selected{{/if}}>{{localize "GOODSOCIETY.family.origin.impoverished"}}</option>
       </select>
     </div>
   </div>

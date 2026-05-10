@@ -9,6 +9,7 @@
 
 import { postMonologueCard } from '../helpers/chat-cards.js';
 import { themedWrap } from '../helpers/themed-wrap.js';
+import { monologueFolder, entryFlags } from '../helpers/journal-folders.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 } = foundry.applications.api;
@@ -90,8 +91,20 @@ export class MonologueEditor extends HandlebarsApplicationMixin(ApplicationV2) {
       `.trim();
       const themedHtml = themedWrap(this.actor, cardHtml, ['gs-monologue-archive-wrap']);
 
+      // Folder hierarchy + permissions per post-MVP §13.1.
+      // Default OBSERVER (was inherited NONE pre-patch — broken because the
+      // chat card already broadcasts the body, so locking the journal entry
+      // beneath that was inconsistent).
+      const folder = await monologueFolder(cycleNumber);
       const entry = await JournalEntry.create({
         name: `${this.actor.name} — Cycle ${cycleNumber} Monologue`,
+        ...(folder ? { folder: folder.id } : {}),
+        ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2 },
+        flags: entryFlags({
+          entryType: 'monologue',
+          cycleNumber,
+          speakerActorId: this.actor.id,
+        }),
         pages: [{
           name: game.i18n.localize('GOODSOCIETY.monologueEditor.pageName') || 'Monologue',
           type: 'text',

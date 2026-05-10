@@ -1,343 +1,403 @@
-/* Connection sheet — layout and chrome.
-   Cross-theme accent on impression cards: _impression-card.css.
-   Resolve pip atoms: _resolve-track.css.
-   This file owns sheet structure only. */
+/* Connection sheet — single-page dossier (post-MVP §4 visual register).
+ *
+ * Mirrors the Major dossier shell (dark desk + paper card + 220×220 cameo)
+ * but at a narrower width (760 px) with everything on a single page. The
+ * sheet root carries data-theme="<connection-theme>" so the connection's
+ * five color variants (green/purple/blue/yellow/grey) cascade across the card.
+ *
+ * Structure:
+ *   .gs-connection-sheet (root)
+ *     .window-content     — dark desk shell (scoped here)
+ *     .dossier-stage      — global; styled in _major-character.css
+ *       .dossier-book     — global
+ *         .dossier-spread.dossier-spread--single  — single-page variant
+ *           .dossier-page.dossier-page--solo      — full-width single page
+ *             .dossier-cameo (header)
+ *             .dossier-section.dossier-description
+ *             .dossier-section.dossier-impressions
+ *             .dossier-section.dossier-scene-info
+ *             .dossier-section.dossier-state
+ *
+ * The .dossier-* primitives are globally defined in _major-character.css
+ * (cameo frame, page padding, section gap, eyebrow rule, etc.). Only the
+ * desk shell + Connection-specific layout pieces live here.
+ */
 
-/* ── Sheet wrapper ───────────────────────────────────────────────────────── */
+/* ── Sheet root + Foundry button reset ───────────────────────────────────── */
+
+/* Foundry v13 applies min-height: 26px and a small min-width to every
+ * <button>. Reset for buttons inside our sheet root so dossier pips,
+ * pills, and inline action buttons can size freely. Same anti-pattern
+ * fix as the Major sheet. */
+.gs-connection-sheet button {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ── Desk shell — dark gradient backdrop on .window-content ──────────────── */
+
+.application.connection .window-content,
+.gs-connection-sheet .window-content {
+  background:
+    radial-gradient(ellipse at center top, rgba(0, 0, 0, 0.18), transparent 70%),
+    radial-gradient(ellipse at 30% 70%,    rgba(0, 0, 0, 0.10), transparent 60%),
+    var(--gs-paper);
+  padding: 24px 28px;
+  overflow: auto;
+}
+
+/* The sheet root — transparent so the desk shows. */
 .gs-connection-sheet {
+  background: transparent;
+  border: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   font-family: var(--gs-body);
   color: var(--gs-ink);
-  background: var(--gs-paper);
 }
 
-/* ── Header ──────────────────────────────────────────────────────────────── */
-.gs-connection-sheet__header {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  background: var(--gs-paper-warm);
-  border-bottom: 0.5px solid var(--gs-accent-1);
+/* ── Single-page spread variant ──────────────────────────────────────────── */
+
+/* For Connections we want ONE wide page, not the two-column .dossier-spread
+ * that Majors use. Override the grid and shrink the min-height so the page
+ * fits its content naturally. */
+.gs-connection-sheet .dossier-spread--single {
+  display: block;
+  min-height: 0;
 }
 
-/* Side panel */
-.gs-connection-sheet__side {
+/* The single-page variant — full width within the stage, same paper-warm
+ * card, same shadow stack as a normal dossier-page. */
+.gs-connection-sheet .dossier-page--solo {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  /* Inherits .dossier-page rules (padding 32×36, paper-warm bg, rounded
+   * 4px, double shadow) from _major-character.css. */
+}
+
+/* ── Linked Major row in the cameo header ────────────────────────────────── */
+
+/* Sits in the cameo's controls slot (where Majors put the persona switcher).
+ * Reuses the cameo's left-aligned position by extending dossier-cameo__controls. */
+.dossier-connection-linked-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 22px 12px;
-  border-right: 0.5px solid var(--gs-accent-1);
+  flex-wrap: wrap;
 }
 
-.gs-connection-sheet__portrait {
-  width: 70px;
-  height: 84px;
-  border-radius: 50%;
-  border: 1px solid var(--gs-brand);
-  object-fit: cover;
-}
-
-.gs-connection-sheet__portrait-fallback {
-  width: 70px;
-  height: 84px;
-  border-radius: 50%;
-  border: 1px solid var(--gs-brand);
-  background: var(--gs-paper);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--gs-display);
-  font-size: 32px;
-  color: var(--gs-brand);
-}
-
-.gs-connection-sheet__bio-chips {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--gs-brand);
-  text-align: center;
-}
-
-/* Main column */
-.gs-connection-sheet__main {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 20px 26px;
-}
-
-.gs-connection-sheet__eyebrow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 2px;
-}
-
-.gs-connection-sheet__eyebrow-left {
+.dossier-connection-linked-row__label {
   font-family: var(--gs-body);
   font-variant: small-caps;
   font-size: 11px;
-  letter-spacing: 0.18em;
-  color: var(--gs-brand);
+  letter-spacing: 0.14em;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
 }
 
-.gs-connection-sheet__eyebrow-right {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 11px;
-  color: var(--gs-brand);
-  opacity: 0.7;
-}
-
-.gs-connection-sheet__name {
-  font-family: var(--gs-display);
-  font-size: 26px;
-  color: var(--gs-ink);
+/* The "no Major assigned" placeholder is also a button — clicking it opens
+ * the picker (same target as the pencil), so the empty state has an
+ * obvious affordance. Styled as ghost text with a dotted-underline hint. */
+.dossier-connection-linked-row__none {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   background: transparent;
-  border: none;
-  padding: 0;
-  width: 100%;
-  line-height: 1.2;
+  border: 0;
+  padding: 2px 4px;
+  cursor: pointer;
+  text-decoration: underline dotted color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  text-underline-offset: 3px;
 }
-
-.gs-connection-sheet__name:focus {
-  outline: none;
-  border-bottom: 0.5px solid var(--gs-brand);
-}
-
-.gs-connection-sheet__role {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 13px;
-  color: var(--gs-brand);
-  margin: 0;
-  line-height: 1.3;
-}
-
-.gs-connection-sheet__main-rule {
-  margin: 6px 0;
-}
-
-/* Linked Major row */
-.gs-connection-sheet__linked-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.gs-connection-sheet__linked-label {
-  font-family: var(--gs-body);
-  font-size: 11px;
+.dossier-connection-linked-row__none:hover {
   color: var(--gs-ink);
-  opacity: 0.6;
 }
 
-/* Major name pill — wrapped in .gs-themed so colors resolve to the Major's theme */
-.gs-connection-sheet__linked-major {
+/* Pencil edit button next to the linked-major pill — opens the picker
+ * to assign / change / clear the link. Tiny ghost-button treatment to
+ * match the ✎ edit affordances used elsewhere on the dossier. */
+.dossier-connection-linked-row__edit {
+  background: transparent;
+  border: 0;
+  padding: 2px 4px;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 3px;
+  transition: color 120ms, background 120ms;
+}
+.dossier-connection-linked-row__edit:hover {
+  color: var(--gs-brand);
+  background: color-mix(in srgb, var(--gs-brand) 8%, transparent);
+}
+
+/* The linked Major pill — themed in the *Major's* palette via .gs-themed.
+ * Click opens the Major's sheet. */
+.dossier-connection-linked-major {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: transparent;
-  border: 0.5px solid var(--gs-brand); /* Major's brand via .gs-themed wrapper */
-  border-radius: 100px;
-  padding: 2px 8px 2px 4px;
+  gap: 6px;
+  padding: 3px 10px 3px 4px;
+  background: color-mix(in srgb, var(--gs-paper-warm) 70%, transparent);
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 999px;
   cursor: pointer;
   font-family: var(--gs-body);
   font-size: 12px;
-  color: var(--gs-brand); /* Major's brand */
+  color: var(--gs-brand);
+  transition: background 120ms;
 }
 
-.gs-connection-sheet__linked-major:hover {
-  background: rgba(0, 0, 0, 0.04);
+.dossier-connection-linked-major:hover {
+  background: color-mix(in srgb, var(--gs-brand) 12%, transparent);
 }
 
-.gs-connection-sheet__linked-portrait {
-  width: 16px;
-  height: 16px;
+.dossier-connection-linked-major__portrait {
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-.gs-connection-sheet__linked-initial {
-  width: 16px;
-  height: 16px;
+.dossier-connection-linked-major__initial {
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--gs-brand);
-  color: var(--gs-paper);
+  background: color-mix(in srgb, var(--gs-brand) 15%, transparent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
   font-family: var(--gs-display);
+  font-size: 10px;
+  color: var(--gs-brand);
 }
 
-.gs-connection-sheet__linked-none {
-  font-family: var(--gs-italic, var(--gs-body));
+.dossier-connection-linked-major__name {
   font-style: italic;
-  font-size: 12px;
+}
+
+/* ── Description section (read-only enriched + ✎ edit button) ────────────── */
+
+.dossier-description--connection .dossier-description__body {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--gs-paper) 85%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 14%, transparent);
+  border-radius: 4px;
+  /* Generous min-height so the box has presence even with just the
+   * placeholder; max-height + scroll keeps long descriptions from
+   * blowing out the page. Wrap is the default for divs but spell it
+   * out so a long unspaced string still breaks instead of overflowing. */
+  min-height: 120px;
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 13.5px;
+  line-height: 1.6;
   color: var(--gs-ink);
-  opacity: 0.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
-/* ── Description ─────────────────────────────────────────────────────────── */
-.gs-connection-sheet__description {
-  padding: 18px 22px 12px;
-  border-bottom: 0.5px solid var(--gs-accent-1);
+.dossier-description--connection .dossier-description__body p { margin: 0 0 10px 0; }
+.dossier-description--connection .dossier-description__body p:last-child { margin-bottom: 0; }
+.dossier-description--connection .dossier-description__body :is(h1, h2, h3) {
+  font-family: var(--gs-display);
+  color: var(--gs-headers);
+  margin: 8px 0 4px 0;
+}
+.dossier-description--connection .dossier-description__body ul,
+.dossier-description--connection .dossier-description__body ol {
+  margin: 4px 0 8px 20px;
+  padding: 0;
+}
+.dossier-description--connection .dossier-description__body li {
+  margin: 2px 0;
+}
+.dossier-description--connection .dossier-description__body a {
+  color: var(--gs-brand);
+  text-decoration: underline;
 }
 
-/* ── Impressions ─────────────────────────────────────────────────────────── */
-.gs-connection-sheet__impressions {
+.dossier-description__placeholder {
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+
+/* ── Section head (eyebrow + add button) ─────────────────────────────────── */
+
+.dossier-section__head {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 18px 22px;
-  border-bottom: 0.5px solid var(--gs-accent-1);
-}
-
-/* Section header + action button — shared by impressions, scene-col, state-col */
-.gs-connection-sheet__section-row {
-  display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  gap: 8px;
 }
 
-.gs-impressions-list {
+.dossier-section__add-btn {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 30%, transparent);
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 120ms, color 120ms, background 120ms;
+}
+
+.dossier-section__add-btn:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: color-mix(in srgb, var(--gs-brand) 6%, transparent);
+}
+
+/* ── Impressions list ────────────────────────────────────────────────────── */
+
+.dossier-impressions__list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* ── Scene info ──────────────────────────────────────────────────────────── */
-.gs-connection-sheet__scene {
-  padding: 18px 22px;
-  border-bottom: 0.5px solid var(--gs-accent-1);
-}
+/* The .gs-impression-card class is defined globally in
+ * styles/components/_impression-card.css — its 2.5px brand left edge
+ * picks up the wrapping major's --gs-brand via the inner .gs-themed
+ * wrapper. We don't override it here. */
 
-.gs-connection-sheet__scene-grid {
+/* ── Scene info grid ─────────────────────────────────────────────────────── */
+
+.dossier-scene-info__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 24px;
-  margin-top: 12px;
+  gap: 16px;
 }
 
-.gs-connection-sheet__scene-col {
+.dossier-scene-info__col {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
 }
 
-.gs-connection-sheet__tag-list {
+.dossier-scene-info__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.dossier-scene-info__empty {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+
+.dossier-scene-info__subtitle,
+.dossier-scene-info__hover-summary {
+  width: 100%;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  background: color-mix(in srgb, var(--gs-paper) 88%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 18%, transparent);
+  border-radius: 4px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+}
+
+.dossier-scene-info__subtitle {
+  font-style: italic;
+}
+
+.dossier-scene-info__hover-summary {
+  resize: vertical;
+  min-height: 64px;
+  line-height: 1.4;
+}
+
+.dossier-scene-info__subtitle:focus,
+.dossier-scene-info__hover-summary:focus {
+  outline: none;
+  border-color: var(--gs-brand);
+}
+
+/* ── State grid (resolve track + personas) ───────────────────────────────── */
+
+.dossier-state__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.dossier-state__col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dossier-state__resolve-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dossier-state__resolve-count {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+}
+
+/* Persona pill list */
+.dossier-state__persona-list {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-/* Public scene tags per doc: paper bg, 0.5px accent-1 border, brand text */
-.gs-scene-tag {
-  font-family: var(--gs-body);
-  font-size: 11px;
-  color: var(--gs-brand);
-  background: var(--gs-paper);
-  border: 0.5px solid var(--gs-accent-1);
-  border-radius: 100px;
-  padding: 3px 10px;
-}
-
-.gs-connection-sheet__hover-summary {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--gs-ink);
-  background: transparent;
-  border: 0.5px solid var(--gs-accent-1);
-  border-radius: 4px;
-  padding: 6px 8px;
-  resize: vertical;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.gs-connection-sheet__empty-state {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 12px;
-  color: var(--gs-ink);
-  opacity: 0.5;
-  margin: 0;
-}
-
-/* ── State block ─────────────────────────────────────────────────────────── */
-.gs-connection-sheet__state {
-  padding: 18px 22px;
-  border-top: 0.5px solid var(--gs-accent-1);
-}
-
-.gs-connection-sheet__state-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 24px;
-  margin-top: 12px;
-}
-
-.gs-connection-sheet__state-col {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.gs-connection-sheet__resolve-row {
-  display: flex;
+.dossier-persona-pill {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-}
-
-.gs-connection-sheet__resolve-count {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 12px;
-  color: var(--gs-brand);
-}
-
-.gs-connection-sheet__persona-list {
-  display: flex;
-  flex-direction: column;
   gap: 4px;
-}
-
-/* Persona pill — active has 2.5px left-edge brand accent per doc */
-.gs-connection-persona-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  padding: 3px 10px;
   background: transparent;
-  border: 0.5px solid var(--gs-accent-1);
-  border-left: 2.5px solid transparent;
-  border-radius: 4px;
-  padding: 4px 10px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-brand) 60%, transparent);
+  border-radius: 999px;
   font-family: var(--gs-body);
   font-size: 12px;
-  color: var(--gs-ink);
+  color: var(--gs-brand);
   cursor: pointer;
-  text-align: left;
+  transition: background 120ms;
 }
 
-.gs-connection-persona-pill--active {
-  border-left-color: var(--gs-brand);
+.dossier-persona-pill:hover {
+  background: color-mix(in srgb, var(--gs-brand) 8%, transparent);
 }
 
-.gs-connection-persona-pill__primary {
-  font-style: italic;
-  font-size: 10px;
-  color: var(--gs-ink);
-  opacity: 0.5;
-  margin-left: auto;
+.dossier-persona-pill--active {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border-color: var(--gs-brand);
+}
+
+.dossier-persona-pill__primary {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  margin-left: 2px;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+/* ── Responsive — collapse two-col grids on narrow widths ────────────────── */
+
+@media (max-width: 640px) {
+  .dossier-scene-info__grid,
+  .dossier-state__grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -25,7 +25,7 @@
 
 /* State variants */
 .gs-visibility-flag--secret {
-  color: var(--gs-accent-2); /* sage — quiet, not alarming */
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent); /* sage — quiet, not alarming */
 }
 
 .gs-visibility-flag--public {

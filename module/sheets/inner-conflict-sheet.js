@@ -8,6 +8,9 @@ export class InnerConflictSheet extends HandlebarsApplicationMixin(ItemSheetV2) 
     classes: ['good-society', 'sheet', 'item', 'inner-conflict'],
     position: { width: 540, height: 'auto' },
     window: { contentClasses: ['gs-item-sheet', 'gs-item-sheet--inner-conflict'] },
+    // Persist native input changes (item name + leftLabel/rightLabel inside
+    // the inner-conflict-grid partial). Without this, label edits don't save.
+    form: { submitOnChange: true, closeOnSubmit: false },
     actions: {
       toggleBox: InnerConflictSheet.#toggleBox,
       reopenConflict: InnerConflictSheet.#reopenConflict,

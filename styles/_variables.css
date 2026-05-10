@@ -1,30 +1,76 @@
-/* House CSS variables — Inkwell & Wildflower */
-/* Source of truth: docs/design/decisions.md §"House style → CSS custom property mirror" */
+/* House CSS variables — Inkwell & Wildflower
+ *
+ * Canonical color spec: `GS Build Colors (1).pdf` (Natalie's color sheet).
+ * Every theme defines the same 10 slots:
+ *   1. Surface          (--gs-paper)
+ *   2. Raised Surface   (--gs-paper-warm)
+ *   3. Text             (--gs-ink)
+ *   4. Brand            (--gs-brand)            — indicator color (resolve pips, MT badge fill, persona pill border, swatches)
+ *   5. Headers & Eyebrows (--gs-headers)        — section eyebrows, character name, prominent header text
+ *   6. Hairlines / Dividers (--gs-hairlines)    — divider lines under eyebrows, hairline borders
+ *   7. Metallic         (--gs-metallic)         — gilt accents, action pill borders/text, "earned" markers (silver on Secret)
+ *   8. Muted Accent     (--gs-muted-accent)     — subtle ui surfaces, muted ink, generic greys
+ *   9. Light/Dark Danger   (--gs-danger)        — negative reputation, scandal, destructive
+ *  10. Light/Dark Positive (--gs-positive)      — positive reputation, success
+ *
+ * Legacy aliases (--gs-accent-1/2/3) are kept for back-compat with
+ * components that haven't migrated to the semantic names yet. New code
+ * should use the semantic names (--gs-headers, --gs-hairlines, etc.).
+ */
 :root {
-  /* Palette */
-  --gs-paper:        #EFE6D2;
-  --gs-paper-warm:   #F4ECD8;
-  --gs-ink:          #3D2F26;
-  --gs-brand:        #2A3A2D;
-  --gs-accent-1:     #B85C3F;
-  --gs-accent-2:     #708060;
-  --gs-accent-3:     #C9A55C;
-  --gs-muted:        rgba(112, 128, 96, 0.3);
-  --gs-danger:       #8B2A2A;
-  --gs-positive:     #4A7A4A;
-  --gs-side-panel:   var(--gs-paper-warm); /* character themes override per-actor */
+  /* Surfaces + ink */
+  --gs-paper:          #EFE6D2;
+  --gs-paper-warm:     #F4ECD8;
+  --gs-ink:            #3D2F26;
+
+  /* Brand + semantic accents (canonical names per PDF, accessibility-tuned).
+   * Headers darkened from #B85C3F (3.65:1 — fails AA at 11.5 px eyebrow size)
+   * to #8a3e26 (~7:1, AAA). Same terracotta family, just deeper. Sage hairlines
+   * kept low-contrast intentionally — they're decorative dividers, not text. */
+  --gs-brand:          #2A3A2D;          /* forest green — indicator color */
+  --gs-headers:        #8a3e26;          /* deep terracotta — headers & eyebrows text (AAA on cream paper) */
+  --gs-hairlines:      #708060;          /* sage — dividers + hairline borders */
+  --gs-metallic:       #C9A55C;          /* gilt — action pill borders, "earned" markers */
+  --gs-muted-accent:   #D4D9CF;          /* mist — muted UI surfaces / subtle greys */
+
+  /* Legacy aliases — keep until every consumer migrates to semantic names. */
+  --gs-accent-1:       var(--gs-headers);
+  --gs-accent-2:       var(--gs-hairlines);
+  --gs-accent-3:       var(--gs-metallic);
+  --gs-muted:          rgba(112, 128, 96, 0.3);
+
+  /* Functional reputation colors (light defaults; dark themes override). */
+  --gs-danger:         #8B2A2A;
+  --gs-positive:       #4A7A4A;
+
+  /* Side panel — character themes may override; defaults to raised surface. */
+  --gs-side-panel:     var(--gs-paper-warm);
+
+  /* Functional rep-tag fills (post-MVP §6.4). Light defaults; dark themes
+   * (Avril, Pearlinda, Secret) override these to brighter variants for
+   * legibility on dark paper. Reputation tags use these directly — green is
+   * positive on every Major's dossier, red is negative on every Major's
+   * dossier — no theme accent shift. */
+  --rep-positive-bg:   rgba( 74, 122,  74, 0.08);
+  --rep-negative-bg:   rgba(139,  42,  42, 0.08);
+  --rep-empty-fg:      rgba(112, 128,  96, 0.4);
 
   /* Type stacks */
-  --gs-display:      'Lora', 'Palatino', 'Book Antiqua', Georgia, serif;
-  --gs-body:         'Crimson Text', 'Palatino', Georgia, serif;
-  --gs-italic:       'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
-  --gs-ui:           system-ui, 'Helvetica Neue', sans-serif;
+  --gs-display:        'Lora', 'Palatino', 'Book Antiqua', Georgia, serif;
+  --gs-body:           'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:         'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  --gs-ui:             system-ui, 'Helvetica Neue', sans-serif;
+  /* Post-MVP §7.1 ornament face — used in exactly one place: the dossier
+   * cameo's name initial (§4.2). Lavishly Yours is the patch's chosen face;
+   * the fallback chain degrades to script-style fonts and finally to italic
+   * display if no script face is available. */
+  --gs-ornament:       'Lavishly Yours', 'Tangerine', 'Pinyon Script', 'Snell Roundhand', cursive, var(--gs-display);
 
   /* Type scale */
-  --gs-size-window:  22px; /* module window header, character names */
-  --gs-size-section: 18px; /* section headers on boards/trackers */
-  --gs-size-label:   12px; /* small-caps labels, eyebrows */
-  --gs-size-body:    14px; /* body text */
-  --gs-size-ui:      11px; /* UI labels, pills, controls */
-  --gs-size-numeric: 16px; /* token counts, ages, numeric stats */
+  --gs-size-window:    22px; /* module window header, character names */
+  --gs-size-section:   18px; /* section headers on boards/trackers */
+  --gs-size-label:     12px; /* small-caps labels, eyebrows */
+  --gs-size-body:      14px; /* body text */
+  --gs-size-ui:        11px; /* UI labels, pills, controls */
+  --gs-size-numeric:   16px; /* token counts, ages, numeric stats */
 }

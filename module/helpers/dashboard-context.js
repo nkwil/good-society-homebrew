@@ -3,7 +3,12 @@
  *
  * No Foundry Document mutation here — read-only.
  * Called from PublicInfoDashboard._prepareContext() and from actor hooks.
+ *
+ * Per post-MVP §8.5 — profile pic resolution goes through `profilePic()`.
  */
+
+import { profilePic } from './profile-pic.js';
+import { effectiveThemeOf } from './themed-wrap.js';
 
 const NS = 'good-society-homebrew';
 
@@ -195,18 +200,30 @@ function _ownerOnline(actor) {
 function _buildRowData(actor) {
   const sys = actor.system;
 
-  // Portrait + display name: active persona first, then actor fields.
-  // Persona name overrides actor name in displays (the actor's true name is
-  // editable on the sheet via the name input, but everywhere else the
-  // active persona's name is what users should see).
-  const persona = sys.activePersona;
-  const displayName = persona?.name || actor.name;
-  const portraitUrl = persona?.portraitUrl || actor.img || '';
+  // Display name: only honor an EXPLICIT persona selection. The data-model's
+  // `activePersona` getter has a fallback chain (active → primary → first),
+  // which is correct for token IMAGE resolution (always render someone) but
+  // wrong for the displayed NAME — when the user picks "true identity" we
+  // want the actor's canonical name, not the first-persona fallback.
+  // (Same pattern as `_explicitPersona` in module/helpers/dock-context.js.)
+  const explicitPersona = sys.activePersonaId
+    ? (sys.personas ?? []).find(p => p.id === sys.activePersonaId)
+    : null;
+  const displayName = explicitPersona?.name || actor.name;
+  // §8.5 — token-based image resolution. Image still uses the fallback so
+  // every row always has something to render.
+  const portraitUrl = profilePic(actor);
   const initial = (displayName || '?')[0].toUpperCase();
 
-  // Role subtitle: localized peerage
-  const peerageLabelKey = `GOODSOCIETY.major.peerage.${sys.bio?.peerage ?? 'new-arrival'}`;
-  const role = game.i18n.localize(peerageLabelKey);
+  // Role subtitle: localized archetype (the flavor-relevant identity descriptor;
+  // peerage is social standing, shown elsewhere).
+  const archetypeKey = `GOODSOCIETY.major.archetype.${sys.bio?.archetype ?? 'new-arrival'}`;
+  const role = game.i18n.localize(archetypeKey);
+
+  // Editable subhead from system.bio.title — free-form title or quick
+  // description. Trim defensively so whitespace-only entries don't render
+  // as a visible empty line.
+  const title = (sys.bio?.title ?? '').trim();
 
   // Resolve pips — array of booleans (true = filled)
   const resolveMax = sys.tokens?.resolve?.max ?? 5;
@@ -256,10 +273,11 @@ function _buildRowData(actor) {
   return {
     id: actor.id,
     name: displayName,
-    theme: sys.theme || 'clayton',
+    theme: effectiveThemeOf(actor) || 'clayton',
     portraitUrl,
     initial,
     role,
+    title,
     resolvePips,
     resolveMax,
     resolveCurrent,

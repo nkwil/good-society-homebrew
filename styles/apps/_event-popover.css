@@ -1,0 +1,226 @@
+/* Event Popover — themed player surface (.gs-themed picks up the actor's
+ * theme). The window chrome stays house-styled; this targets the inner
+ * content. */
+
+.gs-event-popover .window-content {
+  padding: 0;
+}
+
+.gs-event-popover {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--gs-body);
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+}
+
+.gs-event-popover__header {
+  padding: 18px 22px 12px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  background: var(--gs-paper-warm);
+}
+.gs-event-popover__title {
+  margin: 4px 0 0;
+  font-family: var(--gs-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--gs-brand);
+}
+.gs-event-popover__targeting {
+  margin: 4px 0 0;
+  font-style: italic;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+}
+
+.gs-event-popover__desc {
+  padding: 14px 22px;
+  font-size: 14px;
+  line-height: 1.55;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-event-popover__section-head {
+  margin: 0 0 4px;
+  font-family: var(--gs-display);
+  font-size: 13px;
+  font-variant: small-caps;
+  letter-spacing: 0.1em;
+  color: var(--gs-brand);
+}
+.gs-event-popover__hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+
+/* ── Strategies ──────────────────────────────────────────────────────────── */
+.gs-event-popover__strategies {
+  padding: 14px 22px;
+}
+
+.gs-event-popover__strategy {
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: var(--gs-paper-warm);
+}
+.gs-event-popover__strategy--rolled {
+  background: var(--gs-paper);
+  border-color: color-mix(in srgb, var(--gs-brand) 60%, var(--gs-accent-2));
+}
+
+.gs-event-popover__strategy-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.gs-event-popover__strategy-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border-radius: 50%;
+  font-family: var(--gs-display);
+  font-size: 12px;
+}
+.gs-event-popover__strategy-label {
+  flex: 1 1 auto;
+  font-family: var(--gs-body);
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+.gs-event-popover__die {
+  flex: 0 0 auto;
+  font-family: var(--gs-display);
+  font-size: 14px;
+  color: var(--gs-brand);
+  background: var(--gs-paper-warm);
+  padding: 2px 8px;
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 4px;
+}
+
+.gs-event-popover__strategy-input {
+  width: 100%;
+  border: 0.5px solid var(--gs-accent-2);
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  font-family: var(--gs-body);
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  border-radius: 3px;
+  resize: vertical;
+}
+.gs-event-popover__strategy-input:focus {
+  outline: none;
+  border-color: var(--gs-brand);
+}
+.gs-event-popover__strategy-input[readonly] {
+  background: color-mix(in srgb, var(--gs-paper-warm) 70%, var(--gs-paper));
+  cursor: default;
+}
+
+.gs-event-popover__roll-btn {
+  margin-top: 6px;
+}
+
+/* ── Outcome panel ────────────────────────────────────────────────────────── */
+.gs-event-popover__outcome {
+  margin: 0 22px 14px;
+  padding: 14px 16px;
+  border-radius: 4px;
+  border: 0.5px solid var(--gs-accent-2);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.gs-event-popover__outcome--success {
+  background: color-mix(in srgb, var(--gs-positive) 12%, var(--gs-paper-warm));
+  border-color: var(--gs-positive);
+}
+.gs-event-popover__outcome--failure {
+  background: color-mix(in srgb, var(--gs-danger) 12%, var(--gs-paper-warm));
+  border-color: var(--gs-danger);
+}
+
+.gs-event-popover__average {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.gs-event-popover__average-label {
+  font-variant: small-caps;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+.gs-event-popover__average-value {
+  font-family: var(--gs-display);
+  font-size: 28px;
+  color: var(--gs-ink);
+}
+.gs-event-popover__threshold {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 50%, transparent);
+}
+
+.gs-event-popover__verdict {
+  flex: 1 1 auto;
+  font-family: var(--gs-display);
+  font-size: 16px;
+  font-style: italic;
+}
+.gs-event-popover__outcome--success .gs-event-popover__verdict { color: var(--gs-positive); }
+.gs-event-popover__outcome--failure .gs-event-popover__verdict { color: var(--gs-danger); }
+
+/* ── Tag picker ──────────────────────────────────────────────────────────── */
+.gs-event-popover__tags {
+  padding: 0 22px 14px;
+}
+.gs-event-popover__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.gs-event-popover__tag {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  padding: 6px 12px;
+  border-radius: 14px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.gs-event-popover__tag:hover {
+  background: var(--gs-paper);
+  border-color: var(--gs-brand);
+}
+.gs-event-popover__tag--selected {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border-color: var(--gs-brand);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.gs-event-popover__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 22px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+}

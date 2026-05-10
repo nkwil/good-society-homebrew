@@ -6,6 +6,7 @@ export class ReputationConditionSheet extends HandlebarsApplicationMixin(ItemShe
     classes: ['good-society', 'sheet', 'item', 'reputation-condition'],
     position: { width: 380, height: 'auto' },
     window: { contentClasses: ['gs-item-sheet', 'gs-item-sheet--reputation-condition'] },
+    form: { submitOnChange: true, closeOnSubmit: false },
     actions: {
       setPolarity: ReputationConditionSheet.#setPolarity,
       toggleActive: ReputationConditionSheet.#toggleActive,

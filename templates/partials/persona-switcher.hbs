@@ -1,0 +1,35 @@
+{{!--
+  Persona switcher pill — post-MVP §8.4 / patch-persona-switcher.md.
+
+  Single primitive consumed by every surface that needs a quick-switcher:
+    - Major sheet header (canonical instance, dossier cameo)
+    - Connection sheet header (when actor has personas)
+    - NPC sheet header (when actor has personas)
+    - Speaking-As bar above chat
+    - My Characters Dock footer
+
+  The popover itself is opened by `module/apps/persona-switcher-popover.js` via
+  the delegated `data-action="openPersonaSwitcher"` listener; this partial only
+  renders the closed-state pill.
+
+  Inputs:
+    actor                — the actor whose personas we're switching
+    activePersonaExplicit — true when actor.system.activePersonaId !== ''
+    displayName          — resolved per `module/helpers/profile-pic.js#profileName`
+    pillSize             — optional 'compact' | undefined; compact tightens padding
+                           for use in the dock footer / Speaking-As bar
+--}}
+<button type="button"
+        class="gs-persona-switcher__pill {{#if pillSize}}gs-persona-switcher__pill--{{pillSize}}{{/if}}"
+        data-action="openPersonaSwitcher"
+        data-actor-id="{{actor.id}}"
+        title="{{localize "GOODSOCIETY.personaSwitcher.triggerHint"}}">
+  <span class="gs-persona-switcher__label">
+    {{#if activePersonaExplicit}}
+      {{displayName}}
+    {{else}}
+      {{localize "GOODSOCIETY.personaSwitcher.trueIdentity"}}
+    {{/if}}
+  </span>
+  <span class="gs-persona-switcher__chevron" aria-hidden="true">▾</span>
+</button>

@@ -16,6 +16,9 @@
   </div>
   <div class="gs-dock__row-stack">
     <div class="gs-dock__row-name">{{name}}</div>
+    {{#if title}}
+      <div class="gs-dock__row-title"><em>{{title}}</em></div>
+    {{/if}}
     {{#if showPersonaLine}}
       <div class="gs-dock__row-persona">{{localize "GOODSOCIETY.dock.asPersona"}} {{speakerName}}</div>
     {{/if}}
@@ -30,5 +33,22 @@
             title="{{#if monologueAvailable}}{{localize 'GOODSOCIETY.dock.monologueAvailable'}}{{else}}{{localize 'GOODSOCIETY.dock.monologueSpent'}}{{/if}}"
             aria-hidden="true"></span>
     </div>
+
+    {{!-- Active conditions sub-rail — post-MVP §3.3 / §10.4. Hidden when empty.
+         Dock rows are denser than dashboard rows, so the rail caps at one line
+         with horizontal scroll instead of wrapping (per §10.4 open-question
+         resolution). --}}
+    {{#if hasConditions}}
+      <div class="gs-dock__row-conditions" aria-label="{{localize 'GOODSOCIETY.dock.conditionsRailLabel'}}">
+        {{#each positiveConditions}}
+          <span class="gs-dock__condition-pill gs-dock__condition-pill--positive"
+                data-condition-id="{{id}}" title="{{name}}">▲ {{name}}</span>
+        {{/each}}
+        {{#each negativeConditions}}
+          <span class="gs-dock__condition-pill gs-dock__condition-pill--negative"
+                data-condition-id="{{id}}" title="{{name}}">▼ {{name}}</span>
+        {{/each}}
+      </div>
+    {{/if}}
   </div>
 </div>

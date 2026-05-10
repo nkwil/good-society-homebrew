@@ -1,57 +1,59 @@
 /* Impression card — cross-theme rendering for Connection sheet impressions list.
-   Each card is wrapped in .gs-themed[data-theme="{Major's theme}"].
-   The left-edge accent uses var(--gs-brand) from the Major's theme — the ONLY
-   cross-theme property. All other colors are hardcoded to house values so the
-   Major's theme doesn't cascade into structural properties like backgrounds.
+   Each card is wrapped in .gs-themed[data-theme="{Major's theme}"] so the
+   surface reads as a small dispatch from that Major. Paper + brand + ink
+   all inherit the Major's palette. The bordered frame was removed
+   2026-05 — the themed paper is enough of a "card" without a hairline.
    Per docs/design/06-connection-sheet.md §"Cross-theme rendering inside the sheet". */
 
 .gs-impression-card {
   display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 0 12px;
-  align-items: start;
-  border-left: 2.5px solid var(--gs-brand); /* ← Major's brand color — only cross-theme value */
+  grid-template-columns: 96px 1fr;
+  gap: 0 14px;
+  align-items: center;
+  padding: 12px 14px;
   border-radius: 6px;
-  padding: 10px 14px;
-  /* hardcoded house --gs-paper-warm (#F4ECD8) — prevents Major-theme cascade from changing card bg */
-  background: #F4ECD8;
+  /* Major's theme paper, lightly mixed with the connection's surface so
+   * the card reads as "of the major" while staying integrated. */
+  background: color-mix(in srgb, var(--gs-paper-warm) 78%, transparent);
 }
 
 .gs-impression-card--placeholder {
-  border-left-color: transparent;
   grid-template-columns: 1fr;
+  background: transparent;
 }
 
-/* Major reference column (left): portrait + name in Major's brand color */
+/* Major reference column (left): bigger token + name in Major's brand color */
 .gs-impression-card__major-col {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
 }
 
+/* Portrait token — frameless, larger circle. The Major's brand color now
+ * shows through the name underneath rather than the rim of the avatar. */
 .gs-impression-card__portrait {
-  width: 24px;
-  height: 28px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  border: 1px solid var(--gs-brand); /* Major's brand */
+  border: 0;
   object-fit: cover;
   flex-shrink: 0;
 }
 
 .gs-impression-card__portrait-fallback {
-  width: 24px;
-  height: 28px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  border: 1px solid var(--gs-brand); /* Major's brand */
-  /* hardcoded house --gs-paper — prevents cascade */
-  background: #EFE6D2;
+  border: 0;
+  background: color-mix(in srgb, var(--gs-brand) 15%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--gs-display);
-  font-size: 11px;
-  color: var(--gs-brand); /* Major's brand — correct */
+  font-size: 22px;
+  color: var(--gs-brand);
   flex-shrink: 0;
 }
 
@@ -59,12 +61,15 @@
   background: transparent;
   border: none;
   padding: 0;
-  font-family: var(--gs-body);
-  font-size: 12px;
-  color: var(--gs-brand); /* Major's brand — the identifying color */
+  font-family: var(--gs-display);
+  font-size: 12.5px;
+  color: var(--gs-brand);
   cursor: pointer;
-  text-align: left;
-  line-height: 1.3;
+  text-align: center;
+  line-height: 1.25;
+}
+.gs-impression-card__major-ref:hover {
+  text-decoration: underline;
 }
 
 /* Impression text column (right) */
@@ -80,13 +85,11 @@
   font-size: 13px;
   line-height: 1.55;
   margin: 0;
-  /* hardcoded house --gs-ink — prevents theme cascade from changing text color */
-  color: #3D2F26;
+  color: var(--gs-ink);
 }
 
 .gs-impression-card__text--empty {
-  /* hardcoded house --gs-accent-2 */
-  color: #708060;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -95,8 +98,7 @@
 .gs-impression-card__edit {
   font-size: 10px;
   font-style: italic;
-  /* hardcoded house --gs-accent-2 */
-  color: #708060;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -105,6 +107,5 @@
 }
 
 .gs-impression-card__edit:hover {
-  /* hardcoded house --gs-ink */
-  color: #3D2F26;
+  color: var(--gs-brand);
 }

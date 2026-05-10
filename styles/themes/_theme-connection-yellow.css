@@ -1,22 +1,29 @@
-/* Theme: connection-yellow
- * Marigold / ochre palette — warm and distinctive.
- * Paper and type stack from the .gs-connection base (defined in _theme-clayton.css).
- * .gs-themed duplicates base variables so portable wrappers resolve without the class.
- * Source: docs/design/decisions.md §"Theme registry → connection-yellow"
+/* Theme: connection-yellow — Honey / goldenrod.
+ *
+ * Strong color identity: warm honey-cream paper, deep umber ink, rich
+ * goldenrod brand, dark-amber headers. Distinct from dixon's heraldic
+ * peach (which is rose-warm); this one is gold-warm, more "sunny" and
+ * less cinematic.
  */
-.gs-connection[data-theme='connection-yellow'] {
-  --gs-ink:      #6B4A1A;
-  --gs-brand:    #B88B33;
-  --gs-accent-1: #E8D4A0;
-}
-
+.gs-actor[data-theme='connection-yellow'],
+.gs-connection[data-theme='connection-yellow'],
 .gs-themed[data-theme='connection-yellow'] {
-  --gs-paper:      #F4F1E6;
-  --gs-paper-warm: #ECE7D6;
-  --gs-ink:        #6B4A1A;
-  --gs-brand:      #B88B33;
-  --gs-accent-1:   #E8D4A0;
-  --gs-display:    'Lora', 'Palatino', Georgia, serif;
-  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
-  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  --gs-paper:        #F5EDD2;          /* warm honey-cream */
+  --gs-paper-warm:   #EAE0BD;          /* amber-tinted */
+  --gs-side-panel:   #EAE0BD;
+  --gs-ink:          #3D2A0A;          /* deep umber */
+
+  --gs-brand:        #A88528;          /* rich goldenrod */
+  --gs-headers:      #7A5C18;          /* dark amber headers */
+  --gs-hairlines:    #BDA670;          /* muted gold hairline */
+  --gs-metallic:     #B49A60;          /* brass */
+  --gs-muted-accent: #D5C798;
+
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
 }

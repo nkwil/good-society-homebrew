@@ -14,8 +14,38 @@
  */
 
 import { themedWrap } from './themed-wrap.js';
+import { parsePronouns } from './pronouns.js';
+import { SEAL_TYPES } from '../constants.js';
 
 const T = 'systems/good-society-homebrew/templates/chat-cards';
+
+/**
+ * Resolve a localized salutation template ("Dear {name},", "Yours faithfully,").
+ * `kind` is 'greetings' or 'closings'; substitution tokens are {name} and {sender}.
+ * Used by postLetterCard to fill in greetingLine / closingLine if the caller
+ * passed only an id (the composer pre-resolves these itself).
+ */
+function _formatSalutation(kind, id, vars = {}) {
+  if (!id || id === 'none') return '';
+  const key = `GOODSOCIETY.letterComposer.${kind}.${id}.template`;
+  const tpl = game.i18n.localize(key);
+  if (!tpl || tpl === key) return '';
+  return tpl.replace('{name}', vars.name ?? '').replace('{sender}', vars.sender ?? '');
+}
+
+/** Resolve seal metadata (label/asset/accent) for a given seal id. */
+function _resolveSeal(sealId) {
+  if (!sealId) return { label: '', iconAsset: '', accent: '' };
+  const entry = SEAL_TYPES.find(s => s.id === sealId);
+  if (!entry) return { label: sealId, iconAsset: '', accent: '' };
+  const key = `GOODSOCIETY.seal.${entry.label}`;
+  const txt = game.i18n.localize(key);
+  return {
+    label:     (txt && txt !== key) ? txt : (entry.label || sealId),
+    iconAsset: entry.iconAsset || '',
+    accent:    entry.color     || '',
+  };
+}
 
 /** HH:MM timestamp for card headers. */
 function _ts() {
@@ -58,15 +88,15 @@ function _flags(cardType, actor = null, persona = null) {
 
 /**
  * Derive the pronoun possessive for the completion card subtitle.
- * Defaults to "their" — the system never assumes pronouns.
+ * Delegates to the canonical `parsePronouns()` helper so this helper and
+ * the sheet-level pronoun rendering stay in sync (same parser, same
+ * fallback behavior). The system never assumes pronouns: empty input or
+ * unrecognized formats return "their".
  * @param {string} [pronouns='']
- * @returns {'their'|'his'|'her'}
+ * @returns {'their'|'his'|'her'|string}
  */
 function _possessive(pronouns = '') {
-  const p = pronouns.toLowerCase();
-  if (p.includes('she') || p.includes('her')) return 'her';
-  if (p.includes('he') || p.includes('him')) return 'his';
-  return 'their';
+  return parsePronouns(pronouns).possessive;
 }
 
 // ── 1. System card ─────────────────────────────────────────────────────────
@@ -269,12 +299,35 @@ export async function postLetterCard({
 }) {
   const resolvedPersona = _persona(actor, persona);
   const cycleNum = cycleNumber ?? _cycle();
+  const speakerName = resolvedPersona?.name || actor.name;
+
+  // Fill in any salutation/seal-label fields the caller didn't pre-resolve.
+  // The composer pre-resolves these via _buildLetterPayload; external callers
+  // (e.g. future automated letters) can pass only ids and we'll resolve here.
+  const enrichedLetter = { ...letter };
+  if (enrichedLetter.greetingLine == null) {
+    enrichedLetter.greetingLine = _formatSalutation('greetings', enrichedLetter.greeting, {
+      name: enrichedLetter.to ?? '',
+    });
+  }
+  if (enrichedLetter.closingLine == null) {
+    enrichedLetter.closingLine = _formatSalutation('closings', enrichedLetter.closing, {
+      sender: speakerName,
+    });
+  }
+  if (enrichedLetter.sealLabel == null || enrichedLetter.sealIconAsset == null) {
+    const sealMeta = _resolveSeal(enrichedLetter.seal);
+    enrichedLetter.sealLabel     ??= sealMeta.label;
+    enrichedLetter.sealIconAsset ??= sealMeta.iconAsset;
+    enrichedLetter.sealAccent    ??= sealMeta.accent;
+  }
+
   const inner = await foundry.applications.handlebars.renderTemplate(`${T}/letter.hbs`, {
     actor,
     persona: resolvedPersona,
-    letter,
+    letter: enrichedLetter,
     cycleNumber: cycleNum,
-    speakerName: resolvedPersona?.name || actor.name,
+    speakerName,
   });
   const html = themedWrap(actor, inner, ['gs-chat-card', 'gs-letter-card']);
   const whisperTargets = whisper
@@ -293,6 +346,11 @@ export async function postLetterCard({
         speakerPersonaId: resolvedPersona?.id ?? null,
         senderActorId: actor.id,
         senderTheme: actor.system.theme ?? 'npc',
+        // Post-MVP §11.2 — seal type carries meaning. The letter-seals hook
+        // dispatches behavior (invitation hook / burn-after-reading) based
+        // on this flag.
+        letterSealId: letter?.seal ?? '',
+        recipientName: letter?.to ?? '',
       },
     },
   });

@@ -25,13 +25,13 @@
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 /* Muted italic — secondary text, hints, placeholder lines */
 .gs-muted {
   font-style: italic;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 /* Form rows — shared layout used across sheet sections */

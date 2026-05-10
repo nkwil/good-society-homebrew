@@ -1,28 +1,41 @@
 {{!-- Letter card — themed to the sender. Used in chat log and composer preview.
      Outer .gs-themed.gs-letter-card wrapper added by postLetterCard helper.
      For the full compositor preview, the composer renders this template directly.
-     Per docs/design/05-epistolary-ui.md §"Letter card spec". --}}
+
+     Layout (post-MVP polish):
+       - Meta strip is now epistolary · cycle N (left only; no from/to).
+       - Subject sits centered, in the sender's brand color.
+       - Greeting line ("Dear Avril,") starts the letter proper.
+       - Body is the player's prose.
+       - Closing ("Yours faithfully,") + signature (sender's name) sit
+         flush-right under the body.
+       - Seal disc + label live in the footer; theme designation cut.
+
+     Per docs/design/05-epistolary-ui.md §"Letter card spec" + 2026-05 polish. --}}
 <div class="gs-letter-card__header">
   <span class="gs-letter-card__meta-left">
     {{localize "GOODSOCIETY.chatCard.letter.epistolary"}}{{#if cycleNumber}} · {{localize "GOODSOCIETY.chatCard.letter.cycle"}} {{cycleNumber}}{{/if}}
   </span>
-  <span class="gs-letter-card__meta-right">
-    {{localize "GOODSOCIETY.chatCard.letter.from"}} {{speakerName}}{{#if letter.to}} · {{localize "GOODSOCIETY.chatCard.letter.to"}} {{letter.to}}{{/if}}{{#if letter.seal}} · {{localize "GOODSOCIETY.chatCard.letter.sealed"}}{{/if}}
-  </span>
 </div>
-<hr class="gs-chat-card__rule gs-letter-card__rule">
 {{#if letter.subject}}
   <p class="gs-letter-card__subject">{{letter.subject}}</p>
 {{/if}}
+{{#if letter.greetingLine}}
+  <p class="gs-letter-card__greeting">{{letter.greetingLine}}</p>
+{{/if}}
 <div class="gs-letter-card__body">{{letter.body}}</div>
-<hr class="gs-chat-card__rule gs-letter-card__rule">
-<div class="gs-letter-card__footer">
-  <span class="gs-letter-card__theme-label">
-    {{localize "GOODSOCIETY.chatCard.letter.themeLabel"}} · {{actor.system.theme}}
-  </span>
-  {{#if letter.seal}}
-    <span class="gs-letter-card__seal">
-      {{localize "GOODSOCIETY.chatCard.letter.sealedIn"}} {{letter.seal}}
+{{#if letter.closingLine}}
+  <p class="gs-letter-card__closing">{{letter.closingLine}}</p>
+{{/if}}
+<p class="gs-letter-card__signature">{{speakerName}}</p>
+{{#if letter.seal}}
+  <div class="gs-letter-card__footer">
+    {{!-- The disc indicator pulls its imagery from the seal's iconAsset via
+         the CSS custom property `--gs-seal-asset`; falls back to a brand-
+         tinted gradient when the asset is missing (handled in CSS). --}}
+    <span class="gs-letter-card__seal"
+          style="{{#if letter.sealIconAsset}}--gs-seal-asset: url('{{letter.sealIconAsset}}');{{/if}}{{#if letter.sealAccent}} --gs-seal-accent: {{letter.sealAccent}};{{/if}}">
+      {{#if letter.sealLabel}}{{letter.sealLabel}}{{else}}{{localize "GOODSOCIETY.chatCard.letter.sealedIn"}} {{letter.seal}}{{/if}}
     </span>
-  {{/if}}
-</div>
+  </div>
+{{/if}}

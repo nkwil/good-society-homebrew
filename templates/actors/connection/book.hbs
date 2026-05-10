@@ -1,0 +1,326 @@
+{{!--
+  Connection sheet — single-page dossier (post-MVP §4 visual register).
+
+  Mirrors the Major Character dossier: dark desk shell, paper-warm card,
+  220×220 cameo top-left appliqué, sections flowing vertically below.
+  Single page (not a two-page spread) since Connections are simpler than
+  Majors. Width 760 px, height auto.
+
+  Sections (top to bottom):
+    1. Cameo header — token + bio chips + name + role + linked Major
+    2. Description (read-only enriched HTML; ✎ button opens DialogV2 editor)
+    3. Impressions (cross-theme cards keyed by majorTheme)
+    4. Scene info (public tags + hover summary)
+    5. State (resolve track + personas)
+
+  Theme: the sheet root carries data-theme="<connection-theme>" so the
+  cascade picks the right palette. Impression cards are themed BY THE
+  MAJOR they belong to via inner .gs-themed wrappers — that's a deliberate
+  cross-theme rendering pattern from docs/design/06-connection-sheet.md.
+
+  Action handlers preserved verbatim: pickToken, openMajor, addImpression,
+  editImpression, removeImpression, addPublicTag, toggleResolvePip,
+  switchPersona, addPersona, editDescription.
+--}}
+<section class="dossier-stage" data-actor-id="{{actor.id}}">
+
+  <span class="dossier-marginalia dossier-marginalia--tl" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--tr" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--bl" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--br" aria-hidden="true"></span>
+
+  <div class="dossier-book">
+    <article class="dossier-spread dossier-spread--single is-active" data-spread="character">
+
+      <div class="dossier-page dossier-page--solo">
+
+        {{!-- Cameo header — token + bio chips + name + role + linked Major --}}
+        <header class="dossier-cameo">
+          <button type="button"
+                  class="dossier-cameo__frame"
+                  data-action="pickToken"
+                  title="{{localize "GOODSOCIETY.cameo.pickTokenTitle"}}">
+            {{#if portraitUrl}}
+              <img class="dossier-cameo__img" src="{{portraitUrl}}" alt="{{displayName}}" />
+            {{else}}
+              <span class="dossier-cameo__initial">{{portraitInitial}}</span>
+            {{/if}}
+          </button>
+
+          <div class="dossier-cameo__body">
+            {{!-- Name with Lavishly Yours-faced ornament initial. Same
+                 pattern as Major dossier — when a persona is active the
+                 input is read-only (rename via persona editor). --}}
+            <h1 class="dossier-cameo__name">
+              <span class="dossier-cameo__name-initial" aria-hidden="true">{{firstLetter displayName}}</span>
+              <input class="dossier-cameo__name-input"
+                     type="text"
+                     value="{{slice displayName 1}}"
+                     data-name-initial="{{firstLetter displayName}}"
+                     data-name-target="full"
+                     {{#if hasActivePersona}}readonly title="To rename the actor, clear the persona selection first."{{/if}}
+                     placeholder="{{localize 'GOODSOCIETY.connection.namePlaceholder'}}" />
+              {{#unless hasActivePersona}}
+                <input type="hidden"
+                       name="name"
+                       data-name-full
+                       value="{{displayName}}" />
+              {{/unless}}
+            </h1>
+
+            {{!-- Subhead — system.bio.title. Reads as a quiet honorific
+                 directly below the name. Mirrors the Major dossier. --}}
+            <input class="dossier-cameo__subhead"
+                   type="text"
+                   name="system.bio.title"
+                   value="{{system.bio.title}}"
+                   placeholder="{{localize 'GOODSOCIETY.cameo.titlePlaceholder'}}" />
+
+            {{!-- Pronouns — footnote line under the subhead. Real <select>
+                 (not a <datalist>) so all options stay available after a
+                 selection. Mirrors the Major dossier. --}}
+            <p class="dossier-cameo__pronouns-line">
+              <select class="dossier-cameo__pronouns-select"
+                      name="system.bio.pronouns"
+                      title="{{localize 'GOODSOCIETY.dossier.pronounsHint'}}">
+                <option value=""           {{#if (eq system.bio.pronouns "")}}selected{{/if}}>{{localize "GOODSOCIETY.dossier.pronounsPlaceholder"}}</option>
+                <option value="she/her"    {{#if (eq system.bio.pronouns "she/her")}}selected{{/if}}>she/her</option>
+                <option value="he/him"     {{#if (eq system.bio.pronouns "he/him")}}selected{{/if}}>he/him</option>
+                <option value="they/them"  {{#if (eq system.bio.pronouns "they/them")}}selected{{/if}}>they/them</option>
+                <option value="she/they"   {{#if (eq system.bio.pronouns "she/they")}}selected{{/if}}>she/they</option>
+                <option value="he/they"    {{#if (eq system.bio.pronouns "he/they")}}selected{{/if}}>he/they</option>
+                <option value="xe/xem"     {{#if (eq system.bio.pronouns "xe/xem")}}selected{{/if}}>xe/xem</option>
+                <option value="ze/zir"     {{#if (eq system.bio.pronouns "ze/zir")}}selected{{/if}}>ze/zir</option>
+              </select>
+            </p>
+
+            {{!-- Bio line — Connection's "role/relationship" replaces the
+                 Major's "[N] years of age | Archetype" line. Free-form
+                 italic input that blends inline with surrounding text. --}}
+            <p class="dossier-cameo__bio-line">
+              <input type="text"
+                     class="dossier-cameo__bio-line-input"
+                     name="system.bio.relationshipLabel"
+                     value="{{system.bio.relationshipLabel}}"
+                     placeholder="{{localize 'GOODSOCIETY.connection.rolePlaceholder'}}"
+                     aria-label="{{localize 'GOODSOCIETY.connection.roleLabel'}}" />
+            </p>
+
+            {{!-- Persona switcher pill + theme ✎ button — same plumbing as the
+                 Major dossier. The persona-switcher partial renders a click
+                 target whose popover lists personas and offers an "+ add"
+                 entry. The ✎ button only appears when no persona is active
+                 (persona themes are edited via the persona editor). --}}
+            <div class="dossier-cameo__controls">
+              {{> persona-switcher actor=actor displayName=displayName activePersonaExplicit=activePersonaExplicit}}
+              {{#unless hasActivePersona}}
+                <button type="button"
+                        class="dossier-cameo__edit-identity-btn"
+                        data-action="editTrueIdentityTheme"
+                        title="Edit theme"
+                        aria-label="Edit theme">
+                  <span aria-hidden="true">✎</span>
+                </button>
+              {{/unless}}
+            </div>
+
+            {{!-- Linked Major pill — sits below the persona/theme controls
+                 since it's a relationship anchor, not an identity control.
+                 The pill itself opens the Major's sheet when linked; the ✎
+                 pencil opens a DialogV2 picker that lets the user assign,
+                 change, or clear the link. --}}
+            <div class="dossier-connection-linked-row">
+              <span class="dossier-connection-linked-row__label">{{localize "GOODSOCIETY.connection.linkedTo"}}</span>
+              {{#if linkedMajor}}
+                <button class="dossier-connection-linked-major gs-themed"
+                        data-theme="{{linkedMajorTheme}}"
+                        type="button"
+                        data-action="openMajor"
+                        data-actor-id="{{linkedMajor.id}}">
+                  {{#if linkedMajor.system.bio.portraitUrl}}
+                    <img class="dossier-connection-linked-major__portrait"
+                         src="{{linkedMajor.system.bio.portraitUrl}}"
+                         alt="{{linkedMajor.name}}" />
+                  {{else}}
+                    <span class="dossier-connection-linked-major__initial">{{linkedMajorInitial}}</span>
+                  {{/if}}
+                  <span class="dossier-connection-linked-major__name">{{linkedMajor.name}}</span>
+                </button>
+              {{else}}
+                <button class="dossier-connection-linked-row__none"
+                        type="button"
+                        data-action="editLinkedMajor"
+                        title="{{localize 'GOODSOCIETY.connection.editLinkedMajorTitle'}}">
+                  <em>{{localize "GOODSOCIETY.connection.noMajor"}}</em>
+                </button>
+              {{/if}}
+              <button class="dossier-connection-linked-row__edit"
+                      type="button"
+                      data-action="editLinkedMajor"
+                      title="{{localize 'GOODSOCIETY.connection.editLinkedMajorTitle'}}"
+                      aria-label="{{localize 'GOODSOCIETY.connection.editLinkedMajorTitle'}}">
+                <span aria-hidden="true">✎</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {{!-- Description section ────────────────────────────────────────── --}}
+        <section class="dossier-section dossier-description dossier-description--connection">
+          <div class="gs-item-sheet__label-row">
+            <header class="gs-eyebrow">{{localize "GOODSOCIETY.connection.description"}}</header>
+            <button type="button"
+                    class="gs-item-sheet__edit-btn"
+                    data-action="editDescription"
+                    title="{{localize 'GOODSOCIETY.connection.editDescription'}}"
+                    aria-label="Edit description">
+              <span aria-hidden="true">✎</span>
+            </button>
+          </div>
+          <div class="dossier-description__body">
+            {{#if enrichedDescription}}
+              {{{enrichedDescription}}}
+            {{else}}
+              <p class="dossier-description__placeholder"><em>{{localize "GOODSOCIETY.connection.descriptionPlaceholder"}}</em></p>
+            {{/if}}
+          </div>
+        </section>
+
+        {{!-- Impressions ─────────────────────────────────────────────────── --}}
+        <section class="dossier-section dossier-impressions">
+          <div class="dossier-section__head">
+            <header class="gs-eyebrow" data-tooltip-key="impressions">{{localize "GOODSOCIETY.connection.impressions"}}</header>
+            <button class="gs-empty-state__action dossier-section__add-btn"
+                    type="button"
+                    data-action="addImpression">
+              + {{localize "GOODSOCIETY.connection.addImpression"}}
+            </button>
+          </div>
+
+          {{#if impressions.length}}
+            <div class="dossier-impressions__list">
+              {{#each impressions}}
+                <div class="gs-impression-card gs-themed" data-theme="{{this.majorTheme}}">
+                  <div class="gs-impression-card__major-col">
+                    {{#if this.majorPortraitUrl}}
+                      <img class="gs-impression-card__portrait"
+                           src="{{this.majorPortraitUrl}}"
+                           alt="{{this.majorName}}" />
+                    {{else}}
+                      <span class="gs-impression-card__portrait-fallback">{{this.majorInitial}}</span>
+                    {{/if}}
+                    <button class="gs-impression-card__major-ref"
+                            type="button"
+                            data-action="openMajor"
+                            data-actor-id="{{this.majorId}}">
+                      {{this.majorName}}
+                    </button>
+                  </div>
+                  <div class="gs-impression-card__text-col">
+                    {{#if this.text}}
+                      <p class="gs-impression-card__text">{{this.text}}</p>
+                    {{else}}
+                      <p class="gs-impression-card__text gs-impression-card__text--empty">
+                        {{localize "GOODSOCIETY.connection.impressionPlaceholder"}}
+                      </p>
+                    {{/if}}
+                    <button class="gs-impression-card__edit"
+                            type="button"
+                            data-action="editImpression"
+                            data-index="{{this.index}}">
+                      {{localize "GOODSOCIETY.connection.edit"}}
+                    </button>
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          {{else}}
+            <div class="gs-empty-state">
+              <p class="gs-empty-state__body">{{localize "GOODSOCIETY.connection.noImpressions"}}</p>
+            </div>
+          {{/if}}
+        </section>
+
+        {{!-- Scene info — public tags + hover summary ───────────────────── --}}
+        <section class="dossier-section dossier-scene-info">
+          <div class="dossier-scene-info__grid">
+
+            <div class="dossier-scene-info__col">
+              <div class="dossier-section__head">
+                <header class="gs-eyebrow gs-eyebrow--subdued" data-tooltip-key="publicTags">
+                  {{localize "GOODSOCIETY.connection.publicTags"}}
+                </header>
+                <button class="gs-empty-state__action dossier-section__add-btn"
+                        type="button"
+                        data-action="addPublicTag">+</button>
+              </div>
+              <div class="dossier-scene-info__tag-list">
+                {{#each publicTags}}
+                  <span class="gs-scene-tag">{{this}}</span>
+                {{/each}}
+                {{#unless publicTags.length}}
+                  <span class="dossier-scene-info__empty">
+                    <em>{{localize "GOODSOCIETY.connection.noTags"}}</em>
+                  </span>
+                {{/unless}}
+              </div>
+            </div>
+
+            <div class="dossier-scene-info__col">
+              <header class="gs-eyebrow gs-eyebrow--subdued" data-tooltip-key="hoverSummary">
+                {{localize "GOODSOCIETY.connection.hoverSummary"}}
+              </header>
+              <input class="dossier-scene-info__subtitle"
+                     type="text"
+                     name="system.sceneInfo.subtitle"
+                     placeholder="{{localize "GOODSOCIETY.connection.hoverSubtitlePlaceholder"}}"
+                     value="{{system.sceneInfo.subtitle}}" />
+              <textarea class="dossier-scene-info__hover-summary"
+                        name="system.sceneInfo.hoverSummary"
+                        placeholder="{{localize "GOODSOCIETY.connection.hoverSummaryPlaceholder"}}"
+                        rows="3">{{hoverSummary}}</textarea>
+            </div>
+
+          </div>
+        </section>
+
+        {{!-- State — resolve track only. Persona switcher lives in the cameo
+             controls now (canonical), so the bottom section is single-column. --}}
+        <section class="dossier-section dossier-state">
+          <header class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.strip.resolve"}}</header>
+          <div class="dossier-state__resolve-row">
+            <div class="gs-resolve-track">
+              {{#each resolvePips}}
+                <button class="gs-resolve-pip{{#if this.filled}} filled{{/if}}"
+                        type="button"
+                        data-action="toggleResolvePip"
+                        data-pip="{{this.index}}"
+                        aria-label="{{this.label}}">
+                </button>
+              {{/each}}
+            </div>
+            <span class="dossier-state__resolve-count">
+              {{resolveCurrent}} of {{resolveMax}}
+            </span>
+          </div>
+        </section>
+
+      </div>{{!-- /.dossier-page --}}
+
+    </article>{{!-- /.dossier-spread --}}
+  </div>{{!-- /.dossier-book --}}
+
+  {{!-- Shared <datalist> of common pronoun formats. Same id used by every
+       dossier (Major / Connection / NPC) so the suggestion list stays
+       consistent. Free-text input is still accepted; the parser in
+       module/helpers/pronouns.js handles whatever the user types. --}}
+  <datalist id="gs-pronoun-suggestions">
+    <option value="she/her"></option>
+    <option value="he/him"></option>
+    <option value="they/them"></option>
+    <option value="she/they"></option>
+    <option value="he/they"></option>
+    <option value="xe/xem"></option>
+    <option value="ze/zir"></option>
+  </datalist>
+</section>

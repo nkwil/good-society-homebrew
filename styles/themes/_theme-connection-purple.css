@@ -1,21 +1,29 @@
-/* Theme: connection-purple
- * Paper and type stack from the .gs-connection base (defined in _theme-clayton.css).
- * .gs-themed duplicates base variables so portable wrappers resolve without the class.
- * Source: docs/design/decisions.md §"Theme registry → connection-purple"
+/* Theme: connection-purple — Plum / orchid.
+ *
+ * Strong color identity: lavender-tinted paper, deep plum ink, vivid
+ * orchid-purple brand, dark-plum headers. Distinct from avril's mauve
+ * (which is moodier and warmer); this one is more saturated and reads
+ * unmistakably "purple."
  */
-.gs-connection[data-theme='connection-purple'] {
-  --gs-ink:      #3A2A4A;
-  --gs-brand:    #6B4A7A;
-  --gs-accent-1: #C0A8C9;
-}
-
+.gs-actor[data-theme='connection-purple'],
+.gs-connection[data-theme='connection-purple'],
 .gs-themed[data-theme='connection-purple'] {
-  --gs-paper:      #F4F1E6;
-  --gs-paper-warm: #ECE7D6;
-  --gs-ink:        #3A2A4A;
-  --gs-brand:      #6B4A7A;
-  --gs-accent-1:   #C0A8C9;
-  --gs-display:    'Lora', 'Palatino', Georgia, serif;
-  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
-  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  --gs-paper:        #F2EAF2;          /* lavender-tinted cream */
+  --gs-paper-warm:   #E8DEEA;          /* deeper lavender */
+  --gs-side-panel:   #E8DEEA;
+  --gs-ink:          #3D1E48;          /* deep plum */
+
+  --gs-brand:        #7B3F95;          /* vivid orchid purple */
+  --gs-headers:      #5B2B6E;          /* deep plum headers */
+  --gs-hairlines:    #A687B0;          /* muted violet hairline */
+  --gs-metallic:     #B8B0BC;          /* pewter */
+  --gs-muted-accent: #D2C3D5;
+
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
 }

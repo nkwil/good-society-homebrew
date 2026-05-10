@@ -145,6 +145,14 @@ export async function advanceCyclePhase() {
 
   await Promise.all(updates);
 
+  // Post-MVP §13.4 — fire the canonical phase-change + (when applicable)
+  // game-ended hooks so subscribers (Epistolary phase auto-open / close,
+  // Novel Reader auto-open) react.
+  Hooks.callAll('goodSociety.cyclePhaseChanged', nextPhase);
+  if (gameEnds) {
+    Hooks.callAll('goodSociety.gameEnded', { cycleNumber, finalPhase: nextPhase });
+  }
+
   // Chat card.
   const cardKey = gameEnds
     ? 'GOODSOCIETY.hud.advancePostedEnd'

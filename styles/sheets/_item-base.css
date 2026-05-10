@@ -33,14 +33,14 @@
   font-variant: small-caps;
   font-size: 11px;
   letter-spacing: 0.18em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-item-sheet__meta {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 10px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 /* Name — full-width, display type, bottom-border-only edit affordance */
@@ -82,7 +82,152 @@
   font-variant: small-caps;
   font-size: 11px;
   letter-spacing: 0.14em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+/* Label row — when a field's label needs an inline action (e.g. ✎ edit
+   for HTML fields). Label sits left, action button right. */
+.gs-item-sheet__label-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Edit button (✎) next to a label — for HTML fields rendered read-only
+   with enriched HTML. Click opens a Dialog. Min-width/min-height resets
+   defeat Foundry v13's default <button> min-height: 26px. */
+.gs-item-sheet__edit-btn {
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--gs-headers);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+}
+.gs-item-sheet__edit-btn:hover {
+  border-color: var(--gs-headers);
+  background: color-mix(in srgb, var(--gs-headers) 10%, transparent);
+}
+.gs-item-sheet__edit-btn:focus-visible {
+  outline: 1.5px solid var(--gs-metallic);
+  outline-offset: 1px;
+}
+
+/* Read-only enriched-HTML body — for HTML fields whose editing happens
+   in a Dialog. Same role as the dossier's `.dossier-desire__body`. */
+.gs-item-sheet__description-body {
+  padding: 8px 10px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 15%, transparent);
+  border-radius: 4px;
+  min-height: 48px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+}
+.gs-item-sheet__description-body p { margin: 0 0 8px 0; }
+.gs-item-sheet__description-body p:last-child { margin-bottom: 0; }
+.gs-item-sheet__description-placeholder {
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+
+/* Hint line under an input — small italic text explaining what the field
+   is for. Subtle but readable (passes AA on every theme via muted-ink). */
+.gs-item-sheet__hint {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  margin-top: 2px;
+}
+
+/* Name + icon row in the item-sheet header — the icon-thumb sits to the
+   left of the name input, with an optional clear-button on the right when
+   an icon is set. Used by magic-skill (and any future item type that
+   wants a custom icon). */
+.gs-item-sheet__name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.gs-item-sheet__name-row .gs-item-sheet__name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Icon thumb — 36×36 round, click to open FilePicker. Empty state shows
+   the generic ⊛ glyph in subdued ink so the user sees the affordance even
+   before uploading. min-width/min-height: 0 defeats Foundry's button
+   default per the §16 anti-pattern. */
+.gs-item-sheet__icon-thumb {
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--gs-ink) 30%, transparent);
+  background: var(--gs-paper-warm);
+  overflow: hidden;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 18px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  transition: border-color 120ms, background 120ms;
+}
+.gs-item-sheet__icon-thumb:hover {
+  border-color: var(--gs-headers);
+  background: color-mix(in srgb, var(--gs-headers) 8%, transparent);
+}
+.gs-item-sheet__icon-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gs-item-sheet__icon-thumb--empty {
+  border-style: dashed;
+}
+
+/* Clear-icon button — small × pill that appears next to the name input
+   when an icon is set. */
+.gs-item-sheet__icon-clear {
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 30%, transparent);
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.gs-item-sheet__icon-clear:hover {
+  color: var(--gs-danger);
+  border-color: var(--gs-danger);
 }
 
 /* Shared control styles */
@@ -116,7 +261,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 11px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   flex: 1;
   margin-right: 12px;
 }

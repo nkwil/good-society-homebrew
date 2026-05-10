@@ -198,7 +198,7 @@
 }
 
 .gs-upkeep-wizard__sub-card--resolved {
-  border-color: var(--gs-accent-2);
+  border-color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   opacity: 0.85;
 }
 
@@ -221,7 +221,7 @@
 }
 
 .gs-upkeep-wizard__sub-status--muted {
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-upkeep-wizard__sub-prompt {
@@ -249,7 +249,7 @@
   font-variant: small-caps;
   font-size: 9px;
   letter-spacing: 0.1em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-upkeep-wizard__resolve-value {
@@ -264,7 +264,7 @@
 
 .gs-upkeep-wizard__resolve-arrow {
   font-size: 18px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-upkeep-wizard__sub-btn {
@@ -386,7 +386,7 @@
 
 .gs-upkeep-wizard__rep-card--gained-positive .gs-upkeep-wizard__rep-polarity { color: var(--gs-positive); }
 .gs-upkeep-wizard__rep-card--gained-negative .gs-upkeep-wizard__rep-polarity { color: var(--gs-danger); }
-.gs-upkeep-wizard__rep-card--removed         .gs-upkeep-wizard__rep-polarity { color: var(--gs-accent-2); }
+.gs-upkeep-wizard__rep-card--removed         .gs-upkeep-wizard__rep-polarity { color: color-mix(in srgb, var(--gs-ink) 75%, transparent); }
 
 .gs-upkeep-wizard__rep-value {
   font-family: var(--gs-display);
@@ -398,20 +398,20 @@
   font-variant: small-caps;
   font-size: 10px;
   letter-spacing: 0.08em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-upkeep-wizard__rep-scene {
   margin-left: auto;
   font-family: var(--gs-italic);
   font-size: 10px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-upkeep-wizard__rep-summary {
   font-family: var(--gs-italic);
   font-size: 12px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
 }
 
@@ -444,7 +444,7 @@
 .gs-upkeep-wizard__conflict-note {
   font-family: var(--gs-italic);
   font-size: 12px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
   padding-top: 10px;
   border-top: 0.5px dashed var(--gs-accent-2);

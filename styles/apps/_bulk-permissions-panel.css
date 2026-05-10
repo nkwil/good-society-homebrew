@@ -5,6 +5,18 @@
  * written by BulkPermissionsPanel._onRender() after each render.
  */
 
+/* Editable subhead (system.bio.title) — italic, subdued, on its own line
+ * below the actor's display name in the row's name column. */
+.gs-bulk-permissions__actor-title {
+  display: block;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 10.5px;
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  margin-top: 1px;
+}
+
 /* ── Panel root ──────────────────────────────────────────────────────────── */
 
 .gs-bulk-permissions {
@@ -42,13 +54,13 @@
   font-size: 11px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-bulk-permissions__counts {
   font-family: var(--gs-italic);
   font-size: 11px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 /* Filter row */
@@ -69,7 +81,7 @@
 }
 
 .gs-bulk-permissions__search::placeholder {
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   opacity: 0.7;
 }
 
@@ -119,7 +131,7 @@
   font-size: 10px;
   font-variant: small-caps;
   letter-spacing: 0.16em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-bulk-permissions__col-user {
@@ -139,13 +151,13 @@
 .gs-bulk-permissions__col-gm-label {
   font-family: var(--gs-italic);
   font-size: 9px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-bulk-permissions__col-quickset {
   font-family: var(--gs-body);
   font-size: 9px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   background: none;
   border: none;
   padding: 1px 4px;
@@ -191,13 +203,13 @@
   font-size: 10px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-bulk-permissions__section-reset {
   font-family: var(--gs-italic);
   font-size: 10px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   background: none;
   border: none;
   padding: 0;
@@ -214,14 +226,14 @@
 .gs-bulk-permissions__section-empty {
   font-family: var(--gs-italic);
   font-size: 12px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   padding: 10px 22px;
 }
 
 .gs-bulk-permissions__empty {
   font-family: var(--gs-italic);
   font-size: 13px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   text-align: center;
   padding: 32px 22px;
 }
@@ -254,11 +266,10 @@
 }
 
 .gs-bulk-permissions__actor-portrait {
-  width: 22px;
-  height: 26px;
-  border-radius: 50% / 40%;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   overflow: hidden;
-  border: 1px solid var(--gs-brand);
   background: var(--gs-paper-warm);
   display: flex;
   align-items: center;
@@ -351,7 +362,7 @@
   transform: translateY(-50%);
   font-family: var(--gs-body);
   font-size: 9px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 2px;
@@ -397,7 +408,7 @@
 .gs-bulk-permissions__pending-none {
   font-family: var(--gs-italic);
   font-size: 11px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-bulk-permissions__pending-pill {

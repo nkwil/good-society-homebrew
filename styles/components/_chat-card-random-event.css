@@ -1,0 +1,77 @@
+/* Random Event chat card — themed to the actor (sender). The .gs-themed
+ * wrapper provides --gs-brand etc.; this targets the inner card. */
+
+.gs-random-event-card { }
+
+.gs-random-event-card__title {
+  margin: 6px 0 4px;
+  font-family: var(--gs-display);
+  font-size: 16px;
+  color: var(--gs-brand);
+}
+
+.gs-random-event-card__desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  margin-bottom: 8px;
+}
+
+.gs-random-event-card__strategies {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+}
+.gs-random-event-card__strategy {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+.gs-random-event-card__strategy-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border-radius: 50%;
+  font-family: var(--gs-display);
+  font-size: 11px;
+}
+.gs-random-event-card__strategy-text {
+  font-style: italic;
+}
+.gs-random-event-card__strategy-roll {
+  font-family: var(--gs-display);
+  font-size: 12px;
+  color: var(--gs-brand);
+}
+
+.gs-random-event-card__verdict {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 6px 0 4px;
+}
+.gs-random-event-card__average {
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+.gs-random-event-card__outcome {
+  font-family: var(--gs-display);
+  font-size: 14px;
+}
+.gs-random-event-card--success .gs-random-event-card__outcome { color: var(--gs-positive); }
+.gs-random-event-card--failure .gs-random-event-card__outcome { color: var(--gs-danger); }
+
+.gs-random-event-card__tag-line {
+  font-size: 13px;
+  margin: 4px 0 0;
+  color: var(--gs-ink);
+}

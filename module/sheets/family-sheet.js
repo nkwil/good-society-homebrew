@@ -1,3 +1,5 @@
+import { profilePic } from '../helpers/profile-pic.js';
+
 /**
  * @typedef {import('@league-of-foundry-developers/foundry-vtt-types').Actor} Actor
  */
@@ -13,6 +15,7 @@ export class FamilySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     classes: ['good-society', 'sheet', 'actor', 'family'],
     position: { width: 580, height: 'auto' },
     window: { contentClasses: ['gs-family-sheet'] },
+    form: { submitOnChange: true, closeOnSubmit: false },
     actions: {
       openMajor:       FamilySheet.#openMajor,
       linkMajor:       FamilySheet.#linkMajor,
@@ -50,14 +53,17 @@ export class FamilySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       familyInitial,
       memberCount,
       heirStatusPositive,
-      memberActors: memberActors.map(a => ({
-        id: a.id,
-        name: a.name,
-        theme: a.system?.theme ?? 'npc',
-        initial: (a.name?.[0] ?? '?').toUpperCase(),
-        portraitUrl: a.system?.bio?.portraitUrl || a.img || '',
-        peerage: a.system?.bio?.peerage ?? '',
-      })),
+      memberActors: memberActors.map(a => {
+        const peerage = a.system?.bio?.peerage ?? '';
+        return {
+          id: a.id,
+          name: a.name,
+          theme: a.system?.theme ?? 'npc',
+          initial: (a.name?.[0] ?? '?').toUpperCase(),
+          portraitUrl: profilePic(a),  // §8.5 token-based
+          peerage: peerage ? game.i18n.localize(`GOODSOCIETY.major.peerage.${peerage}`) : '',
+        };
+      }),
     };
   }
 

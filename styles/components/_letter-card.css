@@ -1,93 +1,227 @@
-/* Letter card — Epistolary variant.
- * Character-themed (sender's theme). Used in chat log AND letter composer preview.
- * No portrait — epistolary format uses header/footer strips instead of speaker block.
- * Per docs/design/10-chat-cards.md §"Variant 6 — Letter" and docs/design/05-epistolary-ui.md.
+/* Letter card — Epistolary variant (chat card + composer preview).
+ *
+ * Reads as a piece of cream stationery, NOT a themed panel. The sender's
+ * theme drives accent colors (ink, brand for the seal + header rule,
+ * italic display face) but the paper itself is universal cream — letters
+ * always look like letters regardless of who wrote them.
+ *
+ * Visual cues for "real paper":
+ *   - Warm cream background (--gs-letter-paper, hardcoded so theme paper
+ *     overrides can't make the letter sage / plum / slate).
+ *   - Layered radial gradients fake a subtle aged-paper texture without
+ *     needing an asset (foxing-tinted vignette at the corners, faint
+ *     yellowish wash from the top).
+ *   - Asymmetric drop shadow — looks like paper resting slightly tilted
+ *     on the desk rather than a perfectly-aligned box.
+ *   - Slight off-vertical hairline border in dusty taupe instead of brand.
+ *
+ * Per docs/design/10-chat-cards.md §"Variant 6 — Letter".
  */
 
+/* Hard-coded letter paper palette. Same warm cream as everyone's
+ * stationery; the THEME drives accents only. */
 .gs-letter-card {
-  border: 0.5px solid var(--gs-brand);
-  border-radius: 8px;
+  --gs-letter-paper:        #f5ecd6;  /* warm cream */
+  --gs-letter-paper-edge:   #e8dec0;  /* slightly deeper cream at edges */
+  --gs-letter-ink:          #3D2F26;  /* warm brown-black, readable on cream */
+  --gs-letter-rule:         #c9b88f;  /* dusty taupe hairline */
+  --gs-letter-muted:        #8b7d5b;  /* faded sepia for meta lines */
+
+  position: relative;
+  /* Layered backgrounds: a subtle linen-noise vignette + the cream base.
+   * The two radial gradients sit at top-left and bottom-right to give the
+   * impression of light age + a slight foxing tint at the corners. */
+  background:
+    radial-gradient(ellipse at top left, rgba(201, 184, 143, 0.18), transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(180, 150, 100, 0.14), transparent 60%),
+    radial-gradient(ellipse at center, rgba(255, 248, 220, 0.30), transparent 70%),
+    var(--gs-letter-paper);
+  border: 0.5px solid var(--gs-letter-rule);
+  border-radius: 3px;
   padding: 0;
   overflow: hidden;
+  box-shadow:
+    /* asymmetric drop shadow — paper resting on a desk */
+    1px 2px 6px rgba(0, 0, 0, 0.18),
+    -1px 4px 14px rgba(0, 0, 0, 0.22),
+    /* inner cream rim — like the slightly burnished edge of aged paper */
+    inset 0 0 18px rgba(232, 222, 192, 0.55);
+  color: var(--gs-letter-ink);
 }
 
-/* Header strip — meta-left (epistolary · cycle N) and meta-right (from · to · sealed) */
+/* Decorative inner rule — a thin hairline 12px in from the edges, like a
+ * fold or letterpress border on real stationery. Pseudo-element so it
+ * doesn't add layout. */
+.gs-letter-card::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-letter-rule) 50%, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* ── Header strip — meta lines (epistolary · cycle N, from · to · sealed) */
 .gs-letter-card__header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 16px;
-  background: var(--gs-paper-warm);
-  border-bottom: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  padding: 14px 24px 6px;
+  background: transparent;
+  border-bottom: 0.5px solid var(--gs-letter-rule);
+  margin: 0 12px;            /* respect the decorative inner rule */
+  position: relative;
 }
 
-.gs-letter-card__meta-left,
-.gs-letter-card__meta-right {
-  font-family: var(--gs-ui);
-  font-size: 10px;
+/* Meta-left is now the only header line — "epistolary · cycle N". The
+ * from/to designation was removed in the post-MVP polish pass; the salutation
+ * and signature carry that info inline now. */
+.gs-letter-card__meta-left {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
   letter-spacing: 0.04em;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-letter-muted);
   white-space: nowrap;
 }
 
-.gs-letter-card__meta-right {
-  text-align: right;
-}
-
-/* Hairline overrides for letter context */
-.gs-letter-card__rule {
-  margin: 0;
-}
-
-/* Subject line — optional, rendered as a centered display line */
+/* Subject — script display, brand-tinted so it reads as the sender's hand. */
 .gs-letter-card__subject {
   font-family: var(--gs-display);
-  font-size: 16px;
+  font-size: 22px;
   font-style: italic;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--gs-brand);
   text-align: center;
-  padding: 14px 20px 0;
-  margin: 0;
+  padding: 16px 24px 4px;
+  margin: 0 12px;
+  letter-spacing: 0.01em;
 }
 
-/* Body — player-authored prose; pre-wrap preserves intentional line breaks */
+/* Greeting — "Dear Avril," — opening salutation line. Italic display face,
+ * brand color (very softened), flush-left under the subject, generous breathing
+ * space below before the body proper begins. */
+.gs-letter-card__greeting {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 15px;
+  color: var(--gs-letter-ink);
+  padding: 14px 28px 0;
+  margin: 0 12px 0;
+  line-height: 1.4;
+}
+
+/* Body — player prose. Crimson Text italic for handwritten feel; cream
+ * paper means we use the letter-ink color, NOT theme ink (which can be
+ * white/light on dark themes and would be invisible on cream). */
 .gs-letter-card__body {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--gs-ink);
-  padding: 14px 20px;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--gs-letter-ink);
+  padding: 10px 28px 6px;
+  margin: 0 12px;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-/* Footer strip — theme label left, seal label right */
+/* First-line indent on the first paragraph — a small typographic flourish
+ * that says "this is a letter, not a notepad." Suppressed when there's a
+ * greeting above (the greeting itself plays the "opening" role). */
+.gs-letter-card__body > p:first-child,
+.gs-letter-card__body > :first-child {
+  text-indent: 1.2em;
+}
+.gs-letter-card__greeting + .gs-letter-card__body > p:first-child,
+.gs-letter-card__greeting + .gs-letter-card__body > :first-child {
+  text-indent: 0;
+}
+
+/* Closing — "Yours faithfully," — appears flush-right under the body, leading
+ * into the signature line below. Italic; brand-tinted softly. */
+.gs-letter-card__closing {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14.5px;
+  color: var(--gs-letter-ink);
+  padding: 8px 28px 0;
+  margin: 0 12px;
+  text-align: right;
+  line-height: 1.4;
+}
+
+/* Signature — sender's display name in the script display face. Brand color
+ * gives it that "their handwriting" feel; flush-right under the closing. */
+.gs-letter-card__signature {
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gs-brand);
+  padding: 2px 28px 14px;
+  margin: 0 12px;
+  text-align: right;
+  letter-spacing: 0.01em;
+}
+
+/* ── Footer strip — seal-only. Theme designation cut in the post-MVP polish
+ * pass (2026-05); the letter card now reads as universal stationery and the
+ * sender's identity is carried entirely by the signature line above. */
 .gs-letter-card__footer {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-end;
   gap: 8px;
-  padding: 8px 16px;
-  background: var(--gs-paper-warm);
-  border-top: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  padding: 8px 24px 14px;
+  background: transparent;
+  border-top: 0.5px solid var(--gs-letter-rule);
+  margin: 0 12px;
 }
 
-.gs-letter-card__theme-label {
-  font-family: var(--gs-ui);
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  color: var(--gs-accent-2, #708060);
-  font-style: italic;
-}
-
+/* Seal mark — small wax-disc next to the seal label, both tinted in the
+ * sender's brand color. Gives the footer a visual flourish that matches
+ * the wax seal picker in the composer. */
 .gs-letter-card__seal {
-  font-family: var(--gs-ui);
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-size: 10.5px;
   letter-spacing: 0.04em;
   color: var(--gs-brand);
+  font-style: italic;
   font-weight: 600;
   white-space: nowrap;
+}
+
+/* Tiny disc indicator next to the seal label. When the seal has an asset
+ * (the common case now that SEAL_TYPES ships rendered PNGs), it shows the
+ * wax-seal art at 14px; we drop the synthetic dome gradient because the
+ * asset's own rim + lighting carry the look. When no asset is available
+ * (legacy seal ids), we fall back to a brand-tinted gradient disc. */
+.gs-letter-card__seal::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gs-seal-asset, none)
+              radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), transparent 45%)
+              var(--gs-seal-accent, var(--gs-brand));
+  background-size: cover, auto, auto;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22);
+}
+
+/* When the seal has its own rendered asset, the asset alone IS the disc —
+ * suppress the tinted gradient layer so the art reads cleanly. */
+.gs-letter-card__seal[style*="--gs-seal-asset"]::before {
+  background: var(--gs-seal-asset) center / cover no-repeat;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22),
+    0 0 0 0.5px rgba(0, 0, 0, 0.18);
 }

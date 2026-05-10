@@ -1,0 +1,27 @@
+{{!--
+  Pause overlay — post-MVP §2.2.
+  Injected into Foundry's #pause element via the renderPause hook. Bound to
+  the shared world-identity visual register (motes, corner ornaments, dark
+  gradient). Pointer-events pass through.
+--}}
+<div class="gs-wi-corners" aria-hidden="true">
+  <span class="gs-wi-corner gs-wi-corner--tl"></span>
+  <span class="gs-wi-corner gs-wi-corner--tr"></span>
+  <span class="gs-wi-corner gs-wi-corner--bl"></span>
+  <span class="gs-wi-corner gs-wi-corner--br"></span>
+</div>
+
+<div class="gs-wi-motes" aria-hidden="true">
+  <span class="gs-wi-mote m1"></span>
+  <span class="gs-wi-mote m3"></span>
+  <span class="gs-wi-mote m5"></span>
+</div>
+
+<div class="gs-pause">
+  <div class="gs-pause__eyebrow">{{eyebrow}}</div>
+  <div class="gs-pause__cameo" aria-hidden="true"
+       {{#if cameoUrl}}style="--gs-pause-cameo-asset: url('{{cameoUrl}}');"{{/if}}>
+    {{#unless cameoUrl}}{{monogram}}{{/unless}}
+  </div>
+  <p class="gs-pause__title">{{title}}</p>
+</div>

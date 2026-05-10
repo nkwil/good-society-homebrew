@@ -40,7 +40,12 @@
             <span class="gs-npc-organizer__row-initial">{{portraitInitial}}</span>
             {{/if}}
           </div>
-          <div class="gs-npc-organizer__row-name">{{tokenName}}</div>
+          <div class="gs-npc-organizer__row-text">
+            <div class="gs-npc-organizer__row-name">{{tokenName}}</div>
+            {{#if title}}
+              <div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>
+            {{/if}}
+          </div>
         </div>
         {{/each}}
       </div>
@@ -65,7 +70,12 @@
             <span class="gs-npc-organizer__row-initial">{{portraitInitial}}</span>
             {{/if}}
           </div>
-          <div class="gs-npc-organizer__row-name">{{tokenName}}</div>
+          <div class="gs-npc-organizer__row-text">
+            <div class="gs-npc-organizer__row-name">{{tokenName}}</div>
+            {{#if title}}
+              <div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>
+            {{/if}}
+          </div>
         </div>
         {{/each}}
       </div>

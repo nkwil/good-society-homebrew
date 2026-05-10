@@ -12,33 +12,325 @@
  * Configure Token, User Configuration, Hotbar Macro editor.
  */
 
-/* === 1. Window titlebar === */
+/* === 1. Window titlebar ===
+ *
+ * Targets BOTH v1 ApplicationV1 (`.window-app`) and v13 ApplicationV2
+ * (`.application`). In v13, ApplicationV2 windows are framed with a
+ * `<div class="application ...">` wrapper containing a `<header
+ * class="window-header">` and `<section class="window-content">`. The
+ * legacy `.window-app` selector misses every v2 window — that's why the
+ * Bulk Permissions panel, Cabinet drawer, and other v2 modals were
+ * rendering with Foundry's default dark titlebar before this update.
+ *
+ * The close affordance is also class-different across versions: v1 used
+ * `.header-button`, v2 uses `.header-control` (often with
+ * `data-action="close"`). Selector chain catches both.
+ *
+ * The themed window content (the body below the titlebar) is also
+ * styled here so the cream paper continues all the way down rather than
+ * leaving a white/dark default panel under our titlebar.
+ */
 
-body.gs-chrome-themed .window-app .window-header {
-  background: var(--gs-paper);
-  color: var(--gs-brand);
+/* Hardcoded house hex values (cream / forest / sage). Themes override
+ * --gs-paper, --gs-brand, --gs-accent-2 within their actor cascades; if
+ * we used those vars here, a sheet themed Avril (dark-plum --gs-paper)
+ * would render its titlebar in dark plum same as the body — making
+ * titlebar + close button invisible. The chrome theme is always-house
+ * per CLAUDE.md §16 anti-pattern. */
+body.gs-chrome-themed :is(.window-app, .application) > .window-header,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header {
+  background: #EFE6D2 !important;          /* --gs-paper, hardcoded */
+  color: #2A3A2D !important;               /* --gs-brand, hardcoded */
   font-family: var(--gs-display);
   font-size: 14px;
   font-style: italic;
   padding: 10px 18px;
-  border-bottom: 0.5px solid var(--gs-accent-2);
+  border-bottom: 0.5px solid #708060;      /* --gs-accent-2, hardcoded */
   border-radius: 8px 8px 0 0;
 }
 
-body.gs-chrome-themed .window-app .window-header .window-title {
-  color: var(--gs-brand);
+body.gs-chrome-themed :is(.window-app, .application) > .window-header .window-title,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header .window-title {
+  color: #2A3A2D !important;               /* --gs-brand, hardcoded */
   font-style: italic;
 }
 
-body.gs-chrome-themed .window-app .window-header .header-button {
-  color: var(--gs-accent-2);
+/* Window-header action buttons (close, configure, popout, copy-uuid, etc.).
+ *
+ * Strategy: theme the button SHELL (size, color, shape, hover) for every
+ * header action uniformly, but render PER-ACTION glyphs via ::before so
+ * each affordance is visually distinct. Earlier this rule painted `×` on
+ * EVERY header button — they all looked identical because we hid Foundry's
+ * own FA glyphs and rendered the same character for all of them. Now each
+ * action gets its own glyph; unknown actions fall back to ⋯ (so the chrome
+ * doesn't show empty buttons for new Foundry actions we haven't catalogued).
+ */
+body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action]),
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action]) {
+  position: relative;
+  width: 22px !important;
+  height: 22px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: #708060 !important;          /* --gs-accent-2, hardcoded house value */
+  border: 0 !important;
+  border-radius: 50% !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0 !important;            /* hides any text label */
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+  margin-left: 4px !important;        /* small breathing room between buttons */
+}
+
+/* Hide any inner content Foundry put in the button (FA <i>, span text)
+ * so our ::before glyph is the only visible content. */
+body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action]) > *,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action]) > * {
+  display: none !important;
+}
+
+/* Same rule unscoped for close buttons specifically — DialogV2 and other
+ * popouts can put the close button at non-direct-child depths from the
+ * .application root, so the scoped rule above misses them. */
+body.gs-chrome-themed [data-action="close"] > *,
+body.gs-chrome-themed .header-button.close > *,
+body.gs-chrome-themed .header-control.close > * {
+  display: none !important;
+}
+
+/* Default ⋯ for any header action we haven't given a specific glyph yet —
+ * keeps unrecognized buttons visible/clickable without empty squares. */
+body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action])::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action])::before {
+  content: '⋯';
+  font-family: var(--gs-display);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+  color: inherit;
+}
+
+/* Per-action glyphs. Each rule's `[data-action="..."]` overrides the
+ * default ::before content above. List the most common Foundry header
+ * actions; new actions inherit the ⋯ fallback.
+ *
+ * Close glyph: UNSCOPED selector (no `> .window-header` direct-child chain)
+ * so DialogV2 / popouts / sub-applications whose close button lives at a
+ * different depth still render `×`. The earlier scoped rules above set the
+ * pill colour/sizing baseline for header buttons; this one only swaps the
+ * glyph content, which is safe to apply broadly. */
+body.gs-chrome-themed [data-action="close"]::before,
+body.gs-chrome-themed .header-button.close::before,
+body.gs-chrome-themed .header-control.close::before,
+body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control):not([data-action])::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control):not([data-action])::before {
+  content: '×' !important;
+  font-size: 22px !important;
+  font-weight: 300 !important;
+  line-height: 1 !important;
+}
+
+body.gs-chrome-themed :is(.window-app, .application) > .window-header [data-action="configureSheet"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header [data-action="configureSheet"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > .window-header [data-action="configure"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header [data-action="configure"]::before {
+  content: '⚙';
+  font-size: 13px !important;
+}
+
+body.gs-chrome-themed :is(.window-app, .application) > .window-header [data-action="copyUuid"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header [data-action="copyUuid"]::before {
+  content: '#';
+  font-size: 14px !important;
+  font-style: italic;
+}
+
+body.gs-chrome-themed :is(.window-app, .application) > .window-header [data-action="popOut"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header [data-action="popOut"]::before {
+  content: '↗';
+  font-size: 14px !important;
+}
+
+body.gs-chrome-themed :is(.window-app, .application) > .window-header [data-action="toggleEditMode"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header [data-action="toggleEditMode"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > .window-header [data-action="toggleSheetMode"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header [data-action="toggleSheetMode"]::before {
+  content: '✎';
+  font-size: 12px !important;
+}
+
+body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action]):hover,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action]):hover {
+  color: #EFE6D2 !important;          /* --gs-paper, hardcoded */
+  background: #2A3A2D !important;     /* --gs-brand, hardcoded */
+}
+
+/* === 1b. Header controls (⋯) dropdown menu ===
+ *
+ * The `⋯` button in v13 ApplicationV2 window headers opens a popover menu
+ * containing actions like "Configure Sheet", "Prototype Token", "View Token
+ * Artwork". Foundry's default rendering uses a dark/transparent panel with
+ * low-contrast text — items only become readable on hover. Override at
+ * the chrome level so every menu item is legible at rest.
+ *
+ * The menu is rendered as `<menu class="controls-dropdown">` (Foundry v13.346+);
+ * older builds may use `.application-list`, `.context-menu`, or render via
+ * a popover element with `[role="menu"]`. Selector chain catches all of them.
+ *
+ * Hardcoded house hex values for the same reason as the titlebar above:
+ * the menu may render outside any themed actor cascade, so theme variables
+ * could resolve to something illegible. */
+body.gs-chrome-themed .controls-dropdown,
+body.gs-chrome-themed menu.controls-dropdown,
+body.gs-chrome-themed nav.controls-dropdown,
+body.gs-chrome-themed .application-list,
+body.gs-chrome-themed [role="menu"].controls-dropdown {
+  background: #F4ECD8 !important;          /* --gs-paper-warm, hardcoded */
+  border: 0.5px solid #708060 !important;  /* --gs-accent-2, hardcoded */
+  border-radius: 4px !important;
+  padding: 4px !important;
+  box-shadow: 0 4px 16px rgba(42, 24, 18, 0.18) !important;
   font-family: var(--gs-body);
-  font-size: 11px;
+  list-style: none;
+  margin: 0;
+  min-width: 180px;
+}
+
+body.gs-chrome-themed .controls-dropdown li,
+body.gs-chrome-themed menu.controls-dropdown li,
+body.gs-chrome-themed .application-list li {
+  background: transparent !important;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body.gs-chrome-themed .controls-dropdown button,
+body.gs-chrome-themed .controls-dropdown a,
+body.gs-chrome-themed menu.controls-dropdown button,
+body.gs-chrome-themed menu.controls-dropdown a,
+body.gs-chrome-themed nav.controls-dropdown button,
+body.gs-chrome-themed nav.controls-dropdown a,
+body.gs-chrome-themed .application-list button,
+body.gs-chrome-themed .application-list a,
+body.gs-chrome-themed [role="menu"].controls-dropdown button,
+body.gs-chrome-themed [role="menu"].controls-dropdown a {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 6px 10px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 3px !important;
+  color: #2A1812 !important;          /* dark ink, hardcoded */
+  font-family: var(--gs-body);
+  font-size: 13px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  text-align: left;
+  text-shadow: none !important;
+  cursor: pointer;
+  box-shadow: none !important;
+}
+
+body.gs-chrome-themed .controls-dropdown button > i,
+body.gs-chrome-themed .controls-dropdown a > i,
+body.gs-chrome-themed menu.controls-dropdown button > i,
+body.gs-chrome-themed menu.controls-dropdown a > i,
+body.gs-chrome-themed .application-list button > i,
+body.gs-chrome-themed .application-list a > i {
+  color: #5C4A3E !important;          /* muted ink, hardcoded */
+  width: 14px;
+  font-size: 12px;
+  text-align: center;
+}
+
+body.gs-chrome-themed .controls-dropdown button:hover,
+body.gs-chrome-themed .controls-dropdown a:hover,
+body.gs-chrome-themed menu.controls-dropdown button:hover,
+body.gs-chrome-themed menu.controls-dropdown a:hover,
+body.gs-chrome-themed nav.controls-dropdown button:hover,
+body.gs-chrome-themed nav.controls-dropdown a:hover,
+body.gs-chrome-themed .application-list button:hover,
+body.gs-chrome-themed .application-list a:hover,
+body.gs-chrome-themed [role="menu"].controls-dropdown button:hover,
+body.gs-chrome-themed [role="menu"].controls-dropdown a:hover {
+  background: #2A3A2D !important;     /* --gs-brand, hardcoded */
+  color: #F4ECD8 !important;          /* --gs-paper-warm, hardcoded */
+}
+
+body.gs-chrome-themed .controls-dropdown button:hover > i,
+body.gs-chrome-themed .controls-dropdown a:hover > i,
+body.gs-chrome-themed menu.controls-dropdown button:hover > i,
+body.gs-chrome-themed menu.controls-dropdown a:hover > i,
+body.gs-chrome-themed .application-list button:hover > i,
+body.gs-chrome-themed .application-list a:hover > i {
+  color: #F4ECD8 !important;          /* --gs-paper-warm, hardcoded */
+}
+
+/* Separator/divider between menu groups */
+body.gs-chrome-themed .controls-dropdown hr,
+body.gs-chrome-themed menu.controls-dropdown hr,
+body.gs-chrome-themed .application-list hr {
+  border: 0;
+  border-top: 0.5px solid rgba(42, 24, 18, 0.2);
+  margin: 4px 0;
+}
+
+/* Window body — keep the cream paper continuous below the titlebar so
+ * we don't leave a white/dark panel under a themed header. Excludes the
+ * Cabinet (frameless ApplicationV2) and any other surface that opts out
+ * via the `gs-no-chrome` escape-hatch class on its application root. */
+body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content {
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  font-family: var(--gs-body);
+}
+
+/* Foundry's TokenConfig / SettingsConfig / etc. assign Foundry CSS variables
+ * (--color-text-secondary, --color-text-subtle, etc.) directly on labels,
+ * fieldset legends, hints, and tab nav items. Those variables resolve to
+ * Foundry's defaults (pale colours designed for Foundry's dark chrome) and
+ * become near-invisible on our cream paper. Force the standard text colours
+ * to use our ink hierarchy so every "out of scope" sheet (Configure Token,
+ * User Configuration, settings dialogs) is at least legible.
+ *
+ * Hardcoded so they don't get clobbered by character-themed actor sheets. */
+/* Exclude any element carrying a system-specific class (gs-* / dossier-*)
+ * from the blanket label colour — themed sheets own their own label
+ * styling via theme cascade variables and shouldn't get repainted in
+ * hardcoded ink. Same exclusion pattern the chrome's button rule uses. */
+body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content :is(label, legend, .form-group > label, .hint, p.notes, .notes, .form-fields > label):not([class*="gs-"]):not([class*="dossier-"]) {
+  color: #2A1812 !important;          /* dark ink, hardcoded */
+  font-family: var(--gs-body);
+}
+
+body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content :is(.hint, p.notes, .notes) {
+  color: #5C4A3E !important;          /* muted ink for secondary text */
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* Tab nav labels in framed config dialogs (TokenConfig tabs: Identity,
+ * Appearance, Vision, Light, Resources, etc.) */
+body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content nav.tabs a.item,
+body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content nav.sheet-tabs a.item {
+  color: color-mix(in srgb, #2A1812 60%, transparent);
+  font-family: var(--gs-display);
   font-style: italic;
 }
 
-body.gs-chrome-themed .window-app .window-header .header-button:hover {
-  color: var(--gs-brand);
+body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content nav.tabs a.item.active,
+body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content nav.sheet-tabs a.item.active {
+  color: #2A3A2D;                     /* brand for active tab */
+  border-bottom: 1.5px solid #2A3A2D;
 }
 
 /* === 2. Sidebar === */
@@ -48,11 +340,30 @@ body.gs-chrome-themed #sidebar {
   border-left: 0.5px solid var(--gs-accent-2);
 }
 
+/* Sidebar tab navigation strip — the vertical column of icon tabs at the
+ * leftmost edge of the sidebar (chat / combat / scenes / actors / ...).
+ * Foundry v13's default markup leaves these flush against the sidebar's
+ * left border, which reads as a hard cutoff next to the canvas. Add a
+ * little inline-start padding so the icons sit comfortably inside the
+ * sidebar surface. Defensive selector list — matches whichever container
+ * Foundry v13 ends up rendering. */
+body.gs-chrome-themed :where(
+  #sidebar #sidebar-tabs,
+  #sidebar > nav.tabs,
+  #sidebar nav.sidebar-tabs,
+  #sidebar > section > nav.tabs,
+  #sidebar .tabs[data-group="primary"]
+) {
+  padding-inline-start: 8px;
+  padding-inline-end: 6px;
+  gap: 4px;
+}
+
 body.gs-chrome-themed .sidebar-tab {
   background: var(--gs-paper);
   font-family: var(--gs-display);
   font-size: 12px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   letter-spacing: 0.04em;
   border: 0;
   padding: 6px 14px 8px;
@@ -109,7 +420,7 @@ body.gs-chrome-themed #navigation .scene-tab {
   font-family: var(--gs-body);
   font-style: italic;
   font-size: 12px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   padding: 6px 14px 8px;
 }
 
@@ -123,10 +434,22 @@ body.gs-chrome-themed #navigation .scene-tab.active {
  * Per docs/design/28 §"Specificity strategy" — use context scoping rather than !important.
  */
 
-body.gs-chrome-themed .window-app input[type='text'],
-body.gs-chrome-themed .window-app input[type='number'],
-body.gs-chrome-themed .window-app textarea,
-body.gs-chrome-themed .window-app select {
+/* Form controls / buttons are scoped to FRAMED windows only — `:has(>
+ * .window-header)` matches when the application has a window header
+ * (framed), excluding frameless apps like the Cabinet, Dock, Cycle HUD,
+ * Arrival overlay etc. that style their own controls. */
+/* Form controls + buttons inside framed windows.
+ *
+ * The `:not([class*="gs-"])` and `:not([class*="dossier-"])` exclusions
+ * prevent the chrome theme from clobbering the styling of any element
+ * with a system-specific class (resolve pips, theme swatches, MT badges,
+ * launcher buttons, dossier connection chips, etc.). The chrome theme is
+ * for Foundry's *generic* unstyled controls only — anything with a
+ * project class already has its own styling and should win. */
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) input[type='text']:not([class*="gs-"]):not([class*="dossier-"]),
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) input[type='number']:not([class*="gs-"]):not([class*="dossier-"]),
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) textarea:not([class*="gs-"]):not([class*="dossier-"]),
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) select:not([class*="gs-"]):not([class*="dossier-"]) {
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
@@ -136,17 +459,35 @@ body.gs-chrome-themed .window-app select {
   padding: 6px 12px;
 }
 
-body.gs-chrome-themed .window-app input[type='text']:focus,
-body.gs-chrome-themed .window-app textarea:focus,
-body.gs-chrome-themed .window-app select:focus {
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) input[type='text']:not([class*="gs-"]):not([class*="dossier-"]):focus,
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) textarea:not([class*="gs-"]):not([class*="dossier-"]):focus,
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) select:not([class*="gs-"]):not([class*="dossier-"]):focus {
   border-color: var(--gs-brand);
   outline: none;
 }
 
-body.gs-chrome-themed .window-app button {
+/* Universal native <select> <option> styling — the OS dropdown popup
+ * doesn't reliably inherit our theme variables (popups often render
+ * outside the page's CSS scope on macOS / Windows). On dark themes
+ * (Avril, Pearlinda, Secret) this leaves dropdown options unreadable —
+ * theme ink renders on theme paper, but the OS popup renders BOTH at
+ * defaults, often white-on-white or near. Hardcode cream paper + dark
+ * ink for every native option so dropdowns are always readable
+ * regardless of theme. Applies to bio-chip peerage select, theme
+ * picker, persona switcher, and any other <select> on any sheet. */
+body.gs-chrome-themed select option,
+body.gs-chrome-themed select optgroup {
+  font-family: var(--gs-body);
+  font-style: normal;
+  font-size: 13px;
+  color: #2A1812 !important;        /* dark ink, hardcoded */
+  background: #F4ECD8 !important;   /* paper-warm, hardcoded */
+}
+
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]) {
   background: transparent;
   border: 0.5px solid var(--gs-accent-2);
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   font-family: var(--gs-display);
   font-size: 12px;
   padding: 5px 14px;
@@ -154,13 +495,13 @@ body.gs-chrome-themed .window-app button {
   letter-spacing: 0.04em;
 }
 
-body.gs-chrome-themed .window-app button:hover {
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]):hover {
   border-color: var(--gs-brand);
   color: var(--gs-brand);
 }
 
-body.gs-chrome-themed .window-app button.primary,
-body.gs-chrome-themed .window-app button[type='submit'] {
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button.primary:not([class*="gs-"]):not([class*="dossier-"]),
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button[type='submit']:not([class*="gs-"]):not([class*="dossier-"]) {
   background: var(--gs-brand);
   border-color: var(--gs-brand);
   color: var(--gs-paper);
@@ -214,10 +555,254 @@ body.gs-chrome-themed #players .player-name {
   font-size: 12px;
 }
 
-/* === 8. Macro hotbar === */
+/* === 8. Macro hotbar ===
+ *
+ * Matches the Cabinet's pill aesthetic so the two surfaces visually rhyme
+ * (the Cabinet rail sits directly above the hotbar at `bottom: 64px`):
+ *   - Outer pill container: paper, sage hairline, 100px border-radius.
+ *   - Slot cells: paper-warm, sage hairline, soft 6px corners, brand
+ *     colored numerals. Rounded squares (not circles) so macro icons
+ *     don't get clipped weird.
+ *   - Page controls / lock / trash: vertical hairline dividers between
+ *     groups, matching the Cabinet's `__divider` element.
+ *
+ * Selectors target Foundry v13's hotbar DOM — `#hotbar`, `#macro-list`,
+ * `.macro`, `.macro.inactive` — defensively. Anything not matched falls
+ * back to Foundry's default styling.
+ */
 
 body.gs-chrome-themed #hotbar {
-  background: var(--gs-paper-warm);
+  background: var(--gs-paper);
   border: 0.5px solid var(--gs-accent-2);
-  border-radius: 8px;
+  /* Rounded rectangle (was 100px stadium pill). The flatter ends remove
+   * the curve-vs-icon visual conflict at the leftmost/rightmost slots. */
+  border-radius: 12px;
+  padding: 6px 12px;
+  box-shadow: 0 2px 12px rgba(20, 12, 14, 0.12);
+  gap: 6px;
+  /* Force full opacity — Foundry's default chrome makes the hotbar partly
+   * translucent; we want it to read as a real surface. */
+  opacity: 1;
+  /* Single-row pill: never wrap slots into multiple rows. Foundry v13's
+   * default flex setup will wrap when contents exceed container width;
+   * we force single-row + width: max-content so the pill grows to fit
+   * its slots instead. */
+  flex-wrap: nowrap !important;
+  width: max-content !important;
+  max-width: calc(100vw - 40px);
+  align-items: center;
+}
+
+/* Also nail the macro list itself to a single row in case Foundry
+ * applies flex-wrap to it specifically. */
+body.gs-chrome-themed #hotbar #macro-list,
+body.gs-chrome-themed #hotbar .macro-list,
+body.gs-chrome-themed #hotbar ol[data-list],
+body.gs-chrome-themed #hotbar ol.macros {
+  flex-wrap: nowrap !important;
+}
+
+/* The macro list itself — flex strip of slot cells. */
+body.gs-chrome-themed #hotbar #macro-list,
+body.gs-chrome-themed #hotbar .macro-list {
+  background: transparent;
+  border: 0;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Each slot cell — paper-warm fill, sage hairline, rounded square, brand-
+ * colored numeral. Selectors are permissive across Foundry v13's hotbar
+ * DOM variants (`.macro`, `li`, `[data-slot]`). Filled-state and hover
+ * language match the Cabinet rail buttons.
+ *
+ * Fixed 36×36 size so slots stay inside the pill regardless of Foundry's
+ * default slot dimensions (which include badge headers we're hiding).
+ *
+ * The `:where()` wrapper keeps specificity at 0 so per-macro inline styles
+ * (e.g. icon backgrounds Foundry sets directly on the slot) still win. */
+body.gs-chrome-themed #hotbar :where(.macro, li, [data-slot]) {
+  background: var(--gs-paper-warm) !important;
+  border: 1px solid var(--gs-accent-2) !important;
+  border-radius: 6px !important;
+  color: var(--gs-brand);
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+body.gs-chrome-themed #hotbar :where(.macro, li, [data-slot]):hover {
+  background: var(--gs-paper) !important;
+  transform: translateY(-1px);
+}
+
+/* Foundry v13's slot has a small dark "key badge" overlaying each slot's
+ * top-left corner showing the keyboard number (1, 2, 3, …, 0). The badge
+ * uses its own dark fill that bled through earlier. Force every direct
+ * descendant of a slot that's likely a badge container (small absolutely-
+ * positioned elements OR labelled spans) to be transparent + brand-color
+ * text so the slot reads cohesively. */
+body.gs-chrome-themed #hotbar :where(.macro, li, [data-slot]) :where(.slot-number, .macro-key, .key, .number, .keybind, [class*="key"], [class*="number"]) {
+  background: transparent !important;
+  color: var(--gs-brand) !important;
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 10px;
+  text-shadow: none;
+  border: 0 !important;
+}
+
+/* Catch-all for anonymous absolute-positioned children that might be badges. */
+body.gs-chrome-themed #hotbar :where(.macro, li, [data-slot]) > * {
+  background-color: transparent !important;
+}
+
+/* Empty slot — slightly subdued so populated macros pop visually. */
+body.gs-chrome-themed #hotbar :where(.macro, li, [data-slot]):where(.inactive, :empty, :not(:has(img, .macro-icon))) {
+  background: var(--gs-paper) !important;
+  border-color: color-mix(in srgb, var(--gs-accent-2) 60%, transparent) !important;
+}
+
+body.gs-chrome-themed #hotbar :where(.macro, li, [data-slot]):where(.inactive, :empty) :where(.slot-number, .macro-key, .key, .number, .keybind, [class*="key"], [class*="number"]) {
+  opacity: 0.55;
+}
+
+/* Page controls (↑ / ↓ / page indicator) and lock / trash controls.
+ * Style the buttons like Cabinet rail buttons, separated by vertical
+ * hairlines matching the Cabinet's group dividers. */
+body.gs-chrome-themed #hotbar #hotbar-page-controls,
+body.gs-chrome-themed #hotbar #hotbar-directory-controls,
+body.gs-chrome-themed #hotbar .page-controls,
+body.gs-chrome-themed #hotbar .bar-controls {
+  background: transparent;
+  border: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+/* Vertical hairline divider before each control cluster — same width and
+ * color as the Cabinet's `.gs-cabinet-rail__divider` (height auto-fits). */
+body.gs-chrome-themed #hotbar #hotbar-page-controls::before,
+body.gs-chrome-themed #hotbar #hotbar-directory-controls::before,
+body.gs-chrome-themed #hotbar .page-controls::before,
+body.gs-chrome-themed #hotbar .bar-controls::before {
+  content: '';
+  display: block;
+  width: 0.5px;
+  height: 18px;
+  background: var(--gs-accent-2);
+  opacity: 0.4;
+  margin-right: 4px;
+}
+
+/* Buttons inside the control clusters — circular paper-warm pucks like the
+ * Cabinet rail buttons, sized to match the slot height (36 px → 22 px puck
+ * with a margin so they visually align with slot centerlines). */
+body.gs-chrome-themed #hotbar #hotbar-page-controls button,
+body.gs-chrome-themed #hotbar #hotbar-directory-controls button,
+body.gs-chrome-themed #hotbar .page-controls button,
+body.gs-chrome-themed #hotbar .bar-controls button {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  background: var(--gs-paper-warm) !important;
+  border: 1px solid var(--gs-accent-2) !important;
+  border-radius: 50% !important;
+  color: var(--gs-brand) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+body.gs-chrome-themed #hotbar #hotbar-page-controls button:hover,
+body.gs-chrome-themed #hotbar #hotbar-directory-controls button:hover,
+body.gs-chrome-themed #hotbar .page-controls button:hover,
+body.gs-chrome-themed #hotbar .bar-controls button:hover {
+  background: var(--gs-paper) !important;
+  transform: scale(1.06);
+}
+
+/* === 9. Chrome icons (post-MVP §14) === */
+/*
+ * Icon swap pattern: hide Foundry's default <i class="fas/fa-…"> glyph and
+ * render the system's custom illustration via a ::before pseudo-element. The
+ * asset URL is set inline by `module/hooks/chrome-icons.js` via the
+ * --icon-asset CSS custom property; this stylesheet only applies the visual
+ * treatment when both `gs-chrome-themed` AND `gs-chrome-icons-on` are present
+ * on the body.
+ *
+ * Stacking gate: --icon-asset is set on the element regardless of body class
+ * state, but the CSS rules only fire when both classes are active. Toggling
+ * `applyChromeIcons` off reverts to Foundry's FA glyphs without touching the
+ * DOM. Toggling `applyFoundryChrome` off reverts everything.
+ *
+ * Graceful fallback: if the SVG asset 404s, the ::before pseudo renders
+ * nothing visible; the FA glyph also stays hidden. The result is empty space
+ * rather than a broken icon image — acceptable for a first-time install where
+ * Natalie hasn't supplied art for every slot yet.
+ */
+
+body.gs-chrome-themed.gs-chrome-icons-on [data-icon-asset] > i.fas,
+body.gs-chrome-themed.gs-chrome-icons-on [data-icon-asset] > i.fa-solid,
+body.gs-chrome-themed.gs-chrome-icons-on [data-icon-asset] > i.fa-regular,
+body.gs-chrome-themed.gs-chrome-icons-on [data-icon-asset] > i.fa-light {
+  display: none;
+}
+
+body.gs-chrome-themed.gs-chrome-icons-on [data-icon-asset]::before {
+  content: '';
+  display: inline-block;
+  width: var(--icon-size, 22px);
+  height: var(--icon-size, 22px);
+  background-image: var(--icon-asset);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.85;
+  transition: opacity 0.15s, transform 0.15s;
+  vertical-align: middle;
+}
+
+body.gs-chrome-themed.gs-chrome-icons-on [data-icon-asset]:hover::before {
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+body.gs-chrome-themed.gs-chrome-icons-on [data-icon-asset].active::before,
+body.gs-chrome-themed.gs-chrome-icons-on [data-icon-asset][aria-pressed="true"]::before {
+  opacity: 1;
+}
+
+/* Journal sidebar entry-type glyphs (post-MVP §13.2). */
+body.gs-chrome-themed.gs-chrome-icons-on [data-entry-type]::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  background-image: var(--journal-glyph-asset, none);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.7;
+  flex-shrink: 0;
 }

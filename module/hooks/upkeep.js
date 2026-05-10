@@ -13,12 +13,25 @@
 
 import { openUpkeepWizard } from '../apps/upkeep-wizard.js';
 import { openUpkeepRoster } from '../apps/upkeep-roster.js';
+import { createCycleDivider } from '../helpers/cycle-divider.js';
 
 /**
  * Called by good-society.js when cyclePhase changes to 'upkeep'.
  * Safe to call multiple times — guards against re-entry if already handled.
  */
 export function onUpkeepPhaseStart() {
+  // Auto-create the cycle divider on transition into upkeep (post-MVP §13.4).
+  // GM-client-only, idempotent — safe to call from every client's handler.
+  if (game.user?.isGM) {
+    let cycleNumber = null;
+    try { cycleNumber = game.settings.get('good-society-homebrew', 'cycleNumber'); } catch {}
+    if (cycleNumber != null) {
+      createCycleDivider(cycleNumber).catch(err =>
+        console.warn('GS | cycle divider auto-create failed (non-fatal):', err),
+      );
+    }
+  }
+
   if (game.user.isGM) {
     openUpkeepRoster();
     return;

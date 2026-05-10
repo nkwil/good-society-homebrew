@@ -1,3 +1,5 @@
+import { profilePic } from '../helpers/profile-pic.js';
+
 /**
  * BulkPermissionsPanel — GM-only matrix for setting actor ownership across
  * all users in one screen.
@@ -120,8 +122,15 @@ export class BulkPermissionsPanel extends HandlebarsApplicationMixin(Application
 
   #buildRow(actor, users) {
     const sys = actor.system;
-    const persona = sys?.activePersona;
-    const displayName = persona?.name || actor.name;
+    // Honor only EXPLICIT persona selections. `sys.activePersona` getter
+    // falls back to primary → first persona, which would mask the actor's
+    // canonical name on a "true identity" selection. The permissions
+    // matrix is a GM admin surface — show the actor's true name when no
+    // persona is explicitly active.
+    const explicitPersona = sys?.activePersonaId
+      ? (sys.personas ?? []).find(p => p.id === sys.activePersonaId)
+      : null;
+    const displayName = explicitPersona?.name || actor.name;
 
     // Stranded = no non-GM player has OWNER.
     const isStranded = !users.some(u => {
@@ -154,8 +163,11 @@ export class BulkPermissionsPanel extends HandlebarsApplicationMixin(Application
       id: actor.id,
       type: actor.type,
       displayName,
+      // Editable subhead from system.bio.title — renders below the
+      // displayName in the row's name column when set.
+      title: (sys?.bio?.title ?? '').trim(),
       initial: (displayName || '?')[0].toUpperCase(),
-      portraitUrl: persona?.portraitUrl || actor.img || '',
+      portraitUrl: profilePic(actor),  // §8.5 token-based
       theme: sys?.theme || 'npc',
       isStranded,
       cells,

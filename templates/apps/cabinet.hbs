@@ -1,0 +1,81 @@
+{{!-- The Cabinet — post-MVP §9. Rail + drawer pattern. --}}
+<div class="gs-cabinet-shell {{#if drawerOpen}}is-drawer-open{{/if}}">
+
+  {{#if drawerOpen}}
+    <aside class="gs-cabinet-drawer" role="dialog" aria-label="The Cabinet">
+      <header class="gs-cabinet-drawer__head">
+        <h3>{{localize "GOODSOCIETY.cabinet.title"}}</h3>
+        <small>{{localize "GOODSOCIETY.cabinet.subtitle"}}</small>
+      </header>
+
+      {{#each groups as |surfaces groupKey|}}
+        <section class="gs-cabinet-group">
+          <h4 class="gs-eyebrow gs-eyebrow--subdued">{{lookup ../groupLabels groupKey}}</h4>
+          {{#each surfaces}}
+            <div class="gs-cabinet-row">
+              <div class="gs-cabinet-row__name">{{label}}</div>
+              {{#if isLauncher}}
+                {{!-- Launcher rows open a modal/dialog when clicked. --}}
+                <button type="button"
+                        class="gs-cabinet-launcher"
+                        data-action="launchSurface"
+                        data-surface-id="{{id}}"
+                        title="{{label}}">
+                  {{localize "GOODSOCIETY.cabinet.openLauncher"}}
+                </button>
+              {{else}}
+                <button type="button"
+                        class="gs-cabinet-toggle {{#if visible}}is-on{{/if}}"
+                        data-action="toggleSurface"
+                        data-surface-id="{{id}}"
+                        role="switch"
+                        aria-checked="{{visible}}"
+                        title="{{label}}">
+                  <span class="gs-cabinet-toggle__track" aria-hidden="true"></span>
+                  <span class="gs-cabinet-toggle__knob" aria-hidden="true"></span>
+                </button>
+              {{/if}}
+            </div>
+          {{/each}}
+        </section>
+      {{/each}}
+
+      <footer class="gs-cabinet-drawer__foot">
+        <button type="button" data-action="hideAll" class="gs-cabinet-drawer__btn">
+          {{localize "GOODSOCIETY.cabinet.hideAll"}}
+        </button>
+        <button type="button" data-action="showAll" class="gs-cabinet-drawer__btn">
+          {{localize "GOODSOCIETY.cabinet.showAll"}}
+        </button>
+        <span class="gs-cabinet-drawer__hint">{{localize "GOODSOCIETY.cabinet.escHint"}}</span>
+      </footer>
+    </aside>
+  {{/if}}
+
+  <nav class="gs-cabinet-rail" aria-label="Cabinet rail">
+    {{#each railGroups}}
+      {{#each items}}
+        <button type="button"
+                class="gs-cabinet-rail-btn {{#if isLauncher}}gs-cabinet-rail-btn--launcher{{/if}} {{#if visible}}is-active{{/if}}"
+                data-action="{{#if isLauncher}}launchSurface{{else}}toggleSurface{{/if}}"
+                data-surface-id="{{id}}"
+                title="{{label}}"
+                {{#if iconAsset}}
+                  data-cabinet-icon
+                  style="--cabinet-icon: url('{{iconAsset}}');"
+                {{/if}}>
+          {{#unless iconAsset}}{{railGlyph}}{{/unless}}
+        </button>
+      {{/each}}
+      {{#unless @last}}<span class="gs-cabinet-rail__divider" aria-hidden="true"></span>{{/unless}}
+    {{/each}}
+    <span class="gs-cabinet-rail__divider" aria-hidden="true"></span>
+    <button type="button"
+            class="gs-cabinet-rail-toggle"
+            data-action="toggleDrawer"
+            title="{{localize "GOODSOCIETY.cabinet.toggleHint"}}"
+            aria-pressed="{{drawerOpen}}">
+      ≡
+    </button>
+  </nav>
+</div>

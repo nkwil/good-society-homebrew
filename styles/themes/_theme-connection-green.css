@@ -1,21 +1,29 @@
-/* Theme: connection-green
- * Paper and type stack from the .gs-connection base (defined in _theme-clayton.css).
- * .gs-themed duplicates base variables so portable wrappers resolve without the class.
- * Source: docs/design/decisions.md §"Theme registry → connection-green"
+/* Theme: connection-green — Forest / sage.
+ *
+ * Strong color identity: sage-tinted paper, deep forest ink, rich-forest
+ * brand, dark-evergreen headers. Distinct from clayton's olive-grove
+ * (which is yellower and more sun-drenched); this one is cooler, more
+ * shaded — proper "forest" green.
  */
-.gs-connection[data-theme='connection-green'] {
-  --gs-ink:      #2A4A2D;
-  --gs-brand:    #6B8A4F;
-  --gs-accent-1: #B8C99A;
-}
-
+.gs-actor[data-theme='connection-green'],
+.gs-connection[data-theme='connection-green'],
 .gs-themed[data-theme='connection-green'] {
-  --gs-paper:      #F4F1E6;
-  --gs-paper-warm: #ECE7D6;
-  --gs-ink:        #2A4A2D;
-  --gs-brand:      #6B8A4F;
-  --gs-accent-1:   #B8C99A;
-  --gs-display:    'Lora', 'Palatino', Georgia, serif;
-  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
-  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  --gs-paper:        #E5EDDC;          /* sage-tinted cream */
+  --gs-paper-warm:   #D8E3CB;          /* deeper sage */
+  --gs-side-panel:   #D8E3CB;
+  --gs-ink:          #1F3A20;          /* deep forest */
+
+  --gs-brand:        #3F7240;          /* rich forest green */
+  --gs-headers:      #264C28;          /* dark forest headers */
+  --gs-hairlines:    #86A082;          /* muted sage hairline */
+  --gs-metallic:     #A89A6E;          /* bronze */
+  --gs-muted-accent: #C3D2BE;
+
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
 }

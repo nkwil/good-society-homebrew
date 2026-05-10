@@ -4,10 +4,16 @@
 <section class="gs-dashboard">
 
   {{!-- ── Header ──────────────────────────────────────────────────────────── --}}
+  {{!-- Title + subtitle branch on isGM. Players get a clean "Public Info"
+       framing without the "Facilitator" / "GM controls" copy. --}}
   <header class="gs-dashboard__header">
     <div class="gs-dashboard__header-left">
-      <h2 class="gs-dashboard__title">{{localize "GOODSOCIETY.dashboard.title"}}</h2>
-      <p class="gs-dashboard__subtitle">{{localize "GOODSOCIETY.dashboard.subtitle"}}</p>
+      <h2 class="gs-dashboard__title">
+        {{#if isGM}}{{localize "GOODSOCIETY.dashboard.title"}}{{else}}{{localize "GOODSOCIETY.dashboard.titlePlayer"}}{{/if}}
+      </h2>
+      <p class="gs-dashboard__subtitle">
+        {{#if isGM}}{{localize "GOODSOCIETY.dashboard.subtitle"}}{{else}}{{localize "GOODSOCIETY.dashboard.subtitlePlayer"}}{{/if}}
+      </p>
     </div>
     <div class="gs-dashboard__header-right">
       <span class="gs-dashboard__cycle">

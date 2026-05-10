@@ -23,21 +23,21 @@
 
 /* NONE (0) — dash, no fill */
 .gs-perm-pill--none {
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 /* LIMITED (1) — "view", paper-warm tint with muted border */
 .gs-perm-pill--limited {
   background: var(--gs-paper-warm);
-  border-color: var(--gs-accent-2);
-  color: var(--gs-accent-2);
+  border-color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 /* OBSERVER (2) — "read", paper-warm tint with muted border */
 .gs-perm-pill--observer {
   background: var(--gs-paper-warm);
-  border-color: var(--gs-accent-2);
-  color: var(--gs-accent-2);
+  border-color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 /* OWNER (3) — "OWN", brand-filled, high-contrast, small-caps */

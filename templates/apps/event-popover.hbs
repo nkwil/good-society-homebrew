@@ -1,0 +1,101 @@
+<section class="gs-event-popover gs-themed" data-theme="{{themeId}}">
+
+  <header class="gs-event-popover__header">
+    <span class="gs-eyebrow">{{localize "GOODSOCIETY.eventPopover.eyebrow"}}</span>
+    <h2 class="gs-event-popover__title">{{eventName}}</h2>
+    <p class="gs-event-popover__targeting">
+      {{localize "GOODSOCIETY.eventPopover.targetingFor"}} <strong>{{actorName}}</strong>
+    </p>
+  </header>
+
+  {{#if description}}
+    <div class="gs-event-popover__desc">{{{description}}}</div>
+  {{/if}}
+
+  <div class="gs-event-popover__strategies">
+    <h3 class="gs-event-popover__section-head">{{localize "GOODSOCIETY.eventPopover.strategiesHead"}}</h3>
+    <p class="gs-event-popover__hint">{{localize "GOODSOCIETY.eventPopover.strategiesHint"}}</p>
+
+    {{#each strategies}}
+      <div class="gs-event-popover__strategy{{#if rolled}} gs-event-popover__strategy--rolled{{/if}}">
+        <div class="gs-event-popover__strategy-head">
+          <span class="gs-event-popover__strategy-num">{{index}}</span>
+          <span class="gs-event-popover__strategy-label">
+            {{localize "GOODSOCIETY.eventPopover.strategyLabel"}}
+          </span>
+          {{#if rolled}}
+            <span class="gs-event-popover__die">d20 · {{roll}}</span>
+          {{/if}}
+        </div>
+        <textarea class="gs-event-popover__strategy-input"
+                  rows="2"
+                  data-strategy-index="{{@index}}"
+                  {{#if rolled}}readonly{{/if}}
+                  placeholder="{{localize 'GOODSOCIETY.eventPopover.strategyPlaceholder'}}">{{text}}</textarea>
+        {{#unless rolled}}
+          <button type="button"
+                  class="gs-btn gs-btn--ghost gs-btn--sm gs-event-popover__roll-btn"
+                  data-action="rollStrategy"
+                  data-index="{{@index}}"
+                  {{#unless canRoll}}disabled{{/unless}}>
+            {{localize "GOODSOCIETY.eventPopover.roll"}}
+          </button>
+        {{/unless}}
+      </div>
+    {{/each}}
+  </div>
+
+  {{#if allRolled}}
+    <section class="gs-event-popover__outcome{{#if isSuccess}} gs-event-popover__outcome--success{{else}} gs-event-popover__outcome--failure{{/if}}">
+      <div class="gs-event-popover__average">
+        <span class="gs-event-popover__average-label">{{localize "GOODSOCIETY.eventPopover.averageLabel"}}</span>
+        <span class="gs-event-popover__average-value">{{average}}</span>
+        <span class="gs-event-popover__threshold">/ 11</span>
+      </div>
+      <div class="gs-event-popover__verdict">
+        {{#if isSuccess}}
+          {{localize "GOODSOCIETY.eventPopover.successVerdict"}}
+        {{else}}
+          {{localize "GOODSOCIETY.eventPopover.failureVerdict"}}
+        {{/if}}
+      </div>
+    </section>
+
+    <section class="gs-event-popover__tags">
+      <h3 class="gs-event-popover__section-head">
+        {{#if isSuccess}}
+          ▲ {{localize "GOODSOCIETY.eventPopover.pickPositive"}}
+        {{else}}
+          ▼ {{localize "GOODSOCIETY.eventPopover.pickNegative"}}
+        {{/if}}
+      </h3>
+      {{#if tagOptions.length}}
+        <div class="gs-event-popover__tag-list">
+          {{#each tagOptions}}
+            <button type="button"
+                    class="gs-event-popover__tag{{#if selected}} gs-event-popover__tag--selected{{/if}}"
+                    data-action="pickTag"
+                    data-tag="{{text}}">
+              {{text}}
+            </button>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="gs-empty-state">{{localize "GOODSOCIETY.eventPopover.noTagOptions"}}</p>
+      {{/if}}
+    </section>
+  {{/if}}
+
+  <footer class="gs-event-popover__footer">
+    <button type="button" class="gs-btn gs-btn--ghost" data-action="cancel">
+      {{localize "GOODSOCIETY.eventPopover.cancel"}}
+    </button>
+    <button type="button"
+            class="gs-btn gs-btn--primary"
+            data-action="submit"
+            {{#unless hasChosenTag}}disabled{{/unless}}>
+      {{localize "GOODSOCIETY.eventPopover.submit"}}
+    </button>
+  </footer>
+
+</section>

@@ -1,0 +1,63 @@
+/* Empty-state primitive — post-MVP §8.2.
+ *
+ * Used wherever a list, container, or surface can be empty by user action or
+ * by config: empty Cabinet, empty Epistolary inbox, empty outbox, empty
+ * connections list, empty pending-changes log, empty session log, etc.
+ *
+ * Composition:
+ *   .gs-empty-state            — wrapping container (centered, breathing room)
+ *   .gs-empty-state__body      — italic body line
+ *   .gs-empty-state__action    — optional outline pill for next-step action
+ *
+ * NOT used for surfaces whose intended state IS "nothing here right now"
+ * (e.g. the dossier's active-condition slot when no condition is active).
+ * Those use per-component empty styling defined in their host section.
+ */
+
+.gs-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 24px 16px;
+}
+
+/* Larger padding for full-page surfaces (e.g. empty Novel Reader). */
+.gs-empty-state--full {
+  padding: 48px 24px;
+}
+
+.gs-empty-state__body {
+  margin: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.45;
+  /* §6 dropped --gs-ink-soft as a slot. Derive muted text via color-mix. */
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+}
+
+.gs-empty-state__action {
+  font-family: var(--gs-display);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--gs-brand);
+  background: transparent;
+  border: 1px solid var(--gs-brand);
+  border-radius: 100px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 120ms, color 120ms;
+}
+
+.gs-empty-state__action:hover {
+  background: color-mix(in srgb, var(--gs-brand) 8%, transparent);
+}
+
+.gs-empty-state__action:focus-visible {
+  outline: 2px solid var(--gs-accent-3);
+  outline-offset: 2px;
+}

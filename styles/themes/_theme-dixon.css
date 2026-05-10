@@ -1,19 +1,39 @@
-/* Theme: dixon — Red & yellow & dignified.
- * Heraldic palette: gold side panel, crimson brand.
- * Cinzel display for names and section headers only; Crimson Text for all body.
- * Source: docs/design/decisions.md §"Theme registry → dixon"
+/* Theme: dixon — Heraldic warm-peach paper, oxblood brand, mustard headers.
+ *
+ * Inspired by `GS Build Colors (1).pdf` page 5; headers darkened from the
+ * PDF's `#a66f00` (3.29:1 — fails AA on 11.5 px eyebrows) to `#6b4500`
+ * (~6.7:1, near-AAA). Same mustard family, just deeper for readability.
  */
 .gs-actor[data-theme='dixon'],
 .gs-themed[data-theme='dixon'] {
-  --gs-paper:       #FAF3E0;
-  --gs-paper-warm:  #F0E5C8;
-  --gs-side-panel:  #C9A33C;
-  --gs-ink:         #2A1812;
-  --gs-brand:       #8B2A22;
-  --gs-accent-1:    #C9A33C;
-  --gs-accent-2:    #5C3A28;
-  --gs-accent-3:    #E8DCC0;
-  --gs-display:     'Cinzel', 'Trajan Pro', Georgia, serif;
-  --gs-body:        'Crimson Text', Georgia, serif;
-  --gs-italic:      'Crimson Text Italic', Georgia, serif;
+  /* Surfaces sit in clear terracotta-red territory so Dixon reads as
+   * unmistakably "red" alongside Rose (cream-pink) and Roger (cool blue),
+   * but tuned softer/lighter per user feedback — saturation pulled toward
+   * dusty, luminosity raised, hue unchanged. Brand stays oxblood for
+   * legibility against the muted paper. */
+  --gs-paper:        #f7d3c5;          /* dusty terracotta cream */
+  --gs-paper-warm:   #f4cdc0;          /* raised surface — desaturated, only
+                                          a hair deeper than paper. Reads as
+                                          relief, not as a second color. */
+  --gs-side-panel:   #f4cdc0;
+  --gs-ink:          #2A1812;
+
+  --gs-brand:        #8B2A22;          /* oxblood */
+  --gs-headers:      #6b4500;          /* deep mustard — header text + name (~6.7:1, near-AAA) */
+  --gs-hairlines:    #5C3A28;          /* dark-brown hairlines */
+  --gs-metallic:     #C9A55C;          /* gilt */
+  --gs-muted-accent: #D4D9CF;          /* mist */
+
+  /* Legacy aliases */
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  /* Per-theme accent ornament for .gs-eyebrow::after (post-MVP §8.1).
+   * Masked + filled with --gs-brand so it picks up the theme color. */
+  --gs-accent-svg:   url('/systems/good-society-homebrew/assets/theme-accents/dixon.svg');
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', Georgia, serif;
 }

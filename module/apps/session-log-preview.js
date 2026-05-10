@@ -11,6 +11,7 @@
 import { getSessionEvents, clearSessionEvents } from '../hooks/session-events.js';
 import { generateSessionLog, generateSessionLogHTML } from '../helpers/session-log-generator.js';
 import { postSystemCard } from '../helpers/chat-cards.js';
+import { sessionLogFolder, entryFlags } from '../helpers/journal-folders.js';
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -120,25 +121,19 @@ export class SessionLogPreview extends HandlebarsApplicationMixin(ApplicationV2)
       const year = new Date().getFullYear();
       const title = `Session ${sessionNumber} — ${date}`;
 
-      // Ensure "Session Logs / {year}" folder structure exists.
-      let rootFolder = game.folders?.find(
-        f => f.type === 'JournalEntry' && f.name === 'Session Logs' && !f.folder,
-      );
-      if (!rootFolder) {
-        rootFolder = await Folder.create({ name: 'Session Logs', type: 'JournalEntry' });
-      }
-      let yearFolder = game.folders?.find(
-        f => f.type === 'JournalEntry' && f.name === String(year) && f.folder?.id === rootFolder.id,
-      );
-      if (!yearFolder) {
-        yearFolder = await Folder.create({
-          name: String(year), type: 'JournalEntry', folder: rootFolder.id,
-        });
-      }
+      // Folder + flag via the centralized helper (post-MVP §13.1).
+      const folder = await sessionLogFolder(year);
+
+      let cycleNumberAtSave = null;
+      try { cycleNumberAtSave = game.settings.get('good-society-homebrew', 'cycleNumber'); } catch { /* not yet registered */ }
 
       await JournalEntry.create({
         name: title,
-        folder: yearFolder.id,
+        ...(folder ? { folder: folder.id } : {}),
+        flags: entryFlags({
+          entryType: 'sessionLog',
+          cycleNumber: cycleNumberAtSave,
+        }),
         pages: [{
           name: title,
           type: 'text',

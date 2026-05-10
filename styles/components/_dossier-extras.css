@@ -1,0 +1,466 @@
+/* Dossier extras — post-MVP §4 spread overlays.
+ *
+ * Renders alongside the default tab-public / tab-private / strip parts. CSS
+ * hides the default sheet content when the sheet root carries
+ * `.is-on-alt-spread`, and shows the matching `.dossier-spread.is-active`.
+ *
+ * Coexistence rule: a Major sheet's PARTS render in document order. The
+ * `dossierExtras` PART is appended after `strip`, so when nothing is active
+ * the user sees the default sheet (extras hidden) and when an alt spread is
+ * active they see only the extras content (default sheet hidden).
+ */
+
+/* Default hidden state — extras only show when an alt spread is active.
+ *
+ * Specificity note: `_major-character.css` declares `.dossier-spread {
+ * display: grid }` for the character spread. That rule has the same
+ * specificity (0,1,0) as a bare `.dossier-spread { display: none }`,
+ * so cascade order would decide the winner — fragile. Scope the
+ * dossier-extras hide-rule under `.gs-dossier-extras` (specificity 0,2,0)
+ * so it always beats the major-character rule for alt-spreads inside
+ * the extras wrapper. The show-active rule below uses 0,4,0 to beat
+ * everything for the active alt-spread. */
+.gs-dossier-extras { display: none; }
+.gs-dossier-extras .dossier-spread { display: none; }
+
+.gs-major-sheet.is-on-alt-spread .gs-dossier-extras { display: block; }
+.gs-major-sheet.is-on-alt-spread .gs-dossier-extras .dossier-spread.is-active { display: block; }
+
+/* Hide the default character-spread part when we're on an alt spread.
+ * Foundry v13 ApplicationV2 marks each PART's root with [data-application-part].
+ * Post-MVP §4 dossier collapsed everything into a single `book` PART. */
+.gs-major-sheet.is-on-alt-spread > [data-application-part="book"],
+.gs-major-sheet.is-on-alt-spread .dossier-stage {
+  display: none;
+}
+
+/* ── Spread shell ────────────────────────────────────────────────────────── */
+
+/* Character spread is a transparent wrapper — its content (the two
+ * .dossier-page columns) carries the visible Raised Surface color. The
+ * old `background: var(--gs-paper)` rule was creating an unwanted middle
+ * layer between the window-content Surface and the page Raised Surface. */
+.dossier-spread {
+  background: transparent;
+  padding: 0;
+  min-height: 540px;
+}
+
+/* Alt spreads — both backstory + connection wrap their content in a real
+ * .dossier-page--solo inside, so the spread shells stay transparent and
+ * just provide positioning context for the floating back-chip. */
+.dossier-spread--backstory {
+  background: transparent;
+  padding: 0;
+  position: relative;             /* anchor for the floating back-chip */
+}
+
+/* Connection alt-spread — TWO-PAGE BOOK SPREAD that mimics the Major's
+ * character spread. Same paper-card pages, same gap-as-spine, same shadow
+ * stack — the user sees "the same book, flipped to a new page."
+ *
+ * Layout: 2-column grid identical to the character spread. The clicked
+ * connection takes the LEFT page; the RIGHT page is a blank parchment
+ * slot reserved for a future "pin a second connection" feature.
+ *
+ * Visibility: handled by the global `.gs-dossier-extras .dossier-spread`
+ * rule. We override the default display: block to display: grid for the
+ * active alt-spread so the two-page layout actually works. */
+.dossier-spread--connection {
+  background: transparent;
+  padding: 0;
+  position: relative;             /* anchor for the floating back-chip */
+}
+
+.gs-major-sheet.is-on-alt-spread .gs-dossier-extras .dossier-spread--connection.is-active {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  min-height: 760px;              /* match the character spread height */
+}
+
+/* Backstory alt-spread — single centered page (one book page, not a
+ * left+right spread). The .dossier-page--solo inside provides the
+ * paper-warm card, shadow, and padding. */
+.gs-major-sheet.is-on-alt-spread .gs-dossier-extras .dossier-spread--backstory.is-active {
+  display: block;
+  min-height: 760px;
+}
+
+/* Floating back-to-dossier chip — sits in the spread's top-left corner,
+ * outside the page's content flow but visually anchored to the left page's
+ * top edge. Looks like a bookmark sticking out of the open spread. */
+.dossier-spread__back-chip {
+  position: absolute;
+  top: -28px;
+  left: 0;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-family: var(--gs-body);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 30%, transparent);
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--gs-ink) 85%, transparent);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+.dossier-spread__back-chip:hover {
+  background: var(--gs-paper);
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+}
+
+/* Right-side blank page — same paper card chrome as the active page so the
+ * two read as a true book spread, but with reduced visual weight. The hint
+ * text + ornament sit centered, italic, subdued. */
+.dossier-page--blank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dossier-page--blank__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px;
+  text-align: center;
+  opacity: 0.55;
+}
+.dossier-page--blank__ornament {
+  font-family: var(--gs-display);
+  font-size: 36px;
+  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  line-height: 1;
+}
+.dossier-page--blank__hint {
+  margin: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 50%, transparent);
+  max-width: 22ch;
+  line-height: 1.5;
+}
+
+.gs-dossier-extras__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.gs-dossier-extras__back {
+  font-family: var(--gs-display);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--gs-brand);
+  background: transparent;
+  border: 1px solid var(--gs-brand);
+  border-radius: 100px;
+  padding: 4px 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.gs-dossier-extras__back:hover {
+  background: color-mix(in srgb, var(--gs-brand) 8%, transparent);
+}
+
+.gs-dossier-extras__head .gs-eyebrow {
+  flex: 1;
+  margin: 0;
+  border-bottom: 0;       /* sit inline with the back button */
+  padding-bottom: 0;
+}
+
+.gs-dossier-extras__head .gs-eyebrow::after {
+  display: none;          /* no diamond when in the head row */
+}
+
+.gs-dossier-extras__page-marker {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  flex-shrink: 0;
+}
+
+/* ── Backstory spread ────────────────────────────────────────────────────── */
+
+/* ── Backstory page — book spread inside .dossier-page--solo ─────────────── */
+
+/* Widen the page card so two columns of comfortable reading width fit
+ * side-by-side. When the user opens the backstory spread, the visual
+ * is a real two-page book opening rather than a tall single column —
+ * even short backstories read as the start of a book.
+ *
+ * The card itself is one element; the two-column visual is achieved via
+ * CSS columns on the body. The "spine" between pages is a column-rule
+ * (a hairline between the columns). For backstories that grow past one
+ * spread, authors split with <hr class="page-break"> — the existing
+ * backstoryPages pipeline renders each as a separate alt-spread, and
+ * the previous/next pager flips between them. */
+/* Fixed page card height so each spread renders at a consistent module
+ * size. With auto-pagination in _prepareContext (SPREAD_CHAR_BUDGET ≈
+ * 3500 chars per spread), most spreads land inside this height. Use
+ * `height` not `min-height` so the card doesn't stretch when content
+ * is short on the last spread. */
+.dossier-spread--backstory .dossier-page--solo {
+  width: 100%;
+  max-width: 1080px;
+  height: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.dossier-backstory-page__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.dossier-backstory-page__head .gs-eyebrow {
+  margin: 0;
+}
+
+.dossier-backstory-page__marker {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+}
+
+/* The body is the two-page reading area. CSS columns make text flow into
+ * the left page first, top-to-bottom, then continue at the top of the
+ * right page — the same way you read a real open book. The column-rule
+ * is the spine: a quiet hairline between the pages. `widows`/`orphans`
+ * keep paragraph fragments from leaving lonely lines at column boundaries.
+ *
+ * Plain-text content from the textarea editor is normalized to real <p>
+ * tags in _prepareContext (see major-character-sheet.js #_prepareContext
+ * backstoryNormalized) so column-balance can actually split content at
+ * paragraph boundaries — a single text node with internal \n newlines
+ * counts as one indivisible block and would all land in the left column. */
+.dossier-backstory-page__body {
+  flex: 1;
+  min-height: 0;            /* let flex shrink the body inside the fixed-height card */
+  font-family: var(--gs-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--gs-ink);
+  overflow-wrap: anywhere;
+  overflow: hidden;         /* belt-and-suspenders if budget estimate undershoots */
+
+  column-count: 2;
+  column-gap: 56px;
+  column-rule: 0.5px solid color-mix(in srgb, var(--gs-ink) 18%, transparent);
+  /* `auto` fills the left page top-to-bottom first, then overflow goes
+   * to the right page — proper book reading order when each spread is
+   * a paginated chunk (vs. balance, which distributes evenly between
+   * columns and would look more like a poem on the last page). */
+  column-fill: auto;
+  widows: 3;
+  orphans: 3;
+}
+
+.dossier-backstory-page__body p {
+  margin: 0 0 14px;
+  /* Don't break a paragraph awkwardly across the spine if avoidable.
+   * Short paragraphs prefer to stay together; long ones still split. */
+  break-inside: avoid;
+}
+
+/* Drop-cap on the very first letter of the very first paragraph —
+ * Lavishly Yours-faced when the registered font is available, else the
+ * theme's display face. Brand color so it picks up each character's theme. */
+.dossier-backstory-page__body p:first-child::first-letter {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 42px;
+  line-height: 1;
+  float: left;
+  margin: 4px 10px 0 0;
+  color: var(--gs-brand);
+}
+
+/* Footer — previous/next pager (still flips between EXPLICIT page breaks
+ * the author inserted via <hr class="page-break">). Sits across the full
+ * width of the spread, below both pages. */
+.dossier-backstory-page__pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 0.5px solid color-mix(in srgb, var(--gs-ink) 18%, transparent);
+}
+
+/* ── Connection alt-spread (in-dossier "page flip" view) ─────────────────── */
+
+/* (The previous .dossier-page--solo override has been removed — the alt-spread
+ * is now a real two-page book spread, not a single centered page.) */
+
+/* Empty-state placeholder rows inside the connection alt-spread —
+ * italic, subdued, sit where the actual content would. Same visual
+ * weight as the description's read-only body but without the bordered
+ * card chrome. */
+.dossier-conn-spread__empty {
+  margin: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+
+/* The cameo's frame on the alt-spread is read-only (no FilePicker; this
+ * is a public-info view). Suppress the hover scale + remove pointer cursor. */
+.dossier-cameo__frame--readonly {
+  cursor: default !important;
+}
+.dossier-cameo__frame--readonly:hover {
+  transform: none !important;
+}
+
+/* Bio chip "static" — read-only span that mimics the input's typography
+ * without the editable affordance. */
+.dossier-bio-chip__static {
+  display: inline-block;
+  padding: 1px 4px;
+  font-family: var(--gs-body);
+  font-size: 12.5px;
+  color: var(--gs-ink);
+}
+
+/* Static name span (no input) — keeps the same baseline + size as the
+ * editable .dossier-cameo__name-input but renders flat text. Multiplies
+ * by --gs-name-scale (set by responsive-name.js) so long connection
+ * names shrink the same way they do on the editable cameos. */
+.dossier-cameo__name-static {
+  display: inline-block;
+  font-family: var(--gs-display);
+  font-size: calc(36px * var(--gs-name-scale, 1));
+  color: var(--gs-brand);
+  line-height: 1.35;
+}
+
+/* Spread controls row — eyebrow ("Connection · public info") on the left,
+ * back-to-dossier pill on the right. Sits where the standalone sheet's
+ * linked-Major chip lives. */
+.dossier-conn-spread-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dossier-conn-spread-controls__eyebrow {
+  font-style: italic;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dossier-conn-spread-controls__back {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  padding: 3px 12px;
+  border: 0.5px solid var(--gs-brand);
+  background: transparent;
+  color: var(--gs-brand);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 120ms;
+  flex-shrink: 0;
+}
+
+.dossier-conn-spread-controls__back:hover {
+  background: color-mix(in srgb, var(--gs-brand) 8%, transparent);
+}
+
+/* Sections inside the connection spread — chip rows + impressions list. */
+.dossier-conn-spread__rep-row,
+.dossier-conn-spread__tied-row,
+.dossier-conn-spread__public-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dossier-conn-spread__impressions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dossier-conn-spread__impression {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--gs-paper) 75%, transparent);
+  border-left: 2.5px solid var(--gs-brand);
+  border-radius: 0 4px 4px 0;
+}
+
+.dossier-conn-spread__impression-from {
+  font-style: italic;
+}
+
+.dossier-conn-spread__impression-text {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  color: var(--gs-ink);
+  line-height: 1.5;
+}
+
+/* ── Inline theme switcher (referenced by header.hbs once the dossier
+ *    refactor wires it in; CSS provided so it's available when the template
+ *    update lands). ───────────────────────────────────────────────────── */
+
+.gs-dossier-theme-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.gs-dossier-theme-switcher__swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 0.5px solid var(--gs-accent-2);
+  cursor: pointer;
+  background: var(--swatch-color, transparent);
+  flex-shrink: 0;
+  transition: transform 120ms;
+}
+
+.gs-dossier-theme-switcher__swatch:hover {
+  transform: scale(1.2);
+}
+
+.gs-dossier-theme-switcher__swatch.is-active {
+  border: 1.5px solid var(--gs-accent-3);
+  outline: 1px solid var(--swatch-color, var(--gs-brand));
+  outline-offset: 1px;
+}
+
+/* "continue reading" affordance below the backstory editor. */
+.gs-major-sheet__continue-reading {
+  margin-top: 10px;
+}

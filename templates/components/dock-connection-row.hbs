@@ -15,6 +15,9 @@
   </div>
   <div class="gs-dock__row-stack">
     <div class="gs-dock__row-name">{{name}}</div>
+    {{#if title}}
+      <div class="gs-dock__row-title"><em>{{title}}</em></div>
+    {{/if}}
     {{#if role}}
       <div class="gs-dock__row-role">{{role}}</div>
     {{/if}}

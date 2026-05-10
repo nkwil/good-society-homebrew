@@ -1,0 +1,126 @@
+<section class="gs-ecc">
+
+  <header class="gs-ecc__header">
+    <h2 class="gs-ecc__title">{{localize "GOODSOCIETY.eventCommandCenter.heading"}}</h2>
+    <p class="gs-ecc__hint">{{localize "GOODSOCIETY.eventCommandCenter.hint"}}</p>
+  </header>
+
+  <div class="gs-ecc__body">
+
+    {{!-- Roster — left rail of every Major character --}}
+    <aside class="gs-ecc__roster">
+      <div class="gs-ecc__rail-head">
+        <span class="gs-eyebrow">{{localize "GOODSOCIETY.eventCommandCenter.rosterEyebrow"}}</span>
+        <span class="gs-ecc__count">{{totalMajors}}</span>
+      </div>
+      {{#if roster.length}}
+        <ul class="gs-ecc__roster-list">
+          {{#each roster}}
+            <li>
+              <button type="button"
+                      class="gs-ecc__roster-row{{#if selected}} gs-ecc__roster-row--selected{{/if}}"
+                      data-action="selectMajor"
+                      data-major-id="{{id}}">
+                {{#if portraitUrl}}
+                  <img class="gs-ecc__roster-portrait" src="{{portraitUrl}}" alt="{{name}}" />
+                {{else}}
+                  <span class="gs-ecc__roster-initial">{{initial}}</span>
+                {{/if}}
+                <span class="gs-ecc__roster-info">
+                  <span class="gs-ecc__roster-name">{{name}}</span>
+                  <span class="gs-ecc__roster-meta">
+                    {{archetypeLabel}} · {{eventCount}} {{#if (eq eventCount 1)}}{{localize "GOODSOCIETY.eventCommandCenter.eventSingular"}}{{else}}{{localize "GOODSOCIETY.eventCommandCenter.eventPlural"}}{{/if}}
+                  </span>
+                </span>
+                {{#unless ownerOnline}}
+                  <span class="gs-ecc__roster-offline" title="{{localize 'GOODSOCIETY.eventCommandCenter.offlineHint'}}">●</span>
+                {{/unless}}
+              </button>
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="gs-empty-state">{{localize "GOODSOCIETY.eventCommandCenter.noMajors"}}</p>
+      {{/if}}
+    </aside>
+
+    {{!-- Detail — right pane: selected Major's archetype event pool --}}
+    <main class="gs-ecc__detail">
+      {{#if selectedMajor}}
+        <header class="gs-ecc__detail-head">
+          <h3 class="gs-ecc__detail-title">{{selectedMajor.name}}</h3>
+          {{#if selectedMajor.hasArchetype}}
+            <span class="gs-ecc__detail-archetype">{{selectedMajor.archetypeLabel}}</span>
+          {{else}}
+            <span class="gs-ecc__detail-archetype gs-ecc__detail-archetype--missing">
+              {{localize "GOODSOCIETY.eventCommandCenter.noArchetype"}}
+            </span>
+          {{/if}}
+          {{#unless selectedMajor.ownerOnline}}
+            <span class="gs-ecc__detail-offline">{{localize "GOODSOCIETY.eventCommandCenter.ownerOfflineBadge"}}</span>
+          {{/unless}}
+        </header>
+
+        {{#if selectedMajor.hasArchetype}}
+          {{#if eventList.length}}
+            <ul class="gs-ecc__event-list">
+              {{#each eventList}}
+                <li class="gs-ecc__event-card">
+                  <header class="gs-ecc__event-head">
+                    <span class="gs-ecc__event-name">{{name}}</span>
+                    <span class="gs-ecc__event-counts">
+                      <span class="gs-ecc__event-count gs-ecc__event-count--positive">▲ {{positiveCount}}</span>
+                      <span class="gs-ecc__event-count gs-ecc__event-count--negative">▼ {{negativeCount}}</span>
+                    </span>
+                  </header>
+                  {{#if description}}
+                    <div class="gs-ecc__event-desc">{{{description}}}</div>
+                  {{/if}}
+                  <footer class="gs-ecc__event-foot">
+                    <button type="button"
+                            class="gs-btn gs-btn--ghost gs-btn--sm"
+                            data-action="openEventSheet"
+                            data-event-id="{{id}}">
+                      {{localize "GOODSOCIETY.eventCommandCenter.editEvent"}}
+                    </button>
+                    <button type="button"
+                            class="gs-btn gs-btn--primary gs-btn--sm"
+                            data-action="launchEvent"
+                            data-event-id="{{id}}">
+                      {{localize "GOODSOCIETY.eventCommandCenter.launch"}}
+                    </button>
+                  </footer>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <div class="gs-empty-state">
+              <p>{{localize "GOODSOCIETY.eventCommandCenter.emptyPool"}}</p>
+              <button type="button" class="gs-btn gs-btn--ghost gs-btn--sm" data-action="newEvent">
+                + {{localize "GOODSOCIETY.eventCommandCenter.newEvent"}}
+              </button>
+            </div>
+          {{/if}}
+        {{else}}
+          <div class="gs-empty-state">
+            <p>{{localize "GOODSOCIETY.eventCommandCenter.assignArchetypeFirst"}}</p>
+          </div>
+        {{/if}}
+      {{else}}
+        <div class="gs-empty-state">
+          <p>{{localize "GOODSOCIETY.eventCommandCenter.pickMajor"}}</p>
+        </div>
+      {{/if}}
+    </main>
+  </div>
+
+  <footer class="gs-ecc__footer">
+    <span class="gs-ecc__footer-meta">
+      {{localize "GOODSOCIETY.eventCommandCenter.totalEvents"}}: {{allEventCount}}
+    </span>
+    <button type="button" class="gs-btn gs-btn--ghost gs-btn--sm" data-action="newEvent">
+      + {{localize "GOODSOCIETY.eventCommandCenter.newEvent"}}
+    </button>
+  </footer>
+
+</section>

@@ -18,9 +18,12 @@
     {{/if}}
   </div>
 
-  {{!-- Name + role --}}
+  {{!-- Name + title (editable subhead from bio.title) + role --}}
   <div class="gs-dashboard__row-name">
     <div class="gs-dashboard__row-name-primary">{{name}}</div>
+    {{#if title}}
+      <div class="gs-dashboard__row-name-title"><em>{{title}}</em></div>
+    {{/if}}
     <div class="gs-dashboard__row-name-role">{{role}}</div>
   </div>
 

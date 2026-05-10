@@ -1,0 +1,37 @@
+/* Random Event item sheet — house-styled foundation comes from _item-base.css.
+   This file adds the shortlist-editor primitives unique to this sheet. */
+
+.gs-item-sheet--random-event .gs-item-sheet__hint {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  margin: 4px 0 6px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+
+.gs-item-sheet__label--positive { color: var(--gs-positive); }
+.gs-item-sheet__label--negative { color: var(--gs-danger); }
+
+.gs-rev-shortlist__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.gs-rev-shortlist__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.gs-rev-shortlist__row .gs-item-sheet__input { flex: 1 1 auto; min-width: 0; }
+
+.gs-rev-shortlist__remove {
+  flex: 0 0 auto;
+  width: 26px;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+}

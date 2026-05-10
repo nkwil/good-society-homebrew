@@ -1,0 +1,23 @@
+/* Sidebar tab filter — post-MVP companion to §9 Cabinet.
+ *
+ * When `body.gs-sidebar-filtered` is present, hide the sidebar tabs that
+ * aren't on the player allowlist (chat / actors / items / macros /
+ * playlists). The body class is added by `module/hooks/sidebar-filter.js`
+ * on ready for non-GM users when the `playerSidebarFilter` client setting
+ * is true (default). GM users never carry the class.
+ *
+ * Foundry v13 sidebar tabs: each rendered as `<button data-tab="...">`
+ * (or similar) inside a `<nav>` within `#sidebar`. Selectors below scope
+ * to `#sidebar` to avoid colliding with `data-tab` elsewhere on the
+ * page (e.g. inside ApplicationV2 sheets).
+ */
+
+body.gs-sidebar-filtered #sidebar [data-tab="combat"],
+body.gs-sidebar-filtered #sidebar [data-tab="scenes"],
+body.gs-sidebar-filtered #sidebar [data-tab="journal"],
+body.gs-sidebar-filtered #sidebar [data-tab="tables"],
+body.gs-sidebar-filtered #sidebar [data-tab="cards"],
+body.gs-sidebar-filtered #sidebar [data-tab="compendium"],
+body.gs-sidebar-filtered #sidebar [data-tab="settings"] {
+  display: none !important;
+}

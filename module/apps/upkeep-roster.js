@@ -12,6 +12,7 @@
 
 import { openWizardActorIds, openUpkeepWizard } from './upkeep-wizard.js';
 import { postSystemCard } from '../helpers/chat-cards.js';
+import { profilePic } from '../helpers/profile-pic.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
@@ -83,9 +84,14 @@ export class UpkeepRoster extends HandlebarsApplicationMixin(ApplicationV2) {
       // intentionally inverts the normal display rule (CLAUDE.md §16: persona
       // overrides actor name in DISPLAY surfaces) — the roster is an
       // admin/management surface, not a display one.
-      const persona = actor.system?.activePersona;
-      const personaSuffix = persona?.name && persona.name !== actor.name
-        ? game.i18n.format('GOODSOCIETY.upkeepRoster.personaSuffix', { name: persona.name })
+      // Honor only EXPLICIT persona selections — the data-model getter's
+      // primary-persona fallback would otherwise add "as <primary>" to
+      // every roster row even when the user picked "true identity".
+      const explicitPersona = actor.system?.activePersonaId
+        ? (actor.system.personas ?? []).find(p => p.id === actor.system.activePersonaId)
+        : null;
+      const personaSuffix = explicitPersona?.name && explicitPersona.name !== actor.name
+        ? game.i18n.format('GOODSOCIETY.upkeepRoster.personaSuffix', { name: explicitPersona.name })
         : '';
       const ownerName = ownerUser?.name ?? '';
       const subtitle = [personaSuffix, ownerName].filter(Boolean).join(' · ');
@@ -94,8 +100,11 @@ export class UpkeepRoster extends HandlebarsApplicationMixin(ApplicationV2) {
         actorId:      actor.id,
         name:         actor.name,
         subtitle,
+        // Editable subhead from system.bio.title — renders below the name
+        // in the row's identity column when set.
+        title:        (actor.system?.bio?.title ?? '').trim(),
         themeId:      actor.system?.theme ?? 'npc',
-        portraitUrl:  persona?.portraitUrl || actor.system?.bio?.portraitUrl || actor.img || '',
+        portraitUrl:  profilePic(actor),  // §8.5 token-based
         initial:      (actor.name?.[0] ?? '?').toUpperCase(),
         status,
         completedAt:  completedTime,

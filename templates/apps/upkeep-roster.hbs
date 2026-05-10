@@ -19,6 +19,9 @@
           </div>
           <div class="gs-upkeep-roster__info">
             <span class="gs-upkeep-roster__name">{{name}}</span>
+            {{#if title}}
+              <span class="gs-upkeep-roster__title"><em>{{title}}</em></span>
+            {{/if}}
             <span class="gs-upkeep-roster__owner">{{subtitle}}</span>
           </div>
           <div class="gs-upkeep-roster__right">

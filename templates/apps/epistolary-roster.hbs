@@ -1,0 +1,33 @@
+{{!--
+  Epistolary Roster — GM-side companion to the wizard. Shows mark-done
+  status per Major for the current cycle.
+--}}
+<section class="gs-epistolary-roster">
+  <header>
+    <h2 class="gs-eyebrow">
+      {{localize "GOODSOCIETY.epistolary.roster.heading"}} · {{localize "GOODSOCIETY.cycle.label"}} {{cycleNumber}}
+    </h2>
+  </header>
+
+  <ul class="gs-epistolary-roster__list">
+    {{#each majors}}
+      <li class="gs-epistolary-roster__row gs-themed" data-theme="{{theme}}">
+        <span class="gs-epistolary-roster__portrait">
+          {{#if portrait}}
+            <img src="{{portrait}}" alt="" />
+          {{else}}
+            <span class="gs-epistolary-roster__portrait-initial">{{firstLetter name}}</span>
+          {{/if}}
+        </span>
+        <span class="gs-epistolary-roster__name">{{name}}</span>
+        <span class="gs-epistolary-roster__status {{#if done}}is-done{{else}}is-pending{{/if}}">
+          {{#if done}}✓{{else}}⏳{{/if}}
+        </span>
+      </li>
+    {{/each}}
+  </ul>
+
+  <footer class="gs-epistolary-roster__foot">
+    {{summary}}
+  </footer>
+</section>

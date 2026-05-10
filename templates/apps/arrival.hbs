@@ -1,0 +1,41 @@
+{{!--
+  The Arrival — empty-canvas state. Post-MVP §2.1.
+  Frameless ApplicationV2 with pointer-events: none so the GM can click
+  through to the sidebar / chrome to load a scene.
+--}}
+<section class="gs-arrival gs-wi-stage">
+
+  {{!-- Optional video background — renders behind everything else when the
+       arrivalBackgroundUrl setting points at a video file. Image
+       backgrounds use the CSS --gs-arrival-bg variable instead. --}}
+  {{#if videoUrl}}
+    <video class="gs-arrival__video"
+           autoplay loop muted playsinline disablepictureinpicture
+           preload="auto"
+           aria-hidden="true">
+      <source src="{{videoUrl}}" type="{{videoType}}" />
+    </video>
+  {{/if}}
+
+  <div class="gs-wi-corners" aria-hidden="true">
+    <span class="gs-wi-corner gs-wi-corner--tl"></span>
+    <span class="gs-wi-corner gs-wi-corner--tr"></span>
+    <span class="gs-wi-corner gs-wi-corner--bl"></span>
+    <span class="gs-wi-corner gs-wi-corner--br"></span>
+  </div>
+
+  <div class="gs-wi-motes" aria-hidden="true">
+    <span class="gs-wi-mote m1"></span>
+    <span class="gs-wi-mote m2"></span>
+    <span class="gs-wi-mote m3"></span>
+    <span class="gs-wi-mote m4"></span>
+    <span class="gs-wi-mote m5"></span>
+    <span class="gs-wi-mote m6"></span>
+  </div>
+
+  {{#if showTitle}}
+    <h1 class="gs-arrival__title">{{title}}</h1>
+    <div class="gs-arrival__rule" aria-hidden="true"></div>
+  {{/if}}
+
+</section>

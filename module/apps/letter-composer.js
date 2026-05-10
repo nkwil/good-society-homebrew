@@ -9,20 +9,72 @@
 
 import { postLetterCard } from '../helpers/chat-cards.js';
 import { themedWrap } from '../helpers/themed-wrap.js';
+import { letterFolder, entryFlags } from '../helpers/journal-folders.js';
+import { SEAL_TYPES } from '../constants.js';
 
 const { HandlebarsApplicationMixin, ApplicationV2, DialogV2 } = foundry.applications.api;
 
 const TEMPLATE   = 'systems/good-society-homebrew/templates/apps/letter-composer.hbs';
 const LETTER_TPL = 'systems/good-society-homebrew/templates/chat-cards/letter.hbs';
 
-const SEALS = [
-  { id: 'oxblood',     color: '#8B2A2A', label: 'oxblood · burn after reading' },
-  { id: 'sage',        color: '#708060', label: 'sage · press and keep' },
-  { id: 'candlelight', color: '#C9A55C', label: 'candlelight · given in warmth' },
-  { id: 'midnight',    color: '#16100E', label: 'midnight · guard with care' },
-];
+/**
+ * Seal vocabulary — sourced from the typed registry in `module/constants.js`.
+ * Per post-MVP §11.2 (expanded 2026-05), seals are real wax-seal assets that
+ * also carry mechanical meaning when applicable (red-gold → invitation hook,
+ * black → burn-after-reading; all others purely decorative). The composer's
+ * picker renders the assets directly; behavior wiring lives in
+ * `module/hooks/letter-seals.js` and reads from the registry.
+ *
+ * The registry's `label` and `description` are localization-key fragments
+ * (resolved under GOODSOCIETY.seal.{key} — e.g. 'redGold' →
+ * 'GOODSOCIETY.seal.redGold'); the composer resolves them at render time so
+ * the language file owns the strings.
+ */
+const SEALS = SEAL_TYPES.map(s => ({
+  id: s.id,
+  color: s.color,
+  iconAsset: s.iconAsset,
+  behavior: s.behavior,
+  // Resolved at render time via _prepareContext; kept here as a fallback for
+  // any direct access (e.g. the legacy id→label lookup further down).
+  label: s.label,
+}));
 
 const RECIPIENT_TYPES = ['major-character', 'connection', 'npc'];
+
+/**
+ * Salutation + sign-off registries.
+ *
+ * Each entry holds an id only; the human-readable picker label and the
+ * substitution template ("Dear {name}," / "Yours faithfully,") live in
+ * `lang/en.json` under `GOODSOCIETY.letterComposer.greetings.{id}.{label,template}`
+ * and `…closings.{id}.{…}`. The composer resolves both at render time so the
+ * language file owns the strings.
+ *
+ * Order here = picker order. `none` is the suppress option (empty template).
+ */
+const GREETING_IDS = [
+  'dear', 'my-dear', 'dearest', 'my-dearest',
+  'esteemed', 'to', 'beloved', 'honoured', 'none',
+];
+const CLOSING_IDS = [
+  'faithfully', 'sincerely', 'ever', 'affectionately',
+  'devoted', 'remain', 'regard', 'servant', 'none',
+];
+
+const DEFAULT_GREETING = 'dear';
+const DEFAULT_CLOSING  = 'faithfully';
+
+/** Resolve a greeting/closing template via i18n, substituting tokens. */
+function _formatSalutation(kind, id, vars = {}) {
+  if (!id || id === 'none') return '';
+  const key = `GOODSOCIETY.letterComposer.${kind}.${id}.template`;
+  const tpl = game.i18n.localize(key);
+  if (!tpl || tpl === key) return ''; // missing key — fail silent
+  return tpl
+    .replace('{name}',   vars.name   ?? '')
+    .replace('{sender}', vars.sender ?? '');
+}
 
 let _composer = null;
 
@@ -35,7 +87,15 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
     super(options);
     // toActorId replaces the old toName free-text field
-    this._state = { fromActorId: '', toActorId: '', subject: '', body: '', seal: '' };
+    this._state = {
+      fromActorId: '',
+      toActorId:   '',
+      subject:     '',
+      body:        '',
+      seal:        '',
+      greeting:    DEFAULT_GREETING,
+      closing:     DEFAULT_CLOSING,
+    };
     this._lastSaved       = null;
     this._draftInterval   = null;
     this._previewDebounce = null;
@@ -46,7 +106,10 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
     id: 'gs-letter-composer',
     classes: ['good-society', 'gs-letter-composer'],
-    position: { width: 680, height: 'auto' },
+    // Width bumped to 1080 so the new two-page book layout has room for
+    // the form (left page) + live preview (right page) side-by-side. On
+    // narrow windows CSS falls back to a stacked layout automatically.
+    position: { width: 1080, height: 720 },
     window: { title: 'GOODSOCIETY.letterComposer.windowTitle', resizable: true },
     actions: {
       selectSeal: LetterComposer.#selectSeal,
@@ -108,8 +171,25 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     ctx.recipientActors = recipientActors.map(a => ({ ...a, selected: a.id === this._state.toActorId }));
 
-    ctx.seals     = SEALS.map(s => ({ ...s, selected: s.id === this._state.seal }));
-    ctx.sealLabel = SEALS.find(s => s.id === this._state.seal)?.label || '';
+    // Resolve the seal labels via i18n at render time. Each entry's `label`
+    // in SEAL_TYPES is a key fragment (e.g. 'casual' → 'GOODSOCIETY.seal.casual').
+    ctx.seals     = SEALS.map(s => ({
+      ...s,
+      label: game.i18n.localize(`GOODSOCIETY.seal.${s.label}`) || s.label,
+      selected: s.id === this._state.seal,
+    }));
+    const selectedSeal = ctx.seals.find(s => s.id === this._state.seal);
+    ctx.sealLabel = selectedSeal?.label || '';
+
+    // Greeting + closing pickers — localized labels, current selection marked.
+    const _optionFor = (kind, id, selected) => ({
+      id,
+      label: game.i18n.localize(`GOODSOCIETY.letterComposer.${kind}.${id}.label`) || id,
+      selected,
+    });
+    ctx.greetings = GREETING_IDS.map(id => _optionFor('greetings', id, id === this._state.greeting));
+    ctx.closings  = CLOSING_IDS .map(id => _optionFor('closings',  id, id === this._state.closing));
+
     ctx.state     = { ...this._state };
 
     ctx.previewHtml = await this._buildPreviewHtml(cycleNumber);
@@ -199,6 +279,51 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     this._state.toActorId = get('toActorId');
     this._state.subject   = get('subject');
     this._state.body      = get('body');
+    const greeting = get('greeting');
+    if (greeting) this._state.greeting = greeting;
+    const closing  = get('closing');
+    if (closing)  this._state.closing  = closing;
+  }
+
+  /**
+   * Assemble the canonical letter payload — fields stored in state plus the
+   * resolved greeting/closing lines (rendered strings, already i18n + token-
+   * substituted). Used by both the live preview and the send path so the
+   * archive and the chat message render identically.
+   */
+  _buildLetterPayload() {
+    const recipientName = this._resolveToName();
+    const actor         = game.actors.get(this._state.fromActorId);
+    const senderName    = actor ? (actor.system?.activePersona?.name || actor.name) : '';
+    // Resolve the localized seal label + the asset path so the preview +
+    // archive render both the human-readable string and the actual wax-seal
+    // image in the chat-card footer.
+    let sealLabel     = '';
+    let sealIconAsset = '';
+    let sealAccent    = '';
+    if (this._state.seal) {
+      const entry = SEAL_TYPES.find(s => s.id === this._state.seal);
+      if (entry) {
+        const key = `GOODSOCIETY.seal.${entry.label}`;
+        const txt = game.i18n.localize(key);
+        sealLabel     = (txt && txt !== key) ? txt : (entry.label || this._state.seal);
+        sealIconAsset = entry.iconAsset || '';
+        sealAccent    = entry.color     || '';
+      }
+    }
+    return {
+      to:           recipientName,
+      subject:      this._state.subject || '',
+      body:         this._state.body    || '',
+      seal:         this._state.seal    || '',
+      sealLabel,
+      sealIconAsset,
+      sealAccent,
+      greeting:     this._state.greeting || '',
+      closing:      this._state.closing  || '',
+      greetingLine: _formatSalutation('greetings', this._state.greeting, { name: recipientName }),
+      closingLine:  _formatSalutation('closings',  this._state.closing,  { sender: senderName }),
+    };
   }
 
   // ── Send button state ─────────────────────────────────────────────────────
@@ -235,12 +360,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     const actor       = game.actors.get(this._state.fromActorId) ?? null;
     const persona     = actor?.system?.activePersona ?? null;
     const speakerName = persona?.name || actor?.name || '—';
-    const letter = {
-      to:      this._resolveToName(),
-      subject: this._state.subject || '',
-      body:    this._state.body    || '',
-      seal:    this._state.seal    || '',
-    };
+    const letter      = this._buildLetterPayload();
     const inner = await foundry.applications.handlebars.renderTemplate(LETTER_TPL, {
       actor, persona, letter, cycleNumber, speakerName,
     });
@@ -274,37 +394,24 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
           });
       }
 
-      // Find or create Letters folder → recipient inbox sub-folder.
-      // Folder creation may fail for players who lack that permission — non-fatal.
-      let folderId = null;
-      try {
-        let lettersFolder = game.folders.find(
-          f => f.type === 'JournalEntry' && f.name === 'Letters' && !f.folder,
-        );
-        if (!lettersFolder) {
-          lettersFolder = await Folder.create({ name: 'Letters', type: 'JournalEntry', color: '#2A3A2D' });
-        }
-        if (lettersFolder && recipientActor) {
-          const recipientDisplayName = recipientActor.system?.activePersona?.name || recipientActor.name;
-          const inboxName            = `${recipientDisplayName}'s Inbox`;
-          let inboxFolder = game.folders.find(
-            f => f.type === 'JournalEntry' && f.name === inboxName && f.folder?.id === lettersFolder.id,
-          );
-          if (!inboxFolder) {
-            inboxFolder = await Folder.create({ name: inboxName, type: 'JournalEntry', folder: lettersFolder.id });
-          }
-          folderId = inboxFolder?.id ?? lettersFolder.id;
-        } else if (lettersFolder) {
-          folderId = lettersFolder.id;
-        }
-      } catch (folderErr) {
-        console.warn('[GS] Could not create letter inbox folder (non-fatal):', folderErr);
-      }
+      // Resolve recipient inbox folder via the centralized helper.
+      // Use the recipient actor's display name (persona-aware) when available;
+      // otherwise fall back to the literal TO field text — both produce a
+      // valid Foundry folder name.
+      const recipientFolderKey = recipientActor
+        ? (recipientActor.system?.activePersona?.name || recipientActor.name)
+        : recipientLabel;
+      const folder = await letterFolder(recipientFolderKey);
 
       await JournalEntry.create({
         name: entryName,
-        ...(folderId ? { folder: folderId } : {}),
+        ...(folder ? { folder: folder.id } : {}),
         ownership,
+        flags: entryFlags({
+          entryType: 'letter',
+          cycleNumber,
+          speakerActorId: actor.id,
+        }),
         pages: [{
           name: entryName,
           type: 'text',
@@ -351,13 +458,11 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     const persona = actor.system.activePersona ?? null;
-    const toName  = recipientActor.system?.activePersona?.name || recipientActor.name;
-    const letter  = {
-      to:      toName,
-      subject: this._state.subject || '',
-      body:    this._state.body.trim(),
-      seal:    this._state.seal    || '',
-    };
+    // Build via the same helper the preview uses so archived + chat-emitted
+    // letters render identically. trim body to drop trailing whitespace
+    // that snuck in via the textarea.
+    const letter = this._buildLetterPayload();
+    letter.body  = letter.body.trim();
     let cycleNumber = null;
     try { cycleNumber = game.settings.get('good-society-homebrew', 'cycleNumber'); } catch {}
 

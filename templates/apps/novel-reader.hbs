@@ -1,0 +1,125 @@
+{{!--
+  The Novel Reader — post-MVP §13.3.
+  Two display modes (cover / reader) selected by `mode`. Single PART.
+--}}
+<section class="gs-novel-reader gs-novel-reader--{{mode}}">
+
+  {{#if isCoverMode}}
+    {{!-- ── Cover ──────────────────────────────────────────────────────── --}}
+    <div class="gs-novel-reader__cover">
+      {{#if editingTitle}}
+        <div class="gs-novel-reader__title-edit">
+          <input type="text"
+                 name="novelTitleInput"
+                 class="gs-novel-reader__title-input"
+                 maxlength="80"
+                 value="{{novelTitle}}"
+                 placeholder="{{localize 'GOODSOCIETY.novel.cover.titlePlaceholder'}}" />
+          <div class="gs-novel-reader__title-actions">
+            <button type="button" class="gs-empty-state__action" data-action="saveTitle">
+              {{localize "GOODSOCIETY.novel.cover.saveTitle"}}
+            </button>
+            <button type="button" class="gs-empty-state__action" data-action="cancelTitle">
+              {{localize "GOODSOCIETY.novel.cover.cancel"}}
+            </button>
+          </div>
+        </div>
+      {{else}}
+        <h1 class="gs-novel-reader__title">
+          <span class="gs-novel-reader__title-initial">{{novelTitleFirstLetter}}</span>{{novelTitleRest}}
+        </h1>
+        <p class="gs-novel-reader__cycles-line"><em>{{cyclesLine}}</em></p>
+        {{#if byline}}
+          <p class="gs-novel-reader__byline"><em>{{byline}}</em></p>
+        {{/if}}
+        <div class="gs-novel-reader__rule" aria-hidden="true"></div>
+
+        {{#if isEmpty}}
+          <p class="gs-novel-reader__empty">
+            <em>{{localize "GOODSOCIETY.novel.cover.emptyHint"}}</em>
+          </p>
+        {{else}}
+          <button type="button" class="gs-empty-state__action gs-novel-reader__primary"
+                  data-action="beginReading">
+            {{localize "GOODSOCIETY.novel.cover.beginReading"}}
+          </button>
+        {{/if}}
+
+        {{#if isComplete}}
+          <button type="button" class="gs-empty-state__action gs-novel-reader__title-button"
+                  data-action="titleNovel">
+            {{localize "GOODSOCIETY.novel.cover.titleNovel"}}
+          </button>
+        {{/if}}
+      {{/if}}
+    </div>
+
+  {{else}}
+
+    {{!-- ── Reader (rail + reader pane) ────────────────────────────────── --}}
+    <div class="gs-novel-reader__layout">
+
+      <aside class="gs-novel-reader__rail">
+        <button type="button" class="gs-novel-reader__rail-cover"
+                data-action="backToCover">
+          ← {{localize "GOODSOCIETY.novel.rail.cover"}}
+        </button>
+
+        {{#each cycles}}
+          <button type="button"
+                  class="gs-novel-reader__rail-cycle {{#if isActive}}is-active{{/if}}"
+                  data-action="goToCycle"
+                  data-cycle="{{n}}">
+            <span class="gs-eyebrow gs-eyebrow--subdued">
+              {{localize "GOODSOCIETY.cycle.label"}} {{n}}
+            </span>
+            <span class="gs-novel-reader__rail-meta">{{subtitle}}</span>
+          </button>
+        {{/each}}
+      </aside>
+
+      <div class="gs-novel-reader__pane">
+        {{#each allCyclesView}}
+          <article class="gs-novel-reader__cycle-section"
+                   data-cycle-anchor="{{n}}">
+            <header class="gs-novel-reader__cycle-divider">
+              <h2>{{localize "GOODSOCIETY.cycle.label"}} {{n}}</h2>
+              <div class="gs-novel-reader__cycle-rule" aria-hidden="true"></div>
+            </header>
+
+            {{#if divider}}
+              <article class="gs-novel-reader__entry gs-novel-reader__entry--divider">
+                <div class="gs-novel-reader__entry-body">{{{divider.body}}}</div>
+                <a href="#" data-action="openInJournal" data-entry-uuid="{{divider.uuid}}"
+                   class="gs-novel-reader__entry-link">
+                  <em>{{localize "GOODSOCIETY.novel.openInJournal"}} ↗</em>
+                </a>
+              </article>
+            {{/if}}
+
+            {{#each entries}}
+              <article class="gs-novel-reader__entry gs-novel-reader__entry--{{entryType}}">
+                <header class="gs-novel-reader__entry-head">
+                  {{#if glyphAsset}}
+                    <span class="gs-novel-reader__entry-glyph"
+                          style="background-image: url('{{glyphAsset}}');"
+                          aria-hidden="true"></span>
+                  {{/if}}
+                  <span class="gs-eyebrow gs-eyebrow--subdued">{{name}}</span>
+                </header>
+                <div class="gs-novel-reader__entry-body">{{{body}}}</div>
+                <a href="#" data-action="openInJournal" data-entry-uuid="{{uuid}}"
+                   class="gs-novel-reader__entry-link">
+                  <em>{{localize "GOODSOCIETY.novel.openInJournal"}} ↗</em>
+                </a>
+              </article>
+            {{/each}}
+          </article>
+        {{/each}}
+      </div>
+
+    </div>
+
+  {{/if}}
+
+</section>

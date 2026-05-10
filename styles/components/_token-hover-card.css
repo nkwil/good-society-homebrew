@@ -90,6 +90,21 @@
   text-overflow: ellipsis;
 }
 
+/* Editable subhead (system.bio.title) — sits between the name and the
+ * type-specific role line. Italic, slightly larger than role since this
+ * is the user-authored identity descriptor. */
+.gs-token-hover-card__title {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  line-height: 1.3;
+  margin-top: 1px;
+  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .gs-token-hover-card__role {
   font-family: var(--gs-italic);
   font-size: 10px;
@@ -105,7 +120,7 @@
 }
 
 .gs-token-hover-card__role--muted {
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 /* GM-only note shown when active persona name differs from actor true name. */
@@ -166,4 +181,69 @@
 .gs-token-hover-card__tag--negative {
   color: var(--gs-danger);
   border-color: var(--gs-danger);
+}
+
+/* Post-MVP §10.2 token hover card v2 — subtitle, condition, family criteria,
+ * footer, and rich (HTML) summary. */
+
+.gs-token-hover-card__subtitle {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  margin-top: 1px;
+  line-height: 1.3;
+}
+
+.gs-token-hover-card__condition {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.gs-token-hover-card__condition--positive {
+  color: var(--gs-positive);
+  background: var(--rep-positive-bg);
+  border: 0.5px solid var(--gs-positive);
+}
+
+.gs-token-hover-card__condition--negative {
+  color: var(--gs-danger);
+  background: var(--rep-negative-bg);
+  border: 0.5px solid var(--gs-danger);
+}
+
+.gs-token-hover-card__criteria {
+  margin-top: 6px;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  line-height: 1.4;
+}
+
+.gs-token-hover-card__summary--rich {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.gs-token-hover-card__summary--rich p {
+  margin: 0 0 4px;
+}
+
+.gs-token-hover-card__summary--rich p:last-child {
+  margin-bottom: 0;
+}
+
+.gs-token-hover-card__footer {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 0.5px dashed var(--gs-accent-2);
+  font-size: 10px;
+  color: var(--gs-accent-3);
+  text-align: right;
 }

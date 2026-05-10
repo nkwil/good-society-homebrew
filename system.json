@@ -29,7 +29,8 @@
       "reputation-condition": {},
       "inner-conflict": {},
       "magic-skill": {},
-      "backstory-action": {}
+      "backstory-action": {},
+      "random-event": {}
     }
   },
   "styles": ["styles/good-society.css"],

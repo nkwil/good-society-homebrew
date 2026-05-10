@@ -55,14 +55,16 @@
       "reputationCondition": "Reputation Condition Sheet",
       "innerConflict": "Inner Conflict Sheet",
       "magicSkill": "Magic / Skill Sheet",
-      "backstoryAction": "Backstory Action Sheet"
+      "backstoryAction": "Backstory Action Sheet",
+      "randomEvent": "Random Event Sheet"
     },
     "tab": {
       "public": "Public",
       "private": "Private"
     },
     "sheet": {
-      "namePlaceholder": "Character name"
+      "namePlaceholder": "Character name",
+      "majorEyebrow": "major character"
     },
     "strip": {
       "resolve": "resolve",
@@ -117,8 +119,10 @@
         "visible": "visible",
         "hiddenTitle": "Hidden from other players",
         "description": "Description",
-        "referenceUrl": "Reference",
+        "descriptionPlaceholder": "What does this skill do, in fiction? (Click ✎ to edit.)",
+        "referenceUrl": "Reference link",
         "referenceUrlPlaceholder": "https://...",
+        "referenceUrlHint": "Optional URL to source material — rulebook page, fan wiki, house-rules doc.",
         "vfxKey": "VFX key",
         "vfxKeyPlaceholder": "jb2a.misty_step.01.blue",
         "soundUrl": "Sound URL",
@@ -139,6 +143,21 @@
         "description": "Description",
         "sourceConflict": "Source conflict",
         "noSourceConflict": "No inner conflict linked."
+      },
+      "randomEvent": {
+        "eyebrow": "Random event",
+        "namePlaceholder": "Event title (e.g. The Carriage Wreck)",
+        "archetypeLabel": "Archetype",
+        "archetypeHint": "Only Major characters with this archetype can be targeted by this event.",
+        "descriptionLabel": "Description",
+        "positiveLabel": "Positive tag options",
+        "positiveHint": "On a successful roll, the player picks one of these as a positive reputation tag.",
+        "negativeLabel": "Negative tag options",
+        "negativeHint": "On a failed roll, the player picks one of these as a negative reputation tag.",
+        "addOption": "add option",
+        "removeOption": "Remove option",
+        "optionPlaceholderPositive": "e.g. Quick-witted",
+        "optionPlaceholderNegative": "e.g. Reckless"
       }
     },
     "npc": {
@@ -146,6 +165,9 @@
       "namePlaceholder": "NPC name",
       "themeLabel": "theme · npc · house style",
       "description": "Description",
+      "descriptionPlaceholder": "Brief sketch of this NPC. (Click ✎ to edit.)",
+      "editDescription": "Edit description",
+      "rolePlaceholder": "innkeeper, footman, magistrate…",
       "promoteToConnection": "+ promote to connection",
       "grantToPlayer": "grant to player",
       "promoteTitle": "Promote to Connection?",
@@ -163,9 +185,11 @@
       "mottoPlaceholder": "Probity. Patience. Honour.",
       "origin": {
         "label": "Origin",
-        "heir": "heir",
-        "newArrival": "new arrival",
-        "foreign": "foreign"
+        "royalty": "royalty",
+        "nobility": "nobility",
+        "gentry": "gentry",
+        "commoner": "commoner",
+        "impoverished": "impoverished"
       },
       "heirStatus": {
         "label": "Heir Status",
@@ -189,12 +213,22 @@
       "linkMajorConfirm": "Link",
       "noMajorsToLink": "No unlinked Major characters found in this world."
     },
+    "cameo": {
+      "pickTokenTitle": "Click to upload or pick a token image",
+      "titlePlaceholder": "title or quick description"
+    },
     "connection": {
       "eyebrow": "Connection",
       "namePlaceholder": "Connection name",
       "linkedTo": "linked to",
       "noMajor": "no Major assigned",
       "description": "Description",
+      "descriptionPlaceholder": "Sketch this connection in two or three sentences. (Click ✎ to edit.)",
+      "editDescription": "Edit description",
+      "pronounsLabel": "pronouns",
+      "pronounsPlaceholder": "she/her",
+      "roleLabel": "role",
+      "rolePlaceholder": "lady's maid, banker, suitor…",
       "impressions": "Impressions",
       "addImpression": "add",
       "impressionPlaceholder": "No impression written yet.",
@@ -204,6 +238,7 @@
       "noTags": "none",
       "hoverSummary": "Hover summary",
       "hoverSummaryPlaceholder": "What appears when a player mouses over this connection's token.",
+      "hoverSubtitlePlaceholder": "Short italic subtitle (e.g., \"Lady Hetherington's lady's maid\")",
       "personas": "Personas",
       "noPersonas": "no alternate identities",
       "addImpressionTitle": "Add Impression",
@@ -212,7 +247,10 @@
       "noMajorsForImpression": "No Major characters exist in this world yet.",
       "editImpressionTitle": "Edit Impression",
       "editImpressionText": "Impression text",
-      "editImpressionConfirm": "Save"
+      "editImpressionConfirm": "Save",
+      "editLinkedMajorTitle": "Link to Major",
+      "editLinkedMajorPrompt": "Which Major character is this Connection tied to? (Choose \"(no Major)\" to clear.)",
+      "editLinkedMajorConfirm": "Save"
     },
     "public": {
       "reputationCriteria": "Reputation Criteria",
@@ -224,11 +262,14 @@
       "addTagPositive": "Add positive tag",
       "addTagNegative": "Add negative tag",
       "activeConditions": "Active Conditions",
-      "noConditions": "None. Her reputation holds.",
+      "noConditions": "None. {pronoun} reputation holds.",
       "innerConflict": "Inner Conflict",
       "innerConflictRule": "complete at 6 total or 5 on one side",
       "noConflict": "No active inner conflict.",
       "beginConflict": "Begin a conflict",
+      "editConflict": "Edit conflict",
+      "leftSidePlaceholder": "Left side",
+      "rightSidePlaceholder": "Right side",
       "completedConflicts": "Completed Conflicts"
     },
     "private": {
@@ -244,7 +285,65 @@
       "noSkills": "No magic or skills added.",
       "triggersSwap": "triggers persona swap",
       "adventurerSentiment": "Adventurer Sentiment",
-      "adventurerSentimentPlaceholder": "A dashing adventurer, secretly…"
+      "adventurerSentimentPlaceholder": "A dashing adventurer, secretly…",
+      "continueReading": "continue reading"
+    },
+    "dossier": {
+      "backToDossier": "back to dossier",
+      "backstoryHeading": "Backstory",
+      "previousPage": "previous page",
+      "nextPage": "next page",
+      "connectionPublicInfo": "Connection · public info",
+      "npcPublicInfo": "NPC · public info",
+      "noDescription": "no description recorded yet",
+      "noPublicReputation": "no public reputation tags yet",
+      "noPublicImpressions": "no public impressions yet",
+      "noPublicTags": "no public tags yet",
+      "blankConnectionPage": "click another connection chip to view alongside",
+      "publicReputation": "Public reputation",
+      "publicImpressions": "Public impressions",
+      "description": "Description",
+      "fromMajor": "from",
+      "tiedTo": "Also tied to",
+      "ageWord": "age",
+      "yearsOfAge": "years of age",
+      "archetype": "Archetype",
+      "peerage": "Peerage",
+      "appearancePlaceholder": "gentle, composed…",
+      "appearanceLabel": "appearance",
+      "temperamentPlaceholder": "guarded, ambitious…",
+      "temperamentLabel": "temperament",
+      "pronounsHint": "Pronouns",
+      "pronounsPlaceholder": "— pronouns —",
+      "theme": "THEME",
+      "trueIdentityThemeHint": "The dossier's visual theme when no persona is active. To assign a different theme to a persona, edit the persona.",
+      "editTrueIdentityTheme": "Edit theme — true identity",
+      "reputationTags": "Reputation tags",
+      "openSlot": "open slot",
+      "removeTag": "Remove tag",
+      "activeReputation": "Active Reputation",
+      "earnedCycle": "Earned cycle",
+      "vs": "vs.",
+      "totalLabel": "total",
+      "ofSix": "of 6",
+      "nearsResolution": "the conflict nears resolution",
+      "tokens": "Tokens",
+      "monologueToken": "Monologue Token",
+      "monologue": "Monologue",
+      "unspent": "unspent",
+      "spent": "spent",
+      "spentThisCycle": "spent this cycle",
+      "available": "available",
+      "takeMonologue": "take a monologue",
+      "privatelyOf": "Privately, of",
+      "keptSecret": "kept secret",
+      "herPresentDesire": "Her Present Desire",
+      "presentDesire": "Present Desire",
+      "cast": "cast",
+      "desirePlaceholder": "What does this character want, in this moment? (Click ✎ to edit.)",
+      "notesPlaceholder": "Private notes & objectives. (Click ✎ to edit.)",
+      "backstoryPlaceholder": "The character's history, in their own voice. (Click ✎ to edit. Use HTML <hr> tags to split into multi-page spreads.)",
+      "beginBackstory": "Begin writing"
     },
     "tooltips": {
       "reputationCriteria": {
@@ -310,8 +409,14 @@
         "body": "The family's sworn declaration — read aloud at formal toasts and printed on the crest."
       },
       "familyOrigin": {
-        "body": "The family's social standing: heir (established local nobility), new arrival (recently titled or relocated), or foreign (outsider lineage).",
+        "body": "The family's social standing: royalty, nobility, gentry, commoner, or impoverished.",
         "pageRef": "Rulebook · p. 67"
+      },
+      "archetype": {
+        "body": "The character's narrative archetype — the role they play in the story. Drives the pool of random events the GM can launch at this character."
+      },
+      "peerage": {
+        "body": "This character's social standing: royalty, nobility, gentry, commoner, or impoverished. Distinct from archetype."
       },
       "heirStatus": {
         "body": "Whether the family has a named heir, and in what form. Affects reputation conditions in some scenarios."
@@ -506,13 +611,24 @@
       "monologueAvailable": "Monologue available",
       "monologueSpent": "Monologue spent this cycle",
       "minimize": "Minimize dock",
-      "expand": "Expand dock"
+      "expand": "Expand dock",
+      "conditionsRailLabel": "Active conditions"
     },
     "major": {
       "peerage": {
-        "heir": "Heir",
-        "new-arrival": "New arrival",
-        "foreign": "Foreign"
+        "royalty": "Royalty",
+        "nobility": "Nobility",
+        "gentry": "Gentry",
+        "commoner": "Commoner",
+        "impoverished": "Impoverished"
+      },
+      "archetype": {
+        "heir": "The Heir",
+        "new-arrival": "The New Arrival",
+        "hedonist": "The Hedonist",
+        "careerist": "The Careerist",
+        "socialite": "The Socialite",
+        "tutor": "The Tutor"
       }
     },
     "cyclePhase": {
@@ -532,9 +648,7 @@
       "connectionRole": "Connection · {role}",
       "npc": "NPC",
       "npcRole": "NPC · {role}",
-      "peerageHeir": "The Heir",
-      "peerageNewArrival": "New Arrival",
-      "peerageForeign": "Foreign Guest"
+      "openDossier": "Open dossier"
     },
     "revealControl": {
       "title": "REVEAL CONTROL",
@@ -616,10 +730,25 @@
         "removeConfirm": "Remove {name} from this scene? The actor is not deleted."
       }
     },
+    "publicInfoCard": {
+      "windowTitle": "Public Info",
+      "windowTitleFor": "Public Info · {name}",
+      "reputation": "Reputation",
+      "conditions": "Active Conditions",
+      "desire": "Her Present Desire",
+      "backstory": "Backstory",
+      "adventurerSentiment": "Adventurer Sentiment",
+      "notesObjectives": "Notes & Objectives",
+      "magic": "Magic & Skills",
+      "empty": "Nothing has been made public for this character yet."
+    },
     "dashboard": {
       "windowTitle": "Public Info · Facilitator Dashboard",
+      "windowTitlePlayer": "Public Info",
       "title": "Public Info · Facilitator Dashboard",
+      "titlePlayer": "Public Info",
       "subtitle": "All Major characters at a glance · GM controls below · individual sheets remain authoritative.",
+      "subtitlePlayer": "All Major characters at a glance · individual sheets remain authoritative.",
       "cycleLabel": "cycle",
       "sceneControlTitle": "Public Info Dashboard",
       "systemAlias": "Good Society",
@@ -723,6 +852,82 @@
         "name": "Apply Foundry Chrome Theme",
         "hint": "Re-themes Foundry's surrounding chrome (titlebars, sidebar, chat log, scene navigation, form controls, notifications, player list, hotbar) to match the Good Society house style. Toggles instantly without a page reload."
       },
+      "hoverCardEnabled": {
+        "name": "Show Token Hover Card",
+        "hint": "When enabled, hovering a token on canvas shows the Good Society themed hover card. Disable to use Foundry's default tooltip instead."
+      },
+      "hoverCardMajorAutoSummary": {
+        "name": "Auto-Summarize Major Hover Card",
+        "hint": "When enabled, hovering a Major's token shows an auto-derived snapshot (active condition, top reputation tags, family criteria). Disable to show only the name + archetype subtitle."
+      },
+      "applyWorldIdentity": {
+        "name": "Apply World Identity Surfaces",
+        "hint": "Activates the Arrival (empty-canvas state) and the system pause overlay. Disable to revert to Foundry's default empty canvas and pause overlay."
+      },
+      "arrivalEnabled": {
+        "name": "Show the Arrival",
+        "hint": "When enabled, fills the canvas with a themed splash whenever no scene is active. Disable to leave the canvas blank."
+      },
+      "arrivalTitle": {
+        "name": "Arrival Title",
+        "hint": "The text displayed on the Arrival splash. Defaults to \"Welcome to Good Society\" — override with your world's name (e.g., \"Welcome to Swan's Crossing\")."
+      },
+      "arrivalBackgroundUrl": {
+        "name": "Arrival Background",
+        "hint": "Optional image OR video file used as the Arrival's backdrop. Video files (mp4, webm, mov, m4v, ogv) play silently on loop. Falls back to a dark gradient when empty."
+      },
+      "arrivalCornerOrnamentUrl": {
+        "name": "Arrival Corner Ornament",
+        "hint": "Optional decorative asset rendered in each corner of the Arrival (and at half size on the pause overlay). Single asset, mirrored per corner."
+      },
+      "arrivalVideoPlaybackRate": {
+        "name": "Arrival Video Speed",
+        "hint": "Playback rate for the Arrival video backdrop. 1.0 is real-time; 0.5 is half-speed (ambient); 0.25 is very slow. No effect on still-image backgrounds."
+      },
+      "arrivalShowTitle": {
+        "name": "Show Arrival Title",
+        "hint": "When enabled, the centred 'Welcome' title and gilt rule render over the Arrival backdrop. Turn off to let the video / image play uninterrupted."
+      },
+      "pauseCameoImageUrl": {
+        "name": "Pause Cameo Image",
+        "hint": "Optional 72-px image rendered at the centre of the pause overlay. Falls back to the world's first letter as a monogram."
+      },
+      "applyChromeIcons": {
+        "name": "Use Custom Chrome Icons",
+        "hint": "Replaces Foundry's default icons on scene controls, sidebar tabs, and the Cabinet rail with the system's illustrated icons. Requires the chrome theme to be enabled. Falls back to Foundry's defaults for any surface without a custom asset."
+      },
+      "cabinetEnabled": {
+        "name": "Show the Cabinet",
+        "hint": "An on-theme rail for collapsing system surfaces, third-party module UIs, and Foundry chrome at once. Anchored above the macro hotbar. The drawer also exposes GM-only launchers for the NPC Organizer, Bulk Permissions panel, Session Log, Calendar, Letter Composer, and Rumour Board."
+      },
+      "playerSidebarFilter": {
+        "name": "Narrow Sidebar for Players",
+        "hint": "Hides Combat, Scenes, Journal, Tables, Cards, Compendium, and Settings tabs from the Foundry sidebar for non-GM users. Players keep Chat, Actors, Items, Macros, and Playlists. Has no effect for GMs. The Novel Reader replaces the Journal tab as the player-facing archive."
+      },
+      "monologueOverlayEnabled": {
+        "name": "Monologue Scene-Freeze Overlay",
+        "hint": "When a player spends a monologue token, all clients render a full-viewport scene-freeze overlay. Disable to fall back to the chat-card-only flow."
+      },
+      "archiveMonologuesToJournal": {
+        "name": "Archive Monologues to the Journal",
+        "hint": "When enabled, every monologue is archived as a JournalEntry under \"Monologues / Cycle N\". Disable to skip the archive step."
+      },
+      "resolveHandoffAnimationEnabled": {
+        "name": "Animate Resolve Handoff",
+        "hint": "When enabled, a resolve token handed across the table tweens visually from the spender's tracker to the recipient's. Actor updates and chat card still fire when off."
+      },
+      "novelTitle": {
+        "name": "Novel Title",
+        "hint": "The title of your collaboratively-written novel (per the rulebook's end-of-game ritual, p.115). Defaults to the world title until you set this."
+      },
+      "novelReaderEnabled": {
+        "name": "Show the Novel Reader",
+        "hint": "Enables the dedicated reader app for browsing letters, monologues, session logs, and cycle reflections as one chronological archive."
+      },
+      "autoCreateCycleDividers": {
+        "name": "Auto-Create Cycle Reflections",
+        "hint": "On the first transition into Upkeep each cycle, automatically create a \"Cycle N — Reflections\" journal entry summarizing the cycle's events."
+      },
       "autoRefreshOnUpkeep": {
         "name": "Auto-Refresh Resolve on Upkeep",
         "hint": "When the cycle advances to Upkeep, visually highlight the Refresh Resolve button on the dashboard. GM still clicks — this never fires automatically."
@@ -773,6 +978,9 @@
       "hoverSummaryPlaceholder": "What players see when hovering this persona's token…",
       "chatColor": "CHAT COLOR",
       "chatColorHint": "Overrides the character theme's brand color for chat cards posted as this persona.",
+      "theme": "THEME",
+      "themeHint": "The dossier's visual theme when this persona is active. Select \"inherit true identity\" to use the actor's own theme.",
+      "themeInherit": "inherit true identity",
       "visibilityOverrides": "VISIBILITY OVERRIDES · per-identity",
       "visDesire": "desire",
       "visBackstory": "backstory",
@@ -802,16 +1010,170 @@
     "theme": {
       "rose": "Rose",
       "roger": "Roger",
-      "mags": "Mags",
-      "avril": "Avril",
-      "dixon": "Dixon",
       "clayton": "Clayton",
+      "dixon": "Dixon",
+      "avril": "Avril",
+      "pearlinda": "Pearlinda",
+      "secret": "Secret",
       "connection-green": "Connection — Green",
       "connection-purple": "Connection — Purple",
       "connection-blue": "Connection — Blue",
       "connection-yellow": "Connection — Yellow",
       "connection-grey": "Connection — Grey",
       "npc": "NPC"
+    },
+    "arrival": {
+      "defaultTitle": "Welcome to Good Society"
+    },
+    "cabinet": {
+      "title": "The Cabinet",
+      "subtitle": "open and close everything you have on the board",
+      "toggleHint": "Open the Cabinet",
+      "hideAll": "hide all",
+      "showAll": "show all",
+      "escHint": "esc to close",
+      "openLauncher": "Open ↗",
+      "group": {
+        "system": "Good Society",
+        "tools": "Tools",
+        "gmTools": "GM tools",
+        "modules": "Player modules",
+        "foundry": "Foundry chrome"
+      },
+      "surface": {
+        "dashboard": "Public Info Dashboard",
+        "dock": "My Characters Dock",
+        "cycleHud": "Cycle Phase HUD",
+        "sessionLog": "Session Log",
+        "novelReader": "The Novel Reader",
+        "npcOrganizer": "NPC Organizer",
+        "bulkPermissions": "Bulk Permissions Panel",
+        "sessionLogOpen": "Session Log preview",
+        "eventCommandCenter": "Random Event Command Center",
+        "calendar": "Event Timeline",
+        "letterComposer": "Letter Composer",
+        "rumourBoard": "Rumour Board",
+        "sequencer": "Sequencer",
+        "tokenMold": "Token Mold",
+        "diceTray": "Dice Tray",
+        "playersList": "Players list",
+        "sidebar": "Sidebar",
+        "hotbar": "Hotbar"
+      }
+    },
+    "pause": {
+      "eyebrow": "A MOMENT'S PAUSE",
+      "title": "The cycle is suspended."
+    },
+    "resolve": {
+      "noResolveToSpend": "{name} has no resolve tokens to spend.",
+      "recipientFull": "{name}'s resolve pool is full.",
+      "discardCard": "<em>{name} spends a resolve token. ({remaining} remaining.)</em>",
+      "handoffCard": "<em>{from} hands a resolve token to {to}.</em>"
+    },
+    "tokenEvents": {
+      "monologue": {
+        "modalTitle": "Play your monologue token",
+        "targetLabel": "Target",
+        "questionLabel": "Question (optional)",
+        "questionPlaceholder": "e.g., 'Who does Henry really love?'",
+        "alreadyMonologued": "This character has already monologued this cycle.",
+        "trigger": "Trigger the monologue ↗",
+        "eyebrow": "AN INNER MONOLOGUE.",
+        "bannerInProgress": "An inner monologue is in progress.",
+        "targetPlaceholder": "The character's innermost thoughts...",
+        "spenderWatching": "You played your monologue token — {target} is responding.",
+        "audienceWatching": "{spender} played a monologue token on {target}.",
+        "submit": "End the monologue ↗",
+        "cancel": "Cancel monologue",
+        "alreadyInProgress": "Another monologue is in progress.",
+        "noEligibleTargets": "Every Major has already monologued this cycle. The pool refreshes during Upkeep."
+      }
+    },
+    "cycleDivider": {
+      "entryName": "Cycle {cycle} — Reflections",
+      "heading": "Cycle {cycle}",
+      "noEvents": "No events recorded yet — write what passed."
+    },
+    "novel": {
+      "windowTitle": "The Novel",
+      "sceneControlTitle": "Open the Novel Reader",
+      "openInJournal": "open in journal",
+      "disabledHint": "The Novel Reader is disabled in your settings.",
+      "rail": {
+        "cover": "back to cover",
+        "empty": "no entries yet"
+      },
+      "cover": {
+        "statusInProgress": "in progress",
+        "statusFinalCycle": "in its final cycle",
+        "statusComplete": "complete",
+        "cyclesLine": "A novel in {n} cycles, {status}.",
+        "byline": "By {authors}",
+        "beginReading": "Begin reading ↗",
+        "titleNovel": "Title your novel ↗",
+        "titlePlaceholder": "Pride and Prejudice. Emma. Persuasion. What is yours?",
+        "saveTitle": "Save title",
+        "cancel": "Cancel",
+        "emptyHint": "The first letter, monologue, or session log will start the novel."
+      }
+    },
+    "epistolary": {
+      "wizard": {
+        "title": "Epistolary Phase",
+        "eyebrow": "Epistolary"
+      },
+      "roster": {
+        "title": "Epistolary Roster",
+        "heading": "Epistolary roster",
+        "summary": "{done} of {total} marked done"
+      },
+      "tabs": {
+        "inbox": "Inbox",
+        "compose": "Compose",
+        "outbox": "Outbox"
+      },
+      "compose": {
+        "intro": "Open the composer in its own window to write a letter.",
+        "openComposer": "Open the composer"
+      },
+      "filterBySeal": "Filter by seal",
+      "empty": "No letters here yet.",
+      "markDone": "Mark this character done with Epistolary",
+      "markedDone": "marked done"
+    },
+    "seal": {
+      "yellow":           "yellow wax",
+      "yellowHint":       "Plain golden wax — for cheerful everyday correspondence.",
+      "green":            "green wax",
+      "greenHint":        "Plain green wax — for unfussy notes.",
+      "redGold":          "red & gold · official invitation",
+      "redGoldHint":      "Formal red wax pressed in gold. Logs an \"invited\" entry in the session log.",
+      "copper":           "copper wax",
+      "copperHint":       "Burnished copper — fitting for matters of trade or finance.",
+      "purple":           "purple wax",
+      "purpleHint":       "Deep purple wax — for formal but personal mail.",
+      "grey":             "grey wax",
+      "greyHint":         "Neutral grey wax — discreet, unfussy.",
+      "black":            "black wax · burn after reading",
+      "blackHint":        "Black wax for matters meant to vanish. The letter destroys itself 30 seconds after the recipient opens it.",
+      "goldKey":          "gold key",
+      "goldKeyHint":      "An ornate gold-key impression — for secrets, promises, or covert correspondence.",
+      "snake":            "serpent",
+      "snakeHint":        "A coiled serpent — for matters of suspicion, intrigue, or counsel.",
+      "owl":              "owl",
+      "owlHint":          "An owl in flight — for letters of wisdom, advice, or scholarship.",
+      "sun":              "sun",
+      "sunHint":          "A bright sun — for joyful or congratulatory letters.",
+      "mushroom":         "toadstool",
+      "mushroomHint":     "A toadstool — for letters of mischief or the curious naturalist.",
+      "acorn":            "acorn",
+      "acornHint":        "An acorn — for letters of growth, beginnings, or pastoral matters.",
+      "houseCloudcandle": "House of Cloudcandle",
+      "houseCloudcandleHint": "The official seal of the House of Cloudcandle. Used for formal family correspondence.",
+      "houseWillowood":   "House of Willowood",
+      "houseWillowoodHint": "The official seal of the House of Willowood. Used for formal family correspondence.",
+      "burnedNotice": "(Burned. The letter is destroyed.)"
     },
     "upkeepWizard": {
       "windowTitle": "Upkeep",
@@ -1209,6 +1571,8 @@
       "subjectPlaceholder": "On a matter of…",
       "body": "Body",
       "seal": "Seal",
+      "greetingLabel": "Greeting",
+      "closingLabel": "Closing",
       "previewLabel": "PREVIEW · how the letter will appear in chat",
       "send": "Send ↗",
       "saveDraft": "Save Draft",
@@ -1222,7 +1586,29 @@
       "noRecipient": "Select a recipient before sending.",
       "discardTitle": "Discard Letter?",
       "discardBody": "You have unsaved changes. Discard the current letter?",
-      "unknownRecipient": "unknown recipient"
+      "unknownRecipient": "unknown recipient",
+      "greetings": {
+        "dear":      { "label": "Dear",       "template": "Dear {name}," },
+        "my-dear":   { "label": "My dear",    "template": "My dear {name}," },
+        "dearest":   { "label": "Dearest",    "template": "Dearest {name}," },
+        "my-dearest":{ "label": "My dearest", "template": "My dearest {name}," },
+        "esteemed":  { "label": "Esteemed",   "template": "Esteemed {name}," },
+        "to":        { "label": "To",         "template": "To {name}," },
+        "beloved":   { "label": "Beloved",    "template": "Beloved {name}," },
+        "honoured":  { "label": "Honoured",   "template": "Honoured {name}," },
+        "none":      { "label": "(no greeting)", "template": "" }
+      },
+      "closings": {
+        "faithfully":     { "label": "Yours faithfully",   "template": "Yours faithfully," },
+        "sincerely":      { "label": "Yours sincerely",    "template": "Yours sincerely," },
+        "ever":           { "label": "Yours ever",         "template": "Yours ever," },
+        "affectionately": { "label": "Affectionately",     "template": "Affectionately yours," },
+        "devoted":        { "label": "Your devoted",       "template": "Your devoted," },
+        "remain":         { "label": "I remain yours",     "template": "I remain, yours," },
+        "regard":         { "label": "With deepest regard","template": "With deepest regard," },
+        "servant":        { "label": "Your humble servant","template": "Your humble servant," },
+        "none":           { "label": "(no closing)",       "template": "" }
+      }
     },
     "rumourWizard": {
       "windowTitle": "Rumour & Scandal",
@@ -1281,6 +1667,64 @@
       "empty": "No rumours yet. Drama awaits.",
       "sceneControlTitle": "Open Rumour Board"
     },
+    "eventPopover": {
+      "windowTitle": "A Sudden Event",
+      "eyebrow": "Random event",
+      "targetingFor": "Confronting",
+      "strategiesHead": "Three strategies",
+      "strategiesHint": "Write three approaches you might take to address this. Roll 1d20 for each — your average across the three rolls determines the outcome.",
+      "strategyLabel": "strategy",
+      "strategyPlaceholder": "How would you handle this?",
+      "roll": "Roll 1d20",
+      "rollFlavor": "Strategy {n} · {event}",
+      "averageLabel": "Average",
+      "successVerdict": "You rise to the moment.",
+      "failureVerdict": "The moment slips away.",
+      "pickPositive": "Choose a positive reputation tag",
+      "pickNegative": "Choose a negative reputation tag",
+      "noTagOptions": "No tag options were authored for this outcome. Submit to close — no tag will be created.",
+      "submit": "Resolve event",
+      "cancel": "Cancel",
+      "strategyRequired": "Write the strategy before rolling.",
+      "rollAllFirst": "Roll all three strategies before resolving.",
+      "pickTagFirst": "Pick a reputation tag before resolving."
+    },
+    "randomEvent": {
+      "cardEyebrow": "RANDOM EVENT",
+      "success": "Success",
+      "failure": "Failure",
+      "average": "Average:",
+      "gainsPositive": "▲ gains",
+      "gainsNegative": "▼ gains",
+      "tagSource": "Random event · {event}"
+    },
+    "eventCommandCenter": {
+      "windowTitle": "Random Event Command Center",
+      "heading": "Random events",
+      "hint": "Pick a Major character, then launch an archetype-pooled event. Players write three strategies, roll 1d20 each — average ≥ 11 succeeds.",
+      "sceneControlTitle": "Open Random Event Command Center",
+      "rosterEyebrow": "Major characters",
+      "noMajors": "No Major characters in this world yet.",
+      "pickMajor": "Select a Major character from the roster to view their archetype pool.",
+      "noArchetype": "(no archetype assigned)",
+      "noArchetypeWarn": "This character has no archetype assigned. Open the dossier and pick one before launching an event.",
+      "assignArchetypeFirst": "This character has no archetype assigned. Open the dossier and pick one before launching an event.",
+      "archetypeMismatch": "This event's archetype does not match the selected character. Pick a matching event.",
+      "ownerOfflineBadge": "owner offline",
+      "ownerOffline": "{name}'s player is offline — cannot deliver the event right now.",
+      "offlineHint": "No player owner is currently online.",
+      "eventSingular": "event",
+      "eventPlural": "events",
+      "emptyPool": "No events authored for this archetype yet. Create one to fill the pool.",
+      "newEvent": "new event",
+      "newEventName": "New random event",
+      "editEvent": "edit",
+      "launch": "Launch ↗",
+      "launched": "Sent “{event}” to {target}.",
+      "launchMissing": "Could not launch — event or target not found.",
+      "totalEvents": "Total events authored",
+      "gmOnly": "Only the GM can open the Event Command Center."
+    },
     "gmPill": "GM"
   },
   "TYPES": {
@@ -1299,7 +1743,8 @@
       "reputation-condition": "Reputation Condition",
       "inner-conflict": "Inner Conflict",
       "magic-skill": "Magic / Skill",
-      "backstory-action": "Backstory Action"
+      "backstory-action": "Backstory Action",
+      "random-event": "Random Event"
     }
   }
 }

@@ -1,3 +1,5 @@
+import { profilePic } from '../helpers/profile-pic.js';
+
 /**
  * NpcOrganizer — frameless sidebar listing all Connection and NPC tokens
  * on the active scene. Updates in real-time via token hooks.
@@ -62,7 +64,10 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
       const item = {
         tokenId: token.id,
         tokenName: token.name,
-        portraitUrl: actor.system?.bio?.portraitUrl || actor.img || '',
+        // Editable subhead from system.bio.title — renders below tokenName
+        // in the organizer row when set.
+        title: (actor.system?.bio?.title ?? '').trim(),
+        portraitUrl: profilePic(actor),  // §8.5 token-based
         portraitInitial: (actor.name?.[0] ?? '?').toUpperCase(),
         theme: actor.system?.theme ?? (actor.type === 'npc' ? 'npc' : 'connection-green'),
         actorId: actor.id,

@@ -85,6 +85,9 @@
             </div>
             <span class="gs-themed gs-bulk-permissions__actor-name" data-theme="{{this.theme}}">
               {{this.displayName}}
+              {{#if this.title}}
+                <span class="gs-bulk-permissions__actor-title"><em>{{this.title}}</em></span>
+              {{/if}}
             </span>
             {{#if this.isStranded}}
               <span class="gs-bulk-permissions__stranded-dot"

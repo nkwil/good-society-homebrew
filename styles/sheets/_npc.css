@@ -1,244 +1,122 @@
-/* NPC sheet — layout and chrome.
-   Thin delta from _connection.css. Key differences:
-   - Sage side panel (var(--gs-accent-2)) vs. themed: the visual "house-styled" signal.
-   - GM pill in header eyebrow.
-   - Promote/grant action row below the role line.
-   - No impressions, no state row, no resolve track.
-   Per docs/design/16-npc-sheet.md. */
+/* NPC sheet — single-page dossier (post-MVP §4 visual register).
+ *
+ * Same shell as Major/Connection (dark desk + paper-warm card + 220×220
+ * cameo) but house-styled — NPCs don't carry a per-actor theme, so the
+ * default --gs-paper / --gs-brand / --gs-accent-* values (Inkwell &
+ * Wildflower house palette) cascade.
+ *
+ * Width: 680 px (slimmer than Connection's 760 since NPC has no resolve
+ * track or impressions list to widen). Height auto.
+ *
+ * Most layout primitives are inherited:
+ *   - .dossier-stage / .dossier-book / .dossier-page from _major-character.css
+ *   - .dossier-section / .dossier-section__head from _connection.css
+ *   - .dossier-scene-info / .dossier-state / .dossier-persona-pill from _connection.css
+ *   - .dossier-description__body from _connection.css
+ *
+ * This file owns the desk shell scoping for NPC + the GM-tools row
+ * (Promote / Grant) that sits where Connection puts its linked-Major chip.
+ */
 
-/* ── Sheet wrapper ───────────────────────────────────────────────────────── */
+/* Foundry button reset — same defensive pattern as the other sheets. */
+.gs-npc-sheet button {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ── Desk shell ──────────────────────────────────────────────────────────── */
+
+.application.npc .window-content,
+.gs-npc-sheet .window-content {
+  background:
+    radial-gradient(ellipse at center top, rgba(0, 0, 0, 0.18), transparent 70%),
+    radial-gradient(ellipse at 30% 70%,    rgba(0, 0, 0, 0.10), transparent 60%),
+    var(--gs-paper);
+  padding: 24px 28px;
+  overflow: auto;
+}
+
+/* Sheet root — transparent so the desk shows through. */
 .gs-npc-sheet {
+  background: transparent;
+  border: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   font-family: var(--gs-body);
   color: var(--gs-ink);
-  background: var(--gs-paper);
 }
 
-/* ── Header ──────────────────────────────────────────────────────────────── */
-.gs-npc-sheet__header {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  border-bottom: 0.5px solid var(--gs-accent-1);
+/* Single-page spread + solo page — inherit sizing rules from _connection.css
+ * via the shared class names but cap max-width slightly tighter for NPCs. */
+.gs-npc-sheet .dossier-spread--single {
+  display: block;
+  min-height: 0;
 }
 
-/* Sage side panel — the NPC visual signal (all Connections are themed; NPCs are sage) */
-.gs-npc-sheet__side {
+.gs-npc-sheet .dossier-page--solo {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ── NPC eyebrow row (GM pill above name) ────────────────────────────────── */
+
+.dossier-npc-eyebrow {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 22px 12px;
-  background: var(--gs-accent-2); /* sage — hardcoded, not a cascade from any theme */
-  border-right: none;
-}
-
-.gs-npc-sheet__portrait {
-  width: 70px;
-  height: 84px;
-  border-radius: 50%;
-  border: 1.5px solid var(--gs-paper); /* cream ring pops against sage bg */
-  object-fit: cover;
-}
-
-.gs-npc-sheet__portrait-fallback {
-  width: 70px;
-  height: 84px;
-  border-radius: 50%;
-  border: 1.5px solid var(--gs-paper);
-  background: rgba(255, 255, 255, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--gs-display);
-  font-size: 32px;
-  color: var(--gs-paper); /* cream on sage */
-}
-
-.gs-npc-sheet__bio-chips {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--gs-paper); /* cream on sage */
-  text-align: center;
-}
-
-/* Main column */
-.gs-npc-sheet__main {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 20px 22px;
-}
-
-/* Eyebrow row: GM pill + label left, theme note right */
-.gs-npc-sheet__eyebrow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 2px;
 }
 
-.gs-npc-sheet__eyebrow-left {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.gs-npc-sheet__eyebrow-label {
+.dossier-npc-eyebrow__label {
   font-family: var(--gs-body);
   font-variant: small-caps;
   font-size: 11px;
   letter-spacing: 0.18em;
-  color: var(--gs-brand);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
-.gs-npc-sheet__eyebrow-right {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 11px;
-  color: var(--gs-brand);
-  opacity: 0.65;
-}
+/* The .gs-gm-pill primitive is defined globally — it renders the small
+ * red GM badge. We don't override it here. */
 
-/* Name — 24px (smaller than Major's 32px, matching Connection's 26px but one step down) */
-.gs-npc-sheet__name {
-  font-family: var(--gs-display);
-  font-size: 24px;
-  color: var(--gs-brand);
-  background: transparent;
-  border: none;
-  padding: 0;
-  width: 100%;
-  line-height: 1.2;
-}
+/* ── GM tools row (Promote / Grant) ──────────────────────────────────────── */
 
-.gs-npc-sheet__name:focus {
-  outline: none;
-  border-bottom: 0.5px solid var(--gs-brand);
-}
-
-.gs-npc-sheet__role {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 13px;
-  color: var(--gs-accent-2);
-  margin: 0;
-  line-height: 1.3;
-}
-
-/* Promote/grant action row */
-.gs-npc-sheet__actions {
+/* Sits in the cameo's controls slot. Two outline-pill buttons side-by-side. */
+.dossier-npc-tools {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-top: 4px;
 }
 
-/* ── Description ─────────────────────────────────────────────────────────── */
-.gs-npc-sheet__description {
-  padding: 18px 22px 12px;
-  border-bottom: 0.5px solid var(--gs-accent-1);
-}
-
-/* ── Scene info ──────────────────────────────────────────────────────────── */
-.gs-npc-sheet__scene {
-  padding: 18px 22px;
-  border-bottom: 0.5px solid var(--gs-accent-1);
-}
-
-.gs-npc-sheet__scene-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 24px;
-  margin-top: 12px;
-}
-
-.gs-npc-sheet__scene-col {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.gs-npc-sheet__section-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.gs-npc-sheet__tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-/* Hover summary textarea */
-.gs-npc-sheet__hover-summary {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--gs-ink);
-  background: transparent;
-  border: 0.5px solid var(--gs-accent-1);
-  border-radius: 4px;
-  padding: 6px 8px;
-  resize: vertical;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* ── Personas block ──────────────────────────────────────────────────────── */
-.gs-npc-sheet__personas {
-  padding: 18px 22px;
-}
-
-.gs-npc-sheet__persona-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 10px;
-}
-
-/* NPC persona pills — house-style accent (no per-character-theme palette) */
-.gs-npc-persona-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: 0.5px solid var(--gs-accent-1);
-  border-left: 2.5px solid transparent;
-  border-radius: 4px;
-  padding: 4px 10px;
+.dossier-npc-tools__btn {
   font-family: var(--gs-body);
   font-size: 12px;
-  color: var(--gs-ink);
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 85%, transparent);
+  border-radius: 999px;
   cursor: pointer;
-  text-align: left;
+  transition: border-color 120ms, color 120ms, background 120ms;
 }
 
-.gs-npc-persona-pill--active {
-  border-left-color: var(--gs-brand); /* house brand — NPC has no character-theme brand */
+.dossier-npc-tools__btn:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: color-mix(in srgb, var(--gs-brand) 6%, transparent);
 }
 
-.gs-npc-persona-pill__primary {
-  font-style: italic;
-  font-size: 10px;
-  color: var(--gs-ink);
-  opacity: 0.5;
-  margin-left: auto;
-}
+/* ── Personas section — single-column variant (no resolve column) ────────── */
 
-.gs-npc-sheet__empty-state {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 12px;
-  color: var(--gs-ink);
-  opacity: 0.5;
-  margin: 0;
+/* The standalone .dossier-personas section uses the same persona-pill
+ * styling as Connection's state grid, but flows full-width since there's
+ * no resolve track sharing the row. */
+.dossier-personas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

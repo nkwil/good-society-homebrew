@@ -65,7 +65,7 @@
   font-size: 0.68rem;
   font-variant: small-caps;
   letter-spacing: 0.18em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   flex: 1;
 }
 
@@ -97,7 +97,7 @@
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
   background: transparent;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   font-family: var(--gs-display);
   font-size: 12px;
   line-height: 1;
@@ -167,14 +167,13 @@
 
 .gs-npc-organizer__row {
   display: grid;
-  grid-template-columns: 26px 1fr;
+  grid-template-columns: 32px 1fr;
   gap: 8px;
   align-items: center;
   padding: 5px 8px;
   border-radius: 4px;
   background: var(--gs-paper-warm);
   cursor: pointer;
-  border-left: 2.5px solid var(--gs-brand);
   pointer-events: auto;
   transition: opacity 0.15s;
 }
@@ -184,9 +183,9 @@
 }
 
 .gs-npc-organizer__row-portrait {
-  width: 22px;
-  height: 26px;
-  border-radius: 2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   overflow: hidden;
   background: var(--gs-muted);
   display: flex;
@@ -209,10 +208,30 @@
   user-select: none;
 }
 
+/* Two-line stack so the editable title sub-line can sit below the name. */
+.gs-npc-organizer__row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .gs-npc-organizer__row-name {
   font-family: var(--gs-display);
   font-size: 0.78rem;
   color: var(--gs-brand);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Editable subhead (system.bio.title) — italic, subdued, sits below the
+ * tokenName in the organizer row. Truncated on overflow. */
+.gs-npc-organizer__row-title {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 0.65rem;
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

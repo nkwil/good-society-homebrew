@@ -1,45 +1,112 @@
-/* Letter Composer — house-styled chrome wrapping the sender-themed preview zone.
- * Per docs/design/05-epistolary-ui.md §"Composer layout spec".
+/* Letter Composer — dossier-styled writing desk.
+ *
+ * Visual register: matches the Major/Connection dossier sheets — dark
+ * "desk" surface with paper cards floating on it. The form is the writer's
+ * scratch page (left); the live preview is the finished letter (right).
+ * Both feel like real cream paper with shadow, hairlines, and themed
+ * accents from the sender's actor theme.
+ *
+ * Structure (template-wise — unchanged):
+ *   .gs-letter-composer__wrapper      — outer flex column = the desk
+ *     .gs-letter-composer__form        — left page (writing surface)
+ *     .gs-letter-composer__preview-eyebrow  — section divider
+ *     .gs-letter-composer__preview-zone     — right page (themed letter)
+ *     .gs-letter-composer__action-bar       — footer w/ cancel/save/send
+ *
+ * The template still emits this in a SINGLE column (form on top, preview
+ * below) — we flip to a side-by-side TWO-PAGE BOOK layout via CSS grid
+ * here when the window is wide enough.
  */
 
-/* ── Wrapper ──────────────────────────────────────────────────────────────── */
+/* ── Outer "desk" surface ─────────────────────────────────────────────────── */
 
-.gs-letter-composer__wrapper {
-  display: flex;
-  flex-direction: column;
-  background: var(--gs-paper);
+.gs-letter-composer .window-content,
+.application.gs-letter-composer .window-content {
+  /* Same dark gradient as the Major dossier — letters live "on the desk" */
+  background:
+    radial-gradient(ellipse at center top, rgba(0, 0, 0, 0.16), transparent 70%),
+    radial-gradient(ellipse at 30% 70%,    rgba(0, 0, 0, 0.10), transparent 60%),
+    var(--gs-paper);
+  padding: 24px 28px;
+  overflow: auto;
 }
 
-/* ── Form zone ────────────────────────────────────────────────────────────── */
+.gs-letter-composer__wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "form    preview"
+    "form    preview"
+    "actions actions";
+  gap: 16px;
+  background: transparent;
+  min-height: 0;
+}
+
+/* When the window is narrow, stack vertically (form on top, preview below). */
+@media (max-width: 760px) {
+  .gs-letter-composer__wrapper {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "form"
+      "preview"
+      "actions";
+  }
+}
+
+/* ── Form zone — left page ────────────────────────────────────────────────── */
 
 .gs-letter-composer__form {
-  padding: 24px 28px;
+  grid-area: form;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  background: var(--gs-paper);
-  border-bottom: 0.5px solid var(--gs-accent-2, #708060);
+  gap: 12px;
+  padding: 24px 28px 28px;
+  background: var(--gs-paper-warm);
+  border-radius: 4px;
+  border: 0;
+  box-shadow:
+    0 0 0 0.5px color-mix(in srgb, var(--gs-hairlines, var(--gs-accent-2)) 35%, transparent),
+    0 1px 0 0 rgba(0, 0, 0, 0.18),
+    0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
 .gs-letter-composer__form-header {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 4px;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 0.5px solid color-mix(in srgb, var(--gs-headers, var(--gs-brand)) 35%, transparent);
+}
+
+/* Stamped "cycle 1 · novel" header eyebrow — same character as dossier
+ * section eyebrows so the form reads as a real dossier-style page. */
+.gs-letter-composer__form-header::before {
+  content: 'EPISTOLARY';
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gs-headers, var(--gs-brand));
 }
 
 .gs-letter-composer__cycle-label {
-  font-family: var(--gs-body, Georgia, serif);
+  font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
-  color: var(--gs-accent-2, #708060);
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  margin: 0;
 }
 
 /* ── Field row ────────────────────────────────────────────────────────────── */
 
 .gs-letter-composer__row {
   display: grid;
-  grid-template-columns: 90px 1fr;
-  gap: 14px;
+  grid-template-columns: 80px 1fr;
+  gap: 12px;
   align-items: center;
 }
 
@@ -47,137 +114,246 @@
   align-items: start;
 }
 
+/* Small-caps label — matches dossier section eyebrow style at a smaller scale */
 .gs-letter-composer__label {
-  font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 11px;
+  font-family: var(--gs-body);
   font-variant: small-caps;
+  font-size: 11px;
   letter-spacing: 0.16em;
-  color: var(--gs-brand, #2A3A2D);
-  white-space: nowrap;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  font-weight: 500;
 }
 
-/* ── Inputs ───────────────────────────────────────────────────────────────── */
+.gs-letter-composer__control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-.gs-letter-composer__input,
+/* Inputs + selects — share the same cream-paper sunken style as dossier inputs */
 .gs-letter-composer__actor-select,
+.gs-letter-composer__input,
 .gs-letter-composer__textarea {
-  font-family: var(--gs-body, Georgia, serif);
-  font-size: 14px;
-  color: var(--gs-ink, #3D2F26);
-  background: var(--gs-paper-warm, #F4ECD8);
-  border: 0.5px solid var(--gs-accent-2, #708060);
-  border-radius: 4px;
-  padding: 6px 10px;
   width: 100%;
+  font-family: var(--gs-body);
+  font-size: 13.5px;
+  color: var(--gs-ink);
+  background: color-mix(in srgb, var(--gs-paper) 85%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 18%, transparent);
+  border-radius: 4px;
+  padding: 7px 10px;
   box-sizing: border-box;
-  margin: 0;
+  transition: border-color 120ms, background 120ms;
 }
 
-.gs-letter-composer__input:focus,
+.gs-letter-composer__actor-select:hover,
+.gs-letter-composer__input:hover,
+.gs-letter-composer__textarea:hover {
+  border-color: color-mix(in srgb, var(--gs-ink) 28%, transparent);
+}
+
 .gs-letter-composer__actor-select:focus,
+.gs-letter-composer__input:focus,
 .gs-letter-composer__textarea:focus {
-  outline: 1.5px solid var(--gs-brand, #2A3A2D);
-  outline-offset: -1px;
-}
-
-.gs-letter-composer__actor-select {
-  cursor: pointer;
+  outline: none;
+  border-color: var(--gs-brand);
+  background: var(--gs-paper);
 }
 
 .gs-letter-composer__textarea {
-  min-height: 92px;
-  resize: vertical;
+  min-height: 160px;
   line-height: 1.6;
+  resize: vertical;
+  font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
 }
 
-/* ── Seal picker ──────────────────────────────────────────────────────────── */
+/* ── Seal picker — hand-rendered wax seals ────────────────────────────────
+ * Each option renders an actual wax-seal PNG from assets/seals/. The asset
+ * already has its own dome lighting, rim, and motif baked in, so we don't
+ * layer a synthetic wax gradient on top — that would muddy the artwork.
+ *
+ * The seal row wraps when the registry has too many entries to fit in one
+ * line (currently 15 seals, roughly 7–8 per row at this width). */
+
+.gs-letter-composer__row--seal {
+  align-items: start;
+}
 
 .gs-letter-composer__seal-row {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  row-gap: 12px;
 }
 
+/* Each seal is a circular button rendered with the asset as background.
+ * The inline `--gs-seal-accent` from the template carries the registry's
+ * `color` field — used for the selection ring + hover hint, where the
+ * artwork alone isn't enough to signal state. */
 .gs-letter-composer__seal-circle {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
-  cursor: pointer;
+  position: relative;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
   padding: 0;
-  flex-shrink: 0;
-  transition: border-color 0.1s, box-shadow 0.1s;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 0;
+  background-color: transparent;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Subtle drop-shadow grounds the disc on the cream paper without
+   * competing with the asset's own rim lighting. */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+  transition: transform 120ms, filter 120ms, box-shadow 120ms;
 }
 
 .gs-letter-composer__seal-circle:hover {
-  border-color: var(--gs-ink, #3D2F26);
+  transform: scale(1.12);
+  filter:
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.30))
+    drop-shadow(0 0 6px color-mix(in srgb, var(--gs-seal-accent, var(--gs-ink)) 45%, transparent));
 }
 
+/* Selection ring — rendered as a halo via box-shadow so it sits OUTSIDE
+ * the disc (no clipping of the seal artwork inside). The accent color
+ * from the registry distinguishes which seal is picked at a glance. */
 .gs-letter-composer__seal-circle--selected {
-  border-color: var(--gs-brand, #2A3A2D);
-  box-shadow: 0 0 0 2px var(--gs-paper, #EFE6D2);
-  outline: 1.5px solid var(--gs-brand, #2A3A2D);
+  transform: scale(1.10);
+  box-shadow:
+    0 0 0 2px var(--gs-paper-warm),
+    0 0 0 3.5px var(--gs-seal-accent, var(--gs-brand));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.32));
 }
 
 .gs-letter-composer__seal-label {
-  font-family: var(--gs-body, Georgia, serif);
+  font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 12px;
-  color: var(--gs-accent-2, #708060);
-  margin-left: 4px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  /* Pushed onto its own visual line below the wrap when the row is full. */
+  flex-basis: 100%;
+  margin-top: 2px;
 }
 
-/* ── Preview eyebrow ──────────────────────────────────────────────────────── */
+/* ── Preview eyebrow — divider between desk and finished letter ───────────── */
 
+/* On desktop the eyebrow lives between the two pages (above the preview
+ * zone in its own grid cell-less space). Here it occupies the right page's
+ * column header. */
 .gs-letter-composer__preview-eyebrow {
-  background: var(--gs-paper-warm, #F4ECD8);
-  border-top: 0.5px solid var(--gs-accent-2, #708060);
-  border-bottom: 0.5px solid var(--gs-accent-2, #708060);
-  padding: 10px 28px;
-  font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 11px;
-  font-variant: small-caps;
-  letter-spacing: 0.16em;
-  color: var(--gs-accent-2, #708060);
+  display: none; /* The preview zone has its own header eyebrow per page. */
 }
 
-/* ── Preview zone ─────────────────────────────────────────────────────────── */
+/* ── Preview zone — right page (finished letter) ──────────────────────────── */
 
 .gs-letter-composer__preview-zone {
-  background: var(--gs-paper, #EFE6D2);
-  padding: 24px 28px;
-  /* themed wrapper inside is isolated; house bg shows as the mat around the card */
+  grid-area: preview;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: transparent;
+  position: relative;
 }
 
-/* ── Action bar ───────────────────────────────────────────────────────────── */
+/* "PREVIEW" eyebrow floats at the top-left of the preview, like a section
+ * header. Uses the dossier eyebrow style (small-caps, brand-color, with
+ * a right-side trailing dot via ::after).  */
+.gs-letter-composer__preview-zone::before {
+  content: 'PREVIEW';
+  display: block;
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  margin: 0 4px 10px 4px;
+  padding-bottom: 6px;
+  border-bottom: 0.5px solid color-mix(in srgb, var(--gs-ink) 25%, transparent);
+}
+
+/* The themedWrap'd letter card lives inside .gs-letter-composer__preview-zone.
+ * The .gs-themed wrapper supplies brand/ink variables; the inner
+ * .gs-letter-card owns its own parchment chrome (cream paper, aged
+ * texture, deckled-edge shadow) — see _letter-card.css. So we only need
+ * the wrapper to flex correctly inside the composer's right page; no
+ * background override here, or we'd paint over the parchment. */
+.gs-letter-composer__preview-zone > .gs-themed {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.gs-letter-composer__preview-zone .gs-letter-card {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Action bar — footer ──────────────────────────────────────────────────── */
 
 .gs-letter-composer__action-bar {
+  grid-area: actions;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 28px;
-  background: var(--gs-paper, #EFE6D2);
-  border-top: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
+  padding: 12px 4px 0 4px;
+  border-top: 0.5px solid color-mix(in srgb, var(--gs-paper-warm) 75%, transparent);
 }
 
 .gs-letter-composer__status {
-  font-family: var(--gs-body, Georgia, serif);
+  font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
-  color: var(--gs-accent-2, #708060);
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--gs-paper-warm) 70%, transparent);
 }
 
 .gs-letter-composer__buttons {
   display: flex;
   gap: 8px;
-  align-items: center;
 }
 
-/* Disabled send button */
-.gs-letter-composer__buttons .gs-btn--primary:disabled {
+/* Footer buttons — defensive button-default reset (Foundry's min-height: 26 px). */
+.gs-letter-composer .gs-btn {
+  min-width: 0;
+  min-height: 0;
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-family: var(--gs-body);
+  font-size: 12px;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+}
+
+.gs-letter-composer .gs-btn--secondary {
+  background: transparent;
+  border: 0.5px solid color-mix(in srgb, var(--gs-paper-warm) 60%, transparent);
+  color: var(--gs-paper-warm);
+}
+.gs-letter-composer .gs-btn--secondary:hover {
+  border-color: var(--gs-paper);
+  color: var(--gs-paper);
+  background: color-mix(in srgb, var(--gs-paper-warm) 12%, transparent);
+}
+
+.gs-letter-composer .gs-btn--primary {
+  background: var(--gs-brand);
+  border: 0.5px solid var(--gs-brand);
+  color: var(--gs-paper-warm);
+}
+.gs-letter-composer .gs-btn--primary:hover {
+  background: color-mix(in srgb, var(--gs-brand) 88%, white);
+}
+
+.gs-letter-composer .gs-btn--primary[disabled] {
   opacity: 0.45;
   cursor: not-allowed;
 }

@@ -1,27 +1,43 @@
-/* Theme: clayton — Green and simple.
- * Default theme for new Major characters.
- * Shares display/body type with house style (Lora + Crimson Text).
- * Differentiation is palette only — appropriate for a grounded, unstyled character.
- * Source: docs/design/decisions.md §"Theme registry → clayton"
+/* Theme: clayton — Olive grove. Green + yellow throughout, distinct from
+ * Roger's cool-blue palette and from House's warm orange-beige.
  *
- * Selector pattern repeated for every theme in Session B-2:
- *   .gs-actor[data-theme="{id}"]   — full-sheet scoping (Major/Connection sheets)
- *   .gs-themed[data-theme="{id}"]  — portable wrapper (chat cards, letters, board rows)
- * Both selectors apply the same variable overrides; they are peers, not parent-child.
+ * Inspired by `GS Build Colors (1).pdf` page 4 but explicitly pushed into
+ * green-yellow territory per Natalie's note: "I want Clayton's theme to run
+ * more green and yellow." Paper, ink, brand, headers, and hairlines all sit
+ * in the green-yellow family. Gilt metallic carries the yellow accent.
+ *
+ * Accessibility: body text 12.5:1 AAA; headers 6.7:1 AA (7.2:1 AAA on
+ * raised); brand 4.5:1 UI ✓.
  */
 .gs-actor[data-theme='clayton'],
 .gs-themed[data-theme='clayton'] {
-  --gs-paper:       #F4F1E6;
-  --gs-paper-warm:  #E8E4D6;
-  --gs-side-panel:  #C9DABB;
-  --gs-ink:         #2A332A;
-  --gs-brand:       #4A6B3F;
-  --gs-accent-1:    #708060;
-  --gs-accent-2:    #C9A574;
-  --gs-accent-3:    #9CB088;
-  --gs-display:     'Lora', 'Palatino', Georgia, serif;
-  --gs-body:        'Crimson Text', 'Palatino', Georgia, serif;
-  --gs-italic:      'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  /* Surfaces pulled lighter + softer per user feedback. The yellow-green
+   * identity is preserved; the saturation just relaxes so the paper reads
+   * more "olive cream" than "pistachio." Brand and headers stay where
+   * they are — the contrast against the lighter paper is still AA+. */
+  --gs-paper:        #F0F0DA;          /* soft olive cream — Clayton's identity surface */
+  --gs-paper-warm:   #F7F7E5;          /* very pale yellow-cream raised */
+  --gs-side-panel:   #E5E6C4;          /* slightly deeper, still muted */
+  --gs-ink:          #2A2810;          /* dark olive ink (~12:1 AAA on the new paper) */
+
+  --gs-brand:        #5a7235;          /* olive green — indicator color (4.5:1 UI ✓) */
+  --gs-headers:      #4a5520;          /* deep olive for headers + name (6.7:1 AA) */
+  --gs-hairlines:    #c5cba0;          /* yellow-sage hairlines */
+  --gs-metallic:     #C9A55C;          /* gilt — yellow accent */
+  --gs-muted-accent: #DCD9B5;          /* yellow mist */
+
+  /* Legacy aliases */
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  /* Per-theme accent ornament for .gs-eyebrow::after (post-MVP §8.1).
+   * Masked + filled with --gs-brand so it picks up the theme color. */
+  --gs-accent-svg:   url('/systems/good-society-homebrew/assets/theme-accents/clayton.svg');
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', Georgia, serif;
 }
 
 /* Connection base — shared by all five connection variants.

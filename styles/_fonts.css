@@ -3,7 +3,13 @@
  * Font files are copied from @fontsource node_modules into styles/fonts/
  * by the postinstall npm script (scripts/copy-fonts.mjs).
  * Do not reference node_modules paths here — Foundry does not serve node_modules.
+ *
+ * Lavishly Yours — post-MVP §7.1 ornament face, used in exactly one place
+ * (the dossier name initial per §4.2). Loaded from Google Fonts; the
+ * `--gs-ornament` CSS variable falls back to other script faces and
+ * ultimately to italic display if Google Fonts is blocked / unreachable.
  */
+@import url('https://fonts.googleapis.com/css2?family=Lavishly+Yours&display=swap');
 
 /* Lora — house display + Clayton, roger (fallback) */
 @font-face {
@@ -90,7 +96,9 @@
   src: url('./fonts/eb-garamond/eb-garamond-latin-400-italic.woff2') format('woff2');
 }
 
-/* DM Serif Display — mags display (open substitute for Didot/Bodoni) */
+/* DM Serif Display — legacy mags/avril display fallback. Post-MVP §7 keeps
+ * the @font-face declaration available for any theme that opts back in to
+ * the heavier display face; the current 7 Major themes all use Lora. */
 @font-face {
   font-family: 'DM Serif Display';
   font-style: normal;

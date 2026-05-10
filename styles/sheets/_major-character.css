@@ -1,539 +1,1858 @@
-/* Major Character sheet — sheet-level layout
- * spec: docs/design/04-character-sheet.md §"Header spec — locked"
- * Data-theme set on this.element by MajorCharacterSheet._onRender;
- * all CSS variables below resolve from the character's theme scope.
+/* Major Character dossier — post-MVP §4.
+ *
+ * Two-page leather-book spread. The sheet's window-content is the leather
+ * desk; .dossier-stage is the staging area with corner marginalia;
+ * .dossier-book is the bound book; .dossier-spread is the active two-page
+ * spread (left page + spine + right page). Alt spreads (backstory pages,
+ * connection public-info) live in `_dossier-extras.css` and toggle via
+ * `.is-on-alt-spread` on the sheet root.
+ *
+ * Data-theme set on this.element by MajorCharacterSheet._onRender; all
+ * CSS variables below resolve from the character's theme scope.
+ *
+ * Action handlers preserved: every `data-action="..."` in book.hbs maps
+ * back to the same handler the v0.1 tabbed sheet used (toggleResolvePip,
+ * toggleMt, takeMonologue, toggleBox, openItem, beginConflict,
+ * toggleVisibility, openActor, addConnection, createItem, deleteItem,
+ * castSkill, openPersonaSwitcher, setTheme, showSpread, backToDossier).
  */
 
-/* ── Header ─────────────────────────────────────────────────────────── */
-
-/* Two-column: side panel (130px) + main (flex 1) */
-.gs-major-sheet__header {
-  display: grid;
-  grid-template-columns: 130px 1fr;
+/* ── Foundry button defaults reset — scoped to the Major sheet ─────────────
+ * Foundry v13 applies `min-height: 26px` and a small `min-width` to every
+ * <button> via its core stylesheet. These silently defeat explicit small
+ * width/height on component buttons (inner conflict boxes, MT pill, tag-pill
+ * mini-actions, theme swatch buttons, resolve pips, etc.) — buttons styled
+ * at < 26px get stretched into rectangles. Reset across the whole dossier
+ * so component CSS can use the dimensions it declares without having to
+ * fight Foundry per-rule. Individual rules elsewhere in this file may also
+ * set `min-width: 0; min-height: 0` defensively; this rule is the canonical
+ * source of the reset. */
+.gs-major-sheet button,
+.gs-major-sheet .dossier-extras button {
+  min-width: 0;
+  min-height: 0;
 }
 
-/* Side panel — uses theme-specific --gs-side-panel bg */
-.gs-major-sheet__side {
-  background: var(--gs-side-panel);
-  padding: 24px 14px;
+/* ── Eyebrow override on the dossier scope ─────────────────────────────────
+ * Per the canonical color spec (`GS Build Colors (1).pdf`), section
+ * eyebrows use the THEME's "Headers & Eyebrows" color (`--gs-headers`),
+ * not the brand color. Brand is reserved for indicators (resolve pips,
+ * MT badge, persona pill border).
+ *
+ * The hairline below the eyebrow + the right-edge dot also follow
+ * --gs-headers so the section divider tints to the actor's chosen
+ * header color (e.g. aqua for Avril, mustard for Dixon, etc.). */
+
+.gs-major-sheet .gs-eyebrow {
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 11.5px;
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gs-headers);
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 0.5px solid var(--gs-headers);
+  position: relative;
+  display: flex;
+  align-items: baseline;
+}
+
+.gs-major-sheet .gs-eyebrow::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  width: 5px;
+  height: 5px;
+  background: var(--gs-headers);
+  box-shadow: 0 0 0 3px var(--gs-paper);
+  border-radius: 50%;
+  transform: none;
+  pointer-events: none;
+}
+
+.gs-major-sheet .gs-eyebrow--subdued {
+  font-weight: 500;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  margin-bottom: 8px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.gs-major-sheet .gs-eyebrow--subdued::after {
+  display: none;
+}
+
+/* ── Window-content as the desk surface ──────────────────────────────────
+ * The desk uses the theme's "Surface" color (--gs-paper) — for Avril
+ * that's #2f1734 plum, so the desk reads as a darker plum behind the
+ * dark-steel raised pages. For House (cream surface), the desk is a
+ * subtle warm cream that the raised pages contrast against subtly. The
+ * radial overlays add atmosphere without overriding the surface color. */
+
+.application.major-character .window-content,
+.gs-major-sheet .window-content {
+  background:
+    radial-gradient(ellipse at center top, rgba(0, 0, 0, 0.18), transparent 70%),
+    radial-gradient(ellipse at 30% 70%,    rgba(0, 0, 0, 0.10), transparent 60%),
+    var(--gs-paper);
+  padding: 28px 32px;
+  overflow: auto;
+}
+
+/* Hide v1 chrome bits we no longer use. */
+.gs-major-sheet .gs-major-sheet__strip { display: none; }
+
+/* The sheet root — transparent so the desk shows. */
+.gs-major-sheet {
+  background: transparent;
+  border: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
 }
 
-/* Portrait: 86×102px oval. 50% border-radius on non-square = ellipse. */
-.gs-major-sheet__portrait {
-  width: 86px;
-  height: 102px;
+/* ── Stage — pages float on the desk ────────────────────────────────────── */
+
+.dossier-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1080px;
+  padding: 0;
+  margin: 0 auto;
+}
+
+/* Corner marginalia — soft gilt halos at the desk corners. Replaceable
+ * with proper SVG ornaments later. */
+.dossier-marginalia {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(201, 165, 92, 0.35) 0%, transparent 65%);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.dossier-marginalia--tl { top: -32px; left: -48px; }
+.dossier-marginalia--tr { top: -32px; right: -48px; }
+.dossier-marginalia--bl { bottom: -32px; left: -48px; }
+.dossier-marginalia--br { bottom: -32px; right: -48px; }
+
+/* The .dossier-book wrapper exists in markup for forward compat with
+ * book-style chrome (binding spine, page-turn animation). For v0 we just
+ * use it as a flex container holding two free-floating paper pages. No
+ * paper, no border, no shadow on the wrapper itself. */
+.dossier-book {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.dossier-book::before { content: none; }
+
+/* ── Spread — two paper cards + small desk gap ──────────────────────────── */
+
+.dossier-spread {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  /* min-height kept modest so blank-slate dossiers don't render with a giant
+   * empty page; pages grow naturally to fit content. The sheet's
+   * position.height (1040) gives content area ~960 px, which comfortably
+   * holds the right page's six sections at typical content density. */
+  min-height: 600px;
+}
+
+/* Each page is a free-floating "raised surface" — sits ABOVE the leather
+ * desk backdrop. Per the canonical PDF spec, the page uses the theme's
+ * "Raised Surface" value (--gs-paper-warm), which for Avril is #2E3340
+ * dark steel. The "Surface" color (--gs-paper) is reserved for elements
+ * that sit at base level (e.g., the leather desk, modal backdrops). */
+.dossier-page {
+  padding: 32px 36px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--gs-paper-warm);
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 0.5px color-mix(in srgb, var(--gs-hairlines) 35%, transparent),
+    0 1px 0 0 rgba(0, 0, 0, 0.25),
+    0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Aged-paper vignette is opt-in per theme — the warm-brown overlay
+ * was making dark themes (Avril, Pearlinda, Secret) look muddy. Light
+ * themes can re-enable via a body class if desired. */
+.dossier-page::before {
+  content: none;
+}
+
+/* The spine element is now invisible — pages float on the desk with the
+ * `gap` between them showing the desk surface. Keep the element in markup
+ * for future binding chrome. */
+.dossier-spine {
+  display: none;
+}
+
+/* ── Cameo header (left page top) ───────────────────────────────────────── */
+
+/* Cameo header — the token cameo is absolutely positioned so it doesn't
+ * push the page content down. It sits in the upper-left of the page,
+ * sticking up slightly above the page edge for an "applique" effect.
+ * The name + role + bio + controls flow normally with a left padding
+ * to clear the cameo's footprint. Sections BELOW the cameo (criteria,
+ * rep tags, etc.) flow at full page width since the cameo takes no
+ * grid space. */
+.dossier-cameo {
+  display: block;
+  position: relative;
+  /* Cameo sits absolute over the upper-left; reserve horizontal room for
+   * it by padding the cameo body block. With cameo at left:-20 within the
+   * page (its left edge ~16 px from page edge, right edge ~236 px from
+   * page edge), padding-left:216 puts text content at 252 px from page
+   * edge — leaving a ~16 px gutter to the right of the cameo. The cameo
+   * now eats roughly 27 px from the left gutter and 15 px from the right
+   * gutter for more visual presence at the same physical size. */
+  padding-left: 216px;
+  min-height: 220px;
+}
+
+.dossier-cameo__frame {
+  /* Round token cameo — the token IS the cameo (post-MVP §8.5). Custom
+   * tokens carry their own framing in the artwork; no gilt ring, no
+   * border. Click target opens the FilePicker.
+   *
+   * Sized and positioned per Natalie's red-circle annotation: 220×220,
+   * roughly flush with the page top edge (top:-24 to push past the page's
+   * 32 px padding-top), 32 px inset from the cameo container's left
+   * (which sits 36 px in from the page left after page padding, so the
+   * cameo's left edge lands ~68 px from the actual page edge). The cameo
+   * takes no normal-flow space so the criteria / rep tags / tokens
+   * sections below flow at full width without being pushed down.
+   */
+  position: absolute;
+  top: -24px;                 /* near-flush with page top (compensates for page padding-top: 32) */
+  left: -20px;                /* extends into the left gutter so cameo sits ~16 px from page edge (was 43 px) */
+  padding: 0;
+  cursor: pointer;
+  width: 220px;
+  height: 220px;
+  min-width: 220px;
+  min-height: 220px;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
-  border: 1px solid var(--gs-accent-3);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 140ms ease;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.dossier-cameo__frame:hover {
+  transform: scale(1.03);
+}
+
+.dossier-cameo__img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
-  flex-shrink: 0;
 }
 
-/* Fallback when no portrait URL: initial letter in display type */
-.gs-major-sheet__portrait-fallback {
-  width: 86px;
-  height: 102px;
-  border-radius: 50%;
-  border: 1px solid var(--gs-accent-3);
-  background: var(--gs-paper-warm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.dossier-cameo__initial {
   font-family: var(--gs-display);
-  font-size: 42px;
-  color: var(--gs-brand);
-  flex-shrink: 0;
-}
-
-.gs-major-sheet__bio-chips {
-  font-style: italic;
-  font-size: 11px;
-  line-height: 1.6;
-  text-align: center;
-  color: var(--gs-ink);
-}
-
-/* Full-width hairline inside the side panel */
-.gs-major-sheet__side-rule {
-  width: 100%;
-  margin: 0;
-}
-
-/* "persona" small-caps eyebrow above the switcher */
-.gs-major-sheet__persona-eyebrow {
-  font-variant: small-caps;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--gs-brand);
-  text-align: center;
-}
-
-/* Persona select styled as italic text dropdown, no chrome */
-.gs-major-sheet__persona-select {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 14px;
-  color: var(--gs-brand);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  text-align: center;
-  width: 100%;
-  padding-right: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%232A3A2D'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0 center;
-}
-
-.gs-major-sheet__persona-none {
-  font-style: italic;
-  font-size: 11px;
-  color: var(--gs-accent-2);
-}
-
-/* ── Main column ─────────────────────────────────────────────────────── */
-
-.gs-major-sheet__main {
-  background: var(--gs-paper);
-  padding: 22px 28px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* Eyebrow row: "major character" left, "theme · {id}" right */
-.gs-major-sheet__eyebrow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-.gs-major-sheet__eyebrow-left {
-  font-variant: small-caps;
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  color: var(--gs-brand);
-}
-
-.gs-major-sheet__eyebrow-right {
-  font-style: italic;
-  font-size: 11px;
-  color: var(--gs-brand);
-}
-
-/* Theme picker select in the eyebrow row (replaces the read-only label) */
-.gs-major-sheet__theme-select {
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
-  font-size: 11px;
-  color: var(--gs-brand);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0 16px 0 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='4' viewBox='0 0 7 4'%3E%3Cpath d='M0 0l3.5 4 3.5-4z' fill='%232A3A2D'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0 center;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-/* Character name — display type, 32px; editable */
-.gs-major-sheet__name {
-  font-family: var(--gs-display);
-  font-size: 32px;
-  line-height: 1.05;
-  color: var(--gs-brand);
-  border: none;
-  background: transparent;
-  padding: 0;
-  width: 100%;
-  margin: 0;
-}
-
-.gs-major-sheet__name:focus {
-  outline: none;
-  border-bottom: 0.5px solid var(--gs-brand);
-}
-
-/* Role / title — derived display (peerage + family); read-only */
-.gs-major-sheet__role {
-  font-style: italic;
-  font-size: 14px;
-  color: var(--gs-brand);
-  margin: 0;
-}
-
-/* Hairline between role/title and the tab nav */
-.gs-major-sheet__main-rule {
-  margin: 8px 0 0;
-}
-
-/* ── Tab nav ─────────────────────────────────────────────────────────── */
-
-/* Sits at the bottom of the main column; hairline is the rule below it */
-.gs-major-sheet__nav {
-  display: flex;
-  gap: 0;
-  margin-top: auto;
-}
-
-.gs-major-sheet__tab-btn {
-  background: transparent;
-  border: none;
-  border-bottom: 1.5px solid transparent;
-  padding: 8px 18px;
-  font-family: var(--gs-body);
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  color: var(--gs-accent-3);
-  cursor: pointer;
-  /* Overlap the hairline rule above the nav by 0.5px so the active underline */
-  /* extends cleanly below it without a gap.                                   */
-  margin-bottom: -0.5px;
-}
-
-.gs-major-sheet__tab-btn.active {
-  color: var(--gs-brand);
-  border-bottom-color: var(--gs-brand);
-}
-
-.gs-major-sheet__tab-btn:hover:not(.active) {
-  color: var(--gs-brand);
-}
-
-/* ── Tab content panels ──────────────────────────────────────────────── */
-
-.gs-major-sheet__tab-public,
-.gs-major-sheet__tab-private {
-  background: var(--gs-paper);
-  padding: 24px;
-  min-height: 200px;
-}
-
-/* ── Tab content — shared section layout ────────────────────────────── */
-
-.gs-major-sheet__section {
-  margin-bottom: 18px;
-}
-
-.gs-major-sheet__section--last {
-  margin-bottom: 6px;
-}
-
-/* Section row: header left, eyebrow/rule text right (e.g. Inner Conflict rule) */
-.gs-major-sheet__section-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
-}
-
-.gs-major-sheet__rule-eyebrow {
-  font-style: italic;
-  font-size: 11px;
-  color: var(--gs-ink);
-  opacity: 0.65;
-}
-
-/* Field header: section label left, visibility flag (± add button) right */
-.gs-major-sheet__field-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.gs-major-sheet__field-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Empty-state placeholder text */
-.gs-major-sheet__empty-state {
-  font-style: italic;
-  font-size: 13px;
-  color: var(--gs-accent-3);
-  margin: 0;
-}
-
-/* ── Public tab — Reputation Criteria card ──────────────────────────── */
-
-.gs-major-sheet__criteria-card {
-  background: var(--gs-paper-warm);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-top: 8px;
-}
-
-.gs-major-sheet__criteria-card--redacted {
-  display: flex;
-  align-items: center;
-}
-
-.gs-major-sheet__criteria-text {
-  font-style: italic;
-  font-size: 13px;
-  color: var(--gs-ink);
-  margin: 0;
-  line-height: 1.55;
-}
-
-.gs-major-sheet__criteria-empty {
-  font-style: italic;
-  font-size: 13px;
-  color: var(--gs-accent-2);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.gs-redacted-bar {
-  display: inline-block;
-  background: var(--gs-ink);
-  color: var(--gs-paper);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  padding: 3px 10px;
-  border-radius: 3px;
-  opacity: 0.65;
-}
-
-/* ── Public tab — Reputation Tags grid ──────────────────────────────── */
-
-/* Two-column grid for +/- polarity columns */
-.gs-major-sheet__rep-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 8px;
-}
-
-.gs-major-sheet__rep-col-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.gs-major-sheet__add-tag-btn {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  font-size: 14px;
+  font-size: 120px;
+  color: var(--gs-headers);
   line-height: 1;
-  border-radius: 4px;
 }
 
-.gs-major-sheet__tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-/* ── Public tab — Conditions ────────────────────────────────────────── */
-
-.gs-major-sheet__condition-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-/* ── Public tab — Completed Conflicts ───────────────────────────────── */
-
-.gs-major-sheet__completed-list {
+.dossier-cameo__body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-/* ── Private tab — Bio chips ────────────────────────────────────────── */
-
-.gs-major-sheet__section--bio {
-  margin-bottom: 12px;
-}
-
-.gs-bio-chips {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--gs-ink);
-}
-
-.gs-bio-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.gs-bio-chip__sep {
-  color: var(--gs-accent-3);
-  user-select: none;
-}
-
-.gs-bio-chip__input {
-  font-family: var(--gs-body);
-  font-size: 13px;
-  color: var(--gs-ink);
-  background: transparent;
-  border: none;
-  border-bottom: 0.5px solid var(--gs-accent-2);
-  padding: 0 2px;
-  width: 3em;
-  text-align: center;
-}
-
-.gs-bio-chip__input--wide {
-  width: 10em;
-  text-align: left;
-}
-
-.gs-bio-chip__input--narrow {
-  width: 2.5em;
-}
-
-.gs-bio-chip__input:focus {
-  outline: none;
-  border-bottom-color: var(--gs-brand);
-}
-
-/* ── Private tab — Connections ──────────────────────────────────────── */
-
-.gs-connection-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.gs-connection-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--gs-paper-warm);
-  border: 0.5px solid var(--gs-accent-2);
-  border-radius: 8px;
-  padding: 4px 10px 4px 6px;
-  cursor: pointer;
-  font-size: 12px;
-  color: var(--gs-ink);
-}
-
-.gs-connection-chip__portrait {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid var(--gs-accent-2);
-}
-
-.gs-connection-chip__initial {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1px solid var(--gs-accent-2);
-  background: var(--gs-paper);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--gs-display);
-  font-size: 12px;
-  color: var(--gs-brand);
-}
-
-.gs-connection-chip__name {
-  font-family: var(--gs-body);
-  font-size: 12px;
-}
-
-/* ── Private tab — Magic/Skills ─────────────────────────────────────── */
-
-.gs-major-sheet__skill-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.gs-skill-tile {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  background: var(--gs-paper-warm);
-  border-radius: 8px;
-  padding: 10px 14px;
-}
-
-.gs-skill-tile__body {
-  flex: 1;
+  gap: 4px;
   min-width: 0;
 }
 
-.gs-skill-tile__name {
+/* The character name. The Lavishly Yours-faced first letter sits before
+ * the editable input as a ceremonial drop cap (per §4.2 — the sole
+ * ornament-face exception). The input value is the slice (everything
+ * after the first letter); when no persona is active the input has
+ * `name="name"` and form-submit serializes the slice — but the JS sheet
+ * pre-pends the ornament initial back at write time so actor.name stays
+ * the full name. (See JS submit handler.) */
+.dossier-cameo__name {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  margin: 0;
   font-family: var(--gs-display);
-  font-size: 14px;
-  color: var(--gs-brand);
-  display: block;
-  margin-bottom: 2px;
+  font-weight: 500;
+  font-size: 36px;
+  /* line-height 1.35 gives Lora's descenders (g/p/y/etc.) room — 1.05
+   * was clipping them at the input's content edge. */
+  line-height: 1.35;
+  color: var(--gs-headers);
+  /* Reserve room below the baseline so descenders never clip even when
+   * the wrapper itself is height-constrained. */
+  padding-bottom: 6px;
 }
 
-.gs-skill-tile__desc {
+/* Responsive sizing: the JS helper module/helpers/responsive-name.js sets
+ * `--gs-name-scale` on the `.dossier-cameo__name` container based on the
+ * full visible name length. Both the ornament initial and the editable
+ * input multiply their font-size by that scale via calc() so long names
+ * shrink instead of clipping. Default 1 (no shrink) when JS hasn't run. */
+.dossier-cameo__name-initial {
+  font-family: var(--gs-ornament, var(--gs-display));
+  font-size: calc(56px * var(--gs-name-scale, 1));
+  line-height: 0.9;
+  color: var(--gs-headers);
+  margin-right: 2px;
+  vertical-align: -6px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dossier-cameo__name-input {
+  flex: 1;
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: calc(36px * var(--gs-name-scale, 1));
+  line-height: 1.35;
+  color: var(--gs-headers);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  /* Foundry's default input often clips descenders by computing height
+   * from font-size only. Force a content box that includes descender
+   * space. Multiplied min-height keeps the input visually balanced when
+   * the name shrinks. */
+  height: auto;
+  min-height: calc(36px * 1.35 * var(--gs-name-scale, 1));
+}
+
+.dossier-cameo__name-input:focus {
+  outline: none;
+  border-bottom: 0.5px solid var(--gs-headers);
+}
+
+/* Editable subhead — title or quick description. Italic, subdued, sits
+ * directly below the name. Hairline bottom-border on focus only (matches
+ * the name input's affordance pattern). Used on Major / Connection / NPC
+ * sheets via the {{system.bio.title}} field. */
+.dossier-cameo__title {
+  display: block;
+  width: 100%;
+  margin: 2px 0 6px 0;
+  padding: 0 0 2px 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  background: transparent;
+  border: 0;
+  border-bottom: 0.5px solid transparent;
+  outline: none;
+}
+.dossier-cameo__title::placeholder {
+  color: color-mix(in srgb, var(--gs-ink) 40%, transparent);
+  font-style: italic;
+}
+.dossier-cameo__title:focus {
+  border-bottom: 0.5px solid var(--gs-hairlines, var(--gs-accent-2));
+}
+
+.dossier-cameo__role {
+  margin: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14px;
+  color: var(--gs-headers);
+}
+
+.dossier-cameo__bio-chips {
+  margin: 2px 0 0;
+  font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 12px;
-  color: var(--gs-ink);
-  margin: 0;
-  line-height: 1.5;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
 }
 
-.gs-skill-tile__swap-note {
-  font-size: 11px;
-  color: var(--gs-accent-1);
+.dossier-cameo__bio-chips span {
+  white-space: nowrap;
+}
+
+/* ── New header layout (replaces the inline bio-chips run) ───────────────
+ * Hierarchy:
+ *   Name (large, responsive)
+ *   Subhead (e.g. "Duke of Cloudcandle")  — quiet honorific
+ *   Pronouns                              — footnote-tiny
+ *   Bio line: [N] years of age | Archetype
+ *   Descriptors: [appearance] [temperament] (input above muted label)
+ */
+
+/* Subhead — quiet honorific directly below the name. Tighter spacing so
+ * the whole header column reads as a single block. */
+.dossier-cameo__subhead {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 400;
+  color: color-mix(in srgb, var(--gs-headers) 78%, transparent);
+  background: transparent;
+  border: 0;
+  border-bottom: 0.5px solid transparent;
+  outline: none;
+  /* Foundry's input min-height was forcing extra vertical space here. */
+  min-height: 0;
+  height: auto;
+}
+.dossier-cameo__subhead::placeholder {
+  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
   font-style: italic;
 }
-
-.gs-skill-tile__cast {
-  flex-shrink: 0;
-  align-self: center;
+.dossier-cameo__subhead:focus {
+  border-bottom: 0.5px solid var(--gs-hairlines);
 }
 
-/* ── Private tab — Adventurer Sentiment ─────────────────────────────── */
+/* Pronouns — footnote line directly under the subhead. Inline-sized
+ * select that hugs its content (no full-width balloon from Foundry's
+ * default form-control width). */
+.dossier-cameo__pronouns-line {
+  margin: 1px 0 6px 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
 
-.gs-major-sheet__sentiment-input {
+.dossier-cameo__pronouns-select {
+  display: inline-block;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0 !important;
+  padding: 0 12px 0 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  line-height: 1.2;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 7px) center, calc(100% - 3.5px) center;
+  background-size: 3.5px 3.5px, 3.5px 3.5px;
+  background-repeat: no-repeat;
+}
+.dossier-cameo__pronouns-select:focus { outline: none; }
+.dossier-cameo__pronouns-select option {
+  font-family: var(--gs-body);
+  font-style: normal;
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+}
+
+/* Bio line — "[N] years of age | Archetype" on a single line. No wrap so
+ * the divider + select can't fall to a new line and stretch full-width. */
+.dossier-cameo__bio-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 5px;
+  margin: 0 0 6px 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+.dossier-cameo__age-input {
+  width: 3ch;
+  flex: 0 0 auto;
+  background: transparent;
+  border: 0 !important;
+  border-bottom: 0.5px solid transparent !important;
+  font: inherit;
+  color: var(--gs-ink);
+  text-align: center;
+  padding: 0 !important;
+  margin: 0;
+  outline: none;
+  height: auto;
+  min-height: 0;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.dossier-cameo__age-input::-webkit-inner-spin-button,
+.dossier-cameo__age-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.dossier-cameo__age-input:focus {
+  border-bottom: 0.5px solid var(--gs-hairlines) !important;
+}
+
+.dossier-cameo__bio-line-text {
+  white-space: nowrap;
+}
+
+/* Inline italic input that blends into the bio-line — used by Connection
+ * and NPC dossiers in place of the Major's age + archetype combo. Reads
+ * as a single italic role/relationship phrase ("the family's bookish
+ * heir", "town crier, prone to rumormongering"). */
+.dossier-cameo__bio-line-input {
+  flex: 1 1 auto;
+  background: transparent;
+  border: 0 !important;
+  border-bottom: 0.5px solid transparent !important;
+  padding: 0 !important;
+  margin: 0;
+  font: inherit;
+  font-style: italic;
+  color: var(--gs-headers);
+  outline: none;
+  height: auto;
+  min-height: 0;
   width: 100%;
+  min-width: 0;
+}
+.dossier-cameo__bio-line-input::placeholder {
+  color: color-mix(in srgb, var(--gs-ink) 35%, var(--gs-paper));
+  font-style: italic;
+}
+.dossier-cameo__bio-line-input:focus {
+  border-bottom: 0.5px solid var(--gs-hairlines) !important;
+}
+
+.dossier-cameo__bio-line-sep {
+  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  padding: 0 4px;
+}
+
+.dossier-cameo__peerage-select {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0 !important;
+  border-bottom: 0.5px solid transparent !important;
+  padding: 0 12px 0 0 !important;
+  margin: 0;
+  font: inherit;
+  font-style: italic;
+  color: var(--gs-headers);
+  line-height: 1.2;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 7px) center, calc(100% - 3.5px) center;
+  background-size: 3.5px 3.5px, 3.5px 3.5px;
+  background-repeat: no-repeat;
+}
+.dossier-cameo__peerage-select:focus {
+  outline: none;
+  border-bottom: 0.5px solid var(--gs-hairlines) !important;
+}
+.dossier-cameo__peerage-select option {
+  font-family: var(--gs-body);
+  font-style: normal;
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+}
+
+/* Archetype line — sits directly below the bio line; same visual register as
+ * the bio line but with a small leading label so the user reads the field
+ * name. Reuses the peerage select's caret/typography. */
+.dossier-cameo__archetype-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0 8px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+}
+.dossier-cameo__archetype-label {
+  font-family: var(--gs-ui);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+.dossier-cameo__archetype-select {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0 !important;
+  border-bottom: 0.5px solid transparent !important;
+  padding: 0 12px 0 0 !important;
+  margin: 0;
+  font: inherit;
+  font-style: italic;
+  color: var(--gs-headers);
+  line-height: 1.2;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 7px) center, calc(100% - 3.5px) center;
+  background-size: 3.5px 3.5px, 3.5px 3.5px;
+  background-repeat: no-repeat;
+}
+.dossier-cameo__archetype-select:focus {
+  outline: none;
+  border-bottom: 0.5px solid var(--gs-hairlines) !important;
+}
+.dossier-cameo__archetype-select option {
+  font-family: var(--gs-body);
+  font-style: normal;
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+}
+
+/* Descriptors — appearance + temperament STACKED (not side-by-side).
+ * Each is an input with the field name as a small muted label UNDER it
+ * (form-group style flipped vertically). Tighter row spacing so the
+ * whole stack feels like one continuous block. */
+.dossier-cameo__descriptors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0 6px 0;
+}
+
+.dossier-cameo__descriptor {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0;
+}
+
+.dossier-cameo__descriptor-input {
+  background: transparent;
+  border: 0 !important;
+  border-bottom: 0.5px solid var(--gs-hairlines) !important;
+  padding: 1px 0 2px 0 !important;
+  margin: 0;
+  font-family: var(--gs-body);
+  font-size: 13.5px;
+  line-height: 1.3;
+  color: var(--gs-ink);
+  outline: none;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+}
+.dossier-cameo__descriptor-input::placeholder {
+  color: color-mix(in srgb, var(--gs-ink) 30%, transparent);
+}
+.dossier-cameo__descriptor-input:focus {
+  border-bottom-color: var(--gs-headers) !important;
+}
+
+.dossier-cameo__descriptor-label {
+  font-family: var(--gs-display);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* Mix ink toward paper (not transparent) so the label always reads as
+   * a tinted-paper tone — no alpha artifacts. Works on every theme:
+   *   - light themes: dark ink + light paper → soft mid-grey
+   *   - dark themes:  light ink + dark paper → soft mid-grey
+   * 35% keeps it firmly subordinate to the input above without
+   * disappearing into the surface.
+   *
+   * `!important` defeats foundry-chrome.css's blanket
+   * `body.gs-chrome-themed ... label { color: #2A1812 !important }`
+   * which would otherwise repaint these labels in dark ink and ignore
+   * the theme cascade entirely. */
+  color: color-mix(in srgb, var(--gs-ink) 35%, var(--gs-paper)) !important;
+  margin: 1px 0 0;
+  line-height: 1.1;
+}
+
+.dossier-cameo__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.dossier-cameo__sep {
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+/* Theme dropdown — styled native <select> matching the persona pill.
+ * The select sits in normal flow inside a <label> wrapper so it
+ * contributes its intrinsic width to the pill (sized by the longest
+ * theme name + padding). The custom chevron is absolutely positioned at
+ * the right edge over the OS chevron we hide via appearance: none. */
+.dossier-cameo__theme-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 22px 0 10px;
+  font-family: var(--gs-italic, var(--gs-display));
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--gs-ink);
+  background: var(--gs-paper-warm);
+  border: 1px solid var(--gs-hairlines);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.dossier-cameo__theme-pill:hover {
+  background: var(--gs-paper);
+}
+
+.dossier-cameo__theme-pill:focus-within {
+  outline: 2px solid var(--gs-metallic);
+  outline-offset: 2px;
+}
+
+.dossier-cameo__theme-select {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+  /* Sized by content — the longest theme name determines pill width. */
+}
+
+.dossier-cameo__theme-select:focus { outline: none; }
+
+/* Native <option> elements use the OS dropdown chrome (we can't fully
+ * style them without a JS popover). Force a readable color/background so
+ * dark themes don't render unreadable text in the OS dropdown. */
+.dossier-cameo__theme-select option {
+  font-family: var(--gs-body);
+  font-style: normal;
+  font-size: 13px;
+  color: #2A1812;
+  background: #F4ECD8;
+}
+
+.dossier-cameo__theme-chevron {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-style: normal;
+  font-size: 11px;
+  color: var(--gs-metallic);
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ── True-identity theme edit button (✎) ─────────────────────────────────
+ * Replaces the inline theme dropdown that used to sit next to the persona
+ * pill in true-identity mode. Same shape as other ✎ buttons (e.g.,
+ * .dossier-edit-btn for desire/notes). Click opens a small DialogV2 with
+ * a theme picker — handler is #editTrueIdentityTheme. Visible ONLY when
+ * no persona is active; when a persona IS active, theme edits flow
+ * through the persona editor instead. */
+.dossier-cameo__edit-identity-btn {
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  border-radius: 50%;
+  background: var(--gs-paper-warm);
+  color: var(--gs-headers);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+}
+.dossier-cameo__edit-identity-btn:hover {
+  border-color: var(--gs-headers);
+  background: color-mix(in srgb, var(--gs-headers) 10%, transparent);
+}
+.dossier-cameo__edit-identity-btn:focus-visible {
+  outline: 1.5px solid var(--gs-metallic);
+  outline-offset: 1px;
+}
+
+/* ── Section base ───────────────────────────────────────────────────────── */
+
+.dossier-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.dossier-section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dossier-section__add-btn {
+  font-size: 12px;
+  padding: 2px 10px;
+  min-width: 24px;
+}
+
+.dossier-empty {
+  margin: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+
+/* ── Reputation criteria card (with crest) ──────────────────────────────── */
+
+/* Cards inside the page share the page's --gs-paper-warm background and
+ * lift via a hairline border + subtle inset shadow rather than a tonal
+ * shift. Per the canonical PDF, raised surfaces are the same color as
+ * the page itself; cards differentiate via stroke, not fill. */
+.dossier-criteria {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid color-mix(in srgb, var(--gs-hairlines) 50%, transparent);
+  border-left: 2.5px solid var(--gs-brand);
+  border-radius: 0 4px 4px 0;
+  padding: 12px 16px;
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+}
+
+.dossier-criteria > .gs-eyebrow {
+  margin-bottom: 6px;
+}
+
+.dossier-criteria__crest {
+  position: absolute;
+  /* Sit on top of the eyebrow's bottom hairline like a stamp. The opaque
+   * paper-warm background + matching ring (via box-shadow) cleanly cuts
+   * through the line where the crest overlaps it — same trick the eyebrow's
+   * gilt diamond uses. Previously the crest was 20% hairlines + transparent,
+   * so the line showed through the medallion. */
+  top: 8px;
+  right: 14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-hairlines);
+  box-shadow: 0 0 0 3px var(--gs-paper-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gs-headers);
+}
+
+.dossier-criteria__body p {
+  margin: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gs-ink);
+}
+
+.dossier-criteria__body--redacted .gs-redacted-bar {
+  display: inline-block;
+  width: 60%;
+  height: 14px;
+  border-radius: 2px;
+  background: rgba(61, 47, 38, 0.25);
+}
+
+/* ── Reputation tag rows (positive / negative) ──────────────────────────── */
+
+.dossier-rep-tags {
+  gap: 10px;
+}
+
+.dossier-rep-row {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.dossier-rep-row__label {
+  font-family: var(--gs-display);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+.dossier-rep-row__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dossier-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  height: 24px;
+  border-radius: 100px;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12.5px;
+  background: var(--gs-paper);
+  overflow: hidden;
+}
+
+.dossier-tag-pill__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.dossier-tag-pill__delete {
+  width: 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  font-size: 13px;
+  transition: width 120ms ease, padding 120ms ease;
+  padding: 0;
+}
+
+.dossier-tag-pill:hover .dossier-tag-pill__delete {
+  width: 22px;
+  padding: 0 6px 0 0;
+}
+
+.dossier-tag-pill--positive {
+  background: var(--rep-positive-bg);
+  border: 1px solid var(--gs-positive);
+  color: var(--gs-positive);
+}
+
+.dossier-tag-pill--negative {
+  background: var(--rep-negative-bg);
+  border: 1px solid var(--gs-danger);
+  color: var(--gs-danger);
+}
+
+.dossier-tag-pill--empty {
+  border: 1px dashed color-mix(in srgb, var(--gs-accent-2) 50%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  background: transparent;
+}
+
+/* Clickable open-slot — `--add` variant of the empty pill. Reset button
+ * defaults so the pill keeps its existing dashed look, and add a hover
+ * state that hints at clickability. */
+.dossier-tag-pill--add {
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+}
+
+.dossier-tag-pill--add:hover {
+  border-color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: var(--gs-headers);
+  background: color-mix(in srgb, var(--gs-headers) 6%, transparent);
+}
+
+.dossier-tag-pill__placeholder {
+  padding: 0 12px;
+}
+
+/* Always-visible "+" button at the end of each rep row — for adding a
+ * tag past the 3-slot visual cap (the model has no max). Small circular
+ * pill so it doesn't compete with the tag pills themselves. */
+.dossier-tag-pill__add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  font-family: var(--gs-display);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+}
+
+.dossier-tag-pill__add-btn:hover {
+  border-style: solid;
+  border-color: var(--gs-headers);
+  color: var(--gs-headers);
+  background: color-mix(in srgb, var(--gs-headers) 8%, transparent);
+}
+
+/* ── Active reputation chip ────────────────────────────────────────────── */
+
+.dossier-active-rep__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dossier-active-rep__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px 4px 10px;
+  background: var(--gs-paper);
+  border: 1px solid var(--gs-accent-3);
+  border-radius: 100px;
+  cursor: pointer;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 13px;
   color: var(--gs-ink);
-  background: var(--gs-paper-warm);
-  border: 0.5px solid var(--gs-accent-2);
-  border-radius: 4px;
-  padding: 6px 12px;
+  transition: background 120ms ease;
 }
 
-.gs-major-sheet__sentiment-input:focus {
+.dossier-active-rep__chip:hover {
+  background: var(--gs-paper-warm);
+}
+
+.dossier-active-rep__laurel {
+  font-size: 18px;
+  color: var(--gs-accent-3);
+}
+
+.dossier-active-rep__earned {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  margin-left: 4px;
+}
+
+/* ── Inner conflict ledger ─────────────────────────────────────────────── */
+
+.dossier-inner-conflict__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.dossier-inner-conflict__rule {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+
+.dossier-inner-conflict__box {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid color-mix(in srgb, var(--gs-hairlines) 50%, transparent);
+  border-radius: 6px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+}
+
+.dossier-inner-conflict__row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.dossier-inner-conflict__side-label {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--gs-headers);
+}
+
+/* Inline-editable side labels on the dossier — match the visual weight of
+ * the static span (Lora 17px headers-color), but with a transparent
+ * background and a hairline-only on hover/focus to advertise editability. */
+.dossier-inner-conflict__side-input {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--gs-headers);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed transparent;
+  padding: 2px 4px;
+  width: 100%;
+  max-width: 180px;
+  text-align: center;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.dossier-inner-conflict__side-input:hover {
+  border-bottom-color: color-mix(in srgb, var(--gs-headers) 35%, transparent);
+}
+
+.dossier-inner-conflict__side-input:focus {
   outline: none;
-  border-color: var(--gs-brand);
+  border-bottom-color: var(--gs-headers);
+  background: color-mix(in srgb, var(--gs-headers) 6%, transparent);
 }
 
-/* ── Tokens & Cycle strip ────────────────────────────────────────────── */
+.dossier-inner-conflict__side-input::placeholder {
+  color: color-mix(in srgb, var(--gs-headers) 50%, transparent);
+  font-style: italic;
+}
 
-.gs-major-sheet__strip {
+/* Inline-editable bio chips on the cameo — number/text inputs and a
+ * small <select>, all sized to match the original bio-chips text run.
+ * Hover and focus reveal a hairline so it reads as editable without
+ * cluttering the cameo when at rest. */
+.dossier-bio-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.dossier-bio-chip__sep {
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  margin: 0 2px;
+}
+
+.dossier-bio-chip__label {
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  font-style: italic;
+}
+
+.dossier-bio-chip__input,
+.dossier-bio-chip__select {
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed transparent;
+  padding: 1px 4px;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.dossier-bio-chip__input--age {
+  width: 3.2em;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.dossier-bio-chip__input--age::-webkit-inner-spin-button,
+.dossier-bio-chip__input--age::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.dossier-bio-chip__input--appearance {
+  font-style: italic;
+  width: auto;
+  min-width: 8em;
+  max-width: 14em;
+}
+
+.dossier-bio-chip__select {
+  cursor: pointer;
+}
+
+.dossier-bio-chip__input:hover,
+.dossier-bio-chip__select:hover {
+  border-bottom-color: color-mix(in srgb, var(--gs-muted-accent) 50%, transparent);
+}
+
+.dossier-bio-chip__input:focus,
+.dossier-bio-chip__select:focus {
+  outline: none;
+  border-bottom-color: var(--gs-headers);
+  background: color-mix(in srgb, var(--gs-headers) 6%, transparent);
+}
+
+.dossier-bio-chip__input::placeholder {
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  font-style: italic;
+}
+
+.dossier-inner-conflict__vs {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+/* Edit affordance — opens the inner-conflict item sheet for things the
+ * dossier doesn't expose inline (description, completion controls,
+ * delete via right-click). Sits at the upper-right of the conflict box
+ * but pulled OUTSIDE the box's content edge via negative offset, so it
+ * "floats" above the corner and doesn't overlap the right-side label
+ * input below it.
+ *
+ * Visual: pill-shaped button with pencil glyph, subdued default state
+ * with a hover affordance that advertises clickability. */
+.dossier-inner-conflict__box {
+  position: relative;
+}
+
+.dossier-inner-conflict__edit {
+  position: absolute;
+  top: -14px;
+  right: 4px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: var(--gs-paper-warm);
-  border-top: 0.5px solid var(--gs-accent-3);
-  padding: 14px 28px;
+  border: 1px solid color-mix(in srgb, var(--gs-muted-accent) 60%, transparent);
+  border-radius: 100px;
+  padding: 3px 10px;
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 11px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  cursor: pointer;
+  opacity: 0.85;
+  transition: color 120ms ease, border-color 120ms ease, opacity 120ms ease, background 120ms ease;
+}
+
+.dossier-inner-conflict__edit::before {
+  content: '✎';
+  font-size: 12px;
+  font-style: normal;
+}
+
+.dossier-inner-conflict__edit:hover {
+  color: var(--gs-headers);
+  border-color: var(--gs-headers);
+  background: color-mix(in srgb, var(--gs-headers) 8%, transparent);
+  opacity: 1;
+}
+
+.dossier-inner-conflict__count {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+.dossier-inner-conflict__row--boxes {
+  align-items: center;
+}
+
+.dossier-inner-conflict__boxes {
+  display: inline-flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.dossier-inner-conflict__box-cell {
+  width: 16px;
+  height: 16px;
+  /* Foundry v13 applies min-height: 26px and a min-width to all <button>
+     elements via its core stylesheet, which overrides explicit width/height
+     and renders these as 16×26 rectangles. Reset both, plus border-box so
+     the 1.5px border stays inside the 16×16 footprint. */
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  background: transparent;
+  border: 1.5px solid var(--gs-brand);
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dossier-inner-conflict__box-cell.is-filled {
+  background: var(--gs-brand);
+}
+
+.dossier-inner-conflict__footer {
+  margin: 4px 0 0;
+  text-align: center;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+.dossier-inner-conflict__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px;
+  background: var(--gs-paper-warm);
+  border: 0.5px dashed color-mix(in srgb, var(--gs-hairlines) 50%, transparent);
+  border-radius: 6px;
+}
+
+.dossier-inner-conflict__empty p {
+  margin: 0;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+/* ── Tokens card ───────────────────────────────────────────────────────── */
+
+.dossier-tokens-card {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid color-mix(in srgb, var(--gs-hairlines) 50%, transparent);
+  border-radius: 6px;
+  padding: 14px 18px;
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+}
+
+.dossier-tokens-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.dossier-tokens-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.dossier-tokens-cell .gs-eyebrow,
+.dossier-tokens-cell .gs-eyebrow--subdued {
+  margin: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.dossier-tokens-cell .gs-eyebrow::after,
+.dossier-tokens-cell .gs-eyebrow--subdued::after {
+  display: none;
+}
+
+.dossier-tokens-meta {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+.dossier-resolve {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dossier-resolve-pip {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;          /* defensive — Foundry button defaults can shrink */
+  min-height: 14px;
+  aspect-ratio: 1 / 1;       /* lock circle */
+  border-radius: 50%;
+  border: 1px solid var(--gs-brand);
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  line-height: 0;
+}
+
+.dossier-resolve-pip.is-filled {
+  background: var(--gs-brand);
+}
+
+.dossier-mt {
+  width: 36px;
+  height: 24px;
+  /* Reset Foundry's default min-height: 26px on <button>; height 24 would
+     otherwise be ignored and the pill would render as 36×26. */
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  background: transparent;
+  border: 1px solid var(--gs-brand);
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--gs-brand);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.dossier-mt.is-on {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+}
+
+.dossier-monologue-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--gs-accent-3);
+  background: transparent;
+}
+
+.dossier-monologue-dot.is-available {
+  background: var(--gs-accent-3);
+}
+
+.dossier-tokens-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+/* ── Right page — private head ─────────────────────────────────────────── */
+
+.dossier-private-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+}
+
+.dossier-private-head__title {
+  margin: 0;
+  font-family: var(--gs-italic, var(--gs-display));
+  font-style: italic;
+  font-size: 22px;
+  color: var(--gs-headers);
+  font-weight: 500;
+}
+
+.dossier-private-head__hint {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  border: 0.5px solid var(--gs-muted-accent);
+  border-radius: 100px;
+  padding: 2px 10px;
+}
+
+/* Visibility flag inline in eyebrows. */
+.dossier-vis-flag {
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  cursor: pointer;
+  padding: 0;
+  text-transform: lowercase;
+  letter-spacing: 0;
+}
+
+.dossier-vis-flag .gs-visibility-flag__glyph {
+  margin-right: 2px;
+}
+
+/* The eyebrow on the right page hosts a vis-flag at its right edge.
+ * Re-flow eyebrow to flex so the flag floats right. */
+.dossier-page-right .gs-eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* ── Desire — body-size italic prose ───────────────────────────────────────
+ *
+ * Previously rendered as a 32px italic display block ("ceremonial desire
+ * statement"); per user feedback, sizes match the other body inputs (notes,
+ * backstory, description) at 13.5 px. Italic stays — desire is still a
+ * voiced statement, just at body weight. */
+.dossier-desire__body {
+  position: relative;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+  font-weight: 400;
+}
+
+.dossier-desire__body p { margin: 0 0 8px 0; }
+.dossier-desire__body p:last-child { margin-bottom: 0; }
+.dossier-desire__body .editor { background: transparent; border: 0; }
+
+/* Lists rendered inside the read-only body — explicit styling so the
+ * chrome theme's `list-style: none` reset doesn't strip the bullets. */
+.dossier-desire__body ul,
+.dossier-sentiment__body ul {
+  list-style: disc;
+  margin: 4px 0 8px 20px;
+  padding: 0;
+}
+.dossier-desire__body ol,
+.dossier-sentiment__body ol {
+  list-style: decimal;
+  margin: 4px 0 8px 24px;
+  padding: 0;
+}
+.dossier-desire__body li,
+.dossier-sentiment__body li {
+  margin: 2px 0;
+  padding-left: 2px;
+}
+.dossier-desire__body li::marker,
+.dossier-sentiment__body li::marker {
+  color: var(--gs-headers);
+}
+
+/* All four body fields (desire / notes / adventurer sentiment / backstory)
+ * use the eyebrow ✎ → DialogV2 + <prose-mirror> editing flow. Hide any
+ * auto-rendered editor pencils nested inside their read-only bodies so
+ * the affordance stays in the eyebrow row. */
+.dossier-desire__body .editor-edit,
+.dossier-notes__body .editor-edit,
+.dossier-sentiment__body .editor-edit,
+.dossier-backstory__body .editor-edit {
+  display: none !important;
+}
+
+/* ── Notes & objectives ────────────────────────────────────────────────── */
+
+.dossier-notes__body {
+  position: relative;
+  font-family: var(--gs-body);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+}
+
+.dossier-notes__body ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* ── Edit button next to eyebrow (desire / notes / backstory) ─────────────
+ * Sits inside the section's <header class="gs-eyebrow">, after the label
+ * text and before the visibility flag. Triggers the editField action
+ * handler which forwards to the (hidden) auto edit anchor inside the body.
+ * Same shape as the visibility flag pill — keeps the header rhythm clean. */
+.dossier-edit-btn {
+  /* Reset Foundry's default <button> chrome — see the file-top reset for
+     the pattern. Same min-width/min-height: 0 escape hatch. */
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Sits immediately after the subhead label text in the eyebrow's flex
+     row. 10px breathing room from the localized text, so the small ✎
+     glyph reads as "edit this section" without crowding the heading. */
+  margin-left: 10px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--gs-accent-1);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+}
+
+.dossier-edit-btn:hover {
+  border-color: var(--gs-accent-1);
+  color: var(--gs-accent-1);
+  background: color-mix(in srgb, var(--gs-accent-1) 10%, transparent);
+}
+
+.dossier-edit-btn:focus-visible {
+  outline: 1.5px solid var(--gs-accent-3);
+  outline-offset: 1px;
+}
+
+/* When both the edit button and the visibility flag are in the same
+   eyebrow header, the edit button takes the auto-margin (anchored right)
+   and the flag sits to its right with a small gap. */
+.dossier-edit-btn + .dossier-vis-flag {
+  margin-left: 6px;
+}
+
+.dossier-notes__body li {
+  margin-bottom: 4px;
+}
+
+.dossier-notes__body li::marker {
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+.dossier-notes__body .editor { background: transparent; border: 0; }
+
+/* ── Adventurer sentiment ──────────────────────────────────────────────── */
+
+.dossier-sentiment__input {
+  width: 100%;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14px;
+  color: var(--gs-ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 50%, transparent);
+  padding: 4px 0;
+}
+
+.dossier-sentiment__input:focus {
+  outline: none;
+  border-bottom-color: var(--gs-brand);
+}
+
+/* ── Magic & skills cards ──────────────────────────────────────────────── */
+
+.dossier-magic__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dossier-magic-card {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid color-mix(in srgb, var(--gs-hairlines) 50%, transparent);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+}
+
+.dossier-magic-card__icon {
+  font-size: 20px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  text-align: center;
+}
+
+/* Custom icon image variant — when system.iconUrl is set on a magic-skill,
+ * the row renders a 28×28 round thumb instead of the ⊛ glyph. Hardcoded
+ * size + circular crop keeps every row consistent regardless of source
+ * image dimensions. */
+.dossier-magic-card__icon--img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.dossier-magic-card__name {
+  display: block;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--gs-headers);
+  cursor: pointer;
+}
+
+.dossier-magic-card__desc {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+}
+
+.dossier-magic-card__cast {
+  background: var(--gs-danger);
+  color: var(--gs-paper);
+  border-color: var(--gs-danger);
+  font-size: 11px;
+  padding: 4px 12px;
+}
+
+/* Hover override — the base `.gs-empty-state__action:hover` wipes the
+ * background to a brand-tinted near-transparent, which would put paper-
+ * cream text on paper-warm with no contrast. Invert: paper background +
+ * danger text + danger border, so it reads as "ready to fire" on hover. */
+.dossier-magic-card__cast:hover {
+  background: var(--gs-paper) !important;
+  color: var(--gs-danger) !important;
+  border-color: var(--gs-danger) !important;
+}
+
+/* ── Connections chips ─────────────────────────────────────────────────── */
+
+.dossier-connections__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Chip is identity-only — token + name, no description, no hairline frame
+ * (removed 2026-05 per design call). Stays inline-flex so portrait + name
+ * sit side-by-side; the themed paper alone signals "tappable element." */
+.dossier-connection-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  background: var(--gs-paper-warm);
+  border: 0;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.dossier-connection-chip:hover {
+  background: var(--gs-paper);
+  transform: translateY(-1px);
+}
+
+.dossier-connection-chip__disc {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gs-brand);
   display: flex;
   align-items: center;
-  min-height: 50px;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--gs-paper);
 }
+
+.dossier-connection-chip__disc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dossier-connection-chip__initial {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--gs-paper);
+}
+
+.dossier-connection-chip__body {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.dossier-connection-chip__name {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-ink);
+}
+
+/* .dossier-connection-chip__role rule removed 2026-05 — the relationship
+ * description is no longer rendered inside the chip (identity-only chips
+ * per design call). The full description lives on the connection sheet. */
+
+/* ── Backstory teaser ──────────────────────────────────────────────────── */
+
+.dossier-backstory__body {
+  font-family: var(--gs-body);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+}
+
+.dossier-backstory__body p {
+  margin: 0 0 8px;
+}
+
+.dossier-backstory__body .editor { background: transparent; border: 0; }
+
+/* ── Window-level overrides for v1 chat-card classes that bleed in ──────
+ * Some v1 patterns leave residue when the dossier lives inside the same
+ * Foundry window stack. Belt-and-braces resets to keep the dossier paper
+ * clean. */
+
+.gs-major-sheet .gs-section-header { display: none; } /* legacy v1 headers — superseded by .gs-eyebrow in book.hbs */

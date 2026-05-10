@@ -1,0 +1,246 @@
+{{!--
+  Dossier extras — post-MVP §4 dossier refactor.
+
+  Renders the alt-spread surfaces (backstory pages, connection public-info
+  pages). These coexist with the default tab-public / tab-private flow:
+  when no alt spread is active, the default sheet renders normally and these
+  blocks are hidden via CSS. When the user navigates to one of these spreads
+  (e.g. via a connection chip click), CSS hides the default parts and shows
+  the matching `.dossier-spread.is-active`.
+--}}
+<section class="gs-dossier-extras">
+
+  {{!-- Backstory spreads — one per `<hr class="page-break">` separator.
+       Wrapped in .dossier-page--solo so each spread reads as a real
+       book page (paper-warm card, shadow, generous padding). The
+       back-to-dossier chip floats in the top-left corner like a
+       bookmark — same affordance as the connection alt-spread. --}}
+  {{#each backstoryPages as |page index|}}
+    <article class="dossier-spread dossier-spread--single dossier-spread--backstory"
+             data-spread="backstory-{{add index 1}}">
+
+      <button type="button"
+              class="dossier-spread__back-chip"
+              data-action="backToDossier">
+        ← {{localize "GOODSOCIETY.dossier.backToDossier"}}
+      </button>
+
+      <div class="dossier-page dossier-page--solo dossier-page--backstory">
+        <header class="dossier-backstory-page__head">
+          <span class="gs-eyebrow">
+            {{localize "GOODSOCIETY.dossier.backstoryHeading"}}
+          </span>
+          <span class="dossier-backstory-page__marker">
+            {{add index 1}} / {{../backstoryPages.length}}
+          </span>
+        </header>
+
+        <div class="dossier-backstory-page__body">{{{page}}}</div>
+
+        <footer class="dossier-backstory-page__pager">
+          {{#if (gt index 0)}}
+            <button type="button" class="gs-empty-state__action"
+                    data-action="showSpread"
+                    data-goto="backstory-{{index}}">
+              ← {{localize "GOODSOCIETY.dossier.previousPage"}}
+            </button>
+          {{else}}<span></span>{{/if}}
+
+          {{#if (lt (add index 1) ../backstoryPages.length)}}
+            <button type="button" class="gs-empty-state__action"
+                    data-action="showSpread"
+                    data-goto="backstory-{{add index 2}}">
+              {{localize "GOODSOCIETY.dossier.nextPage"}} →
+            </button>
+          {{else}}<span></span>{{/if}}
+        </footer>
+      </div>
+    </article>
+  {{/each}}
+
+  {{!-- Connection public-info spreads — one per Connection in this Major's
+       connections array. Resolved data comes from `connectionsResolved` in
+       _prepareContext.
+
+       Layout: TWO-PAGE BOOK SPREAD that mimics the Major dossier's character
+       spread. The clicked connection takes the LEFT page; the RIGHT page is
+       a blank parchment slot reserved for a second connection (a future
+       enhancement will allow pinning a second connection beside the first).
+
+       Back-to-dossier chip floats in the spread's TOP-LEFT corner, above
+       both pages — like a bookmark sticking out of the open spread.
+
+       Public-info-only per post-MVP §4.4.2: no resolve track, no personas
+       list, no GM private fields. --}}
+  {{#each connectionsResolved as |conn|}}
+    <article class="dossier-spread dossier-spread--connection gs-themed{{#if conn.isNpc}} dossier-spread--npc{{/if}}"
+             data-spread="conn-{{conn.id}}"
+             data-theme="{{conn.theme}}">
+
+      {{!-- Floating back-to-dossier chip — sits in the spread's top-left
+           corner so it reads as a bookmark indicating "you're on a flipped
+           page; click here to return to the character spread." --}}
+      <button type="button"
+              class="dossier-spread__back-chip"
+              data-action="backToDossier">
+        ← {{localize "GOODSOCIETY.dossier.backToDossier"}}
+      </button>
+
+      {{!-- LEFT PAGE — the connection's public-info dossier page. --}}
+      <div class="dossier-page dossier-page--connection-left dossier-page--connection">
+
+        <header class="dossier-cameo">
+          <span class="dossier-cameo__frame dossier-cameo__frame--readonly">
+            {{#if conn.portraitUrl}}
+              <img class="dossier-cameo__img" src="{{conn.portraitUrl}}" alt="{{conn.displayName}}" />
+            {{else}}
+              <span class="dossier-cameo__initial">{{firstLetter conn.displayName}}</span>
+            {{/if}}
+          </span>
+
+          <div class="dossier-cameo__body">
+            <h1 class="dossier-cameo__name">
+              <span class="dossier-cameo__name-initial" aria-hidden="true">{{firstLetter conn.displayName}}</span>
+              <span class="dossier-cameo__name-static">{{slice conn.displayName 1}}</span>
+            </h1>
+
+            {{#if conn.title}}
+              <p class="dossier-cameo__title-static"><em>{{conn.title}}</em></p>
+            {{/if}}
+
+            {{#if conn.relationshipLabel}}
+              <p class="dossier-cameo__role"><em>{{conn.relationshipLabel}}</em></p>
+            {{/if}}
+
+            <p class="dossier-cameo__bio-chips">
+              {{#if conn.pronouns}}
+                <span class="dossier-bio-chip">
+                  <span class="dossier-bio-chip__label">{{localize "GOODSOCIETY.connection.pronounsLabel"}}</span>
+                  <span class="dossier-bio-chip__static">{{conn.pronouns}}</span>
+                </span>
+              {{/if}}
+              {{#if conn.relationshipLabel}}
+                {{#if conn.pronouns}}<span class="dossier-bio-chip__sep" aria-hidden="true">·</span>{{/if}}
+                <span class="dossier-bio-chip">
+                  <span class="dossier-bio-chip__label">{{localize "GOODSOCIETY.connection.roleLabel"}}</span>
+                  <span class="dossier-bio-chip__static">{{conn.relationshipLabel}}</span>
+                </span>
+              {{/if}}
+            </p>
+
+            {{!-- Page-type eyebrow (NPC vs Connection). Sits where the
+                 standalone sheet's linked-Major chip lives. --}}
+            <div class="dossier-cameo__controls dossier-conn-spread-controls">
+              <span class="gs-eyebrow gs-eyebrow--subdued dossier-conn-spread-controls__eyebrow">
+                {{#if conn.isNpc}}
+                  <span class="gs-gm-pill" aria-hidden="true">GM</span>
+                  {{localize "GOODSOCIETY.dossier.npcPublicInfo"}}
+                {{else}}
+                  {{localize "GOODSOCIETY.dossier.connectionPublicInfo"}}
+                {{/if}}
+              </span>
+            </div>
+          </div>
+        </header>
+
+        {{!-- Sections render unconditionally so the page has visual rhythm
+             even when the connection has no public-info recorded yet. --}}
+        <section class="dossier-section dossier-description dossier-description--connection">
+          <header class="gs-eyebrow">{{localize "GOODSOCIETY.dossier.description"}}</header>
+          <div class="dossier-description__body">
+            {{#if conn.description}}
+              {{{conn.description}}}
+            {{else}}
+              <p class="dossier-description__placeholder"><em>{{localize "GOODSOCIETY.dossier.noDescription"}}</em></p>
+            {{/if}}
+          </div>
+        </section>
+
+        <section class="dossier-section dossier-conn-spread__rep">
+          <header class="gs-eyebrow gs-eyebrow--subdued">
+            {{localize "GOODSOCIETY.dossier.publicReputation"}}
+          </header>
+          {{#if conn.publicReputationTags.length}}
+            <div class="dossier-conn-spread__rep-row">
+              {{#each conn.publicReputationTags}}
+                <span class="gs-tag-pill gs-tag-pill--{{this.polarity}}">
+                  <span class="gs-tag-pill__open">
+                    {{#if (eq this.polarity "positive")}}▲{{else}}▼{{/if}}
+                    <span class="gs-tag-pill__name">{{this.name}}</span>
+                  </span>
+                </span>
+              {{/each}}
+            </div>
+          {{else}}
+            <p class="dossier-conn-spread__empty"><em>{{localize "GOODSOCIETY.dossier.noPublicReputation"}}</em></p>
+          {{/if}}
+        </section>
+
+        <section class="dossier-section dossier-conn-spread__impressions">
+          <header class="gs-eyebrow gs-eyebrow--subdued">
+            {{localize "GOODSOCIETY.dossier.publicImpressions"}}
+          </header>
+          {{#if conn.impressions.length}}
+            <ul class="dossier-conn-spread__impressions-list">
+              {{#each conn.impressions}}
+                <li class="dossier-conn-spread__impression">
+                  <span class="gs-eyebrow gs-eyebrow--subdued dossier-conn-spread__impression-from">
+                    {{localize "GOODSOCIETY.dossier.fromMajor"}} {{this.majorName}}
+                  </span>
+                  <em class="dossier-conn-spread__impression-text">"{{this.text}}"</em>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p class="dossier-conn-spread__empty"><em>{{localize "GOODSOCIETY.dossier.noPublicImpressions"}}</em></p>
+          {{/if}}
+        </section>
+
+        <section class="dossier-section dossier-conn-spread__public-tags">
+          <header class="gs-eyebrow gs-eyebrow--subdued">
+            {{localize "GOODSOCIETY.connection.publicTags"}}
+          </header>
+          {{#if conn.publicTags.length}}
+            <div class="dossier-conn-spread__public-tags-row">
+              {{#each conn.publicTags}}
+                <span class="gs-scene-tag">{{this}}</span>
+              {{/each}}
+            </div>
+          {{else}}
+            <p class="dossier-conn-spread__empty"><em>{{localize "GOODSOCIETY.dossier.noPublicTags"}}</em></p>
+          {{/if}}
+        </section>
+
+        {{#if conn.tiedTo.length}}
+          <section class="dossier-section dossier-conn-spread__tied">
+            <header class="gs-eyebrow gs-eyebrow--subdued">
+              {{localize "GOODSOCIETY.dossier.tiedTo"}}
+            </header>
+            <div class="dossier-conn-spread__tied-row">
+              {{#each conn.tiedTo}}
+                <span class="gs-tag-pill" data-theme="{{this.theme}}">
+                  <span class="gs-tag-pill__name">{{this.name}}</span>
+                </span>
+              {{/each}}
+            </div>
+          </section>
+        {{/if}}
+
+      </div>{{!-- /.dossier-page--connection-left --}}
+
+      {{!-- RIGHT PAGE — reserved for a second connection (future feature).
+           For now, renders as a blank parchment slot with a quiet hint
+           that another connection could be pinned here. --}}
+      <div class="dossier-page dossier-page--connection-right dossier-page--blank">
+        <div class="dossier-page--blank__inner">
+          <span class="dossier-page--blank__ornament" aria-hidden="true">⊙</span>
+          <p class="dossier-page--blank__hint">
+            <em>{{localize "GOODSOCIETY.dossier.blankConnectionPage"}}</em>
+          </p>
+        </div>
+      </div>
+
+    </article>
+  {{/each}}
+
+</section>

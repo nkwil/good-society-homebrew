@@ -95,7 +95,7 @@
 .gs-condition-picker__empty {
   font-family: var(--gs-italic);
   font-size: 13px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   text-align: center;
   padding: 24px 0;
   margin: 0;

@@ -1,22 +1,30 @@
-/* Theme: connection-grey
- * Neutral slate — the understated connection variant.
- * Paper and type stack from the .gs-connection base (defined in _theme-clayton.css).
- * .gs-themed duplicates base variables so portable wrappers resolve without the class.
- * Source: docs/design/decisions.md §"Theme registry → connection-grey"
+/* Theme: connection-grey — Charcoal / slate.
+ *
+ * Strong color identity: cool grey-tinted paper, deep charcoal ink, rich
+ * slate brand, dark-charcoal headers. Distinct from secret's near-black
+ * register (which goes much darker and reads as "kept hidden"); this one
+ * stays in the legible-grey range — understated but unmistakably grey,
+ * not "void."
  */
-.gs-connection[data-theme='connection-grey'] {
-  --gs-ink:      #2A2D32;
-  --gs-brand:    #5C6068;
-  --gs-accent-1: #B8BCC0;
-}
-
+.gs-actor[data-theme='connection-grey'],
+.gs-connection[data-theme='connection-grey'],
 .gs-themed[data-theme='connection-grey'] {
-  --gs-paper:      #F4F1E6;
-  --gs-paper-warm: #ECE7D6;
-  --gs-ink:        #2A2D32;
-  --gs-brand:      #5C6068;
-  --gs-accent-1:   #B8BCC0;
-  --gs-display:    'Lora', 'Palatino', Georgia, serif;
-  --gs-body:       'Crimson Text', 'Palatino', Georgia, serif;
-  --gs-italic:     'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  --gs-paper:        #E8E8E8;          /* cool grey-tinted cream */
+  --gs-paper-warm:   #DCDCDC;          /* deeper grey */
+  --gs-side-panel:   #DCDCDC;
+  --gs-ink:          #1F1F1F;          /* deep charcoal */
+
+  --gs-brand:        #4F5258;          /* rich slate */
+  --gs-headers:      #2A2C30;          /* dark charcoal headers */
+  --gs-hairlines:    #8E9094;          /* muted grey hairline */
+  --gs-metallic:     #9C9EA2;          /* pewter */
+  --gs-muted-accent: #C8C9CB;
+
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
 }

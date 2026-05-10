@@ -1,0 +1,198 @@
+/* Public Info Card — read-only "public face" view of a Major.
+ *
+ * Themed via the .gs-themed class on the application root (set in
+ * PublicInfoCard#_onRender). Sections collapse when their source data
+ * is empty — no "—" placeholders. House-styled chrome (window-header,
+ * window-content) inherits from foundry-chrome.css.
+ */
+
+.gs-public-info-card .window-content {
+  padding: 0;
+  background: var(--gs-paper);
+  overflow-y: auto;
+}
+
+.gs-public-info-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 26px;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  font-family: var(--gs-body);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.gs-public-info-card__header {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  border-bottom: 0.5px solid var(--gs-hairlines);
+  padding-bottom: 16px;
+}
+
+.gs-public-info-card__portrait {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.gs-public-info-card__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gs-public-info-card__portrait-initial {
+  font-family: var(--gs-display);
+  font-size: 32px;
+  color: var(--gs-brand);
+}
+
+.gs-public-info-card__identity {
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-public-info-card__name {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gs-headers);
+  line-height: 1.2;
+  margin: 0 0 3px;
+}
+
+.gs-public-info-card__title {
+  margin: 0 0 3px;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  font-size: 13px;
+}
+
+.gs-public-info-card__role {
+  margin: 0;
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--gs-brand);
+}
+
+.gs-public-info-card__persona-summary {
+  margin: 6px 0 0;
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--gs-ink);
+  line-height: 1.4;
+}
+
+/* ── Section blocks ────────────────────────────────────────────────────── */
+
+.gs-public-info-card__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Reputation tags ───────────────────────────────────────────────────── */
+
+.gs-public-info-card__tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.gs-public-info-card__polarity {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.gs-public-info-card__polarity--positive { color: var(--gs-positive, #4A7A4A); }
+.gs-public-info-card__polarity--negative { color: var(--gs-danger, #8B2A2A); }
+
+.gs-public-info-card__tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 0.5px solid var(--gs-hairlines);
+  font-size: 12.5px;
+  background: var(--rep-positive-bg, rgba(74, 122, 74, 0.08));
+}
+
+.gs-public-info-card__tag--negative {
+  background: var(--rep-negative-bg, rgba(139, 42, 42, 0.08));
+}
+
+/* ── Conditions ────────────────────────────────────────────────────────── */
+
+.gs-public-info-card__condition {
+  border-left: 3px solid var(--gs-hairlines);
+  padding: 8px 12px;
+  border-radius: 0 4px 4px 0;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.gs-public-info-card__condition--positive { border-left-color: var(--gs-positive, #4A7A4A); }
+.gs-public-info-card__condition--negative { border-left-color: var(--gs-danger, #8B2A2A); }
+
+.gs-public-info-card__condition strong {
+  font-family: var(--gs-display);
+  color: var(--gs-headers);
+}
+
+.gs-public-info-card__condition p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ── Visibility-gated narrative ─────────────────────────────────────── */
+
+.gs-public-info-card__prose {
+  font-family: var(--gs-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+}
+
+.gs-public-info-card__prose p { margin: 0 0 0.6em; }
+.gs-public-info-card__prose p:last-child { margin-bottom: 0; }
+
+/* ── Magic & skills ─────────────────────────────────────────────────────── */
+
+.gs-public-info-card__magic {
+  padding: 8px 0;
+  border-bottom: 0.5px dashed var(--gs-hairlines);
+}
+
+.gs-public-info-card__magic:last-child {
+  border-bottom: none;
+}
+
+.gs-public-info-card__magic strong {
+  font-family: var(--gs-display);
+  color: var(--gs-brand);
+}
+
+.gs-public-info-card__magic p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ── Empty state ────────────────────────────────────────────────────────── */
+
+.gs-public-info-card__empty {
+  text-align: center;
+  font-style: italic;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  padding: 18px 0;
+}

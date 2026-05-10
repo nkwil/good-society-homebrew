@@ -1,0 +1,43 @@
+<div class="gs-chat-card gs-random-event-card{{#if isSuccess}} gs-random-event-card--success{{else}} gs-random-event-card--failure{{/if}}">
+  <header class="gs-chat-card__header">
+    <div class="gs-chat-card__speaker">
+      {{#if portraitUrl}}
+        <img class="gs-chat-card__portrait" src="{{portraitUrl}}" alt="{{actorName}}" />
+      {{else}}
+        <span class="gs-chat-card__initial">{{initial}}</span>
+      {{/if}}
+      <div class="gs-chat-card__speaker-info">
+        <span class="gs-chat-card__speaker-name">{{actorName}}</span>
+        <span class="gs-chat-card__eyebrow">{{localize "GOODSOCIETY.randomEvent.cardEyebrow"}}</span>
+      </div>
+    </div>
+  </header>
+
+  <h3 class="gs-random-event-card__title">{{eventName}}</h3>
+  {{#if eventDescription}}
+    <div class="gs-random-event-card__desc">{{{eventDescription}}}</div>
+  {{/if}}
+
+  <ul class="gs-random-event-card__strategies">
+    {{#each strategies}}
+      <li class="gs-random-event-card__strategy">
+        <span class="gs-random-event-card__strategy-num">{{index}}</span>
+        <span class="gs-random-event-card__strategy-text">{{text}}</span>
+        <span class="gs-random-event-card__strategy-roll">d20 · {{roll}}</span>
+      </li>
+    {{/each}}
+  </ul>
+
+  <hr class="gs-chat-card__rule" />
+
+  <div class="gs-random-event-card__verdict">
+    <span class="gs-random-event-card__average">
+      {{localize "GOODSOCIETY.randomEvent.average"}} {{average}}
+    </span>
+    <span class="gs-random-event-card__outcome">{{outcomeLabel}}</span>
+  </div>
+
+  <p class="gs-random-event-card__tag-line">
+    {{tagLabel}}: <strong>{{chosenTag}}</strong>
+  </p>
+</div>

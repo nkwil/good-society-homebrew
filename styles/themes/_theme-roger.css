@@ -1,19 +1,29 @@
-/* Theme: roger — A mirror of rose, but blue.
- * Cormorant Garamond + EB Garamond — same type family as rose (twin link).
- * accent-3 (#C9A574) shared with rose — the visual tie between the pair.
- * Source: docs/design/decisions.md §"Theme registry → roger"
+/* Theme: roger — Mirror of rose, but blue.
+ * Canonical per `GS Build Colors (1).pdf` page 3.
  */
 .gs-actor[data-theme='roger'],
 .gs-themed[data-theme='roger'] {
-  --gs-paper:       #F1F0F8;
-  --gs-paper-warm:  #E5E4F0;
-  --gs-side-panel:  #C5D5E8;
-  --gs-ink:         #1F2A4A;
-  --gs-brand:       #4A6B8B;
-  --gs-accent-1:    #7A9BC4;
-  --gs-accent-2:    #C5D5E8;
-  --gs-accent-3:    #C9A574;
-  --gs-display:     'Cormorant Garamond', Georgia, serif;
-  --gs-body:        'EB Garamond', 'Lora', Georgia, serif;
-  --gs-italic:      'EB Garamond Italic', 'Lora Italic', Georgia, serif;
+  --gs-paper:        #F1F0F8;
+  --gs-paper-warm:   #FAF1ED;
+  --gs-side-panel:   #C5D5E8;
+  --gs-ink:          #1F2A4A;
+
+  --gs-brand:        #4A6B8B;          /* mid-blue */
+  --gs-headers:      #144c82;          /* deep navy for header text + name */
+  --gs-hairlines:    #C5D5E8;          /* light blue hairlines */
+  --gs-metallic:     #C9A55C;          /* gilt */
+  --gs-muted-accent: #D4D9CF;          /* mist */
+
+  /* Legacy aliases */
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  /* Per-theme accent ornament for .gs-eyebrow::after (post-MVP §8.1).
+   * Masked + filled with --gs-brand so it picks up the theme color. */
+  --gs-accent-svg:   url('/systems/good-society-homebrew/assets/theme-accents/roger.svg');
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', Georgia, serif;
 }

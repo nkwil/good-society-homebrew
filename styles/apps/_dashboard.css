@@ -10,7 +10,10 @@
 .gs-public-info-dashboard .window-content {
   padding: 0;
   background: var(--gs-paper);
-  overflow: hidden;
+  /* Auto-scroll when the roster outgrows the window height. Without this,
+   * `overflow: hidden` clips rows below the fold and majors silently
+   * disappear off the bottom of the dashboard. */
+  overflow-y: auto;
 }
 
 /* ── Root section ────────────────────────────────────────────────────────── */
@@ -19,6 +22,15 @@
   display: flex;
   flex-direction: column;
   background: var(--gs-paper);
+  /* Post-MVP §3.1 outer frame — thin paper-warm + sage hairline so the panel
+   * reads as one object on a busy canvas. The inner header / footer /
+   * conditions-rail hairlines are 0.5px sage; this outer rule is 1px to
+   * differentiate the panel boundary from internal dividers. */
+  border: 1px solid var(--gs-accent-2);
+  border-radius: 6px;
+  /* No overflow:hidden here — the parent .window-content owns scroll so
+   * the rounded corners look right while rows past the fold remain
+   * accessible via scroll. */
 }
 
 /* ── Header ─────────────────────────────────────────────────────────────── */
@@ -64,7 +76,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 12px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   white-space: nowrap;
 }
 
@@ -112,7 +124,7 @@
   font-size: 11px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin-bottom: 12px;
 }
 
@@ -129,7 +141,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 13px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
   padding: 8px 0;
 }
@@ -150,7 +162,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 11px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-dashboard__footer-time {

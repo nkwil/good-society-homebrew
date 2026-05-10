@@ -14,6 +14,8 @@
  *   Edit   — persona is an existing object; save replaces in the array.
  */
 
+import { THEME_REGISTRY } from '../constants.js';
+
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
 
@@ -48,10 +50,13 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     super({ id: `gs-persona-editor-${actor.id}` });
     this._actor    = actor;
     this._isCreate = !persona;
-    // _draft is a deep-cloned working copy. It is updated in-place by action
+    // _draft is a plain-object working copy. It is updated in-place by action
     // handlers (togglePrimary, cycleVisibility) and collected from the DOM on save.
+    // Use .toObject() (when persona is a DataModel instance) rather than
+    // deepClone — deepClone of a DataModel can miss fields that live on the
+    // schema proxy rather than as own enumerable properties.
     this._draft = persona
-      ? foundry.utils.deepClone(persona)
+      ? (typeof persona.toObject === 'function' ? persona.toObject() : foundry.utils.deepClone(persona))
       : {
           id:           foundry.utils.randomID(),
           name:         '',
@@ -61,6 +66,7 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
           tokenName:    '',
           hoverSummary: '',
           chatColor:    '',
+          theme:        '',
           visibility:   { desire: 'inherit', backstory: 'inherit', magic: 'inherit' },
         };
     // Original chatColor used on save to detect "user never touched the color picker"
@@ -73,6 +79,20 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     const ctx = await super._prepareContext(options);
     const actor = this._actor;
     const eyebrowBase = actor.name.toUpperCase();
+
+    // Theme registry rows for the per-persona theme picker. Empty value
+    // = "inherit true identity theme". The picker is a select; on save
+    // we read the chosen value back into _draft.theme.
+    const themeOptions = [
+      { id: '', label: game.i18n.localize('GOODSOCIETY.personaEditor.themeInherit'), isSelected: !this._draft.theme },
+      ...THEME_REGISTRY.map(t => ({
+        id: t.id,
+        label: game.i18n.localize(t.label) || t.id,
+        swatchColor: t.swatchColor,
+        isSelected: this._draft.theme === t.id,
+      })),
+    ];
+
     return {
       ...ctx,
       themeId:  actor.system?.theme ?? 'npc',
@@ -81,6 +101,7 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
         : `${game.i18n.localize('GOODSOCIETY.personaEditor.eyebrowEdit')} · ${eyebrowBase}`,
       isCreate: this._isCreate,
       persona:  this._draft,
+      themeOptions,
     };
   }
 
@@ -135,7 +156,7 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     // Collect text-input values from the DOM into the draft.
     // The draft's isPrimary and visibility are already up-to-date via the
     // in-place action handlers above; only text fields need a DOM read here.
-    const fields = ['name', 'portraitUrl', 'tokenImageUrl', 'tokenName', 'hoverSummary', 'chatColor'];
+    const fields = ['name', 'portraitUrl', 'tokenImageUrl', 'tokenName', 'hoverSummary', 'chatColor', 'theme'];
     for (const f of fields) {
       const el = this.element.querySelector(`[data-persona-field="${f}"]`);
       if (el) this._draft[f] = el.value.trim();
@@ -149,14 +170,21 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const actor    = this._actor;
     const existing = actor.system?.personas ?? [];
-    let   updated;
+    // Normalize every existing persona to a plain object so the array sent
+    // to actor.update is uniformly serializable. Mixing DataModel
+    // instances and plain objects in the same array can cause Foundry's
+    // update layer to silently drop newly-added fields (like our `theme`)
+    // on entries that weren't migrated to plain. Force-toObject every
+    // entry, then swap in our modified draft.
+    const toPlain = (p) => (p && typeof p.toObject === 'function') ? p.toObject() : { ...p };
 
+    let updated;
     if (this._isCreate) {
       // First persona on an actor becomes primary automatically.
       if (existing.length === 0) this._draft.isPrimary = true;
-      updated = [...existing, this._draft];
+      updated = [...existing.map(toPlain), this._draft];
     } else {
-      updated = existing.map(p => p.id === this._draft.id ? this._draft : p);
+      updated = existing.map(p => p.id === this._draft.id ? this._draft : toPlain(p));
     }
 
     // Enforce single primary: if this persona is being set as primary,
@@ -166,6 +194,11 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     await actor.update({ 'system.personas': updated });
+    // Force re-render the actor's sheet so dataset.theme picks up the new
+    // persona theme immediately (the Foundry hook chain SHOULD do this on
+    // its own, but defensive — if anything blocked the chain we still get
+    // the correct visual state on save).
+    if (actor.sheet?.rendered) actor.sheet.render({ force: false });
     await this.close();
   }
 

@@ -50,14 +50,43 @@
              placeholder="{{localize "GOODSOCIETY.letterComposer.subjectPlaceholder"}}" />
     </div>
 
+    {{!-- GREETING — Regency-era salutation picker. Substitutes {name} with
+         the recipient's display name when the letter renders. --}}
+    <div class="gs-letter-composer__row">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.greetingLabel"}}</label>
+      <div class="gs-letter-composer__control">
+        <select class="gs-letter-composer__actor-select" name="greeting">
+          {{#each greetings}}
+            <option value="{{id}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
     {{!-- BODY --}}
     <div class="gs-letter-composer__row gs-letter-composer__row--body">
       <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.body"}}</label>
       <textarea class="gs-letter-composer__textarea" name="body" rows="5">{{state.body}}</textarea>
     </div>
 
-    {{!-- SEAL --}}
+    {{!-- CLOSING — sign-off picker. The sender's display name renders on
+         a new line below the closing as the signature. --}}
     <div class="gs-letter-composer__row">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.closingLabel"}}</label>
+      <div class="gs-letter-composer__control">
+        <select class="gs-letter-composer__actor-select" name="closing">
+          {{#each closings}}
+            <option value="{{id}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
+    {{!-- SEAL — image-backed wax discs. Each option is a real rendered seal
+         (see assets/seals/*.png + the SEAL_TYPES registry in module/constants.js).
+         The disc itself shows the asset; the rim color from the registry
+         drives the selection-state ring + hover affordance. --}}
+    <div class="gs-letter-composer__row gs-letter-composer__row--seal">
       <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.seal"}}</label>
       <div class="gs-letter-composer__seal-row">
         {{#each seals}}
@@ -66,7 +95,8 @@
                   data-action="selectSeal"
                   data-seal-id="{{id}}"
                   title="{{label}}"
-                  style="background-color: {{color}};"></button>
+                  style="background-image: url('{{iconAsset}}'); --gs-seal-accent: {{color}};"
+                  aria-label="{{label}}"></button>
         {{/each}}
         <span class="gs-letter-composer__seal-label">{{sealLabel}}</span>
       </div>

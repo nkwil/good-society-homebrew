@@ -1,0 +1,99 @@
+/* Pause overlay — post-MVP §2.2 / patch-world-identity §5.
+ *
+ * Replaces Foundry's default <div id="pause"> markup. Bound to the shared
+ * world-identity register (see _world-identity-shared.css). Only renders when
+ * `body.gs-world-identity` is present.
+ */
+
+/* Hide our custom markup (and let Foundry's default show) when the body class
+ * is absent. The renderPause hook still runs, but its rules don't apply. */
+body:not(.gs-world-identity) #pause .gs-pause { display: none !important; }
+
+/* When world identity IS active AND the game is actually paused, hide
+ * Foundry's default content and render ours.
+ *
+ * The `body.paused` gate is critical — `#pause` is a permanent DOM node
+ * in Foundry v13 (Foundry hides it via its own CSS when not paused). Without
+ * this gate, our `display: flex !important` would force the overlay
+ * visible 24/7, painting a translucent black tint over the Arrival video
+ * and every other always-on surface. */
+body.gs-world-identity.paused #pause {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(20, 16, 12, 0.65);
+  z-index: 40;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Hide Foundry's default D20 / "GAME PAUSED" content — but only when our
+ * overlay is the one currently being shown (paused state). */
+body.gs-world-identity.paused #pause > :not(.gs-pause):not(.gs-wi-motes):not(.gs-wi-corners) {
+  display: none !important;
+}
+
+/* Defensive: when world identity is on but the game is NOT paused,
+ * force-hide #pause. Belt-and-braces against any !important leak from
+ * the rule above re-triggering on stale state. */
+body.gs-world-identity:not(.paused) #pause {
+  display: none !important;
+}
+
+.gs-pause {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.gs-pause__eyebrow {
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gs-accent-3, #C9A55C);
+  margin: 0;
+}
+
+.gs-pause__cameo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background:
+    var(--gs-pause-cameo-asset, none) center/cover no-repeat,
+    var(--gs-danger, #8B2A2A);
+  border: 3px solid var(--gs-accent-3, #C9A55C);
+  outline: 1px solid #14100c;
+  outline-offset: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 32px;
+  color: var(--gs-accent-3, #C9A55C);
+  line-height: 1;
+}
+
+.gs-pause__title {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 22px;
+  color: #F1E5C8;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* Pause overlay uses corner ornaments at half size, half-density motes. */
+body.gs-world-identity #pause .gs-wi-corner {
+  width: 64px;
+  height: 64px;
+}

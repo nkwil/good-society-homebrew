@@ -4,7 +4,11 @@
  * .gs-themed[data-theme="..."] wrapper, --gs-brand and --gs-paper resolve
  * to the character's palette. House surfaces use the root values.
  *
- * Rule 2 (antique-but-clean): hairlines — secondary uses 0.5px border, not 1px.
+ * Class naming uses BEM double-hyphen modifiers (gs-btn + gs-btn--variant)
+ * — must match the templates exactly. Single-hyphen variants (gs-btn-primary)
+ * silently fall through to Foundry's default grey button styling.
+ *
+ * Rule 2 (antique-but-clean): hairlines — outline buttons use 0.5px border.
  * Rule 7: no shadow, no blur. Letterpress precision.
  */
 
@@ -19,7 +23,7 @@
   padding: 7px 16px;
   border-radius: 6px;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
   white-space: nowrap;
 }
 
@@ -29,81 +33,103 @@
   cursor: not-allowed;
 }
 
-/* #40 — Primary button: solid brand fill, paper text.
- * Used for: Take Monologue, Cast, Advance Phase — moments that matter.
- */
-.gs-btn-primary {
+/* #40 — Primary: solid brand fill, paper text. Moments that matter
+ * (Take Monologue, Cast, Advance Phase, wizard "Next/Begin"). */
+.gs-btn--primary {
   background: var(--gs-brand);
   color: var(--gs-paper);
   border: none;
   font-weight: 600;
 }
 
-.gs-btn-primary:hover:not(:disabled) {
-  opacity: 0.88;
-}
+.gs-btn--primary:hover:not(:disabled) { opacity: 0.88; }
+.gs-btn--primary:active:not(:disabled) { opacity: 0.75; }
 
-.gs-btn-primary:active:not(:disabled) {
-  opacity: 0.75;
-}
-
-/* #41 — Secondary button: outline only. Body type in brand color.
- * Used for: save draft, cancel, + add actions, Take Monologue default state.
- */
-.gs-btn-secondary {
+/* #41 — Secondary: 0.5px brand outline, transparent fill, brand text.
+ * Cancel, save-draft, wizard "Back". */
+.gs-btn--secondary,
+.gs-btn--outline {
   background: transparent;
   color: var(--gs-brand);
   border: 0.5px solid var(--gs-brand);
   font-weight: 400;
 }
 
-.gs-btn-secondary:hover:not(:disabled) {
+.gs-btn--secondary:hover:not(:disabled),
+.gs-btn--outline:hover:not(:disabled) {
   background: var(--gs-paper-warm);
 }
 
-.gs-btn-secondary:active:not(:disabled) {
+.gs-btn--secondary:active:not(:disabled),
+.gs-btn--outline:active:not(:disabled) {
   background: var(--gs-muted);
 }
 
-/* #42 — GM-only button: house-styled, distinguished from character-themed buttons.
- * Small key icon (content: '🔑' or SVG) set by the caller's ::before pseudo-element.
- * Always confirms before destructive actions — enforced in the JS click handler.
- */
-.gs-btn-gm {
+/* Ghost: text-only, no border, no background until hover. For inline
+ * "+ add" actions, dismissable affordances, anywhere a full button
+ * would feel too heavy. */
+.gs-btn--ghost {
   background: transparent;
-  color: var(--gs-accent-2);
+  color: var(--gs-brand);
+  border: none;
+  font-weight: 400;
+}
+
+.gs-btn--ghost:hover:not(:disabled) {
+  background: var(--gs-paper-warm);
+}
+
+/* Danger-outline: same shape as secondary but in danger color. Delete
+ * actions that need confirmation (persona delete). */
+.gs-btn--danger-outline {
+  background: transparent;
+  color: var(--gs-danger);
+  border: 0.5px solid var(--gs-danger);
+  font-weight: 400;
+}
+
+.gs-btn--danger-outline:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--gs-danger) 8%, transparent);
+}
+
+/* Small variant — composes with any of the above for inline actions. */
+.gs-btn--sm {
+  padding: 3px 10px;
+  font-size: var(--gs-size-ui);
+}
+
+/* #42 — GM-only button: house-styled, distinct from character-themed buttons.
+ * Class is `gs-btn--gm` for BEM consistency. Caller's ::before may set an
+ * icon; the base ::before below is the default key glyph. */
+.gs-btn--gm {
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   border: 0.5px solid var(--gs-accent-2);
   font-size: var(--gs-size-ui);
   font-family: var(--gs-ui);
   letter-spacing: 0.06em;
 }
 
-.gs-btn-gm::before {
+.gs-btn--gm::before {
   content: '⚷';
   font-size: 10px;
   opacity: 0.7;
 }
 
-.gs-btn-gm:hover:not(:disabled) {
+.gs-btn--gm:hover:not(:disabled) {
   background: var(--gs-muted);
 }
 
-/* Small variant — for inline "+ add" actions */
-.gs-btn-sm {
-  padding: 3px 10px;
-  font-size: var(--gs-size-ui);
-}
-
 /* Icon-only button (#54 icon button preview) */
-.gs-btn-icon {
+.gs-btn--icon {
   padding: 5px 6px;
   background: transparent;
   border: none;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   border-radius: 4px;
 }
 
-.gs-btn-icon:hover:not(:disabled) {
+.gs-btn--icon:hover:not(:disabled) {
   background: var(--gs-paper-warm);
   color: var(--gs-brand);
 }

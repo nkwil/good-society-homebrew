@@ -13,7 +13,7 @@
  * @returns {string} HTML string with .gs-themed wrapper applied
  */
 export function themedWrap(actor, content, extraClasses = []) {
-  const themeId = actor?.system?.theme || 'npc';
+  const themeId = effectiveThemeOf(actor) || 'npc';
   const persona = actor?.system?.activePersonaId
     ? actor.system.personas?.find(p => p.id === actor.system.activePersonaId)
     : null;
@@ -21,6 +21,35 @@ export function themedWrap(actor, content, extraClasses = []) {
   const styleAttr = overrideColor ? ` style="--gs-brand: ${overrideColor};"` : '';
   const classList = ['gs-themed', ...extraClasses].join(' ');
   return `<div class="${classList}" data-theme="${themeId}"${styleAttr}>${content}</div>`;
+}
+
+/**
+ * Resolve the *effective* theme id for an actor, honoring the active
+ * persona's per-persona theme override when present.
+ *
+ *   activePersona.theme  →  preferred (only when an explicit persona is
+ *                           selected and that persona has a non-empty theme)
+ *   actor.system.theme   →  fallback ("true identity" theme)
+ *
+ * Use this anywhere a surface paints the actor's themed cascade — chat
+ * cards, dock rows, dashboard rows, hover cards — so a Mags-active Rose
+ * actor renders in the Secret theme everywhere, not just on the dossier.
+ *
+ * Returns the actor's bare `system.theme` when no persona is selected, or
+ * undefined if the actor has neither. Callers should fall back to a
+ * sensible default ('clayton', 'connection-grey', 'npc') for their surface.
+ *
+ * @param {Actor|null} actor
+ * @returns {string|undefined}
+ */
+export function effectiveThemeOf(actor) {
+  if (!actor) return undefined;
+  const sys = actor.system;
+  if (sys?.activePersonaId) {
+    const persona = sys.personas?.find(p => p.id === sys.activePersonaId);
+    if (persona?.theme) return persona.theme;
+  }
+  return sys?.theme;
 }
 
 /**

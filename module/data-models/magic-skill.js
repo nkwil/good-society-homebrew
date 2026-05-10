@@ -5,6 +5,10 @@ export class MagicSkillDataModel extends foundry.abstract.TypeDataModel {
     return {
       description: new HTMLField({ initial: '' }),
       referenceUrl: new StringField({ initial: '' }),
+      // Custom icon shown on the character sheet's Magic & Skills row.
+      // Set via FilePicker on the item sheet. Empty string falls back to
+      // the generic ⊛ glyph in the row template.
+      iconUrl: new StringField({ initial: '' }),
       // JB2A / Sequencer asset path, e.g. "jb2a.misty_step.01.blue"
       vfxKey: new StringField({ initial: '' }),
       soundUrl: new StringField({ initial: '' }),

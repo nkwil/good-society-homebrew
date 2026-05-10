@@ -27,6 +27,12 @@
       <header class="gs-section-header" data-tooltip-key="hoverSummary">
         {{localize "GOODSOCIETY.connection.hoverSummary"}}
       </header>
+      {{!-- Post-MVP §10.2 subtitle line — short italic descriptor (~50 chars). --}}
+      <input class="gs-connection-sheet__hover-subtitle"
+             type="text"
+             name="system.sceneInfo.subtitle"
+             placeholder="{{localize "GOODSOCIETY.connection.hoverSubtitlePlaceholder"}}"
+             value="{{system.sceneInfo.subtitle}}" />
       <textarea class="gs-connection-sheet__hover-summary"
                 name="system.sceneInfo.hoverSummary"
                 placeholder="{{localize "GOODSOCIETY.connection.hoverSummaryPlaceholder"}}"

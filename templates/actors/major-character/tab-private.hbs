@@ -11,7 +11,11 @@
                value="{{system.bio.age}}" min="0" /> {{localize "GOODSOCIETY.private.age"}}
       </span>
       <span class="gs-bio-chip__sep" aria-hidden="true">·</span>
-      <span class="gs-bio-chip">{{peerageLabel}}</span>
+      <span class="gs-bio-chip">{{archetypeLabel}}</span>
+      {{#if peerageLabel}}
+        <span class="gs-bio-chip__sep" aria-hidden="true">·</span>
+        <span class="gs-bio-chip gs-bio-chip--muted">{{peerageLabel}}</span>
+      {{/if}}
       <span class="gs-bio-chip__sep" aria-hidden="true">·</span>
       <span class="gs-bio-chip">
         <input class="gs-bio-chip__input gs-bio-chip__input--wide" type="text"
@@ -93,9 +97,13 @@
     {{#if connectionActors.length}}
       <div class="gs-connection-chips">
         {{#each connectionActors}}
+          {{!-- Post-MVP §4.4.2 — chip click navigates to the connection's
+               public-info spread, not the full actor sheet. GMs reach
+               private fields via the Foundry sidebar. --}}
           <button class="gs-connection-chip"
                   type="button"
-                  data-action="openActor"
+                  data-action="showSpread"
+                  data-goto="conn-{{this.id}}"
                   data-actor-id="{{this.id}}">
             {{#if this.system.bio.portraitUrl}}
               <img class="gs-connection-chip__portrait" src="{{this.system.bio.portraitUrl}}"
@@ -133,6 +141,17 @@
       <div class="gs-redacted-bar">[redacted]</div>
     {{else}}
       {{editor system.backstory target="system.backstory" button=true editable=true}}
+      {{!-- Post-MVP §4.4.3 continue-reading affordance — only when the
+           backstory contains a `<hr class="page-break">` separator that
+           splits it into two or more pages. --}}
+      {{#if backstoryHasMultiplePages}}
+        <button type="button"
+                class="gs-empty-state__action gs-major-sheet__continue-reading"
+                data-action="showSpread"
+                data-goto="backstory-1">
+          {{localize "GOODSOCIETY.private.continueReading"}} ↗
+        </button>
+      {{/if}}
     {{/if}}
   </section>
 

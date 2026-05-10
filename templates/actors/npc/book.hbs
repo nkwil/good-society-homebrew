@@ -1,0 +1,218 @@
+{{!--
+  NPC sheet — single-page dossier (post-MVP §4 visual register).
+
+  Mirrors the Major Character dossier shell at a slimmer width (680 px).
+  House-styled throughout — NPCs don't get a per-actor theme; they inherit
+  the standard parchment/forest/sage palette. The "GM tools" row (Promote
+  to Connection, Grant to Player) sits in the cameo header where the
+  Connection sheet puts the linked-Major chip.
+
+  Sections (top to bottom):
+    1. Cameo header — token + bio chips + name + role + GM tools row
+    2. Description (read-only enriched HTML; ✎ button opens DialogV2 editor)
+    3. Scene info (public tags + hover summary)
+    4. Personas (list of pills)
+
+  Action handlers preserved verbatim: pickToken, addPublicTag, switchPersona,
+  addPersona, promoteToConnection, grantToPlayer, editDescription.
+--}}
+<section class="dossier-stage" data-actor-id="{{actor.id}}">
+
+  <span class="dossier-marginalia dossier-marginalia--tl" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--tr" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--bl" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--br" aria-hidden="true"></span>
+
+  <div class="dossier-book">
+    <article class="dossier-spread dossier-spread--single is-active" data-spread="character">
+
+      <div class="dossier-page dossier-page--solo">
+
+        {{!-- Cameo header — token + bio chips + name + role + GM tools row --}}
+        <header class="dossier-cameo">
+          <button type="button"
+                  class="dossier-cameo__frame"
+                  data-action="pickToken"
+                  title="{{localize "GOODSOCIETY.cameo.pickTokenTitle"}}">
+            {{#if portraitUrl}}
+              <img class="dossier-cameo__img" src="{{portraitUrl}}" alt="{{displayName}}" />
+            {{else}}
+              <span class="dossier-cameo__initial">{{portraitInitial}}</span>
+            {{/if}}
+          </button>
+
+          <div class="dossier-cameo__body">
+
+            {{!-- GM pill above name (eyebrow row) --}}
+            <div class="dossier-npc-eyebrow">
+              <span class="gs-gm-pill">GM</span>
+              <span class="dossier-npc-eyebrow__label">{{localize "GOODSOCIETY.npc.eyebrow"}}</span>
+            </div>
+
+            {{!-- Name with Lavishly Yours-faced ornament initial. Same
+                 pattern as Major / Connection — when a persona is active
+                 the input is read-only (rename via persona editor). --}}
+            <h1 class="dossier-cameo__name">
+              <span class="dossier-cameo__name-initial" aria-hidden="true">{{firstLetter displayName}}</span>
+              <input class="dossier-cameo__name-input"
+                     type="text"
+                     value="{{slice displayName 1}}"
+                     data-name-initial="{{firstLetter displayName}}"
+                     data-name-target="full"
+                     {{#if hasActivePersona}}readonly title="To rename the actor, clear the persona selection first."{{/if}}
+                     placeholder="{{localize 'GOODSOCIETY.npc.namePlaceholder'}}" />
+              {{#unless hasActivePersona}}
+                <input type="hidden"
+                       name="name"
+                       data-name-full
+                       value="{{displayName}}" />
+              {{/unless}}
+            </h1>
+
+            {{!-- Subhead — system.bio.title. Quiet honorific directly
+                 below the name. Mirrors Major + Connection dossiers. --}}
+            <input class="dossier-cameo__subhead"
+                   type="text"
+                   name="system.bio.title"
+                   value="{{system.bio.title}}"
+                   placeholder="{{localize 'GOODSOCIETY.cameo.titlePlaceholder'}}" />
+
+            {{!-- Pronouns — footnote line under the subhead. Real <select>
+                 (not a <datalist>). Mirrors Major + Connection dossiers. --}}
+            <p class="dossier-cameo__pronouns-line">
+              <select class="dossier-cameo__pronouns-select"
+                      name="system.bio.pronouns"
+                      title="{{localize 'GOODSOCIETY.dossier.pronounsHint'}}">
+                <option value=""           {{#if (eq system.bio.pronouns "")}}selected{{/if}}>{{localize "GOODSOCIETY.dossier.pronounsPlaceholder"}}</option>
+                <option value="she/her"    {{#if (eq system.bio.pronouns "she/her")}}selected{{/if}}>she/her</option>
+                <option value="he/him"     {{#if (eq system.bio.pronouns "he/him")}}selected{{/if}}>he/him</option>
+                <option value="they/them"  {{#if (eq system.bio.pronouns "they/them")}}selected{{/if}}>they/them</option>
+                <option value="she/they"   {{#if (eq system.bio.pronouns "she/they")}}selected{{/if}}>she/they</option>
+                <option value="he/they"    {{#if (eq system.bio.pronouns "he/they")}}selected{{/if}}>he/they</option>
+                <option value="xe/xem"     {{#if (eq system.bio.pronouns "xe/xem")}}selected{{/if}}>xe/xem</option>
+                <option value="ze/zir"     {{#if (eq system.bio.pronouns "ze/zir")}}selected{{/if}}>ze/zir</option>
+              </select>
+            </p>
+
+            {{!-- Bio line — NPC's "role" replaces the Major's "[N] years
+                 of age | Archetype" line. Free-form italic input that
+                 blends inline with surrounding text. --}}
+            <p class="dossier-cameo__bio-line">
+              <input type="text"
+                     class="dossier-cameo__bio-line-input"
+                     name="system.bio.role"
+                     value="{{system.bio.role}}"
+                     placeholder="{{localize 'GOODSOCIETY.npc.rolePlaceholder'}}"
+                     aria-label="{{localize 'GOODSOCIETY.connection.roleLabel'}}" />
+            </p>
+
+            {{!-- Persona switcher pill — sits in the cameo controls slot
+                 (canonical pattern across Major / Connection / NPC). The
+                 popover opens via the global persona-switcher-popover.js
+                 listener and lists personas with an "+ add" entry. --}}
+            <div class="dossier-cameo__controls">
+              {{> persona-switcher actor=actor displayName=displayName activePersonaExplicit=activePersonaExplicit}}
+            </div>
+
+            {{!-- GM tools row: Promote / Grant. Below the persona controls
+                 since these are facilitator actions, not identity controls. --}}
+            <div class="dossier-npc-tools">
+              <button class="gs-empty-state__action dossier-npc-tools__btn"
+                      type="button"
+                      data-action="promoteToConnection">
+                {{localize "GOODSOCIETY.npc.promoteToConnection"}}
+              </button>
+              <button class="gs-empty-state__action dossier-npc-tools__btn"
+                      type="button"
+                      data-action="grantToPlayer">
+                {{localize "GOODSOCIETY.npc.grantToPlayer"}}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {{!-- Description section ────────────────────────────────────────── --}}
+        <section class="dossier-section dossier-description dossier-description--connection">
+          <div class="gs-item-sheet__label-row">
+            <header class="gs-eyebrow" data-tooltip-key="npcDescription">{{localize "GOODSOCIETY.npc.description"}}</header>
+            <button type="button"
+                    class="gs-item-sheet__edit-btn"
+                    data-action="editDescription"
+                    title="{{localize 'GOODSOCIETY.npc.editDescription'}}"
+                    aria-label="Edit description">
+              <span aria-hidden="true">✎</span>
+            </button>
+          </div>
+          <div class="dossier-description__body">
+            {{#if enrichedDescription}}
+              {{{enrichedDescription}}}
+            {{else}}
+              <p class="dossier-description__placeholder"><em>{{localize "GOODSOCIETY.npc.descriptionPlaceholder"}}</em></p>
+            {{/if}}
+          </div>
+        </section>
+
+        {{!-- Scene info — public tags + hover summary ───────────────────── --}}
+        <section class="dossier-section dossier-scene-info">
+          <div class="dossier-scene-info__grid">
+
+            <div class="dossier-scene-info__col">
+              <div class="dossier-section__head">
+                <header class="gs-eyebrow gs-eyebrow--subdued" data-tooltip-key="publicTags">
+                  {{localize "GOODSOCIETY.connection.publicTags"}}
+                </header>
+                <button class="gs-empty-state__action dossier-section__add-btn"
+                        type="button"
+                        data-action="addPublicTag">+</button>
+              </div>
+              <div class="dossier-scene-info__tag-list">
+                {{#each publicTags}}
+                  <span class="gs-scene-tag">{{this}}</span>
+                {{/each}}
+                {{#unless publicTags.length}}
+                  <span class="dossier-scene-info__empty">
+                    <em>{{localize "GOODSOCIETY.connection.noTags"}}</em>
+                  </span>
+                {{/unless}}
+              </div>
+            </div>
+
+            <div class="dossier-scene-info__col">
+              <header class="gs-eyebrow gs-eyebrow--subdued" data-tooltip-key="hoverSummary">
+                {{localize "GOODSOCIETY.connection.hoverSummary"}}
+              </header>
+              <input class="dossier-scene-info__subtitle"
+                     type="text"
+                     name="system.sceneInfo.subtitle"
+                     placeholder="{{localize "GOODSOCIETY.connection.hoverSubtitlePlaceholder"}}"
+                     value="{{system.sceneInfo.subtitle}}" />
+              <textarea class="dossier-scene-info__hover-summary"
+                        name="system.sceneInfo.hoverSummary"
+                        placeholder="{{localize "GOODSOCIETY.connection.hoverSummaryPlaceholder"}}"
+                        rows="3">{{hoverSummary}}</textarea>
+            </div>
+
+          </div>
+        </section>
+
+        {{!-- Personas section removed — the persona switcher in the cameo
+             controls is the canonical entry point now. The popover lists
+             all personas + offers an "+ add" entry, replacing this section. --}}
+
+      </div>{{!-- /.dossier-page --}}
+
+    </article>{{!-- /.dossier-spread --}}
+  </div>{{!-- /.dossier-book --}}
+
+  {{!-- Shared <datalist> of common pronoun formats. Same id as Major +
+       Connection dossiers so the suggestion list stays consistent. --}}
+  <datalist id="gs-pronoun-suggestions">
+    <option value="she/her"></option>
+    <option value="he/him"></option>
+    <option value="they/them"></option>
+    <option value="she/they"></option>
+    <option value="he/they"></option>
+    <option value="xe/xem"></option>
+    <option value="ze/zir"></option>
+  </datalist>
+</section>

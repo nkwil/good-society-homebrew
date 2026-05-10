@@ -31,10 +31,21 @@ export async function switchPersona(actor, toPersonaId) {
   }
 
   // Resolve target texture + nameplate.
-  // Option B: never use persona.portraitUrl as the token image source —
-  // only persona.tokenImageUrl (or actor.img as fallback).
+  //
+  // Token-image fallback chain (when switching TO a persona):
+  //   1. persona.tokenImageUrl  — explicit token-only image
+  //   2. persona.portraitUrl    — cameo image, doubles as token if no
+  //                                separate token image was uploaded
+  //   3. actor.img              — last resort
+  //
+  // Option B keeps actor.img as the canonical base-identity portrait and
+  // never overwrites it. The earlier version skipped step 2, which made
+  // personas with only a cameo silently fall through to actor.img — so
+  // switching to such a persona didn't visually change the token. Step 2
+  // makes the most-common authoring path "just work": upload a portrait
+  // for each persona, the token swap follows automatically.
   const tokenSrc  = toPersona
-    ? (toPersona.tokenImageUrl || actor.img)
+    ? (toPersona.tokenImageUrl || toPersona.portraitUrl || actor.img)
     : actor.img;
   const tokenName = toPersona
     ? (toPersona.tokenName || toPersona.name || actor.name)

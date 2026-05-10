@@ -1,0 +1,104 @@
+{{!-- Public Info Card — read-only public face of a Major.
+     Single root <section> required by ApplicationV2 PARTS.
+     Only sections whose source data exists are rendered; missing sections
+     collapse entirely (no "—" placeholders). --}}
+<section class="gs-public-info-card__body">
+
+  {{!-- ── Header: portrait + identity ──────────────────────────────────── --}}
+  <header class="gs-public-info-card__header">
+    <div class="gs-public-info-card__portrait">
+      {{#if portraitUrl}}
+        <img src="{{portraitUrl}}" alt="{{displayName}}" />
+      {{else}}
+        <span class="gs-public-info-card__portrait-initial">{{initial}}</span>
+      {{/if}}
+    </div>
+    <div class="gs-public-info-card__identity">
+      <h1 class="gs-public-info-card__name">{{displayName}}</h1>
+      {{#if title}}
+        <p class="gs-public-info-card__title"><em>{{title}}</em></p>
+      {{/if}}
+      {{#if role}}
+        <p class="gs-public-info-card__role">{{role}}</p>
+      {{/if}}
+      {{#if personaSummary}}
+        <p class="gs-public-info-card__persona-summary">{{personaSummary}}</p>
+      {{/if}}
+    </div>
+  </header>
+
+  {{!-- ── Reputation tags (always public per rulebook p.92) ───────────── --}}
+  {{#if (or hasPositiveTags hasNegativeTags)}}
+    <section class="gs-public-info-card__section">
+      <h2 class="gs-eyebrow">{{localize "GOODSOCIETY.publicInfoCard.reputation"}}</h2>
+      {{#if hasPositiveTags}}
+        <div class="gs-public-info-card__tag-row">
+          <span class="gs-public-info-card__polarity gs-public-info-card__polarity--positive">▲</span>
+          {{#each positiveTags}}
+            <span class="gs-public-info-card__tag gs-public-info-card__tag--positive"
+                  title="{{description}}">{{name}}</span>
+          {{/each}}
+        </div>
+      {{/if}}
+      {{#if hasNegativeTags}}
+        <div class="gs-public-info-card__tag-row">
+          <span class="gs-public-info-card__polarity gs-public-info-card__polarity--negative">▼</span>
+          {{#each negativeTags}}
+            <span class="gs-public-info-card__tag gs-public-info-card__tag--negative"
+                  title="{{description}}">{{name}}</span>
+          {{/each}}
+        </div>
+      {{/if}}
+    </section>
+  {{/if}}
+
+  {{!-- ── Active conditions (always public) ───────────────────────────── --}}
+  {{#if (or hasPositiveConditions hasNegativeConditions)}}
+    <section class="gs-public-info-card__section">
+      <h2 class="gs-eyebrow">{{localize "GOODSOCIETY.publicInfoCard.conditions"}}</h2>
+      {{#each positiveConditions}}
+        <div class="gs-public-info-card__condition gs-public-info-card__condition--positive">
+          <strong>{{name}}</strong>
+          {{#if description}}<p>{{{description}}}</p>{{/if}}
+        </div>
+      {{/each}}
+      {{#each negativeConditions}}
+        <div class="gs-public-info-card__condition gs-public-info-card__condition--negative">
+          <strong>{{name}}</strong>
+          {{#if description}}<p>{{{description}}}</p>{{/if}}
+        </div>
+      {{/each}}
+    </section>
+  {{/if}}
+
+  {{!-- ── Visibility-gated narrative fields (only when set to public) ── --}}
+  {{#if hasFields}}
+    {{#each fields}}
+      <section class="gs-public-info-card__section">
+        <h2 class="gs-eyebrow">{{localize labelKey}}</h2>
+        <div class="gs-public-info-card__prose">{{{html}}}</div>
+      </section>
+    {{/each}}
+  {{/if}}
+
+  {{!-- ── Public Magic & Skills ───────────────────────────────────────── --}}
+  {{#if hasMagicSkills}}
+    <section class="gs-public-info-card__section">
+      <h2 class="gs-eyebrow">{{localize "GOODSOCIETY.publicInfoCard.magic"}}</h2>
+      {{#each magicSkills}}
+        <div class="gs-public-info-card__magic">
+          <strong>{{name}}</strong>
+          {{#if description}}<p>{{{description}}}</p>{{/if}}
+        </div>
+      {{/each}}
+    </section>
+  {{/if}}
+
+  {{!-- Empty-state: when nothing is publicly visible. --}}
+  {{#unless (or hasPositiveTags hasNegativeTags hasPositiveConditions hasNegativeConditions hasFields hasMagicSkills)}}
+    <p class="gs-public-info-card__empty">
+      <em>{{localize "GOODSOCIETY.publicInfoCard.empty"}}</em>
+    </p>
+  {{/unless}}
+
+</section>

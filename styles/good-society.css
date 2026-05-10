@@ -9,10 +9,13 @@
 @import './_variables.css';
 @import './_house.css';
 @import './_themed-wrapper.css';
+@import './_world-identity-shared.css';
 
 /* Component primitives */
 @import './components/_card.css';
 @import './components/_section-header.css';
+@import './components/_eyebrow.css';
+@import './components/_empty-state.css';
 @import './components/_hairline.css';
 @import './components/_buttons.css';
 @import './components/_form-inputs.css';
@@ -37,11 +40,21 @@
 /* Rule tooltip — floating hover panel for [data-tooltip-key] elements */
 @import './components/_rule-tooltip.css';
 
-/* Persona picker — in-sheet trigger (closed state) */
+/* Persona picker — in-sheet trigger (closed state, legacy v1 pill) */
 @import './components/_persona-picker.css';
+
+/* Persona switcher pill — post-MVP §8.4 unified primitive */
+@import './components/_persona-switcher.css';
+
+/* Dossier alt-spread overlays — post-MVP §4 (backstory pages, connection public-info). */
+@import './components/_dossier-extras.css';
 
 /* Persona switcher popover — floating persona list */
 @import './components/_persona-switcher-popover.css';
+
+/* Rich-text editor dialog — toolbar + chrome for the ProseMirror editor
+ * mounted in DialogV2 from the Major sheet's editField action. */
+@import './components/_prose-dialog.css';
 
 /* Token hover card — themed floating card on canvas token hover */
 @import './components/_token-hover-card.css';
@@ -56,6 +69,7 @@
 @import './components/_chat-card-monologue.css';
 @import './components/_chat-card-completion.css';
 @import './components/_chat-card-persona-switch.css';
+@import './components/_chat-card-random-event.css';
 @import './components/_letter-card.css';
 
 /* Actor sheets */
@@ -71,14 +85,16 @@
 @import './sheets/_item-inner-conflict.css';
 @import './sheets/_item-magic-skill.css';
 @import './sheets/_item-backstory-action.css';
+@import './sheets/_item-random-event.css';
 
-/* Character theme presets — Major themes */
+/* Character theme presets — Major themes (post-MVP §6.5: 7 themes) */
 @import './themes/_theme-clayton.css';
 @import './themes/_theme-rose.css';
 @import './themes/_theme-roger.css';
-@import './themes/_theme-mags.css';
-@import './themes/_theme-avril.css';
 @import './themes/_theme-dixon.css';
+@import './themes/_theme-avril.css';
+@import './themes/_theme-pearlinda.css';
+@import './themes/_theme-secret.css';
 
 /* Character theme presets — Connection variants */
 @import './themes/_theme-connection-green.css';
@@ -99,6 +115,7 @@
 @import './apps/_persona-editor.css';
 @import './apps/_dock.css';
 @import './apps/_dashboard.css';
+@import './apps/_public-info-card.css';
 
 /* Dashboard Major row — hybrid-themed component */
 @import './components/_dashboard-row.css';
@@ -119,3 +136,21 @@
 @import './apps/_rumour-board.css';
 
 @import './apps/_letter-composer.css';
+@import './apps/_epistolary-wizard.css';
+@import './apps/_novel-reader.css';
+@import './apps/_event-command-center.css';
+@import './apps/_event-popover.css';
+
+/* World identity surfaces — post-MVP §2 (Arrival + pause overlay) + §12.2 (monologue overlay). */
+@import './apps/_arrival.css';
+@import './apps/_pause-overlay.css';
+@import './apps/_monologue-overlay.css';
+
+/* The Cabinet — post-MVP §9 player module menu. */
+@import './apps/_cabinet.css';
+
+/* Sidebar tab filter — narrows Foundry's right-edge sidebar to the player
+ * allowlist (chat / actors / items / macros / playlists). Body class
+ * `gs-sidebar-filtered` is added on ready for non-GM users when the
+ * `playerSidebarFilter` setting is on. GM users always see the full sidebar. */
+@import './components/_sidebar-filter.css';

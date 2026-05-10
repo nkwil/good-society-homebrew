@@ -1,0 +1,81 @@
+/* Persona switcher pill primitive — post-MVP §8.4 / patch-persona-switcher.md.
+ *
+ * Implements the visual contract for the persona-switcher pill across all five
+ * surfaces (dossier cameo, Connection sheet, NPC sheet, Speaking-As bar, dock
+ * footer). The popover/dropdown machinery lives in
+ * `module/apps/persona-switcher-popover.js` and `_persona-switcher-popover.css`.
+ *
+ * Coexists with the legacy `.gs-persona-picker__trigger` pill from B-5a-i;
+ * surfaces migrate to this primitive batch-by-batch as they're refactored.
+ */
+
+.gs-persona-switcher__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Use min-height + padding instead of fixed height + line-height: 1 —
+     italic Lora descenders (g, p, y on "true identity") get clipped at
+     line-height 1 because the descender extends below the text bottom.
+     min-height keeps the pill touch-friendly; line-height 1.4 gives the
+     descenders room to render. */
+  min-height: 26px;
+  padding: 3px 10px;
+  font-family: var(--gs-italic, var(--gs-display));
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--gs-ink);
+  background: var(--gs-paper-warm);
+  border: 1px solid var(--gs-accent-2);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.gs-persona-switcher__pill:hover {
+  background: var(--gs-paper);
+}
+
+.gs-persona-switcher__pill:focus-visible {
+  outline: 2px solid var(--gs-accent-3);
+  outline-offset: 2px;
+}
+
+.gs-persona-switcher__label {
+  max-width: 18ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gs-persona-switcher__chevron {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--gs-accent-3); /* gilt; persona chatColor override applied via inline style */
+  line-height: 1;
+}
+
+/* Compact variant — used in dense surfaces (dock footer, Speaking-As bar). */
+.gs-persona-switcher__pill--compact {
+  height: 22px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+/* Empty state — actor has zero personas. The pill collapses to a non-interactive
+ * "true identity" label. Clicks do nothing (the popover machinery still allows
+ * opening the editor via the dropdown's "+ new persona" item, but the pill
+ * itself goes quiet). */
+.gs-persona-switcher__pill--silent {
+  cursor: default;
+  background: transparent;
+  border-color: transparent;
+}
+
+.gs-persona-switcher__pill--silent .gs-persona-switcher__chevron {
+  display: none;
+}
+
+.gs-persona-switcher__pill--silent:hover {
+  background: transparent;
+}

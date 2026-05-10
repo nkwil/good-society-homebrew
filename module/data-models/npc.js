@@ -1,10 +1,16 @@
-const { StringField, ArrayField, SchemaField, EmbeddedDataField } = foundry.data.fields;
+const { StringField, ArrayField, SchemaField, EmbeddedDataField, HTMLField } = foundry.data.fields;
 import { PersonaModel } from './persona.js';
 
 export class NpcDataModel extends foundry.abstract.TypeDataModel {
-  /** Defensive: ensure pre-A.5 NPCs without `theme` get the only valid choice. */
+  /**
+   * Coerce only when `theme` is explicitly present and invalid. migrateData
+   * runs on partial change payloads during updates — auto-defaulting missing
+   * keys would write 'npc' on every unrelated update (harmless here since
+   * 'npc' is the only valid value, but consistency with the other actor
+   * data models matters).
+   */
   static migrateData(source) {
-    if (source && source.theme !== 'npc') {
+    if (source && 'theme' in source && source.theme !== 'npc') {
       source.theme = 'npc';
     }
     return super.migrateData(source);
@@ -15,11 +21,18 @@ export class NpcDataModel extends foundry.abstract.TypeDataModel {
       bio: new SchemaField({
         pronouns: new StringField({ initial: '' }),
         role: new StringField({ initial: '' }),
+        // Editable subhead displayed directly under the name on the cameo.
+        // Free-form: title, brief description, anything the GM wants. Empty
+        // by default. Distinct from `role` which sits in the bio chip row.
+        title: new StringField({ initial: '' }),
         description: new StringField({ initial: '' }),
         portraitUrl: new StringField({ initial: '' }),
       }),
       sceneInfo: new SchemaField({
-        hoverSummary: new StringField({ initial: '' }),
+        // Post-MVP §10.2: hover-card subtitle line (italic Crimson; ~50 chars).
+        subtitle: new StringField({ initial: '' }),
+        // Post-MVP §10.2: hoverSummary upgrades from StringField to HTMLField.
+        hoverSummary: new HTMLField({ initial: '' }),
         publicTags: new ArrayField(new StringField()),
       }),
       theme: new StringField({

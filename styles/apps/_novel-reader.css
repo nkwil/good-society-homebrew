@@ -1,0 +1,294 @@
+/* The Novel Reader — post-MVP §13.3.
+ *
+ * Two display modes (cover / reader). Cover is full-window centered title.
+ * Reader is rail (left) + scrolling reader pane (right).
+ */
+
+.gs-novel-reader {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--gs-paper);
+}
+
+/* ── Cover ───────────────────────────────────────────────────────────────── */
+
+.gs-novel-reader--cover .gs-novel-reader__cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  height: 100%;
+  text-align: center;
+  padding: 48px 64px;
+}
+
+.gs-novel-reader__title {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 56px;
+  color: var(--gs-brand);
+  margin: 0;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+}
+
+.gs-novel-reader__title-initial {
+  font-family: var(--gs-ornament, var(--gs-display));
+  font-size: 84px;
+  vertical-align: -8px;
+  margin-right: 4px;
+  color: var(--gs-brand);
+}
+
+.gs-novel-reader__cycles-line,
+.gs-novel-reader__byline {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 16px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  margin: 0;
+}
+
+.gs-novel-reader__rule {
+  width: 240px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gs-accent-3) 50%,
+    transparent 100%
+  );
+  margin: 6px 0 14px;
+}
+
+.gs-novel-reader__primary,
+.gs-novel-reader__title-button {
+  font-size: 14px;
+  padding: 8px 18px;
+}
+
+.gs-novel-reader__title-button {
+  margin-top: 8px;
+  border-color: var(--gs-accent-3);
+  color: var(--gs-accent-3);
+}
+
+.gs-novel-reader__empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  max-width: 360px;
+  text-align: center;
+  margin: 0;
+}
+
+.gs-novel-reader__title-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.gs-novel-reader__title-input {
+  font-family: var(--gs-display);
+  font-size: 32px;
+  text-align: center;
+  width: 540px;
+  max-width: 80vw;
+  padding: 8px 14px;
+  background: var(--gs-paper-warm);
+  border: 1px solid var(--gs-accent-3);
+  border-radius: 6px;
+  color: var(--gs-brand);
+}
+
+.gs-novel-reader__title-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Reader layout ───────────────────────────────────────────────────────── */
+
+.gs-novel-reader--reader .gs-novel-reader__layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.gs-novel-reader__rail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 12px;
+  background: var(--gs-paper-warm);
+  border-right: 0.5px solid var(--gs-accent-2);
+  overflow-y: auto;
+}
+
+.gs-novel-reader__rail-cover {
+  font-family: var(--gs-display);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--gs-brand);
+  background: transparent;
+  border: 1px solid var(--gs-brand);
+  border-radius: 100px;
+  padding: 4px 12px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.gs-novel-reader__rail-cycle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px 8px 14px;
+  background: transparent;
+  border: 0;
+  border-left: 4px solid transparent;
+  border-radius: 4px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms;
+}
+
+.gs-novel-reader__rail-cycle:hover {
+  background: var(--gs-paper);
+}
+
+.gs-novel-reader__rail-cycle.is-active {
+  background: var(--gs-paper);
+  border-left-color: var(--gs-accent-3);
+}
+
+.gs-novel-reader__rail-cycle .gs-eyebrow,
+.gs-novel-reader__rail-cycle .gs-eyebrow--subdued {
+  margin: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.gs-novel-reader__rail-cycle .gs-eyebrow::after,
+.gs-novel-reader__rail-cycle .gs-eyebrow--subdued::after { display: none; }
+
+.gs-novel-reader__rail-meta {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+
+/* ── Reader pane ─────────────────────────────────────────────────────────── */
+
+.gs-novel-reader__pane {
+  overflow-y: auto;
+  padding: 48px 64px;
+  scroll-behavior: smooth;
+}
+
+.gs-novel-reader__cycle-section + .gs-novel-reader__cycle-section {
+  margin-top: 48px;
+}
+
+.gs-novel-reader__cycle-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 0;
+  margin-bottom: 24px;
+  border-top: 1px solid var(--gs-accent-3);
+  border-bottom: 1px solid var(--gs-accent-3);
+  background: var(--gs-paper-warm);
+}
+
+.gs-novel-reader__cycle-divider h2 {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 32px;
+  color: var(--gs-brand);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.gs-novel-reader__cycle-rule {
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gs-accent-3) 50%,
+    transparent 100%
+  );
+}
+
+.gs-novel-reader__entry {
+  max-width: 640px;
+  margin: 0 auto 32px;
+  position: relative;
+}
+
+.gs-novel-reader__entry--divider {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 8px;
+  padding: 20px 24px;
+}
+
+.gs-novel-reader__entry-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.gs-novel-reader__entry-glyph {
+  width: 18px;
+  height: 18px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.gs-novel-reader__entry-head .gs-eyebrow,
+.gs-novel-reader__entry-head .gs-eyebrow--subdued {
+  margin: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+  flex: 1;
+}
+
+.gs-novel-reader__entry-head .gs-eyebrow::after,
+.gs-novel-reader__entry-head .gs-eyebrow--subdued::after { display: none; }
+
+.gs-novel-reader__entry-body {
+  font-family: var(--gs-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+}
+
+.gs-novel-reader__entry-body p {
+  margin: 0 0 10px;
+}
+
+.gs-novel-reader__entry-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  text-decoration: none;
+}
+
+.gs-novel-reader__entry-link:hover {
+  color: var(--gs-brand);
+}

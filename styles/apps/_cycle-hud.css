@@ -40,7 +40,7 @@
   font-size: 11px;
   font-variant: small-caps;
   letter-spacing: 0.16em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   text-transform: lowercase;
 }
 
@@ -144,7 +144,7 @@
   gap: 5px;
   background: var(--gs-paper);
   border: 0.5px solid var(--gs-accent-2);
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   font-family: var(--gs-ui);
   font-size: 10px;
   letter-spacing: 0.06em;

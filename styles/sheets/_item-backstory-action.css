@@ -4,7 +4,7 @@
 .gs-item-sheet__helper--id {
   font-family: var(--gs-ui);
   font-size: 10px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   opacity: 0.7;
   margin: 0;
   word-break: break-all;
@@ -14,7 +14,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 12px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   opacity: 0.6;
   margin: 0;
 }

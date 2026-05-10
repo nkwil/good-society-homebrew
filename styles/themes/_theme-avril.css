@@ -1,20 +1,38 @@
-/* Theme: avril — Candlelight & crimson.
- * Inverted palette: near-black paper, warm candlelight ink.
- * Didot display (preferred); DM Serif Display as fallback.
- * accent-1 is oxblood — darker and more contained than mags's blood.
- * Source: docs/design/decisions.md §"Theme registry → avril"
+/* Theme: avril — Light lavender paper, violet brand, deep-navy headers.
+ *
+ * Reimagined as a light-mode theme (was dark plum). Pairs a pale-lilac
+ * paper with a violet brand and deep-navy header type — purple primary,
+ * blue secondary — every text colour clears WCAG AA, headers are AAA.
+ *
+ * Contrast (against paper #F4EFFA):
+ *   ink     #2D1F4A → ~14.5:1 (AAA body)
+ *   brand   #5B3B9C → ~7.6:1  (AAA body, AAA UI)
+ *   headers #1E3A8A → ~9.8:1  (AAA body)
+ *   hairlines #8FA1D6 → decorative; not held to AA text contrast.
  */
 .gs-actor[data-theme='avril'],
 .gs-themed[data-theme='avril'] {
-  --gs-paper:       #16100E;
-  --gs-paper-warm:  #2C1F2A;
-  --gs-side-panel:  #2C1F2A;
-  --gs-ink:         #E8DDC8;
-  --gs-brand:       #E8C988;
-  --gs-accent-1:    #8B2A2A;
-  --gs-accent-2:    #8B6A3F;
-  --gs-accent-3:    #4A2C1E;
-  --gs-display:     'Didot', 'Bodoni 72', 'DM Serif Display', serif;
-  --gs-body:        'Crimson Text', Georgia, serif;
-  --gs-italic:      'Crimson Text Italic', Georgia, serif;
+  --gs-paper:        #F4EFFA;          /* pale lavender */
+  --gs-paper-warm:   #F4EFFA;
+  --gs-side-panel:   #F4EFFA;
+  --gs-ink:          #2D1F4A;          /* deep purple-navy (~14.5:1 AAA) */
+
+  --gs-brand:        #5B3B9C;          /* violet (~7.6:1 AAA on paper) */
+  --gs-headers:      #1E3A8A;          /* deep navy headers (~9.8:1 AAA) */
+  --gs-hairlines:    #8FA1D6;          /* light blue hairlines */
+  --gs-metallic:     #C9A55C;          /* gilt */
+  --gs-muted-accent: #D8E0F0;          /* powder blue mist */
+
+  /* Legacy aliases */
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  /* Per-theme accent ornament for .gs-eyebrow::after (post-MVP §8.1).
+   * Masked + filled with --gs-brand so it picks up the theme color. */
+  --gs-accent-svg:   url('/systems/good-society-homebrew/assets/theme-accents/avril.svg');
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', Georgia, serif;
 }

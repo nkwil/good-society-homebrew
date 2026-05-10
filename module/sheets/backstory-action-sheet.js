@@ -6,6 +6,7 @@ export class BackstoryActionSheet extends HandlebarsApplicationMixin(ItemSheetV2
     classes: ['good-society', 'sheet', 'item', 'backstory-action'],
     position: { width: 400, height: 'auto' },
     window: { contentClasses: ['gs-item-sheet', 'gs-item-sheet--backstory-action'] },
+    form: { submitOnChange: true, closeOnSubmit: false },
     actions: {
       toggleUsed: BackstoryActionSheet.#toggleUsed,
       toggleExpanded: BackstoryActionSheet.#toggleExpanded,

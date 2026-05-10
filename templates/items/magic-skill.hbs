@@ -17,29 +17,71 @@
         </button>
       </div>
     </div>
-    <input class="gs-item-sheet__name"
-           type="text"
-           name="name"
-           value="{{document.name}}"
-           placeholder="{{localize "GOODSOCIETY.item.magicSkill.namePlaceholder"}}" />
+    <div class="gs-item-sheet__name-row">
+      {{!-- Icon thumb — click to open FilePicker. Falls back to ⊛ glyph
+           when no icon is set. The character sheet's Magic & Skills row
+           uses the same iconUrl with the same fallback. --}}
+      <button type="button"
+              class="gs-item-sheet__icon-thumb{{#unless system.iconUrl}} gs-item-sheet__icon-thumb--empty{{/unless}}"
+              data-action="pickIcon"
+              title="Click to upload an icon for this skill"
+              aria-label="Upload skill icon">
+        {{#if system.iconUrl}}
+          <img src="{{system.iconUrl}}" alt="" />
+        {{else}}
+          <span aria-hidden="true">⊛</span>
+        {{/if}}
+      </button>
+      <input class="gs-item-sheet__name"
+             type="text"
+             name="name"
+             value="{{document.name}}"
+             placeholder="{{localize "GOODSOCIETY.item.magicSkill.namePlaceholder"}}" />
+      {{#if system.iconUrl}}
+        <button type="button"
+                class="gs-item-sheet__icon-clear"
+                data-action="clearIcon"
+                title="Clear icon"
+                aria-label="Clear skill icon">×</button>
+      {{/if}}
+    </div>
   </header>
 
   <div class="gs-item-sheet__body">
 
     {{!-- Description --}}
-    <div class="gs-item-sheet__field">
-      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.description"}}</span>
-      {{editor system.description target="system.description" button=true editable=true}}
+    <div class="gs-item-sheet__field gs-item-sheet__field--description">
+      <div class="gs-item-sheet__label-row">
+        <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.description"}}</span>
+        <button type="button"
+                class="gs-item-sheet__edit-btn"
+                data-action="editDescription"
+                title="Edit description"
+                aria-label="Edit description">
+          <span aria-hidden="true">✎</span>
+        </button>
+      </div>
+      <div class="gs-item-sheet__description-body">
+        {{#if enrichedDescription}}
+          {{{enrichedDescription}}}
+        {{else}}
+          <p class="gs-item-sheet__description-placeholder"><em>{{localize "GOODSOCIETY.item.magicSkill.descriptionPlaceholder"}}</em></p>
+        {{/if}}
+      </div>
     </div>
 
-    {{!-- Reference URL --}}
+    {{!-- Reference link — URL pointing to external source material (rulebook
+         page, fan wiki, the GM's house rules doc, etc.). Optional. NOT the
+         icon for the skill, NOT a Foundry document reference. --}}
     <div class="gs-item-sheet__field">
       <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.referenceUrl"}}</span>
       <input class="gs-item-sheet__input"
              type="url"
              name="system.referenceUrl"
              value="{{system.referenceUrl}}"
-             placeholder="{{localize "GOODSOCIETY.item.magicSkill.referenceUrlPlaceholder"}}" />
+             placeholder="{{localize "GOODSOCIETY.item.magicSkill.referenceUrlPlaceholder"}}"
+             title="{{localize "GOODSOCIETY.item.magicSkill.referenceUrlHint"}}" />
+      <span class="gs-item-sheet__hint"><em>{{localize "GOODSOCIETY.item.magicSkill.referenceUrlHint"}}</em></span>
     </div>
 
     {{!-- VFX / Sound (GM fields) --}}

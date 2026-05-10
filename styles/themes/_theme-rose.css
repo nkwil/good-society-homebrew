@@ -1,19 +1,29 @@
-/* Theme: rose — Soft, pink, traditional.
- * Cormorant Garamond + EB Garamond for an elegant, period feel.
- * accent-3 (#C9A574) shared with roger — twin link between the pair.
- * Source: docs/design/decisions.md §"Theme registry → rose"
+/* Theme: rose — Soft pink, traditional.
+ * Canonical per `GS Build Colors (1).pdf` page 2.
  */
 .gs-actor[data-theme='rose'],
 .gs-themed[data-theme='rose'] {
-  --gs-paper:       #FAF1ED;
-  --gs-paper-warm:  #F5E6E0;
-  --gs-side-panel:  #E8C5CE;
-  --gs-ink:         #4A2030;
-  --gs-brand:       #B85B6F;
-  --gs-accent-1:    #D4889E;
-  --gs-accent-2:    #E8C5CE;
-  --gs-accent-3:    #C9A574;
-  --gs-display:     'Cormorant Garamond', Georgia, serif;
-  --gs-body:        'EB Garamond', 'Lora', Georgia, serif;
-  --gs-italic:      'EB Garamond Italic', 'Lora Italic', Georgia, serif;
+  --gs-paper:        #FAF1ED;
+  --gs-paper-warm:   #FAF1ED;
+  --gs-side-panel:   #FAF1ED;
+  --gs-ink:          #4A2030;
+
+  --gs-brand:        #B85B6F;          /* dusty rose */
+  --gs-headers:      #ad4865;          /* deeper rose for header text + name */
+  --gs-hairlines:    #708060;          /* sage hairlines */
+  --gs-metallic:     #C9A55C;          /* gilt */
+  --gs-muted-accent: #D4D9CF;          /* mist */
+
+  /* Legacy aliases */
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  /* Per-theme accent ornament for .gs-eyebrow::after (post-MVP §8.1).
+   * Masked + filled with --gs-brand so it picks up the theme color. */
+  --gs-accent-svg:   url('/systems/good-society-homebrew/assets/theme-accents/rose.svg');
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', Georgia, serif;
 }

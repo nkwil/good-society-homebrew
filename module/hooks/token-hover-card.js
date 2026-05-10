@@ -49,6 +49,12 @@ export function register() {
 // ── Hook handler ──────────────────────────────────────────────────────────────
 
 function _onHoverToken(placeable, hovered) {
+  // Post-MVP §10.2 — `hoverCardEnabled` client setting bypasses the system
+  // hover card entirely; Foundry's default tooltip shows instead.
+  let enabled = true;
+  try { enabled = game.settings.get('good-society-homebrew', 'hoverCardEnabled'); } catch {}
+  if (!enabled) return;
+
   if (hovered) {
     _cancelDismiss();
     _clearCard();
@@ -110,12 +116,8 @@ function _buildCardData(placeable) {
   // Role label: type-specific format.
   let roleLabel, roleLabelStyle;
   if (actor.type === 'major-character') {
-    const peerageKey = {
-      'heir':        'GOODSOCIETY.hoverCard.peerageHeir',
-      'new-arrival': 'GOODSOCIETY.hoverCard.peerageNewArrival',
-      'foreign':     'GOODSOCIETY.hoverCard.peerageForeign',
-    }[actor.system?.bio?.peerage];
-    roleLabel = peerageKey ? game.i18n.localize(peerageKey) : '';
+    const archetype = actor.system?.bio?.archetype;
+    roleLabel = archetype ? game.i18n.localize(`GOODSOCIETY.major.archetype.${archetype}`) : '';
     roleLabelStyle = 'branded';
   } else if (actor.type === 'connection') {
     const rel = actor.system?.bio?.relationshipLabel?.trim();
@@ -134,12 +136,25 @@ function _buildCardData(placeable) {
     roleLabelStyle = 'muted';
   }
 
-  // Hover summary: persona overrides actor-level.
+  // Hover summary: persona overrides actor-level. Post-MVP §10.2 upgraded
+  // sceneInfo.hoverSummary on Connection + NPC to HTMLField — render it raw
+  // (assumed safe; the Foundry editor sanitizes) rather than via _esc.
   const hoverSummary = (
     activePersona?.hoverSummary
     || actor.system?.sceneInfo?.hoverSummary
     || ''
-  ).trim();
+  );
+  const hoverSummaryIsHtml =
+    actor.type === 'connection' || actor.type === 'npc';
+
+  // Subtitle line (post-MVP §10.2; Connection + NPC only).
+  const subtitle = (actor.system?.sceneInfo?.subtitle || '').trim();
+
+  // Editable subhead (system.bio.title) — free-form title or quick
+  // description set on the sheet's cameo. Renders directly under the
+  // name on the hover card, above the roleLabel/subtitle line. Available
+  // on Major / Connection / NPC.
+  const title = (actor.system?.bio?.title || '').trim();
 
   // Public tags: persona overrides actor-level.
   const publicTags = (
@@ -148,20 +163,60 @@ function _buildCardData(placeable) {
       : (actor.system?.sceneInfo?.publicTags ?? [])
   ).filter(Boolean);
 
-  // Reputation tags: Majors only, max 4 (2 positive + 2 negative).
+  // ── Major-only auto-summary (post-MVP §10.2) ────────────────────────────
+  // The Major data model has no `sceneInfo.hoverSummary`; instead the hover
+  // card derives a public-info snapshot from existing fields. Honors the
+  // world-scope setting `hoverCardMajorAutoSummary` — when off, render only
+  // the header (name + role/peerage subtitle).
   let reputationTags = [];
+  let activeCondition = null;
+  let familyCriteria = '';
+  let showOpenDossier = false;
+
   if (actor.type === 'major-character') {
-    const posItems = (actor.system?.reputation?.positiveTags ?? [])
-      .slice(0, 2)
-      .map(id => actor.items.get(id))
-      .filter(Boolean)
-      .map(item => ({ label: '▲ ' + item.name, polarity: 'positive' }));
-    const negItems = (actor.system?.reputation?.negativeTags ?? [])
-      .slice(0, 2)
-      .map(id => actor.items.get(id))
-      .filter(Boolean)
-      .map(item => ({ label: '▼ ' + item.name, polarity: 'negative' }));
-    reputationTags = [...posItems, ...negItems].slice(0, 4);
+    let majorAuto = true;
+    try { majorAuto = game.settings.get('good-society-homebrew', 'hoverCardMajorAutoSummary'); } catch {}
+    showOpenDossier = true; // always show "open dossier ↗" for Majors
+
+    if (majorAuto) {
+      // Top 3 rep tags total, prioritizing the highest pinned positive +
+      // highest pinned negative + one more of either polarity.
+      const posItems = (actor.system?.reputation?.positiveTags ?? [])
+        .map(id => actor.items.get(id))
+        .filter(i => i?.type === 'reputation-tag')
+        .map(item => ({ label: '▲ ' + item.name, polarity: 'positive' }));
+      const negItems = (actor.system?.reputation?.negativeTags ?? [])
+        .map(id => actor.items.get(id))
+        .filter(i => i?.type === 'reputation-tag')
+        .map(item => ({ label: '▼ ' + item.name, polarity: 'negative' }));
+      const slot1 = posItems[0] ?? null;
+      const slot2 = negItems[0] ?? null;
+      const slot3 = posItems[1] ?? negItems[1] ?? null;
+      reputationTags = [slot1, slot2, slot3].filter(Boolean);
+
+      // Active condition — first item from reputation.activeConditions.
+      const condIds = actor.system?.reputation?.activeConditions ?? [];
+      for (const id of condIds) {
+        const item = actor.items.get(id);
+        if (item?.type === 'reputation-condition' && item.system?.active) {
+          activeCondition = {
+            name: item.name,
+            polarity: item.system?.polarity ?? 'positive',
+          };
+          break;
+        }
+      }
+
+      // Family criteria — only when visible to the viewer.
+      const family = actor.system?.familyId
+        ? game.actors?.get(actor.system.familyId)
+        : null;
+      const criteriaVis = family?.system?.visibility?.uniqueNegativeRepCriteria;
+      const viewerCanSeeCriteria = isGM || criteriaVis === 'public';
+      if (family && viewerCanSeeCriteria) {
+        familyCriteria = (family.system?.uniqueNegativeRepCriteria || '').trim();
+      }
+    }
   }
 
   return {
@@ -171,10 +226,16 @@ function _buildCardData(placeable) {
     portraitInitial,
     roleLabel,
     roleLabelStyle,
+    subtitle,
+    title,
     secretPersonaNote,
     hoverSummary,
+    hoverSummaryIsHtml,
     publicTags,
     reputationTags,
+    activeCondition,
+    familyCriteria,
+    showOpenDossier,
   };
 }
 
@@ -195,9 +256,20 @@ function _buildInnerHtml(data) {
     ? `<img class="gs-token-hover-card__portrait-img" src="${_esc(data.portraitUrl)}" alt="" />`
     : `<span class="gs-token-hover-card__portrait-initial">${_esc(data.portraitInitial)}</span>`;
 
+  // Title — editable subhead from system.bio.title. Sits directly under
+  // the name (above roleLabel/subtitle) on every actor type.
+  const titleHtml = data.title
+    ? `<div class="gs-token-hover-card__title"><em>${_esc(data.title)}</em></div>`
+    : '';
+
   // Role line
   const roleLabelHtml = data.roleLabel
     ? `<div class="gs-token-hover-card__role gs-token-hover-card__role--${data.roleLabelStyle}">${_esc(data.roleLabel)}</div>`
+    : '';
+
+  // Subtitle (post-MVP §10.2 — Connection + NPC).
+  const subtitleHtml = data.subtitle
+    ? `<div class="gs-token-hover-card__subtitle"><em>${_esc(data.subtitle)}</em></div>`
     : '';
 
   // GM-only secret persona note
@@ -205,9 +277,24 @@ function _buildInnerHtml(data) {
     ? `<div class="gs-token-hover-card__secret-note">${_esc(data.secretPersonaNote)}</div>`
     : '';
 
-  // Summary — only rendered when non-empty
+  // Active condition (Major-only, post-MVP §10.2 auto-summary).
+  const conditionHtml = data.activeCondition
+    ? `<div class="gs-token-hover-card__condition gs-token-hover-card__condition--${data.activeCondition.polarity}">◆ ${_esc(data.activeCondition.name)}</div>`
+    : '';
+
+  // Family criteria (Major-only, when visible).
+  const criteriaHtml = data.familyCriteria
+    ? `<div class="gs-token-hover-card__criteria"><em>${_esc(data.familyCriteria)}</em></div>`
+    : '';
+
+  // Summary — Connection + NPC bodies are HTML; the user-authored content is
+  // already in the safe Foundry-editor format. Major hover never has a
+  // `hoverSummary` (auto-summary uses other fields), so this branch is mostly
+  // for Connection / NPC.
   const summaryHtml = data.hoverSummary
-    ? `<div class="gs-token-hover-card__summary">${_esc(data.hoverSummary)}</div>`
+    ? data.hoverSummaryIsHtml
+      ? `<div class="gs-token-hover-card__summary gs-token-hover-card__summary--rich">${data.hoverSummary}</div>`
+      : `<div class="gs-token-hover-card__summary">${_esc(data.hoverSummary)}</div>`
     : '';
 
   // Tags: reputation pills + public tag pills
@@ -222,7 +309,12 @@ function _buildInnerHtml(data) {
     ? `<div class="gs-token-hover-card__tags">${allTagsHtml}</div>`
     : '';
 
-  return `<header class="gs-token-hover-card__header"><div class="gs-token-hover-card__portrait">${portraitInner}</div><div class="gs-token-hover-card__identity"><div class="gs-token-hover-card__name">${_esc(data.displayName)}</div>${roleLabelHtml}${secretNoteHtml}</div></header>${summaryHtml}${tagsHtml}`;
+  // Open dossier footer (Major-only).
+  const footerHtml = data.showOpenDossier
+    ? `<div class="gs-token-hover-card__footer"><em>${_esc(game.i18n.localize('GOODSOCIETY.hoverCard.openDossier'))} ↗</em></div>`
+    : '';
+
+  return `<header class="gs-token-hover-card__header"><div class="gs-token-hover-card__portrait">${portraitInner}</div><div class="gs-token-hover-card__identity"><div class="gs-token-hover-card__name">${_esc(data.displayName)}</div>${titleHtml}${roleLabelHtml}${subtitleHtml}${secretNoteHtml}</div></header>${conditionHtml}${criteriaHtml}${summaryHtml}${tagsHtml}${footerHtml}`;
 }
 
 // ── Show / hide ───────────────────────────────────────────────────────────────

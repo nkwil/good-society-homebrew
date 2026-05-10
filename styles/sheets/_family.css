@@ -34,7 +34,7 @@
   font-variant: small-caps;
   font-size: 11px;
   letter-spacing: 0.18em;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-family-sheet__name {
@@ -151,10 +151,13 @@
   flex-shrink: 0;
 }
 
-.gs-family-sheet__dot--origin-heir       { background: var(--gs-accent-1); } /* terracotta */
-.gs-family-sheet__dot--origin-new-arrival { background: var(--gs-accent-3); } /* honey */
-/* hardcoded cold steel — "foreign" sits outside the house palette */
-.gs-family-sheet__dot--origin-foreign    { background: #6B7D8E; }
+/* Five-tier social standing — palette walks from gilt (royalty) to muted slate
+ * (impoverished). Hex literals stay close to the house palette where possible. */
+.gs-family-sheet__dot--origin-royalty      { background: var(--gs-accent-3); } /* honey-gold */
+.gs-family-sheet__dot--origin-nobility     { background: var(--gs-accent-1); } /* terracotta */
+.gs-family-sheet__dot--origin-gentry       { background: var(--gs-accent-2); } /* sage */
+.gs-family-sheet__dot--origin-commoner     { background: #8A7E66; }            /* warm clay */
+.gs-family-sheet__dot--origin-impoverished { background: #6B7D8E; }            /* cold slate */
 
 .gs-family-sheet__dot--positive { background: var(--gs-positive); } /* heir named */
 .gs-family-sheet__dot--negative { background: var(--gs-danger); }   /* vacant / contested */
@@ -247,7 +250,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 11px;
-  color: var(--gs-accent-2);
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
 }
 

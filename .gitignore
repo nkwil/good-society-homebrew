@@ -13,3 +13,8 @@ foundry
 
 # Boilerplate
 build/
+# macOS
+.DS_Store
+
+# Claude Code workspace
+.claude/

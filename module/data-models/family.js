@@ -6,6 +6,12 @@ const { StringField, NumberField, ArrayField, SchemaField, HTMLField } = foundry
  */
 const HEIR_STATUS_CHOICES = ['named-son', 'named-daughter', 'named-foster', 'vacant', 'contested'];
 
+/** Valid origin values — must mirror Major.bio.peerage. The two share a
+ *  conceptual social-standing axis; swapping them in lockstep keeps Family
+ *  membership rules consistent. */
+const ORIGIN_CHOICES = ['royalty', 'nobility', 'gentry', 'commoner', 'impoverished'];
+const LEGACY_ORIGIN = new Set(['heir', 'new-arrival', 'foreign']);
+
 export class FamilyDataModel extends foundry.abstract.TypeDataModel {
   /**
    * Coerce legacy data shapes before validation. Pre-A.6 the field was a
@@ -15,10 +21,20 @@ export class FamilyDataModel extends foundry.abstract.TypeDataModel {
    * to the new default `'vacant'`. Foundry calls this prior to schema
    * validation, so the actor loads cleanly and the cleaned value persists on
    * the next user-driven save.
+   *
+   * IMPORTANT: only coerce when `heirStatus` is explicitly present and
+   * invalid. migrateData runs on partial change payloads during updates, not
+   * just full source data — auto-defaulting missing keys would silently
+   * overwrite the family's actual heirStatus on every unrelated update.
    */
   static migrateData(source) {
-    if (source && !HEIR_STATUS_CHOICES.includes(source.heirStatus)) {
+    if (source && 'heirStatus' in source && !HEIR_STATUS_CHOICES.includes(source.heirStatus)) {
       source.heirStatus = 'vacant';
+    }
+    // Origin rename mirrors Major.bio.peerage: legacy heir|new-arrival|foreign
+    // → 'gentry' as the neutral middle tier. §16 partial-update guard applies.
+    if (source && 'origin' in source && LEGACY_ORIGIN.has(source.origin)) {
+      source.origin = 'gentry';
     }
     return super.migrateData(source);
   }
@@ -27,8 +43,8 @@ export class FamilyDataModel extends foundry.abstract.TypeDataModel {
     return {
       familyName: new StringField({ initial: '' }),
       origin: new StringField({
-        choices: ['heir', 'new-arrival', 'foreign'],
-        initial: 'heir',
+        choices: ORIGIN_CHOICES,
+        initial: 'gentry',
       }),
       heirStatus: new StringField({
         required: true,

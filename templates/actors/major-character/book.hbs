@@ -1,0 +1,696 @@
+{{!--
+  Major Character dossier — post-MVP §4 leather-book shell + character spread.
+
+  Layout:
+    .dossier-stage           — leather backdrop + corner marginalia
+      .dossier-book          — the book object (paper + spine + pages)
+        .dossier-spread[data-spread="character"]
+          .dossier-page-left  — public reputation
+            cameo header (token portrait + bio chips + name + role + persona pill + theme swatches)
+            reputation criteria (with crest)
+            reputation tags (positive row + negative row, hairline pills)
+            active reputation chip
+            inner conflict ledger
+            tokens card
+          .dossier-spine
+          .dossier-page-right — private inner life
+            "Privately, of {name}" header + visibility hint pill
+            desire (large italic display)
+            notes & objectives
+            adventurer sentiment
+            magic & skills cards
+            connections chips
+            backstory teaser + "continue reading" button
+
+  All existing action handlers (toggleResolvePip, toggleMt, takeMonologue,
+  toggleBox, openItem, beginConflict, toggleVisibility, openActor,
+  addConnection, createItem, deleteItem, castSkill, openPersonaSwitcher,
+  setTheme, showSpread, backToDossier) keep working — markup just changed
+  shape, not data-action contracts.
+--}}
+<section class="dossier-stage" data-actor-id="{{actor.id}}">
+
+  {{!-- Corner marginalia — small period ornaments at each book corner.
+       Decorative SVGs may land later; for now empty boxes carry the
+       visual weight via background-image fallback. --}}
+  <span class="dossier-marginalia dossier-marginalia--tl" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--tr" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--bl" aria-hidden="true"></span>
+  <span class="dossier-marginalia dossier-marginalia--br" aria-hidden="true"></span>
+
+  <div class="dossier-book">
+
+    <article class="dossier-spread is-active" data-spread="character">
+
+      {{!-- ─────────────── LEFT PAGE — public reputation ─────────────── --}}
+      <div class="dossier-page dossier-page-left">
+
+        {{!-- Cameo header: token + bio chips + name + role + persona/theme controls --}}
+        <header class="dossier-cameo">
+          <button type="button"
+                  class="dossier-cameo__frame"
+                  data-action="pickToken"
+                  title="{{localize "GOODSOCIETY.cameo.pickTokenTitle"}}">
+            {{#if profilePicUrl}}
+              <img class="dossier-cameo__img" src="{{profilePicUrl}}" alt="{{displayName}}" />
+            {{else}}
+              <span class="dossier-cameo__initial">{{portraitInitial}}</span>
+            {{/if}}
+          </button>
+          <div class="dossier-cameo__body">
+            {{!-- Name with Lavishly Yours-faced ornament initial. The
+                 ornament IS the first letter — it visually replaces the M
+                 in "MC3", so the visible input only renders the slice
+                 ("C3") for editing. A hidden field carries the full
+                 reconstructed name back to form-submit so actor.name
+                 stays correct. The pair is kept in sync by a small
+                 listener wired in major-character-sheet.js#_onRender. --}}
+            <h1 class="dossier-cameo__name">
+              <span class="dossier-cameo__name-initial" aria-hidden="true">{{firstLetter displayName}}</span>
+              <input class="dossier-cameo__name-input"
+                     type="text"
+                     value="{{slice displayName 1}}"
+                     data-name-initial="{{firstLetter displayName}}"
+                     data-name-target="full"
+                     {{#if hasActivePersona}}readonly title="To rename the actor, clear the persona selection first."{{/if}}
+                     placeholder="{{localize 'GOODSOCIETY.sheet.namePlaceholder'}}" />
+              {{#unless hasActivePersona}}
+                <input type="hidden"
+                       name="name"
+                       data-name-full
+                       value="{{displayName}}" />
+              {{/unless}}
+            </h1>
+            {{!-- Subhead — system.bio.title. Reads as a quiet honorific
+                 directly below the name (e.g. "Duke of Cloudcandle"). --}}
+            <input class="dossier-cameo__subhead"
+                   type="text"
+                   name="system.bio.title"
+                   value="{{system.bio.title}}"
+                   placeholder="{{localize 'GOODSOCIETY.cameo.titlePlaceholder'}}" />
+
+            {{!-- Pronouns — small footnote line under the subhead. A real
+                 `<select>` (not a `<datalist>`) so all options stay available
+                 after a selection — the datalist filtered visible options
+                 down to substring matches of the current value, which made
+                 it feel like switching pronouns broke the picker. --}}
+            <p class="dossier-cameo__pronouns-line">
+              <select class="dossier-cameo__pronouns-select"
+                      name="system.bio.pronouns"
+                      title="{{localize 'GOODSOCIETY.dossier.pronounsHint'}}">
+                <option value=""           {{#if (eq system.bio.pronouns "")}}selected{{/if}}>{{localize "GOODSOCIETY.dossier.pronounsPlaceholder"}}</option>
+                <option value="she/her"    {{#if (eq system.bio.pronouns "she/her")}}selected{{/if}}>she/her</option>
+                <option value="he/him"     {{#if (eq system.bio.pronouns "he/him")}}selected{{/if}}>he/him</option>
+                <option value="they/them"  {{#if (eq system.bio.pronouns "they/them")}}selected{{/if}}>they/them</option>
+                <option value="she/they"   {{#if (eq system.bio.pronouns "she/they")}}selected{{/if}}>she/they</option>
+                <option value="he/they"    {{#if (eq system.bio.pronouns "he/they")}}selected{{/if}}>he/they</option>
+                <option value="xe/xem"     {{#if (eq system.bio.pronouns "xe/xem")}}selected{{/if}}>xe/xem</option>
+                <option value="ze/zir"     {{#if (eq system.bio.pronouns "ze/zir")}}selected{{/if}}>ze/zir</option>
+              </select>
+            </p>
+
+            {{!-- Bio line — combined "[N] years of age | Peerage". The age
+                 is editable inline; peerage is the social-standing selector.
+                 Archetype lives on its own row below the bio line. --}}
+            <p class="dossier-cameo__bio-line">
+              <input type="number"
+                     class="dossier-cameo__age-input"
+                     name="system.bio.age"
+                     value="{{system.bio.age}}"
+                     min="0"
+                     step="1"
+                     aria-label="{{localize 'GOODSOCIETY.dossier.ageWord'}}" />
+              <span class="dossier-cameo__bio-line-text">{{localize "GOODSOCIETY.dossier.yearsOfAge"}}</span>
+              <span class="dossier-cameo__bio-line-sep" aria-hidden="true">|</span>
+              <select class="dossier-cameo__peerage-select"
+                      name="system.bio.peerage"
+                      aria-label="{{localize 'GOODSOCIETY.dossier.peerage'}}">
+                <option value="royalty"      {{#if (eq system.bio.peerage "royalty")}}selected{{/if}}>{{localize "GOODSOCIETY.major.peerage.royalty"}}</option>
+                <option value="nobility"     {{#if (eq system.bio.peerage "nobility")}}selected{{/if}}>{{localize "GOODSOCIETY.major.peerage.nobility"}}</option>
+                <option value="gentry"       {{#if (eq system.bio.peerage "gentry")}}selected{{/if}}>{{localize "GOODSOCIETY.major.peerage.gentry"}}</option>
+                <option value="commoner"     {{#if (eq system.bio.peerage "commoner")}}selected{{/if}}>{{localize "GOODSOCIETY.major.peerage.commoner"}}</option>
+                <option value="impoverished" {{#if (eq system.bio.peerage "impoverished")}}selected{{/if}}>{{localize "GOODSOCIETY.major.peerage.impoverished"}}</option>
+              </select>
+            </p>
+
+            {{!-- Archetype — character-role pool that drives the random-event
+                 system. Kept OUT of the form serializer (no `name` attr) per
+                 the §16 anti-pattern; the change listener in
+                 module/sheets/major-character-sheet.js _onRender writes
+                 `system.bio.archetype` directly. --}}
+            <p class="dossier-cameo__archetype-line" data-tooltip-key="archetype">
+              <span class="dossier-cameo__archetype-label">{{localize "GOODSOCIETY.dossier.archetype"}}</span>
+              <select class="dossier-cameo__archetype-select"
+                      data-archetype-select
+                      aria-label="{{localize 'GOODSOCIETY.dossier.archetype'}}">
+                {{#each archetypeChoices}}
+                  <option value="{{id}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                {{/each}}
+              </select>
+            </p>
+
+            {{!-- Descriptors — appearance + temperament, side-by-side.
+                 Each is an editable input with a muted footnote-style
+                 label below it (input on top, label underneath). --}}
+            <div class="dossier-cameo__descriptors">
+              <div class="dossier-cameo__descriptor">
+                <input type="text"
+                       class="dossier-cameo__descriptor-input"
+                       name="system.bio.appearance"
+                       value="{{system.bio.appearance}}"
+                       placeholder="{{localize 'GOODSOCIETY.dossier.appearancePlaceholder'}}" />
+                <label class="dossier-cameo__descriptor-label">{{localize "GOODSOCIETY.dossier.appearanceLabel"}}</label>
+              </div>
+              <div class="dossier-cameo__descriptor">
+                <input type="text"
+                       class="dossier-cameo__descriptor-input"
+                       name="system.bio.temperamentDescription"
+                       value="{{system.bio.temperamentDescription}}"
+                       placeholder="{{localize 'GOODSOCIETY.dossier.temperamentPlaceholder'}}" />
+                <label class="dossier-cameo__descriptor-label">{{localize "GOODSOCIETY.dossier.temperamentLabel"}}</label>
+              </div>
+            </div>
+
+            {{!-- Persona pill is the canonical identity switcher. Each
+                 persona carries its own `theme` field set via the persona
+                 editor; switching personas swaps the dossier's visual
+                 cascade automatically.
+
+                 The "true identity" theme (actor.system.theme) is editable
+                 via a small ✎ button visible ONLY when true identity is
+                 the active selection. The button opens a DialogV2 with a
+                 theme picker — handler is #editTrueIdentityTheme in
+                 major-character-sheet.js. When a persona is active, edit
+                 that persona's theme via the persona editor instead. --}}
+            <div class="dossier-cameo__controls">
+              {{> persona-switcher actor=actor displayName=displayName activePersonaExplicit=activePersonaExplicit}}
+              {{#unless hasActivePersona}}
+                <button type="button"
+                        class="dossier-cameo__edit-identity-btn"
+                        data-action="editTrueIdentityTheme"
+                        title="{{localize 'GOODSOCIETY.dossier.editTrueIdentityTheme'}}"
+                        aria-label="Edit true identity theme">
+                  <span aria-hidden="true">✎</span>
+                </button>
+              {{/unless}}
+            </div>
+          </div>
+        </header>
+
+        {{!-- Reputation criteria (with family crest medallion) --}}
+        <section class="dossier-section dossier-criteria">
+          <header class="gs-eyebrow">
+            {{localize "GOODSOCIETY.public.reputationCriteria"}}{{#if familyName}} · {{familyName}}{{/if}}
+          </header>
+          {{#if familyName}}
+            <span class="dossier-criteria__crest" aria-hidden="true">{{firstLetter familyName}}</span>
+          {{/if}}
+          {{#if (eq criteriaVisibility "redacted")}}
+            <div class="dossier-criteria__body dossier-criteria__body--redacted">
+              <span class="gs-redacted-bar">[redacted]</span>
+            </div>
+          {{else}}
+            <div class="dossier-criteria__body">
+              {{#if reputationCriteria}}
+                <p>{{{reputationCriteria}}}</p>
+              {{else if familyActor}}
+                <p class="dossier-empty">{{localize "GOODSOCIETY.public.criteriaEmpty"}}</p>
+              {{else}}
+                <p class="dossier-empty">{{localize "GOODSOCIETY.public.noFamily"}}</p>
+              {{/if}}
+            </div>
+          {{/if}}
+        </section>
+
+        {{!-- Reputation tags — positive row, negative row (with open slots) --}}
+        <section class="dossier-section dossier-rep-tags">
+          <header class="gs-eyebrow">{{localize "GOODSOCIETY.dossier.reputationTags"}}</header>
+
+          <div class="dossier-rep-row">
+            <span class="dossier-rep-row__label">{{localize "GOODSOCIETY.public.positive"}}</span>
+            <div class="dossier-rep-row__list">
+              {{#each positiveTags}}
+                <span class="dossier-tag-pill dossier-tag-pill--positive">
+                  <button type="button"
+                          class="dossier-tag-pill__open"
+                          data-action="openItem"
+                          data-item-id="{{this.id}}">▲ {{this.name}}</button>
+                  <button type="button"
+                          class="dossier-tag-pill__delete"
+                          data-action="deleteItem"
+                          data-item-id="{{this.id}}"
+                          title="{{localize 'GOODSOCIETY.dossier.removeTag'}}">×</button>
+                </span>
+              {{/each}}
+              {{#repeat openPositiveSlots}}
+                {{!-- Open-slot placeholders are clickable: click to create
+                     a new positive reputation-tag item in that slot. The
+                     #createItem handler routes by data-item-polarity. --}}
+                <button type="button"
+                        class="dossier-tag-pill dossier-tag-pill--empty dossier-tag-pill--add"
+                        data-action="createItem"
+                        data-item-type="reputation-tag"
+                        data-item-polarity="positive"
+                        title="{{localize 'GOODSOCIETY.public.addTagPositive'}}">
+                  <span class="dossier-tag-pill__placeholder">+ {{localize "GOODSOCIETY.dossier.openSlot"}}</span>
+                </button>
+              {{/repeat}}
+              {{!-- Always-visible "+" — handles the case where all 3 slots
+                   are filled but the user wants a 4th tag (the model
+                   allows it; the 3-slot meter is just a visual cap). --}}
+              <button type="button"
+                      class="dossier-tag-pill__add-btn"
+                      data-action="createItem"
+                      data-item-type="reputation-tag"
+                      data-item-polarity="positive"
+                      title="{{localize 'GOODSOCIETY.public.addTagPositive'}}"
+                      aria-label="{{localize 'GOODSOCIETY.public.addTagPositive'}}">+</button>
+            </div>
+          </div>
+
+          <div class="dossier-rep-row">
+            <span class="dossier-rep-row__label">{{localize "GOODSOCIETY.public.negative"}}</span>
+            <div class="dossier-rep-row__list">
+              {{#each negativeTags}}
+                <span class="dossier-tag-pill dossier-tag-pill--negative">
+                  <button type="button"
+                          class="dossier-tag-pill__open"
+                          data-action="openItem"
+                          data-item-id="{{this.id}}">▼ {{this.name}}</button>
+                  <button type="button"
+                          class="dossier-tag-pill__delete"
+                          data-action="deleteItem"
+                          data-item-id="{{this.id}}"
+                          title="{{localize 'GOODSOCIETY.dossier.removeTag'}}">×</button>
+                </span>
+              {{/each}}
+              {{#repeat openNegativeSlots}}
+                <button type="button"
+                        class="dossier-tag-pill dossier-tag-pill--empty dossier-tag-pill--add"
+                        data-action="createItem"
+                        data-item-type="reputation-tag"
+                        data-item-polarity="negative"
+                        title="{{localize 'GOODSOCIETY.public.addTagNegative'}}">
+                  <span class="dossier-tag-pill__placeholder">+ {{localize "GOODSOCIETY.dossier.openSlot"}}</span>
+                </button>
+              {{/repeat}}
+              <button type="button"
+                      class="dossier-tag-pill__add-btn"
+                      data-action="createItem"
+                      data-item-type="reputation-tag"
+                      data-item-polarity="negative"
+                      title="{{localize 'GOODSOCIETY.public.addTagNegative'}}"
+                      aria-label="{{localize 'GOODSOCIETY.public.addTagNegative'}}">+</button>
+            </div>
+          </div>
+        </section>
+
+        {{!-- Active reputation chip (collapses entirely when no condition) --}}
+        {{#if activeConditions.length}}
+          <section class="dossier-section dossier-active-rep">
+            <header class="gs-eyebrow">{{localize "GOODSOCIETY.dossier.activeReputation"}}</header>
+            <div class="dossier-active-rep__list">
+              {{#each activeConditions}}
+                <button type="button"
+                        class="dossier-active-rep__chip"
+                        data-action="openItem"
+                        data-item-id="{{this.id}}">
+                  <span class="dossier-active-rep__laurel" aria-hidden="true">⚜</span>
+                  <em>{{this.name}}</em>
+                  {{#if this.system.cycleEarned}}
+                    <span class="dossier-active-rep__earned">{{localize "GOODSOCIETY.dossier.earnedCycle"}} {{this.system.cycleEarned}}</span>
+                  {{/if}}
+                </button>
+              {{/each}}
+            </div>
+          </section>
+        {{/if}}
+
+        {{!-- Inner conflict ledger (single big box; one entry per active conflict) --}}
+        <section class="dossier-section dossier-inner-conflict">
+          <div class="dossier-inner-conflict__head">
+            <header class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.public.innerConflict"}}</header>
+          </div>
+          {{#if activeConflicts.length}}
+            {{#each activeConflicts}}
+              <div class="dossier-inner-conflict__box">
+                {{!-- Inline-editable side labels. These don't ride the
+                     standard form serializer because they belong to an
+                     embedded Item, not the parent actor. A custom listener
+                     in major-character-sheet.js#_onRender catches `change`
+                     events on these inputs and routes the new value to
+                     `item.update({ 'system.<side>Label': ... })`. --}}
+                <div class="dossier-inner-conflict__row">
+                  <input type="text"
+                         class="dossier-inner-conflict__side-input"
+                         data-conflict-id="{{itemId}}"
+                         data-conflict-side="left"
+                         value="{{leftLabel}}"
+                         placeholder="{{localize "GOODSOCIETY.public.leftSidePlaceholder"}}" />
+                  <span class="dossier-inner-conflict__vs"><em>{{localize "GOODSOCIETY.dossier.vs"}}</em></span>
+                  <input type="text"
+                         class="dossier-inner-conflict__side-input"
+                         data-conflict-id="{{itemId}}"
+                         data-conflict-side="right"
+                         value="{{rightLabel}}"
+                         placeholder="{{localize "GOODSOCIETY.public.rightSidePlaceholder"}}" />
+                </div>
+                <div class="dossier-inner-conflict__row dossier-inner-conflict__row--counts">
+                  <span class="dossier-inner-conflict__count">{{leftCount}} of 5</span>
+                  <span></span>
+                  <span class="dossier-inner-conflict__count">{{rightCount}} of 5</span>
+                </div>
+                <div class="dossier-inner-conflict__row dossier-inner-conflict__row--boxes">
+                  <div class="dossier-inner-conflict__boxes">
+                    {{#each leftBoxes}}
+                      <button type="button"
+                              class="dossier-inner-conflict__box-cell {{#if this}}is-filled{{/if}}"
+                              data-action="toggleBox"
+                              data-item-id="{{../itemId}}"
+                              data-side="left"
+                              data-index="{{@index}}"></button>
+                    {{/each}}
+                  </div>
+                  <span></span>
+                  <div class="dossier-inner-conflict__boxes">
+                    {{#each rightBoxes}}
+                      <button type="button"
+                              class="dossier-inner-conflict__box-cell {{#if this}}is-filled{{/if}}"
+                              data-action="toggleBox"
+                              data-item-id="{{../itemId}}"
+                              data-side="right"
+                              data-index="{{@index}}"></button>
+                    {{/each}}
+                  </div>
+                </div>
+              </div>
+            {{/each}}
+          {{else}}
+            <div class="dossier-inner-conflict__empty">
+              <p><em>{{localize "GOODSOCIETY.public.noConflict"}}</em></p>
+              <button type="button"
+                      class="gs-empty-state__action"
+                      data-action="beginConflict">
+                + {{localize "GOODSOCIETY.public.beginConflict"}}
+              </button>
+            </div>
+          {{/if}}
+        </section>
+
+        {{!-- Tokens card — resolve / monologue token / monologue dot --}}
+        <section class="dossier-section dossier-tokens-card">
+          <header class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.dossier.tokens"}}</header>
+          <div class="dossier-tokens-grid">
+
+            <div class="dossier-tokens-cell">
+              <span class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.strip.resolve"}}</span>
+              <div class="dossier-resolve">
+                {{#each resolvePips}}
+                  <button type="button"
+                          class="dossier-resolve-pip {{#if filled}}is-filled{{/if}}"
+                          data-action="toggleResolvePip"
+                          data-pip="{{index}}"
+                          title="{{label}}"></button>
+                {{/each}}
+              </div>
+              <span class="dossier-tokens-meta"><em>{{system.tokens.resolve.current}} of {{system.tokens.resolve.max}}</em></span>
+            </div>
+
+            <div class="dossier-tokens-cell">
+              <span class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.dossier.monologueToken"}}</span>
+              <button type="button"
+                      class="dossier-mt {{#if system.tokens.major}}is-on{{/if}}"
+                      data-action="toggleMt"
+                      title="{{localize 'GOODSOCIETY.strip.mtTitle'}}">MT</button>
+              <span class="dossier-tokens-meta"><em>{{#if system.tokens.major}}{{localize "GOODSOCIETY.dossier.unspent"}}{{else}}{{localize "GOODSOCIETY.dossier.spent"}}{{/if}}</em></span>
+            </div>
+
+            <div class="dossier-tokens-cell">
+              <span class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.dossier.monologue"}}</span>
+              <span class="dossier-monologue-dot {{#unless system.tokens.monologuedThisCycle}}is-available{{/unless}}"
+                    title="{{#if system.tokens.monologuedThisCycle}}{{localize 'GOODSOCIETY.strip.monologueSpent'}}{{else}}{{localize 'GOODSOCIETY.strip.monologueAvailable'}}{{/if}}"></span>
+              <span class="dossier-tokens-meta"><em>{{#if system.tokens.monologuedThisCycle}}{{localize "GOODSOCIETY.dossier.spentThisCycle"}}{{else}}{{localize "GOODSOCIETY.dossier.available"}}{{/if}}</em></span>
+            </div>
+
+          </div>
+          {{#unless system.tokens.monologuedThisCycle}}
+            <div class="dossier-tokens-action">
+              <button type="button"
+                      class="gs-empty-state__action"
+                      data-action="takeMonologue">
+                {{localize "GOODSOCIETY.dossier.takeMonologue"}} ↗
+              </button>
+            </div>
+          {{/unless}}
+        </section>
+
+      </div>
+
+      {{!-- ─────────────── SPINE ─────────────── --}}
+      <div class="dossier-spine" aria-hidden="true"></div>
+
+      {{!-- ─────────────── RIGHT PAGE — private inner life ─────────────── --}}
+      <div class="dossier-page dossier-page-right">
+
+        <header class="dossier-private-head">
+          <h2 class="dossier-private-head__title"><em>{{localize "GOODSOCIETY.dossier.privatelyOf"}} {{displayName}}</em></h2>
+          <span class="dossier-private-head__hint">○ {{localize "GOODSOCIETY.dossier.keptSecret"}}</span>
+        </header>
+
+        {{!-- Desire — large italic display --}}
+        {{!-- Desire — ✎ in eyebrow opens a DialogV2 with a <prose-mirror>
+             editor (proper rich-text WYSIWYG; no HTML typing). Body below
+             renders the enriched HTML read-only. --}}
+        <section class="dossier-section dossier-desire">
+          <header class="gs-eyebrow">
+            {{pronouns.Possessive}} {{localize "GOODSOCIETY.dossier.presentDesire"}}
+            <button class="dossier-edit-btn"
+                    type="button"
+                    data-action="editField"
+                    data-field="desire"
+                    title="Edit"
+                    aria-label="Edit Desire">
+              <span aria-hidden="true">✎</span>
+            </button>
+            <button class="gs-visibility-flag gs-visibility-flag--{{visibility.desire}} dossier-vis-flag"
+                    type="button"
+                    data-action="toggleVisibility"
+                    data-field="desire"
+                    aria-label="Desire visibility: {{visibility.desire}}">
+              <span class="gs-visibility-flag__glyph">{{#if (eq visibility.desire "public")}}●{{else if (eq visibility.desire "redacted")}}⊘{{else}}○{{/if}}</span>
+            </button>
+          </header>
+          {{#if (eq visibility.desire "redacted")}}
+            <div class="gs-redacted-bar">[redacted]</div>
+          {{else}}
+            <div class="dossier-desire__body">
+              {{#if enrichedDesire}}
+                {{{enrichedDesire}}}
+              {{else}}
+                <p class="dossier-desire__placeholder"><em>{{localize "GOODSOCIETY.dossier.desirePlaceholder"}}</em></p>
+              {{/if}}
+            </div>
+          {{/if}}
+        </section>
+
+        {{!-- Notes & Objectives — same dialog-based rich-text editor. --}}
+        <section class="dossier-section dossier-notes">
+          <header class="gs-eyebrow">
+            {{localize "GOODSOCIETY.private.notesObjectives"}}
+            <button class="dossier-edit-btn"
+                    type="button"
+                    data-action="editField"
+                    data-field="notesObjectives"
+                    title="Edit"
+                    aria-label="Edit Notes & Objectives">
+              <span aria-hidden="true">✎</span>
+            </button>
+            <button class="gs-visibility-flag gs-visibility-flag--{{visibility.notesObjectives}} dossier-vis-flag"
+                    type="button"
+                    data-action="toggleVisibility"
+                    data-field="notesObjectives"
+                    aria-label="Notes visibility: {{visibility.notesObjectives}}">
+              <span class="gs-visibility-flag__glyph">{{#if (eq visibility.notesObjectives "public")}}●{{else if (eq visibility.notesObjectives "redacted")}}⊘{{else}}○{{/if}}</span>
+            </button>
+          </header>
+          {{#if (eq visibility.notesObjectives "redacted")}}
+            <div class="gs-redacted-bar">[redacted]</div>
+          {{else}}
+            <div class="dossier-notes__body">
+              {{#if enrichedNotes}}
+                {{{enrichedNotes}}}
+              {{else}}
+                <p class="dossier-notes__placeholder"><em>{{localize "GOODSOCIETY.dossier.notesPlaceholder"}}</em></p>
+              {{/if}}
+            </div>
+          {{/if}}
+        </section>
+
+        {{!-- Adventurer Sentiment — same dialog-based rich-text editor.
+             Promoted from the v0 single-line input; the data model's
+             HTMLField already supported rich text. --}}
+        <section class="dossier-section dossier-sentiment">
+          <header class="gs-eyebrow">
+            {{localize "GOODSOCIETY.private.adventurerSentiment"}}
+            <button class="dossier-edit-btn"
+                    type="button"
+                    data-action="editField"
+                    data-field="adventurerSentiment"
+                    title="Edit"
+                    aria-label="Edit Adventurer Sentiment">
+              <span aria-hidden="true">✎</span>
+            </button>
+          </header>
+          <div class="dossier-sentiment__body">
+            {{#if enrichedAdventurerSentiment}}
+              {{{enrichedAdventurerSentiment}}}
+            {{else}}
+              <p class="dossier-sentiment__placeholder"><em>{{localize "GOODSOCIETY.private.adventurerSentimentPlaceholder"}}</em></p>
+            {{/if}}
+          </div>
+        </section>
+
+        {{!-- Magic & Skills --}}
+        <section class="dossier-section dossier-magic">
+          <div class="dossier-section__head">
+            <header class="gs-eyebrow">{{localize "GOODSOCIETY.private.magicSkills"}}</header>
+            <button type="button"
+                    class="gs-empty-state__action dossier-section__add-btn"
+                    data-action="createItem"
+                    data-item-type="magic-skill">+</button>
+          </div>
+          {{#if magicSkills.length}}
+            <div class="dossier-magic__list">
+              {{#each magicSkills}}
+                <div class="dossier-magic-card">
+                  {{#if this.system.iconUrl}}
+                    <img class="dossier-magic-card__icon dossier-magic-card__icon--img"
+                         src="{{this.system.iconUrl}}" alt="" />
+                  {{else}}
+                    <span class="dossier-magic-card__icon" aria-hidden="true">⊛</span>
+                  {{/if}}
+                  <div class="dossier-magic-card__body">
+                    <button type="button"
+                            class="dossier-magic-card__name"
+                            data-action="openItem"
+                            data-item-id="{{this.id}}">{{this.name}}</button>
+                    {{#if this.system.description}}
+                      <p class="dossier-magic-card__desc"><em>{{{this.system.description}}}</em></p>
+                    {{/if}}
+                  </div>
+                  <button type="button"
+                          class="gs-empty-state__action dossier-magic-card__cast"
+                          data-action="castSkill"
+                          data-item-id="{{this.id}}">
+                    {{localize "GOODSOCIETY.dossier.cast"}} ↗
+                  </button>
+                </div>
+              {{/each}}
+            </div>
+          {{else}}
+            <p class="dossier-empty"><em>{{localize "GOODSOCIETY.private.noSkills"}}</em></p>
+          {{/if}}
+        </section>
+
+        {{!-- Connections — chips with portrait discs --}}
+        <section class="dossier-section dossier-connections">
+          <div class="dossier-section__head">
+            <header class="gs-eyebrow">{{localize "GOODSOCIETY.private.connections"}}</header>
+            <button type="button"
+                    class="gs-empty-state__action dossier-section__add-btn"
+                    data-action="addConnection">+</button>
+          </div>
+          {{#if connectionsResolved.length}}
+            <div class="dossier-connections__list">
+              {{#each connectionsResolved}}
+                <button type="button"
+                        class="dossier-connection-chip gs-themed{{#if this.isNpc}} dossier-connection-chip--npc{{/if}}"
+                        data-theme="{{this.theme}}"
+                        data-action="showSpread"
+                        data-goto="conn-{{this.id}}"
+                        data-actor-id="{{this.id}}"
+                        title="{{this.displayName}}">
+                  <span class="dossier-connection-chip__disc" aria-hidden="true">
+                    {{#if this.portraitUrl}}
+                      <img src="{{this.portraitUrl}}" alt="" />
+                    {{else}}
+                      <span class="dossier-connection-chip__initial">{{firstLetter this.displayName}}</span>
+                    {{/if}}
+                  </span>
+                  <span class="dossier-connection-chip__body">
+                    <span class="dossier-connection-chip__name">
+                      {{#if this.isNpc}}<span class="dossier-connection-chip__npc-flag" aria-hidden="true">GM</span>{{/if}}
+                      {{this.displayName}}
+                    </span>
+                    {{!-- Relationship label intentionally omitted — the chip is
+                         identity-only; full description lives on the connection
+                         sheet itself (open via click). --}}
+                  </span>
+                </button>
+              {{/each}}
+            </div>
+          {{else}}
+            <p class="dossier-empty"><em>{{localize "GOODSOCIETY.private.noConnections"}}</em></p>
+          {{/if}}
+        </section>
+
+        {{!-- Backstory teaser --}}
+        <section class="dossier-section dossier-backstory">
+          <header class="gs-eyebrow">
+            {{localize "GOODSOCIETY.private.backstory"}}
+            <button class="dossier-edit-btn"
+                    type="button"
+                    data-action="editField"
+                    data-field="backstory"
+                    title="Edit"
+                    aria-label="Edit Backstory">
+              <span aria-hidden="true">✎</span>
+            </button>
+            <button class="gs-visibility-flag gs-visibility-flag--{{visibility.backstory}} dossier-vis-flag"
+                    type="button"
+                    data-action="toggleVisibility"
+                    data-field="backstory"
+                    aria-label="Backstory visibility: {{visibility.backstory}}">
+              <span class="gs-visibility-flag__glyph">{{#if (eq visibility.backstory "public")}}●{{else if (eq visibility.backstory "redacted")}}⊘{{else}}○{{/if}}</span>
+            </button>
+          </header>
+          {{#if (eq visibility.backstory "redacted")}}
+            <div class="gs-redacted-bar">[redacted]</div>
+          {{else}}
+            <div class="dossier-backstory__body">
+              {{#if backstoryTeaser}}
+                <p>{{backstoryTeaser}}</p>
+              {{else if enrichedBackstory}}
+                {{{enrichedBackstory}}}
+              {{else}}
+                <p class="dossier-backstory__placeholder"><em>{{localize "GOODSOCIETY.dossier.backstoryPlaceholder"}}</em></p>
+              {{/if}}
+              {{!-- "Continue reading" only when there's actual backstory to
+                   read; otherwise the click would silently no-op (no
+                   backstory-1 spread is rendered). With nothing yet
+                   written, the CTA opens the editor instead. --}}
+              {{#if (or backstoryTeaser enrichedBackstory)}}
+                <button type="button"
+                        class="gs-empty-state__action"
+                        data-action="showSpread"
+                        data-goto="backstory-1">
+                  {{localize "GOODSOCIETY.private.continueReading"}} ↗
+                </button>
+              {{else}}
+                <button type="button"
+                        class="gs-empty-state__action"
+                        data-action="editField"
+                        data-field="backstory">
+                  {{localize "GOODSOCIETY.dossier.beginBackstory"}} ↗
+                </button>
+              {{/if}}
+            </div>
+          {{/if}}
+        </section>
+
+      </div>
+
+    </article>
+
+  </div>
+</section>

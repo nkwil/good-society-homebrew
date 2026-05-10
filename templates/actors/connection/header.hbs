@@ -2,11 +2,16 @@
 <header class="gs-connection-sheet__header">
 
   <div class="gs-connection-sheet__side">
-    {{#if portraitUrl}}
-      <img class="gs-connection-sheet__portrait" src="{{portraitUrl}}" alt="{{actor.name}}" />
-    {{else}}
-      <div class="gs-connection-sheet__portrait-fallback">{{portraitInitial}}</div>
-    {{/if}}
+    <button type="button"
+            class="gs-connection-sheet__portrait-button"
+            data-action="pickToken"
+            title="{{localize "GOODSOCIETY.cameo.pickTokenTitle"}}">
+      {{#if portraitUrl}}
+        <img class="gs-connection-sheet__portrait" src="{{portraitUrl}}" alt="{{actor.name}}" />
+      {{else}}
+        <div class="gs-connection-sheet__portrait-fallback">{{portraitInitial}}</div>
+      {{/if}}
+    </button>
     <div class="gs-connection-sheet__bio-chips">
       {{#if system.bio.pronouns}}<span>{{system.bio.pronouns}}</span>{{/if}}
       {{#if system.bio.relationshipLabel}}<span>{{system.bio.relationshipLabel}}</span>{{/if}}

@@ -1,0 +1,242 @@
+/* Event Command Center — house-styled GM tool. Two-column body: left rail
+ * roster of Majors, right pane shows the selected Major's archetype-pooled
+ * event list. */
+
+.gs-event-command-center .window-content {
+  padding: 0;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+}
+
+.gs-ecc {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: var(--gs-body);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.gs-ecc__header {
+  padding: 18px 22px 12px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  background: var(--gs-paper-warm);
+}
+.gs-ecc__title {
+  margin: 0 0 4px;
+  font-family: var(--gs-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--gs-ink);
+}
+.gs-ecc__hint {
+  margin: 0;
+  font-style: italic;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+
+/* ── Body — two-column layout ───────────────────────────────────────────── */
+.gs-ecc__body {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Roster rail */
+.gs-ecc__roster {
+  padding: 14px 12px 14px 18px;
+  border-right: 0.5px solid var(--gs-accent-2);
+  overflow-y: auto;
+}
+.gs-ecc__rail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+.gs-ecc__count {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+.gs-ecc__roster-list { list-style: none; padding: 0; margin: 0; }
+
+.gs-ecc__roster-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  margin-bottom: 2px;
+  background: transparent;
+  border: 0.5px solid transparent;
+  border-radius: 4px;
+  font: inherit !important;
+  font-size: 13px !important;
+  line-height: 1.3 !important;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+  /* Prevent autofocus glow from making the first row look "pressed". */
+  outline: none;
+}
+.gs-ecc__roster-row:hover {
+  background: var(--gs-paper-warm);
+  border-color: var(--gs-accent-2);
+}
+.gs-ecc__roster-row--selected {
+  background: var(--gs-paper-warm);
+  border-color: var(--gs-brand);
+}
+.gs-ecc__roster-row:focus-visible {
+  outline: 1.5px solid var(--gs-brand);
+  outline-offset: -1.5px;
+}
+
+.gs-ecc__roster-portrait,
+.gs-ecc__roster-initial {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+}
+.gs-ecc__roster-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 14px !important;
+  color: var(--gs-ink);
+}
+
+.gs-ecc__roster-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+.gs-ecc__roster-name {
+  font-family: var(--gs-display) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  color: var(--gs-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gs-ecc__roster-meta {
+  font-family: var(--gs-body) !important;
+  font-style: italic !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gs-ecc__roster-offline {
+  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  font-size: 10px !important;
+  line-height: 1;
+}
+
+/* Detail pane */
+.gs-ecc__detail {
+  padding: 14px 22px;
+  overflow-y: auto;
+}
+.gs-ecc__detail-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+.gs-ecc__detail-title {
+  margin: 0;
+  font-family: var(--gs-display);
+  font-size: 18px;
+  font-weight: 500;
+}
+.gs-ecc__detail-archetype {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  color: var(--gs-brand);
+}
+.gs-ecc__detail-archetype--missing {
+  color: var(--gs-danger);
+}
+.gs-ecc__detail-offline {
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  color: var(--gs-danger);
+}
+
+/* Event list */
+.gs-ecc__event-list { list-style: none; padding: 0; margin: 0; }
+.gs-ecc__event-card {
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+}
+.gs-ecc__event-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.gs-ecc__event-name {
+  font-family: var(--gs-display);
+  font-size: 15px;
+  color: var(--gs-ink);
+}
+.gs-ecc__event-counts {
+  display: inline-flex;
+  gap: 6px;
+  font-size: 12px;
+  font-family: var(--gs-body);
+}
+.gs-ecc__event-count--positive { color: var(--gs-positive); }
+.gs-ecc__event-count--negative { color: var(--gs-danger); }
+
+.gs-ecc__event-desc {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  margin-bottom: 8px;
+}
+.gs-ecc__event-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Footer */
+.gs-ecc__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 22px;
+  border-top: 0.5px solid var(--gs-accent-2);
+  background: var(--gs-paper-warm);
+  font-family: var(--gs-body);
+  font-size: 12px;
+}
+.gs-ecc__footer-meta {
+  font-style: italic;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}

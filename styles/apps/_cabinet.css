@@ -1,0 +1,396 @@
+/* The Cabinet — post-MVP §9 / patch-cabinet.md.
+ *
+ * Bottom-anchored horizontal rail (default) + drawer that opens upward
+ * (on demand). House-styled. Renders regardless of which actor is selected.
+ * Per-surface visibility flips a body class; surface CSS selectors below
+ * key off those classes.
+ *
+ * Layout pivoted 2026-05-09: was a vertical right-edge rail; now horizontal
+ * bottom-center, sitting directly above Foundry's macro hotbar. Drawer
+ * stacks ABOVE the rail (toward the canvas) rather than to the side.
+ *
+ * Frameless ApplicationV2 — same anti-pattern handling as the dock:
+ *   - position: fixed (window manager strips positioning when frame: false)
+ *   - z-index: 50 (above canvas overlays, below tooltips)
+ *   - pointer-events: auto on root + descendants (Foundry sidebar chain
+ *     inherits pointer-events: none)
+ */
+
+#gs-cabinet,
+.application.gs-cabinet {
+  position: fixed !important;
+  bottom: 64px !important;       /* Clear the macro hotbar (~50–58 px) plus breathing room. */
+  left: 50% !important;
+  top: auto !important;
+  right: auto !important;
+  transform: translateX(-50%);
+  z-index: 50 !important;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  pointer-events: auto;
+}
+
+#gs-cabinet .window-content,
+.application.gs-cabinet .window-content {
+  padding: 0;
+  background: transparent;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+/* Shell stacks vertically: drawer (when open) on top, rail at bottom.
+ * The template renders drawer first, rail second — natural document order
+ * matches the visual stacking under flex-direction: column. */
+.gs-cabinet-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  pointer-events: auto;
+}
+
+.gs-cabinet-shell *,
+.gs-cabinet-shell *::before,
+.gs-cabinet-shell *::after {
+  pointer-events: auto;
+}
+
+/* ── Rail ────────────────────────────────────────────────────────────────── */
+
+.gs-cabinet-rail {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  /* Rounded rectangle to match the macro hotbar — was a 100px stadium pill;
+   * the flatter ends keep the rail and hotbar visually consistent. */
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(20, 12, 14, 0.12);
+}
+
+/* Divider is now a vertical hairline between horizontal buttons. */
+.gs-cabinet-rail__divider {
+  width: 0.5px;
+  height: 18px;
+  background: var(--gs-accent-2);
+  opacity: 0.4;
+  margin: 0 2px;
+}
+
+.gs-cabinet-rail-btn {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gs-paper-warm);
+  border: 1px solid var(--gs-accent-2);
+  font-family: var(--gs-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--gs-brand);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, transform 120ms ease;
+  padding: 0;
+}
+
+.gs-cabinet-rail-btn:hover {
+  background: var(--gs-paper);
+  transform: scale(1.06);
+}
+
+/* Active dot — small filled disc at top-right of each rail button. */
+.gs-cabinet-rail-btn.is-active::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gs-brand);
+  box-shadow: 0 0 0 1px var(--gs-paper);
+}
+
+/* Cabinet rail SVG icons — terracotta (--gs-accent-1) via mask-image so the
+ * SVG asset's baked-in black fill is irrelevant. We mask the BUTTON itself
+ * (rather than a ::before pseudo) so layout is dead simple — the button is
+ * the icon. The asset URL is carried inline via the `--cabinet-icon` CSS
+ * variable on the button. */
+.gs-cabinet-rail-btn[data-cabinet-icon] {
+  font-size: 0 !important;     /* hide the railGlyph fallback letters */
+  color: transparent;
+  background-color: var(--gs-accent-1) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  -webkit-mask-image: var(--cabinet-icon);
+          mask-image: var(--cabinet-icon);
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: 70% 70%;
+          mask-size: 70% 70%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.gs-cabinet-rail-btn[data-cabinet-icon]:hover {
+  background-color: var(--gs-brand) !important;
+  transform: scale(1.06);
+}
+
+/* Launcher rail buttons don't carry an "is-active" state — they always open
+ * a modal on click. Suppress the active dot for them. */
+.gs-cabinet-rail-btn--launcher.is-active::after {
+  content: none;
+}
+
+.gs-cabinet-rail-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border: 1px solid var(--gs-brand);
+  font-family: var(--gs-display);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.gs-cabinet-rail-toggle:hover {
+  background: color-mix(in srgb, var(--gs-brand) 88%, var(--gs-paper));
+}
+
+/* ── Drawer ──────────────────────────────────────────────────────────────── */
+
+.gs-cabinet-drawer {
+  width: 320px;
+  max-height: 70vh;              /* Slightly tighter than vertical layout to keep room above the hotbar. */
+  margin-bottom: 8px;            /* Gap between drawer-above and rail-below. */
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(20, 12, 14, 0.18);
+  display: flex;
+  flex-direction: column;
+  /* Scroll the middle when the group list exceeds max-height. The clip on
+   * X keeps the rounded corners crisp while letting Y overflow scroll —
+   * head + groups + foot all live inside the same flex column, so the
+   * groups grow to fill the gap and scroll independently. */
+  overflow: hidden auto;
+}
+
+/* Sticky header + footer so they stay visible while the middle scrolls. */
+.gs-cabinet-drawer__head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.gs-cabinet-drawer__foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+.gs-cabinet-drawer__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px 10px;
+  background: var(--gs-paper-warm);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-cabinet-drawer__head h3 {
+  font-family: var(--gs-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  margin: 0;
+}
+
+.gs-cabinet-drawer__head small {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+.gs-cabinet-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 16px 12px;
+}
+
+.gs-cabinet-group + .gs-cabinet-group {
+  border-top: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-cabinet-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  gap: 12px;
+}
+
+.gs-cabinet-row__name {
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Toggle switch — iOS-style.
+ *
+ * Geometry: knob is 80% of track height with just 2 px of breathing room
+ * top/bottom and the same 2 px gap on the active side in both states. The
+ * larger knob-to-track ratio is the "iOS look" — anything smaller reads as
+ * a small disc rattling around in a pill.
+ *
+ *   - Track 36 × 20 (no border — a fill-only surface).
+ *   - Knob 16 × 16, centered vertically (20 − 16 = 4 → 2 top, 2 bottom).
+ *   - OFF position: left:2. ON position translates 16 px right →
+ *     left ends at 18, right edge at 34, leaving 2 px on the active side.
+ *   - 36 − 16 = 20 → 2 + 16 (knob) + 16 (translate) + 2 = 36 ✓ symmetric.
+ *
+ * Color contract:
+ *   - OFF: muted sage track + paper knob.
+ *   - ON:  solid brand track + paper knob.
+ *   - Knob keeps a subtle drop shadow so it lifts visibly off the coloured
+ *     track in both states.
+ */
+.gs-cabinet-toggle {
+  position: relative;
+  width: 46px !important;
+  height: 26px !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.gs-cabinet-toggle__track {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border-radius: 100px;
+  background: color-mix(in srgb, var(--gs-accent-2) 32%, var(--gs-paper));
+  border: 0;
+  transition: background 140ms ease;
+}
+
+.gs-cabinet-toggle__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--gs-paper);
+  box-shadow: 0 1px 2px rgba(20, 12, 14, 0.22);
+  transition: transform 140ms ease;
+}
+
+.gs-cabinet-toggle.is-on .gs-cabinet-toggle__track {
+  background: var(--gs-brand);
+}
+
+.gs-cabinet-toggle.is-on .gs-cabinet-toggle__knob {
+  /* OFF: left:3, ON: left = 46 - 3 - 20 = 23. Translate 20px. */
+  transform: translateX(20px);
+}
+
+/* Launcher button — for `kind: 'launcher'` rows (GM Tools group). Opens a
+ * modal/dialog when clicked instead of toggling visibility. Same outline-pill
+ * vocabulary as the drawer's footer buttons so it reads as "action you can
+ * take" rather than "state to switch." */
+.gs-cabinet-launcher {
+  font-family: var(--gs-display);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--gs-brand);
+  background: transparent;
+  border: 1px solid var(--gs-brand);
+  border-radius: 100px;
+  padding: 3px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms ease;
+}
+
+.gs-cabinet-launcher:hover {
+  background: color-mix(in srgb, var(--gs-brand) 8%, transparent);
+}
+
+/* Footer */
+.gs-cabinet-drawer__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-cabinet-drawer__btn {
+  font-family: var(--gs-display);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--gs-brand);
+  background: transparent;
+  border: 1px solid var(--gs-brand);
+  border-radius: 100px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.gs-cabinet-drawer__btn:hover {
+  background: color-mix(in srgb, var(--gs-brand) 8%, transparent);
+}
+
+.gs-cabinet-drawer__hint {
+  margin-left: auto;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+/* ── Per-surface hide rules. ──────────────────────────────────────────────
+ * These match `hideBodyClass` in COWORK_SURFACES. Each surface has its own
+ * rule because Foundry's element IDs aren't predictable enough for a single
+ * generic selector.
+ */
+
+body.gs-hide-dock #gs-my-characters-dock,
+body.gs-hide-dock .application.gs-my-characters-dock,
+body.gs-hide-cycle-hud .gs-cycle-hud { display: none !important; }
+
+body.gs-hide-sequencer  .sequencer-effects,
+body.gs-hide-token-mold #token-mold-config,
+body.gs-hide-dice-tray  #dice-tray { display: none !important; }
+
+body.gs-hide-players #players,
+body.gs-hide-sidebar #sidebar,
+body.gs-hide-hotbar  #hotbar { display: none !important; }

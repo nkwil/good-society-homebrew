@@ -20,6 +20,7 @@ import { openRevealControl } from './reveal-control.js';
 import { openBulkPermissionsPanel } from './bulk-permissions-panel.js';
 import { openEventTimeline } from './event-timeline.js';
 import { openRumourBoard } from './rumour-board.js';
+import { openPublicInfoCard } from './public-info-card.js';
 import { postSystemCard } from '../helpers/chat-cards.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -35,7 +36,7 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
       positioned: true,
       title: 'GOODSOCIETY.dashboard.windowTitle',
     },
-    position: { width: 720, height: 'auto' },
+    position: { width: 720, height: 720, left: 200, top: 80 },
     actions: {
       'refresh-resolve':  PublicInfoDashboard.#refreshResolve,
       'clear-monologues': PublicInfoDashboard.#clearMonologues,
@@ -55,6 +56,19 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
       ],
     },
   };
+
+  /**
+   * Window title is role-aware. GMs see "Public Info · Facilitator
+   * Dashboard"; players see plain "Public Info" so the framing isn't
+   * misleading (no GM controls show in the player view, so the
+   * "Facilitator" label was confusing).
+   */
+  get title() {
+    const key = game.user?.isGM
+      ? 'GOODSOCIETY.dashboard.windowTitle'
+      : 'GOODSOCIETY.dashboard.windowTitlePlayer';
+    return game.i18n.localize(key);
+  }
 
   /** @override */
   async _prepareContext(options) {
@@ -98,7 +112,19 @@ export class PublicInfoDashboard extends HandlebarsApplicationMixin(ApplicationV
       const row = ev.target.closest('[data-actor-id]');
       if (!row) return;
       const actor = game.actors?.get(row.dataset.actorId);
-      if (actor) actor.sheet?.render(true);
+      if (!actor) return;
+      // If the user has at least OBSERVER on the actor, open the full sheet.
+      // Otherwise open the public-info card (read-only public face) so we
+      // don't trip Foundry's "no permission" notification on every click.
+      const canView = actor.testUserPermission(
+        game.user,
+        CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER,
+      );
+      if (canView) {
+        actor.sheet?.render(true);
+      } else {
+        openPublicInfoCard(actor);
+      }
     });
   }
 
@@ -233,5 +259,12 @@ export function getDashboard() {
 }
 
 export function openDashboard() {
-  getDashboard().render({ force: true });
+  const app = getDashboard();
+  // If already open, bring to front rather than re-rendering (which can
+  // briefly collapse the window and look like it's "toggling").
+  if (app.rendered) {
+    app.bringToTop?.();
+    return;
+  }
+  app.render({ force: true });
 }

@@ -4,11 +4,16 @@
 <header class="gs-npc-sheet__header">
 
   <div class="gs-npc-sheet__side">
-    {{#if portraitUrl}}
-      <img class="gs-npc-sheet__portrait" src="{{portraitUrl}}" alt="{{actor.name}}" />
-    {{else}}
-      <div class="gs-npc-sheet__portrait-fallback">{{portraitInitial}}</div>
-    {{/if}}
+    <button type="button"
+            class="gs-npc-sheet__portrait-button"
+            data-action="pickToken"
+            title="{{localize "GOODSOCIETY.cameo.pickTokenTitle"}}">
+      {{#if portraitUrl}}
+        <img class="gs-npc-sheet__portrait" src="{{portraitUrl}}" alt="{{actor.name}}" />
+      {{else}}
+        <div class="gs-npc-sheet__portrait-fallback">{{portraitInitial}}</div>
+      {{/if}}
+    </button>
     <div class="gs-npc-sheet__bio-chips">
       {{#if system.bio.pronouns}}<span>{{system.bio.pronouns}}</span>{{/if}}
       {{#if system.bio.role}}<span>{{system.bio.role}}</span>{{/if}}

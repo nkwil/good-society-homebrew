@@ -1,0 +1,105 @@
+<section class="gs-item-sheet__wrapper">
+<form class="gs-item-sheet__form" autocomplete="off">
+
+  <header class="gs-item-sheet__header">
+    <div class="gs-item-sheet__header-row">
+      <span class="gs-item-sheet__eyebrow">{{localize "GOODSOCIETY.item.randomEvent.eyebrow"}}</span>
+    </div>
+    <input class="gs-item-sheet__name"
+           type="text"
+           name="name"
+           value="{{document.name}}"
+           placeholder="{{localize "GOODSOCIETY.item.randomEvent.namePlaceholder"}}" />
+  </header>
+
+  <div class="gs-item-sheet__body">
+
+    {{!-- Archetype filter --}}
+    <div class="gs-item-sheet__field">
+      <label class="gs-item-sheet__label" for="gs-rev-archetype">
+        {{localize "GOODSOCIETY.item.randomEvent.archetypeLabel"}}
+      </label>
+      <select id="gs-rev-archetype"
+              class="gs-item-sheet__input"
+              name="system.archetype">
+        {{#each archetypeChoices}}
+          <option value="{{id}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+        {{/each}}
+      </select>
+      <p class="gs-item-sheet__hint">{{localize "GOODSOCIETY.item.randomEvent.archetypeHint"}}</p>
+    </div>
+
+    {{!-- Description (HTML editor) --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.randomEvent.descriptionLabel"}}</span>
+      {{editor system.description target="system.description" button=true editable=true}}
+    </div>
+
+    {{!-- Positive tag shortlist --}}
+    <div class="gs-item-sheet__field">
+      <div class="gs-rev-shortlist__header">
+        <span class="gs-item-sheet__label gs-item-sheet__label--positive">
+          ▲ {{localize "GOODSOCIETY.item.randomEvent.positiveLabel"}}
+        </span>
+        <button type="button"
+                class="gs-btn gs-btn--ghost gs-btn--sm"
+                data-action="addPositiveTag">
+          + {{localize "GOODSOCIETY.item.randomEvent.addOption"}}
+        </button>
+      </div>
+      <p class="gs-item-sheet__hint">{{localize "GOODSOCIETY.item.randomEvent.positiveHint"}}</p>
+      {{#each positiveTagOptions}}
+        <div class="gs-rev-shortlist__row">
+          <input class="gs-item-sheet__input"
+                 type="text"
+                 name="system.positiveTagOptions.{{@index}}"
+                 value="{{this}}"
+                 placeholder="{{localize "GOODSOCIETY.item.randomEvent.optionPlaceholderPositive"}}" />
+          <button type="button"
+                  class="gs-btn gs-btn--ghost gs-btn--sm gs-rev-shortlist__remove"
+                  data-action="removePositiveTag"
+                  data-index="{{@index}}"
+                  title="{{localize 'GOODSOCIETY.item.randomEvent.removeOption'}}">×</button>
+        </div>
+      {{/each}}
+    </div>
+
+    {{!-- Negative tag shortlist --}}
+    <div class="gs-item-sheet__field">
+      <div class="gs-rev-shortlist__header">
+        <span class="gs-item-sheet__label gs-item-sheet__label--negative">
+          ▼ {{localize "GOODSOCIETY.item.randomEvent.negativeLabel"}}
+        </span>
+        <button type="button"
+                class="gs-btn gs-btn--ghost gs-btn--sm"
+                data-action="addNegativeTag">
+          + {{localize "GOODSOCIETY.item.randomEvent.addOption"}}
+        </button>
+      </div>
+      <p class="gs-item-sheet__hint">{{localize "GOODSOCIETY.item.randomEvent.negativeHint"}}</p>
+      {{#each negativeTagOptions}}
+        <div class="gs-rev-shortlist__row">
+          <input class="gs-item-sheet__input"
+                 type="text"
+                 name="system.negativeTagOptions.{{@index}}"
+                 value="{{this}}"
+                 placeholder="{{localize "GOODSOCIETY.item.randomEvent.optionPlaceholderNegative"}}" />
+          <button type="button"
+                  class="gs-btn gs-btn--ghost gs-btn--sm gs-rev-shortlist__remove"
+                  data-action="removeNegativeTag"
+                  data-index="{{@index}}"
+                  title="{{localize 'GOODSOCIETY.item.randomEvent.removeOption'}}">×</button>
+        </div>
+      {{/each}}
+    </div>
+
+  </div>
+
+  <footer class="gs-item-sheet__footer">
+    <button type="button" class="gs-btn gs-btn--primary" data-action="done">
+      {{localize "GOODSOCIETY.item.done"}}
+    </button>
+  </footer>
+
+</form>
+</section>

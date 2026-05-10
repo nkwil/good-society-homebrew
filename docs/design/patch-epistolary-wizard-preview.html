@@ -1,0 +1,1759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Good Society — Epistolary Wizard preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --gs-paper:        #EFE6D2;
+  --gs-paper-warm:   #F4ECD8;
+  --gs-paper-aged:   #E5D9BD;
+  --gs-ink:          #3D2F26;
+  --gs-ink-soft:     #6B5A4D;
+  --gs-brand:        #2A3A2D;
+  --gs-brand-soft:   #45533F;
+  --gs-accent-1:     #B85C3F;
+  --gs-accent-2:     #708060;
+  --gs-accent-3:     #C9A55C;
+  --gs-muted:        rgba(112,128,96,.30);
+  --gs-positive:     #4A7A4A;
+  --gs-danger:       #8B2A2A;
+  --gold-leaf:       #C9A24E;
+  --gold-bright:     #E8C77E;
+  --gs-display:      'Lora', Georgia, serif;
+  --gs-body:         'Crimson Text', Georgia, serif;
+  --gs-ui:           system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+
+  /* Seal type colors */
+  --seal-yellow:     #C9A33C;
+  --seal-red:        #8B2A2A;
+  --seal-green:      #4A7A4A;
+
+  --frame-shadow: 0 1px 2px rgba(61,47,38,.06), 0 8px 24px -8px rgba(61,47,38,.18);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: linear-gradient(180deg, #2a2520 0%, #1c1815 100%);
+  color: var(--gs-ink);
+  font-family: var(--gs-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Page chrome */
+.shell { max-width: 1180px; margin: 0 auto; padding: 48px 32px 96px; }
+.kicker {
+  font-family: var(--gs-ui);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: 11px;
+  color: var(--gs-accent-3);
+  font-weight: 500;
+}
+.doc-h1 {
+  font-family: var(--gs-display);
+  color: #F4ECD8;
+  font-size: 38px;
+  font-weight: 500;
+  margin: 6px 0 4px;
+  letter-spacing: .005em;
+}
+.doc-sub {
+  color: #B8AB94;
+  font-style: italic;
+  font-family: var(--gs-body);
+  font-size: 17px;
+  margin: 0 0 36px;
+  max-width: 780px;
+}
+
+.section {
+  background: var(--gs-paper);
+  border: 1px solid rgba(61,47,38,.18);
+  border-radius: 4px;
+  padding: 36px 40px 40px;
+  margin-bottom: 28px;
+  box-shadow: var(--frame-shadow);
+}
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid var(--gs-muted);
+  padding-bottom: 14px;
+  margin-bottom: 24px;
+}
+.section-num {
+  font-family: var(--gs-display);
+  font-style: italic;
+  color: var(--gs-accent-2);
+  font-size: 18px;
+}
+.section-title {
+  font-family: var(--gs-display);
+  font-size: 24px;
+  color: var(--gs-brand);
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: .005em;
+}
+.section-sub {
+  font-style: italic;
+  color: var(--gs-ink-soft);
+  margin-left: auto;
+  font-size: 13px;
+}
+.notes {
+  background: var(--gs-paper-warm);
+  border-left: 2px solid var(--gs-accent-3);
+  padding: 14px 18px;
+  font-size: 14.5px;
+  margin: 24px 0 0;
+}
+.notes h4 {
+  font-family: var(--gs-display);
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gs-accent-1);
+  margin: 0 0 6px;
+  font-weight: 500;
+}
+.notes ul { margin: 4px 0 0 18px; padding: 0; }
+.notes li { margin-bottom: 4px; }
+.notes code {
+  background: rgba(61,47,38,.08);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-size: .9em;
+}
+
+/* ============================================================
+   THE WIZARD FRAME
+============================================================ */
+.wiz-frame {
+  width: 760px;
+  max-width: 100%;
+  margin: 0 auto;
+  background: var(--gs-paper);
+  border: 1px solid rgba(61,47,38,.22);
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(244,236,216,.6) inset, var(--frame-shadow);
+  overflow: hidden;
+}
+.wiz-head {
+  padding: 18px 24px 16px;
+  display: flex;
+  align-items: center;
+  background: var(--gs-paper-warm);
+  border-bottom: 1px solid var(--gs-muted);
+}
+.wiz-head h3 {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  color: var(--gs-brand);
+  font-weight: 500;
+  margin: 0;
+}
+.wiz-head .cycle {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  margin-left: 10px;
+}
+.wiz-actor-switch {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gs-paper);
+  border: 1px solid var(--gs-accent-2);
+  border-radius: 100px;
+  padding: 4px 12px 4px 6px;
+  font-family: var(--gs-display);
+  font-size: 12px;
+  color: var(--gs-brand);
+}
+.wiz-actor-switch .av {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #6B2A3A; color: var(--gs-paper);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600;
+}
+.wiz-actor-switch .chev {
+  font-style: normal;
+  font-size: 9px;
+  color: var(--gs-accent-3);
+}
+
+/* Tab nav */
+.wiz-tabs {
+  padding: 14px 24px 0;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--gs-muted);
+}
+.wiz-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px 11px;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  margin-bottom: -1px;
+  background: transparent;
+  font-family: var(--gs-display);
+  font-size: 13px;
+  color: var(--gs-ink-soft);
+  cursor: pointer;
+  transition: background .15s;
+}
+.wiz-tab:hover { background: var(--gs-paper-warm); }
+.wiz-tab.is-active {
+  background: var(--gs-paper);
+  border-color: var(--gs-muted);
+  color: var(--gs-brand);
+  font-weight: 500;
+}
+.wiz-tab .badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gs-paper-warm);
+  border: 1px solid var(--gs-muted);
+  border-radius: 100px;
+  padding: 1px 7px;
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  color: var(--gs-accent-2);
+  font-weight: 500;
+}
+.wiz-tab.is-active .badge {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border-color: var(--gs-brand);
+}
+
+/* Tab body */
+.wiz-body {
+  padding: 18px 24px 12px;
+  background: var(--gs-paper);
+  min-height: 380px;
+}
+.wiz-body-eyebrow {
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .14em;
+  color: var(--gs-accent-2);
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+/* ============================================================
+   LETTER ROWS (used in inbox + outbox)
+============================================================ */
+.letter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.letter-row {
+  display: grid;
+  grid-template-columns: 36px 38px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--gs-paper-warm);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color .15s, transform .15s;
+}
+.letter-row:hover {
+  border-color: var(--gs-accent-2);
+  transform: translateY(-1px);
+}
+.letter-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 2.5px;
+  background: var(--row-brand, var(--gs-brand));
+  border-radius: 2px;
+}
+.letter-row.is-unread .letter-row-meta::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gs-brand);
+  transform: translateY(-50%);
+}
+
+/* Seal disc */
+.seal-disc {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 30% 25%,
+    rgba(255,255,255,.42) 0%,
+    transparent 38%),
+    radial-gradient(circle at 50% 55%,
+      var(--seal-light, #C9A33C) 0%,
+      var(--seal-dark, #8B6A26) 100%);
+  box-shadow:
+    inset 0 -2px 3px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.3),
+    0 1px 2px rgba(0,0,0,.45);
+  color: var(--gs-paper);
+  font-family: var(--gs-display);
+  font-size: 11px;
+  font-weight: 600;
+}
+.seal-disc.seal--yellow { --seal-light: #E8C77E; --seal-dark: #8B6A26; }
+.seal-disc.seal--red    { --seal-light: #C8584F; --seal-dark: #5A1A14; }
+.seal-disc.seal--green  { --seal-light: #6BA86B; --seal-dark: #2D4F2D; }
+
+/* Cameo portrait — themed disc */
+.cameo {
+  width: 38px; height: 42px;
+  border-radius: 50% / 60%;
+  background: var(--cameo-color, var(--gs-brand));
+  color: var(--gs-paper);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 14px; font-weight: 600;
+  border: 1px solid rgba(0,0,0,.18);
+  box-shadow: 0 0 0 2px var(--gs-paper) inset;
+}
+
+.letter-row-meta {
+  position: relative;
+  min-width: 0;
+}
+.letter-row-from {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--gs-display);
+  font-size: 13px;
+  color: var(--row-brand, var(--gs-brand));
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.letter-row-cycle {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 10px;
+  color: var(--gs-accent-2);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.letter-row-subject {
+  font-family: var(--gs-display);
+  font-size: 13px;
+  color: var(--gs-ink);
+  margin: 0 0 1px;
+  font-weight: 500;
+}
+.letter-row-snippet {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 11.5px;
+  color: var(--gs-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.letter-row-status {
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--gs-accent-2);
+  white-space: nowrap;
+  padding: 4px 10px;
+  border: 1px solid var(--gs-muted);
+  border-radius: 100px;
+  background: var(--gs-paper);
+}
+.letter-row-status.is-burned { color: var(--gs-danger); border-color: rgba(139,42,42,.4); background: rgba(139,42,42,.06); }
+.letter-row-status.is-read   { color: var(--gs-accent-2); }
+.letter-row-status.is-fresh  { color: var(--gs-brand); border-color: var(--gs-brand); background: rgba(42,58,45,.06); }
+
+/* Empty state */
+.letter-empty {
+  text-align: center;
+  padding: 60px 24px 80px;
+  color: var(--gs-ink-soft);
+}
+.letter-empty-msg {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+.cta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(201, 165, 116, 0.18);
+  border: 1px solid var(--gold-leaf);
+  color: var(--gs-brand);
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  cursor: pointer;
+}
+
+/* Wiz footer */
+.wiz-foot {
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gs-paper-warm);
+  border-top: 1px solid var(--gs-muted);
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-ink-soft);
+}
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 11px;
+  border-radius: 100px;
+  border: 1px solid var(--gs-muted);
+  background: var(--gs-paper);
+  font-family: var(--gs-display);
+  font-size: 11px;
+  color: var(--gs-ink-soft);
+  cursor: pointer;
+  font-style: normal;
+}
+.filter-pill .pill-disc {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--filter-color, var(--gs-brand));
+  border: 1px solid rgba(0,0,0,.15);
+}
+.filter-pill.is-active {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: rgba(42,58,45,.06);
+}
+.foot-spacer { flex: 1; }
+.btn-primary {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border: 1px solid var(--gs-brand);
+  font-family: var(--gs-ui);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  padding: 7px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.btn-primary:hover { background: var(--gs-brand-soft); }
+.btn-primary[disabled] {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   LETTER DETAIL VIEW
+============================================================ */
+.letter-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.detail-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 100px;
+  border: 1px solid var(--gs-accent-2);
+  background: var(--gs-paper-warm);
+  font-family: var(--gs-ui);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--gs-accent-2);
+  cursor: pointer;
+}
+
+/* Themed letter card (the .gs-themed wrapper drives palette) */
+.gs-themed[data-theme="connection-purple"] {
+  --th-paper: #F4F1E6;
+  --th-paper-warm: #ECE7D6;
+  --th-ink: #3A2A4A;
+  --th-brand: #6B4A7A;
+  --th-accent: #C0A8C9;
+}
+.gs-themed[data-theme="rose"] {
+  --th-paper: #FAF1ED;
+  --th-paper-warm: #F5E6E0;
+  --th-ink: #4A2030;
+  --th-brand: #B85B6F;
+  --th-accent: #D4889E;
+}
+.gs-themed[data-theme="avril"] {
+  --th-paper: #16100E;
+  --th-paper-warm: #2C1F2A;
+  --th-ink: #E8DDC8;
+  --th-brand: #E8C988;
+  --th-accent: #8B6A3F;
+}
+
+.letter-card {
+  border-radius: 12px;
+  padding: 24px 30px;
+  background: var(--th-paper, var(--gs-paper));
+  border: 1px solid var(--th-accent, var(--gs-accent-3));
+  color: var(--th-ink, var(--gs-ink));
+  box-shadow: 0 4px 18px -8px rgba(61,47,38,.4);
+  position: relative;
+}
+.letter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 12px;
+  border-bottom: 0.5px solid var(--th-accent, var(--gs-accent-2));
+  font-family: var(--gs-display);
+  font-size: 11px;
+  color: var(--th-accent, var(--gs-accent-2));
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.letter-head .right {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+.letter-subject {
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 19px;
+  color: var(--th-brand, var(--gs-brand));
+  margin: 16px 0 14px;
+  font-weight: 500;
+}
+.letter-body {
+  font-family: var(--gs-body);
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0;
+}
+.letter-body p { margin: 0 0 12px; }
+.letter-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 0.5px solid var(--th-accent, var(--gs-accent-2));
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--th-accent, var(--gs-accent-2));
+}
+.letter-foot .seal-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.letter-foot .seal-mini {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--seal-light, #C9A33C);
+  border: 1px solid var(--seal-dark, #8B6A26);
+}
+
+.detail-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 4px;
+}
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(201, 165, 116, 0.15);
+  border: 1px solid var(--gold-leaf);
+  color: var(--gs-brand);
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.btn-secondary:hover { background: rgba(201, 165, 116, 0.28); }
+.btn-secondary.is-danger {
+  color: var(--gs-danger);
+  border-color: rgba(139,42,42,.5);
+  background: rgba(139,42,42,.06);
+}
+.btn-secondary.is-danger:hover { background: rgba(139,42,42,.14); }
+
+/* Burn warning */
+.burn-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(74,122,74,.08);
+  border: 1px solid rgba(74,122,74,.4);
+  border-radius: 4px;
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-positive);
+}
+.burn-warning::before {
+  content: '◉';
+  color: var(--gs-positive);
+  font-size: 14px;
+}
+
+/* Burn animation (CSS keyframes, hover-triggered demo) */
+.letter-card.burning {
+  animation: burnFade 1.5s ease-out forwards;
+}
+@keyframes burnFade {
+  0%   { opacity: 1; filter: brightness(1); }
+  60%  { opacity: 0.7; filter: brightness(0.6) sepia(0.7) hue-rotate(-20deg); }
+  100% { opacity: 0; filter: brightness(0.2); transform: scale(0.96); }
+}
+.flame {
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  width: 30px; height: 40px;
+  pointer-events: none;
+  display: none;
+}
+.letter-card.burning .flame { display: block; animation: flameRise 1.5s ease-out forwards; }
+@keyframes flameRise {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.5); }
+  30%  { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(1.3); }
+}
+.flame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 80%,
+    #E8C77E 0%, #C9A33C 30%, #B85C3F 60%, transparent 90%);
+  border-radius: 50% 50% 60% 60% / 80% 80% 50% 50%;
+  filter: blur(2px);
+}
+
+.burned-card {
+  border-radius: 12px;
+  padding: 28px 30px;
+  background: var(--gs-paper);
+  border: 1px dashed var(--gs-muted);
+  text-align: center;
+  font-family: var(--gs-body);
+  font-style: italic;
+  color: var(--gs-ink-soft);
+  font-size: 14px;
+}
+.burned-card .ash {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: var(--gs-accent-2);
+}
+
+/* ============================================================
+   COMPOSE TAB
+============================================================ */
+.compose-form {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 12px 14px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+.compose-label {
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gs-brand);
+  padding-top: 8px;
+}
+.compose-input {
+  background: var(--gs-paper-warm);
+  border: 1px solid var(--gs-muted);
+  border-radius: 4px;
+  padding: 7px 10px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+}
+.compose-input.is-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 5px 12px 5px 6px;
+  border-radius: 100px;
+}
+.compose-input textarea {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  resize: vertical;
+  min-height: 92px;
+  font-family: var(--gs-body);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--gs-ink);
+}
+.compose-input.is-textarea { padding: 10px 12px; }
+
+/* Seal picker */
+.seal-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.seal-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px 4px 5px;
+  background: var(--gs-paper-warm);
+  border: 1px solid var(--gs-muted);
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-size: 12px;
+  color: var(--gs-ink-soft);
+  cursor: pointer;
+  transition: all 200ms;
+}
+.seal-option:hover {
+  border-color: var(--gs-accent-2);
+}
+.seal-option.is-selected {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: var(--gs-paper);
+  box-shadow: inset 0 0 0 1px var(--gs-brand);
+}
+.seal-option .seal-disc { width: 22px; height: 22px; }
+.seal-description {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-ink-soft);
+  margin: 8px 0 0;
+}
+
+/* Compose preview eyebrow */
+.compose-preview-eyebrow {
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+  text-align: center;
+  margin: 18px 0 12px;
+  position: relative;
+}
+.compose-preview-eyebrow::before,
+.compose-preview-eyebrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 80px);
+  height: 1px;
+  background: var(--gs-muted);
+}
+.compose-preview-eyebrow::before { left: 0; }
+.compose-preview-eyebrow::after  { right: 0; }
+
+/* ============================================================
+   ROSTER (GM)
+============================================================ */
+.roster-frame {
+  width: 480px;
+  margin: 0 auto;
+  background: var(--gs-paper);
+  border: 1px solid rgba(61,47,38,.22);
+  border-radius: 6px;
+  box-shadow: var(--frame-shadow);
+  overflow: hidden;
+}
+.roster-head {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--gs-muted);
+  font-family: var(--gs-display);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gs-brand);
+  background: var(--gs-paper-warm);
+  display: flex;
+  align-items: baseline;
+}
+.roster-head .cycle {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-accent-2);
+  margin-left: auto;
+  font-weight: 400;
+}
+.roster-list {
+  padding: 12px 22px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.roster-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--gs-paper-warm);
+  border-radius: 5px;
+  position: relative;
+}
+.roster-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 2.5px;
+  background: var(--row-brand, var(--gs-brand));
+  border-radius: 2px;
+}
+.roster-cameo {
+  width: 32px; height: 36px;
+  border-radius: 50% / 60%;
+  background: var(--cameo-color, var(--gs-brand));
+  color: var(--gs-paper);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--gs-display);
+  font-size: 12px; font-weight: 600;
+  border: 1px solid rgba(0,0,0,.18);
+  box-shadow: 0 0 0 2px var(--gs-paper) inset;
+}
+.roster-name {
+  font-family: var(--gs-display);
+  font-size: 13px;
+  color: var(--row-brand, var(--gs-brand));
+  font-weight: 500;
+}
+.roster-counts {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-ink-soft);
+  white-space: nowrap;
+}
+.roster-status {
+  font-family: var(--gs-display);
+  font-size: 14px;
+}
+.roster-status.is-done   { color: var(--gs-positive); }
+.roster-status.is-pending { color: var(--gs-accent-3); }
+.roster-foot {
+  padding: 12px 22px;
+  background: var(--gs-paper-warm);
+  border-top: 1px solid var(--gs-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-ink-soft);
+}
+.roster-foot .foot-spacer { flex: 1; }
+.roster-foot .btn-primary { padding: 6px 12px; font-size: 10px; }
+.btn-text {
+  background: transparent;
+  border: 0;
+  color: var(--gs-brand);
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-decoration: underline dotted;
+  text-decoration-color: rgba(42,58,45,.4);
+}
+
+/* ============================================================
+   SEAL REGISTRY REFERENCE
+============================================================ */
+.seal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+.seal-card {
+  padding: 20px 18px 18px;
+  background: var(--gs-paper-warm);
+  border: 1px solid var(--gs-muted);
+  border-radius: 4px;
+  text-align: center;
+}
+.seal-card .big-seal {
+  width: 56px; height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 30% 25%,
+    rgba(255,255,255,.45) 0%,
+    transparent 38%),
+    radial-gradient(circle at 50% 55%,
+      var(--seal-light, #C9A33C) 0%,
+      var(--seal-dark, #8B6A26) 100%);
+  box-shadow:
+    inset 0 -3px 4px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(255,255,255,.3),
+    0 2px 4px rgba(0,0,0,.5);
+}
+.seal-card .big-seal-sym {
+  color: rgba(255,255,255,.85);
+  font-family: var(--gs-display);
+  font-size: 22px;
+  font-weight: 600;
+  text-shadow: 0 1px 0 rgba(0,0,0,.35);
+}
+.seal-card h4 {
+  font-family: var(--gs-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gs-brand);
+  margin: 0 0 6px;
+}
+.seal-card .seal-desc {
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-ink-soft);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+.seal-card .seal-meta {
+  font-family: var(--gs-ui);
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gs-accent-2);
+}
+.seal-card .seal-behavior {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  background: rgba(201, 165, 116, 0.16);
+  border: 1px solid var(--gold-leaf);
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 10px;
+  color: var(--gs-brand);
+}
+
+/* Try-it switcher (live JS) */
+.live-wiz-note {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: var(--gs-paper-warm);
+  border-left: 2px solid var(--gs-accent-3);
+  font-family: var(--gs-body);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-ink-soft);
+}
+</style>
+</head>
+
+<body>
+<div class="shell">
+
+  <div class="kicker">Patch · Epistolary Wizard · Preview</div>
+  <h1 class="doc-h1">A writing room for the cycle.</h1>
+  <p class="doc-sub">
+    Email-inspired three-tab phase environment built around the locked v1 composer + letter card. Wraps the writing experience in an inbox, an outbox, and a registry of typed wax seals — yellow casual, red invitation, green burn-after-reading. Custom illustration assets supplied by the GM go in the seal slots.
+  </p>
+
+  <!-- ======================== INBOX ======================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">i.</span>
+      <h2 class="section-title">Inbox</h2>
+      <span class="section-sub">letters received this cycle · sorted newest first</span>
+    </div>
+
+    <div class="wiz-frame">
+      <div class="wiz-head">
+        <h3>Epistolary phase</h3>
+        <span class="cycle">cycle 3 &middot; novel</span>
+        <span class="wiz-actor-switch">
+          <span class="av">R</span>
+          Rose Whitcombe
+          <span class="chev">▾</span>
+        </span>
+      </div>
+
+      <nav class="wiz-tabs">
+        <span class="wiz-tab is-active">Inbox <span class="badge">3 unread</span></span>
+        <span class="wiz-tab">Compose</span>
+        <span class="wiz-tab">Outbox <span class="badge">2 sent</span></span>
+      </nav>
+
+      <div class="wiz-body">
+        <div class="wiz-body-eyebrow">This cycle &middot; 4 letters</div>
+
+        <div class="letter-list">
+
+          <div class="letter-row is-unread" style="--row-brand: #6B4A7A;">
+            <div class="seal-disc seal--red">⚜</div>
+            <div class="cameo" style="--cameo-color: #6B4A7A;">M</div>
+            <div class="letter-row-meta">
+              <div class="letter-row-from">
+                Margaret Halloway
+                <span class="letter-row-cycle">cycle 3 &middot; iii</span>
+              </div>
+              <h5 class="letter-row-subject">An unusual invitation</h5>
+              <div class="letter-row-snippet">"Niece — I am writing to ask you to attend an evening at Lord Peterson's…"</div>
+            </div>
+            <span class="letter-row-status is-fresh">Invitation</span>
+          </div>
+
+          <div class="letter-row is-unread" style="--row-brand: #E8C988;">
+            <div class="seal-disc seal--green">★</div>
+            <div class="cameo" style="--cameo-color: #4A2C1E; color: #E8C988;">A</div>
+            <div class="letter-row-meta">
+              <div class="letter-row-from">
+                Avril St. James
+                <span class="letter-row-cycle">cycle 3 &middot; ii</span>
+              </div>
+              <h5 class="letter-row-subject">— no subject —</h5>
+              <div class="letter-row-snippet">"Cousin — read this once, then strike a match. The Marquess knows…"</div>
+            </div>
+            <span class="letter-row-status is-fresh">Burn after reading</span>
+          </div>
+
+          <div class="letter-row is-unread" style="--row-brand: #5A4A2A;">
+            <div class="seal-disc seal--yellow">✎</div>
+            <div class="cameo" style="--cameo-color: #5A4A2A;">G</div>
+            <div class="letter-row-meta">
+              <div class="letter-row-from">
+                Roger Goodfellow
+                <span class="letter-row-cycle">cycle 3 &middot; ii</span>
+              </div>
+              <h5 class="letter-row-subject">A small kindness</h5>
+              <div class="letter-row-snippet">"Lady Whitcombe — I trust this finds you well. I wished only to thank you…"</div>
+            </div>
+            <span class="letter-row-status is-read">Casual</span>
+          </div>
+
+          <div class="letter-row" style="--row-brand: #8B2A22;">
+            <div class="seal-disc seal--yellow">✎</div>
+            <div class="cameo" style="--cameo-color: #8B2A22;">D</div>
+            <div class="letter-row-meta">
+              <div class="letter-row-from">
+                Dixon Lefroy
+                <span class="letter-row-cycle">cycle 2 &middot; iv</span>
+              </div>
+              <h5 class="letter-row-subject">Apologies for the matter at the soirée</h5>
+              <div class="letter-row-snippet">"Lady Rose — I owe you a fuller explanation than the one I gave that evening…"</div>
+            </div>
+            <span class="letter-row-status is-read">Read · cycle 2</span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="wiz-foot">
+        <span class="filter-pill is-active">All</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #C9A33C;"></span>Casual</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #8B2A2A;"></span>Invitation</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #4A7A4A;"></span>Burn</span>
+        <span class="foot-spacer"></span>
+        <button class="btn-primary">mark done ↗</button>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>What's shown</h4>
+      <ul>
+        <li><strong>Theme-stripe + cameo</strong> on each row reflect the sender's actor theme via <code>.gs-themed</code> cascade. Connection variants (Margaret = purple, Roger = roger-tobacco) and Major themes (Avril = candlelight, Dixon = heraldic) all appear correctly side-by-side.</li>
+        <li><strong>Seal disc</strong> uses the seal-type's color + a placeholder symbol (⚜ for invitation, ★ for burn, ✎ for casual). Replace with custom illustrations — drop assets in <code>assets/seals/</code> as <code>{seal-id}.png</code>.</li>
+        <li><strong>Status pill</strong> on the right shows seal label OR read state. Unread shows the seal label (Invitation, Burn after reading) in brand color; read letters show "Read · cycle N" in muted.</li>
+        <li><strong>Unread dot</strong> on each unread row's right edge — small `--gs-brand` filled circle.</li>
+        <li><strong>Filter pills</strong> in the footer match the seal registry. Click toggles the filter; multi-select for "show me only invitations and burns this cycle."</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ======================== COMPOSE ======================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">ii.</span>
+      <h2 class="section-title">Compose</h2>
+      <span class="section-sub">embedded letter composer with seal-type picker</span>
+    </div>
+
+    <div class="wiz-frame">
+      <div class="wiz-head">
+        <h3>Epistolary phase</h3>
+        <span class="cycle">cycle 3 &middot; novel</span>
+        <span class="wiz-actor-switch">
+          <span class="av">R</span>
+          Rose Whitcombe
+          <span class="chev">▾</span>
+        </span>
+      </div>
+
+      <nav class="wiz-tabs">
+        <span class="wiz-tab">Inbox <span class="badge">3 unread</span></span>
+        <span class="wiz-tab is-active">Compose</span>
+        <span class="wiz-tab">Outbox <span class="badge">2 sent</span></span>
+      </nav>
+
+      <div class="wiz-body">
+
+        <div class="compose-form">
+          <span class="compose-label">From</span>
+          <span class="compose-input is-pill">
+            <span class="cameo" style="--cameo-color: #B85B6F; width: 24px; height: 28px; font-size: 12px;">R</span>
+            Rose Whitcombe &middot; <em style="color: var(--gs-accent-2);">as Lady Rose &middot; theme · rose</em>
+            <span style="margin-left: auto; font-size: 9px; color: var(--gs-accent-3);">▾</span>
+          </span>
+
+          <span class="compose-label">To</span>
+          <span class="compose-input is-pill">
+            <span class="cameo" style="--cameo-color: #6B4A7A; width: 24px; height: 28px; font-size: 12px;">M</span>
+            Margaret Halloway &middot; <em style="color: var(--gs-accent-2);">her aunt &middot; connection · purple</em>
+            <span style="margin-left: auto; font-size: 9px; color: var(--gs-accent-3);">▾</span>
+          </span>
+
+          <span class="compose-label">Subject</span>
+          <input class="compose-input" type="text" value="Concerning your invitation" />
+
+          <span class="compose-label">Body</span>
+          <span class="compose-input is-textarea">
+            <textarea>Aunt Margaret —
+
+You will not be surprised to hear that I have been turning your letter over in my mind since it arrived. Lord Peterson's evenings have a way of producing alliances and ruinations in equal measure, and one is never quite certain which one is in for. Still, I would rather attend with you than spend a sixth night this season being lectured by my brother about the south fence.
+
+I will accept on Thursday, and bring a thicker shawl.
+
+— R.</textarea>
+          </span>
+
+          <span class="compose-label">Seal</span>
+          <div>
+            <div class="seal-picker">
+              <span class="seal-option is-selected">
+                <span class="seal-disc seal--yellow">✎</span>
+                Casual
+              </span>
+              <span class="seal-option">
+                <span class="seal-disc seal--red">⚜</span>
+                Invitation
+              </span>
+              <span class="seal-option">
+                <span class="seal-disc seal--green">★</span>
+                Burn after reading
+              </span>
+            </div>
+            <p class="seal-description">An everyday note. A pleasantry, a small invitation, a kindness.</p>
+          </div>
+        </div>
+
+        <div class="compose-preview-eyebrow">Preview &middot; how the letter will appear</div>
+
+        <div class="gs-themed" data-theme="rose">
+          <div class="letter-card">
+            <div class="letter-head">
+              <span>epistolary &middot; cycle 3</span>
+              <span class="right">from rose &middot; to margaret &middot; sealed</span>
+            </div>
+            <h3 class="letter-subject">Concerning your invitation</h3>
+            <div class="letter-body">
+              <p>Aunt Margaret —</p>
+              <p>You will not be surprised to hear that I have been turning your letter over in my mind since it arrived. Lord Peterson's evenings have a way of producing alliances and ruinations in equal measure, and one is never quite certain which one is in for…</p>
+              <p style="font-style: italic; color: var(--gs-accent-2);">— continues —</p>
+            </div>
+            <div class="letter-foot">
+              <span>theme &middot; soft pink, traditional</span>
+              <span class="seal-pair">
+                <span class="seal-mini" style="--seal-light: #C9A33C; --seal-dark: #8B6A26;"></span>
+                sealed casual
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="wiz-foot">
+        <span style="color: var(--gs-accent-2);">drafts save automatically &middot; last saved 8s ago</span>
+        <span class="foot-spacer"></span>
+        <button class="btn-text" type="button">cancel</button>
+        <button class="btn-text" type="button">save draft</button>
+        <button class="btn-primary">send ↗</button>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>What's shown</h4>
+      <ul>
+        <li><strong>FROM / TO pills</strong> render selected actors with their themed cameos. Subtitle shows persona + theme id (the latter can be hidden in a "minimal" preference).</li>
+        <li><strong>Seal picker</strong> shows all three seed seal types with their disc + label. Selecting one swaps the description text below and updates the live preview's footer.</li>
+        <li><strong>Live themed preview</strong> wraps the letter card in <code>.gs-themed[data-theme="rose"]</code> — the cream-pink paper, mauve brand, and gilt accent are Rose's locked v1 palette. Switching the FROM actor switches the preview's <code>data-theme</code> automatically.</li>
+        <li><strong>Footer</strong> follows the locked v1 spec: drafts auto-save, three actions (cancel / save draft / send).</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ======================== OUTBOX ======================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">iii.</span>
+      <h2 class="section-title">Outbox</h2>
+      <span class="section-sub">letters Rose has sent · status from recipient flags</span>
+    </div>
+
+    <div class="wiz-frame">
+      <div class="wiz-head">
+        <h3>Epistolary phase</h3>
+        <span class="cycle">cycle 3 &middot; novel</span>
+        <span class="wiz-actor-switch">
+          <span class="av">R</span>
+          Rose Whitcombe
+          <span class="chev">▾</span>
+        </span>
+      </div>
+
+      <nav class="wiz-tabs">
+        <span class="wiz-tab">Inbox <span class="badge">3 unread</span></span>
+        <span class="wiz-tab">Compose</span>
+        <span class="wiz-tab is-active">Outbox <span class="badge">2 sent</span></span>
+      </nav>
+
+      <div class="wiz-body">
+        <div class="wiz-body-eyebrow">This cycle &middot; 2 sent</div>
+
+        <div class="letter-list">
+
+          <div class="letter-row" style="--row-brand: #6B4A7A;">
+            <div class="seal-disc seal--yellow">✎</div>
+            <div class="cameo" style="--cameo-color: #6B4A7A;">M</div>
+            <div class="letter-row-meta">
+              <div class="letter-row-from">
+                to Margaret Halloway
+                <span class="letter-row-cycle">cycle 3 &middot; sent ii</span>
+              </div>
+              <h5 class="letter-row-subject">Concerning your invitation</h5>
+              <div class="letter-row-snippet">"Aunt Margaret — You will not be surprised to hear that I have been…"</div>
+            </div>
+            <span class="letter-row-status is-read">Read · cycle 3</span>
+          </div>
+
+          <div class="letter-row" style="--row-brand: #B88B33;">
+            <div class="seal-disc seal--red">⚜</div>
+            <div class="cameo" style="--cameo-color: #B88B33;">P</div>
+            <div class="letter-row-meta">
+              <div class="letter-row-from">
+                to Lord Peterson
+                <span class="letter-row-cycle">cycle 3 &middot; sent i</span>
+              </div>
+              <h5 class="letter-row-subject">Acceptance</h5>
+              <div class="letter-row-snippet">"Lord Peterson — I would be honoured to attend on Thursday next…"</div>
+            </div>
+            <span class="letter-row-status">Delivered · 2h ago</span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="wiz-foot">
+        <span class="filter-pill is-active">All</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #C9A33C;"></span>Casual</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #8B2A2A;"></span>Invitation</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #4A7A4A;"></span>Burn</span>
+        <span class="foot-spacer"></span>
+        <button class="btn-primary">mark done ↗</button>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>What's shown</h4>
+      <ul>
+        <li><strong>Recipient cameos</strong> use the recipient's theme — Margaret (connection-purple), Lord Peterson (connection-yellow). Connection variants distinct from the sender's theme; the row stripe matches the recipient.</li>
+        <li><strong>Status</strong> on the right shows delivery state. "Delivered · 2h ago" = recipient hasn't opened yet. "Read · cycle 3" = recipient opened. Future states: "Burned · cycle 3" (green seal opened), "Replied" (recipient sent a letter back).</li>
+        <li><strong>Sent letters are read-only.</strong> Click opens the letter detail view; no edit, no resend. Once dispatched, dispatched.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ======================== LETTER DETAIL — NORMAL ======================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">iv.</span>
+      <h2 class="section-title">Letter detail · normal</h2>
+      <span class="section-sub">opens when an inbox row is clicked</span>
+    </div>
+
+    <div class="wiz-frame">
+      <div class="wiz-head">
+        <h3>Epistolary phase</h3>
+        <span class="cycle">cycle 3 &middot; novel</span>
+        <span class="wiz-actor-switch">
+          <span class="av">R</span>
+          Rose Whitcombe
+          <span class="chev">▾</span>
+        </span>
+      </div>
+
+      <nav class="wiz-tabs">
+        <span class="wiz-tab is-active">Inbox <span class="badge">3 unread</span></span>
+        <span class="wiz-tab">Compose</span>
+        <span class="wiz-tab">Outbox <span class="badge">2 sent</span></span>
+      </nav>
+
+      <div class="wiz-body">
+        <div class="letter-detail">
+          <span class="detail-back">‹ back to inbox</span>
+
+          <div class="gs-themed" data-theme="connection-purple">
+            <div class="letter-card">
+              <div class="letter-head">
+                <span>epistolary &middot; cycle 3</span>
+                <span class="right">from margaret &middot; to rose &middot; sealed</span>
+              </div>
+              <h3 class="letter-subject">An unusual invitation</h3>
+              <div class="letter-body">
+                <p>Niece —</p>
+                <p>I am writing to ask you to attend an evening at Lord Peterson's, this Thursday next. He has asked specifically after you, and the matter — though I cannot put it down on paper — concerns the south of the estate, and the lease, and what your father is and is not aware of. I should like to discuss it with you in a place where the walls do not have your brother in them.</p>
+                <p>The carriage will be sent at seven. Do not bring anyone. Do not tell your mother.</p>
+                <p>— M.</p>
+              </div>
+              <div class="letter-foot">
+                <span>theme &middot; connection · purple</span>
+                <span class="seal-pair">
+                  <span class="seal-mini" style="--seal-light: #C8584F; --seal-dark: #5A1A14;"></span>
+                  sealed invitation
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <button class="btn-secondary" type="button">↩ reply</button>
+            <button class="btn-secondary" type="button">📁 archive</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wiz-foot">
+        <span class="filter-pill is-active">All</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #C9A33C;"></span>Casual</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #8B2A2A;"></span>Invitation</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #4A7A4A;"></span>Burn</span>
+        <span class="foot-spacer"></span>
+        <button class="btn-primary">mark done ↗</button>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>What's shown</h4>
+      <ul>
+        <li><strong>Letter card</strong> renders with <code>.gs-themed[data-theme="connection-purple"]</code> — Margaret's variant. Same component as the chat-card render and the journal archive; one source of truth.</li>
+        <li><strong>Action strip:</strong> Reply → opens Compose pre-filled with TO=Margaret, SUBJECT="RE: An unusual invitation". Archive → hides the letter from the active inbox view (per-user state, not deletion).</li>
+        <li><strong>Tab nav stays visible</strong> — clicking another tab leaves the letter detail view. Footer filter pills also remain active.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ======================== LETTER DETAIL — GREEN BURN ======================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">v.</span>
+      <h2 class="section-title">Letter detail · burn-after-reading</h2>
+      <span class="section-sub">green seal · letter destroys itself when the recipient closes the view</span>
+    </div>
+
+    <div class="wiz-frame">
+      <div class="wiz-head">
+        <h3>Epistolary phase</h3>
+        <span class="cycle">cycle 3 &middot; novel</span>
+        <span class="wiz-actor-switch">
+          <span class="av">R</span>
+          Rose Whitcombe
+          <span class="chev">▾</span>
+        </span>
+      </div>
+
+      <nav class="wiz-tabs">
+        <span class="wiz-tab is-active">Inbox <span class="badge">2 unread</span></span>
+        <span class="wiz-tab">Compose</span>
+        <span class="wiz-tab">Outbox <span class="badge">2 sent</span></span>
+      </nav>
+
+      <div class="wiz-body">
+        <div class="letter-detail">
+          <span class="detail-back">‹ back to inbox</span>
+
+          <div class="burn-warning">
+            This letter burns when you close this view. Read it now, or click <em>burn now</em> to dispose of it deliberately.
+          </div>
+
+          <div class="gs-themed" data-theme="avril">
+            <div class="letter-card" id="burn-demo">
+              <div class="flame"></div>
+              <div class="letter-head">
+                <span>epistolary &middot; cycle 3</span>
+                <span class="right">from avril &middot; to rose &middot; sealed</span>
+              </div>
+              <h3 class="letter-subject" style="font-style: italic;">— no subject —</h3>
+              <div class="letter-body">
+                <p>Cousin —</p>
+                <p>Read this once, then strike a match.</p>
+                <p>The Marquess knows about your father's investment. He has known for at least three weeks. I do not know how he knows, but I know who told him, and the answer will not please you. You should leave Swan's Crossing for the season. I will tell you, in person, the rest.</p>
+                <p>Burn this. I mean it.</p>
+                <p>— A.</p>
+              </div>
+              <div class="letter-foot">
+                <span>theme &middot; candlelight & crimson</span>
+                <span class="seal-pair">
+                  <span class="seal-mini" style="--seal-light: #6BA86B; --seal-dark: #2D4F2D;"></span>
+                  sealed burn
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <button class="btn-secondary" type="button">↩ reply</button>
+            <button class="btn-secondary is-danger" type="button" onclick="document.getElementById('burn-demo').classList.add('burning'); setTimeout(()=>{document.getElementById('burn-demo').outerHTML='<div class=&quot;burned-card&quot;><div class=&quot;ash&quot;>◌</div>(Burned. The letter is destroyed.)<br><small>cycle 3 · sender notified</small></div>';}, 1500);">🔥 burn now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wiz-foot">
+        <span style="font-style: italic;">Try it: click "burn now" to see the destruction animation</span>
+        <span class="foot-spacer"></span>
+        <button class="btn-primary">mark done ↗</button>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>The burn mechanic</h4>
+      <ul>
+        <li><strong>Warning eyebrow</strong> appears at the top of the detail view in green-positive color. Recipient knows the letter is destructible before they finish reading.</li>
+        <li><strong>"Burn now" action</strong> replaces the normal "archive" action when seal is green. Triggers an immediate 1.5s CSS keyframe — the card fades and ages, a small flame rises and disappears.</li>
+        <li><strong>Auto-burn:</strong> if the recipient closes the detail view OR navigates away from the wizard for &gt;30s without burning manually, the burn fires anyway. The letter cannot be re-read.</li>
+        <li><strong>After burn:</strong> the chat message's content is replaced with "(Burned. The letter is destroyed.)"; the inbox row vanishes for the recipient; the outbox row for the sender shows status "Burned · cycle N." Original content preserved in <code>flags.burnedContent</code> for GM forensics (configurable per-world).</li>
+        <li><strong>Themed render:</strong> Avril's candlelight & crimson theme. Letters from her always read on near-black paper with gold accents — burn or no burn.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ======================== GM ROSTER ======================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">vi.</span>
+      <h2 class="section-title">The GM roster</h2>
+      <span class="section-sub">parallel companion app · same structure as Upkeep Roster</span>
+    </div>
+
+    <div class="roster-frame">
+      <div class="roster-head">
+        Epistolary roster
+        <span class="cycle">cycle 3</span>
+      </div>
+
+      <div class="roster-list">
+        <div class="roster-row" style="--row-brand: #B85B6F;">
+          <div class="roster-cameo" style="--cameo-color: #B85B6F;">R</div>
+          <div class="roster-name">Rose Whitcombe</div>
+          <div class="roster-counts">sent 2 &middot; received 1</div>
+          <div class="roster-status is-done">✓</div>
+        </div>
+        <div class="roster-row" style="--row-brand: #4A6B8B;">
+          <div class="roster-cameo" style="--cameo-color: #4A6B8B;">G</div>
+          <div class="roster-name">Roger Goodfellow</div>
+          <div class="roster-counts">sent 1 &middot; received 0</div>
+          <div class="roster-status is-pending">⏳</div>
+        </div>
+        <div class="roster-row" style="--row-brand: #6B0F1A;">
+          <div class="roster-cameo" style="--cameo-color: #6B0F1A;">M</div>
+          <div class="roster-name">Mags Tarrant</div>
+          <div class="roster-counts">sent 0 &middot; received 3</div>
+          <div class="roster-status is-pending">⏳</div>
+        </div>
+        <div class="roster-row" style="--row-brand: #8B2A2A;">
+          <div class="roster-cameo" style="--cameo-color: #8B2A2A;">A</div>
+          <div class="roster-name">Avril St. James</div>
+          <div class="roster-counts">sent 1 &middot; received 2</div>
+          <div class="roster-status is-done">✓</div>
+        </div>
+        <div class="roster-row" style="--row-brand: #8B2A22;">
+          <div class="roster-cameo" style="--cameo-color: #8B2A22;">D</div>
+          <div class="roster-name">Dixon Lefroy</div>
+          <div class="roster-counts">sent 0 &middot; received 0</div>
+          <div class="roster-status is-pending">⏳</div>
+        </div>
+        <div class="roster-row" style="--row-brand: #4A6B3F;">
+          <div class="roster-cameo" style="--cameo-color: #4A6B3F;">C</div>
+          <div class="roster-name">Clayton Pemberton</div>
+          <div class="roster-counts">sent 2 &middot; received 0</div>
+          <div class="roster-status is-done">✓</div>
+        </div>
+      </div>
+
+      <div class="roster-foot">
+        <span>3 of 6 done</span>
+        <span class="foot-spacer"></span>
+        <button class="btn-text">poke laggers</button>
+        <button class="btn-text">unlock all</button>
+        <button class="btn-primary">advance phase ↗</button>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h4>How it behaves</h4>
+      <ul>
+        <li><strong>Auto-opens for the GM</strong> when <code>cyclePhase</code> becomes <code>epistolary</code>. Auto-closes when the phase advances.</li>
+        <li><strong>Counts</strong> are read from chat-message flags scoped to the current cycle. Sent = letters where this actor is the sender; received = letters where this actor is in the recipient list.</li>
+        <li><strong>Status</strong> reflects the per-actor flag <code>flags["good-society-homebrew"].epistolaryDone[cycleNumber]</code>. ✓ when set; ⏳ when not.</li>
+        <li><strong>Poke laggers</strong> whispers the not-done players a reminder. <strong>Unlock all</strong> clears the done flag (e.g., GM realized the phase needs more time). <strong>Advance phase ↗</strong> calls <code>cycleAdvance()</code> regardless of completion — GM can advance even with stragglers.</li>
+        <li><strong>Row click</strong> (not shown) opens a peek of that actor's outbox, read-only.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ======================== SEAL REGISTRY ======================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">vii.</span>
+      <h2 class="section-title">Seal registry · seed types</h2>
+      <span class="section-sub">three to start · expandable in <code style="font-family: var(--gs-ui)">module/constants.js</code></span>
+    </div>
+
+    <div class="seal-grid">
+
+      <div class="seal-card">
+        <div class="big-seal" style="--seal-light: #E8C77E; --seal-dark: #8B6A26;">
+          <span class="big-seal-sym">✎</span>
+        </div>
+        <h4>Casual</h4>
+        <p class="seal-desc">An everyday note. A pleasantry, a small invitation, a kindness.</p>
+        <div class="seal-meta">id · yellow-casual</div>
+        <span class="seal-behavior">no special behavior</span>
+      </div>
+
+      <div class="seal-card">
+        <div class="big-seal" style="--seal-light: #C8584F; --seal-dark: #5A1A14;">
+          <span class="big-seal-sym">⚜</span>
+        </div>
+        <h4>Invitation</h4>
+        <p class="seal-desc">A formal invitation. The recipient is expected to respond.</p>
+        <div class="seal-meta">id · red-invitation</div>
+        <span class="seal-behavior">fires <code>invitation-sent</code> hook</span>
+      </div>
+
+      <div class="seal-card">
+        <div class="big-seal" style="--seal-light: #6BA86B; --seal-dark: #2D4F2D;">
+          <span class="big-seal-sym">★</span>
+        </div>
+        <h4>Burn after reading</h4>
+        <p class="seal-desc">Sensitive. The letter destroys itself once opened.</p>
+        <div class="seal-meta">id · green-burn</div>
+        <span class="seal-behavior">burn-on-open</span>
+      </div>
+
+    </div>
+
+    <div class="notes">
+      <h4>Custom illustration slots</h4>
+      <ul>
+        <li>Each seal type has an <code>iconAsset</code> field that points at <code>assets/seals/{seal-id}.png</code>. The placeholder symbols above (✎ ⚜ ★) are CSS-rendered glyphs for the preview only.</li>
+        <li><strong>Asset spec:</strong> 64×64 (or larger) transparent PNG / SVG, on-color or two-color flat, designed to read at 24–32 px when rendered in inbox / outbox rows. Should look like a wax seal — circular bias, slight texture, no harsh edges.</li>
+        <li><strong>Future seals</strong> (placeholder, not yet defined): black mourning, white ceremonial, blue secret, purple confession. Add to the <code>SEAL_TYPES</code> array in <code>module/constants.js</code> with id, label, color, iconAsset, behavior. The composer's seal picker, the inbox row's disc, and the filter pills all auto-update.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ======================== LIVE TAB SWITCHER (try-it) ======================== -->
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">viii.</span>
+      <h2 class="section-title">Live tab switcher</h2>
+      <span class="section-sub">try the navigation if browser permits</span>
+    </div>
+
+    <div class="wiz-frame" id="liveWiz">
+      <div class="wiz-head">
+        <h3>Epistolary phase</h3>
+        <span class="cycle">cycle 3 &middot; novel</span>
+        <span class="wiz-actor-switch">
+          <span class="av">R</span>
+          Rose Whitcombe
+          <span class="chev">▾</span>
+        </span>
+      </div>
+
+      <nav class="wiz-tabs">
+        <span class="wiz-tab is-active" data-tab="inbox">Inbox <span class="badge">3 unread</span></span>
+        <span class="wiz-tab" data-tab="compose">Compose</span>
+        <span class="wiz-tab" data-tab="outbox">Outbox <span class="badge">2 sent</span></span>
+      </nav>
+
+      <div class="wiz-body">
+        <div data-tab-panel="inbox">
+          <div class="wiz-body-eyebrow">This cycle &middot; 4 letters</div>
+          <div class="letter-list">
+            <div class="letter-row is-unread" style="--row-brand: #6B4A7A;">
+              <div class="seal-disc seal--red">⚜</div>
+              <div class="cameo" style="--cameo-color: #6B4A7A;">M</div>
+              <div class="letter-row-meta">
+                <div class="letter-row-from">Margaret Halloway <span class="letter-row-cycle">cycle 3 &middot; iii</span></div>
+                <h5 class="letter-row-subject">An unusual invitation</h5>
+                <div class="letter-row-snippet">"Niece — I am writing to ask you to attend an evening at Lord Peterson's…"</div>
+              </div>
+              <span class="letter-row-status is-fresh">Invitation</span>
+            </div>
+            <div class="letter-row is-unread" style="--row-brand: #E8C988;">
+              <div class="seal-disc seal--green">★</div>
+              <div class="cameo" style="--cameo-color: #4A2C1E; color: #E8C988;">A</div>
+              <div class="letter-row-meta">
+                <div class="letter-row-from">Avril St. James <span class="letter-row-cycle">cycle 3 &middot; ii</span></div>
+                <h5 class="letter-row-subject">— no subject —</h5>
+                <div class="letter-row-snippet">"Cousin — read this once, then strike a match. The Marquess knows…"</div>
+              </div>
+              <span class="letter-row-status is-fresh">Burn after reading</span>
+            </div>
+            <div class="letter-row is-unread" style="--row-brand: #5A4A2A;">
+              <div class="seal-disc seal--yellow">✎</div>
+              <div class="cameo" style="--cameo-color: #5A4A2A;">G</div>
+              <div class="letter-row-meta">
+                <div class="letter-row-from">Roger Goodfellow <span class="letter-row-cycle">cycle 3 &middot; ii</span></div>
+                <h5 class="letter-row-subject">A small kindness</h5>
+                <div class="letter-row-snippet">"Lady Whitcombe — I trust this finds you well…"</div>
+              </div>
+              <span class="letter-row-status is-read">Casual</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-tab-panel="compose" hidden>
+          <p style="font-family: var(--gs-body); font-style: italic; color: var(--gs-ink-soft); padding: 40px 20px; text-align: center;">
+            Compose tab — full embedded composer (FROM / TO / Subject / Body / Seal picker / Live preview). See §ii above for the full rendering.
+          </p>
+        </div>
+
+        <div data-tab-panel="outbox" hidden>
+          <div class="wiz-body-eyebrow">This cycle &middot; 2 sent</div>
+          <div class="letter-list">
+            <div class="letter-row" style="--row-brand: #6B4A7A;">
+              <div class="seal-disc seal--yellow">✎</div>
+              <div class="cameo" style="--cameo-color: #6B4A7A;">M</div>
+              <div class="letter-row-meta">
+                <div class="letter-row-from">to Margaret Halloway <span class="letter-row-cycle">cycle 3 &middot; sent ii</span></div>
+                <h5 class="letter-row-subject">Concerning your invitation</h5>
+                <div class="letter-row-snippet">"Aunt Margaret — You will not be surprised…"</div>
+              </div>
+              <span class="letter-row-status is-read">Read · cycle 3</span>
+            </div>
+            <div class="letter-row" style="--row-brand: #B88B33;">
+              <div class="seal-disc seal--red">⚜</div>
+              <div class="cameo" style="--cameo-color: #B88B33;">P</div>
+              <div class="letter-row-meta">
+                <div class="letter-row-from">to Lord Peterson <span class="letter-row-cycle">cycle 3 &middot; sent i</span></div>
+                <h5 class="letter-row-subject">Acceptance</h5>
+                <div class="letter-row-snippet">"Lord Peterson — I would be honoured…"</div>
+              </div>
+              <span class="letter-row-status">Delivered · 2h ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wiz-foot">
+        <span class="filter-pill is-active">All</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #C9A33C;"></span>Casual</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #8B2A2A;"></span>Invitation</span>
+        <span class="filter-pill"><span class="pill-disc" style="--filter-color: #4A7A4A;"></span>Burn</span>
+        <span class="foot-spacer"></span>
+        <button class="btn-primary">mark done ↗</button>
+      </div>
+    </div>
+
+    <div class="live-wiz-note">
+      Click any tab above to switch panels. Falls back to the static depictions in §i–§iii if the click handler doesn't fire.
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  const wiz = document.getElementById('liveWiz');
+  if (!wiz) return;
+
+  wiz.addEventListener('click', function (e) {
+    const tab = e.target.closest('[data-tab]');
+    if (!tab) return;
+    const tabId = tab.dataset.tab;
+
+    wiz.querySelectorAll('[data-tab]').forEach(t => t.classList.remove('is-active'));
+    tab.classList.add('is-active');
+
+    wiz.querySelectorAll('[data-tab-panel]').forEach(p => {
+      p.hidden = (p.dataset.tabPanel !== tabId);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

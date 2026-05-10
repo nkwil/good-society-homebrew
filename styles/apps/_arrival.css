@@ -1,0 +1,100 @@
+/* The Arrival — empty-canvas state. Post-MVP §2.1 / patch-world-identity §4.
+ *
+ * Frameless ApplicationV2 rendered when no scene is active. Pinned to the
+ * canvas viewport via fixed positioning. Pointer-events pass through so the
+ * GM can still click the sidebar to load a scene.
+ */
+
+body:not(.gs-world-identity) #gs-arrival,
+body:not(.gs-world-identity) .application.gs-arrival {
+  display: none !important;
+}
+
+#gs-arrival,
+.application.gs-arrival {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  /* z-index 5: above the canvas (default 0) so the Arrival video paints over
+   * the empty board, but BELOW Foundry's interface chrome (#interface and
+   * its descendants — sidebar, hotbar, scene controls — sit at z-index ~50
+   * or higher in v13). With pointer-events: none, clicks pass through to
+   * canvas anyway. The original z-index 30 covered the chrome opaquely
+   * because the .gs-wi-stage backdrop is a solid gradient (or video). */
+  z-index: 5;
+  pointer-events: none; /* canvas + sidebar still clickable */
+}
+
+#gs-arrival .window-content,
+.application.gs-arrival .window-content {
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.gs-arrival {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Video background — fills the viewport, sits behind the title/rule but
+ * above the stage gradient + corners + motes. The gs-wi-stage's CSS
+ * gradient still paints at base level for any letterbox bars around the
+ * video.
+ *
+ * z-index 1 deliberately beats the corners + motes (which sit at z 0,
+ * default stacking) so the video shows above the dark gradient — and
+ * stays below the title (z-index 2) so the welcome text reads on top. */
+.gs-arrival__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
+  background: transparent;
+  display: block;
+}
+
+.gs-arrival__title {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 42px;
+  color: #F1E5C8;
+  text-align: center;
+  margin: 0;
+  text-shadow: 0 1px 12px rgba(201, 165, 92, 0.25);
+  letter-spacing: 0.02em;
+  z-index: 2;
+}
+
+.gs-arrival__rule {
+  width: 120px;
+  height: 1px;
+  margin: 16px 0 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gs-accent-3, #C9A55C) 50%,
+    transparent 100%
+  );
+  z-index: 2;
+}
+
+/* Use all six motes on the Arrival. */
+.gs-arrival .gs-wi-mote { /* sized + animated by shared rules */ }

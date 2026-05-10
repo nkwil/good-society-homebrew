@@ -12,6 +12,19 @@ import { register as registerReputationPhase, onReputationPhaseStart } from './h
 import { register as registerSessionEvents } from './hooks/session-events.js';
 import { register as registerRumourPhase, onRumourPhaseStart } from './hooks/rumour-phase.js';
 import { register as registerRumourSocket } from './hooks/rumour-socket.js';
+import { register as registerRandomEventSocket } from './hooks/random-event-socket.js';
+import { register as registerChatPortraits } from './hooks/chat-portraits.js';
+import { migrateJournalEntryTypes } from './hooks/journal-migrate.js';
+import { register as registerArrivalSync } from './hooks/arrival-sync.js';
+import { register as registerPauseOverlay } from './hooks/pause-overlay.js';
+import { register as registerChromeIcons } from './hooks/chrome-icons.js';
+import { register as registerSidebarFilter, applySidebarFilter } from './hooks/sidebar-filter.js';
+import { register as registerLetterSeals } from './hooks/letter-seals.js';
+import { register as registerEpistolaryPhase } from './hooks/epistolary-phase.js';
+import { registerMonologueSocket } from './apps/monologue-overlay.js';
+import { registerNovelReaderHooks, openNovelReader } from './apps/novel-reader.js';
+import { syncArrivalToCanvas } from './apps/arrival.js';
+import { renderCabinet } from './apps/cabinet.js';
 import { checkThresholdAndPrompt } from './helpers/reputation-rules.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
@@ -20,6 +33,7 @@ import { renderOrganizer } from './apps/npc-organizer.js';
 import { initTooltipSystem } from './helpers/rule-tooltip.js';
 import { deriveInitialPosition } from './helpers/dashboard-context.js';
 import { ReputationTagDataModel } from './data-models/reputation-tag.js';
+import { RandomEventDataModel } from './data-models/random-event.js';
 import { ReputationConditionDataModel } from './data-models/reputation-condition.js';
 import { InnerConflictDataModel } from './data-models/inner-conflict.js';
 import { MagicSkillDataModel } from './data-models/magic-skill.js';
@@ -33,6 +47,7 @@ import { ConnectionSheet } from './sheets/connection-sheet.js';
 import { FamilySheet } from './sheets/family-sheet.js';
 import { NpcSheet } from './sheets/npc-sheet.js';
 import { ReputationTagSheet } from './sheets/reputation-tag-sheet.js';
+import { RandomEventSheet } from './sheets/random-event-sheet.js';
 import { ReputationConditionSheet } from './sheets/reputation-condition-sheet.js';
 import { InnerConflictSheet } from './sheets/inner-conflict-sheet.js';
 import { MagicSkillSheet } from './sheets/magic-skill-sheet.js';
@@ -50,6 +65,10 @@ const GS_COMPONENT_PARTIALS = {
     'systems/good-society-homebrew/templates/components/dashboard-major-row.hbs',
   'evt-row':
     'systems/good-society-homebrew/templates/components/evt-row.hbs',
+  // Post-MVP §8.4 unified persona-switcher pill (template; popover behavior is
+  // wired via the existing persona-switcher-popover.js delegated handler).
+  'persona-switcher':
+    'systems/good-society-homebrew/templates/partials/persona-switcher.hbs',
 };
 
 Hooks.once('init', async function () {
@@ -303,6 +322,218 @@ Hooks.once('init', async function () {
     default: null,
   });
 
+  // Post-MVP §10.2 token hover card v2 — two settings:
+  //   hoverCardEnabled (client) — disables system hover card; falls back to
+  //     Foundry's default token tooltip.
+  //   hoverCardMajorAutoSummary (world) — when off, Major hover card renders
+  //     header only (no auto-derived rep snapshot).
+  game.settings.register('good-society-homebrew', 'hoverCardEnabled', {
+    name: 'GOODSOCIETY.settings.hoverCardEnabled.name',
+    hint: 'GOODSOCIETY.settings.hoverCardEnabled.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+  game.settings.register('good-society-homebrew', 'hoverCardMajorAutoSummary', {
+    name: 'GOODSOCIETY.settings.hoverCardMajorAutoSummary.name',
+    hint: 'GOODSOCIETY.settings.hoverCardMajorAutoSummary.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  // Post-MVP §2 world identity surfaces — six settings.
+  game.settings.register('good-society-homebrew', 'applyWorldIdentity', {
+    name: 'GOODSOCIETY.settings.applyWorldIdentity.name',
+    hint: 'GOODSOCIETY.settings.applyWorldIdentity.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: (value) => {
+      document.body.classList.toggle('gs-world-identity', !!value);
+      // Re-sync the Arrival on toggle — it may need to render or close.
+      try { syncArrivalToCanvas(); } catch {}
+    },
+  });
+
+  game.settings.register('good-society-homebrew', 'arrivalEnabled', {
+    name: 'GOODSOCIETY.settings.arrivalEnabled.name',
+    hint: 'GOODSOCIETY.settings.arrivalEnabled.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: () => { try { syncArrivalToCanvas(); } catch {} },
+  });
+
+  game.settings.register('good-society-homebrew', 'arrivalTitle', {
+    name: 'GOODSOCIETY.settings.arrivalTitle.name',
+    hint: 'GOODSOCIETY.settings.arrivalTitle.hint',
+    scope: 'world',
+    config: true,
+    type: String,
+    default: 'Welcome to Good Society',
+    onChange: () => { try { syncArrivalToCanvas(); } catch {} },
+  });
+
+  game.settings.register('good-society-homebrew', 'arrivalBackgroundUrl', {
+    name: 'GOODSOCIETY.settings.arrivalBackgroundUrl.name',
+    hint: 'GOODSOCIETY.settings.arrivalBackgroundUrl.hint',
+    scope: 'world',
+    config: true,
+    type: String,
+    default: '',
+    // 'imagevideo' lets the FilePicker show both still images and video
+    // files. Video URLs render as a <video autoplay loop muted> element;
+    // image URLs render as a CSS background-image. See `module/apps/arrival.js`
+    // for the dispatch.
+    filePicker: 'imagevideo',
+    onChange: () => { try { syncArrivalToCanvas(); } catch {} },
+  });
+
+  // Playback rate for the Arrival video. 1.0 = real-time; 0.5 = half-speed
+  // (gentler ambience); 0.25 = very slow. Range clamped to [0.1, 2.0]
+  // by the rendering code defensively. World-scoped because the Arrival
+  // is the shared empty-canvas state — every player should see the same.
+  game.settings.register('good-society-homebrew', 'arrivalVideoPlaybackRate', {
+    name: 'GOODSOCIETY.settings.arrivalVideoPlaybackRate.name',
+    hint: 'GOODSOCIETY.settings.arrivalVideoPlaybackRate.hint',
+    scope: 'world',
+    config: true,
+    type: Number,
+    default: 0.5,
+    range: { min: 0.1, max: 2.0, step: 0.05 },
+    onChange: () => { try { syncArrivalToCanvas(); } catch {} },
+  });
+
+  // Whether to show the centred "Welcome" title on the Arrival. Off when
+  // the GM wants the video to be the focus rather than overlaid copy.
+  game.settings.register('good-society-homebrew', 'arrivalShowTitle', {
+    name: 'GOODSOCIETY.settings.arrivalShowTitle.name',
+    hint: 'GOODSOCIETY.settings.arrivalShowTitle.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: () => { try { syncArrivalToCanvas(); } catch {} },
+  });
+
+  game.settings.register('good-society-homebrew', 'arrivalCornerOrnamentUrl', {
+    name: 'GOODSOCIETY.settings.arrivalCornerOrnamentUrl.name',
+    hint: 'GOODSOCIETY.settings.arrivalCornerOrnamentUrl.hint',
+    scope: 'world',
+    config: true,
+    type: String,
+    default: '',
+    filePicker: 'image',
+    onChange: () => { try { syncArrivalToCanvas(); } catch {} },
+  });
+
+  game.settings.register('good-society-homebrew', 'pauseCameoImageUrl', {
+    name: 'GOODSOCIETY.settings.pauseCameoImageUrl.name',
+    hint: 'GOODSOCIETY.settings.pauseCameoImageUrl.hint',
+    scope: 'world',
+    config: true,
+    type: String,
+    default: '',
+    filePicker: 'image',
+  });
+
+  // Post-MVP §12 token spend events — three settings.
+  game.settings.register('good-society-homebrew', 'monologueOverlayEnabled', {
+    name: 'GOODSOCIETY.settings.monologueOverlayEnabled.name',
+    hint: 'GOODSOCIETY.settings.monologueOverlayEnabled.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+  game.settings.register('good-society-homebrew', 'archiveMonologuesToJournal', {
+    name: 'GOODSOCIETY.settings.archiveMonologuesToJournal.name',
+    hint: 'GOODSOCIETY.settings.archiveMonologuesToJournal.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+  game.settings.register('good-society-homebrew', 'resolveHandoffAnimationEnabled', {
+    name: 'GOODSOCIETY.settings.resolveHandoffAnimationEnabled.name',
+    hint: 'GOODSOCIETY.settings.resolveHandoffAnimationEnabled.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  // Post-MVP §13.5 journal elevation — three settings.
+  game.settings.register('good-society-homebrew', 'novelTitle', {
+    name: 'GOODSOCIETY.settings.novelTitle.name',
+    hint: 'GOODSOCIETY.settings.novelTitle.hint',
+    scope: 'world',
+    config: true,
+    type: String,
+    default: '',
+  });
+  game.settings.register('good-society-homebrew', 'novelReaderEnabled', {
+    name: 'GOODSOCIETY.settings.novelReaderEnabled.name',
+    hint: 'GOODSOCIETY.settings.novelReaderEnabled.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+  game.settings.register('good-society-homebrew', 'autoCreateCycleDividers', {
+    name: 'GOODSOCIETY.settings.autoCreateCycleDividers.name',
+    hint: 'GOODSOCIETY.settings.autoCreateCycleDividers.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  // Post-MVP §9 Cabinet — toggle the entire feature on/off.
+  game.settings.register('good-society-homebrew', 'cabinetEnabled', {
+    name: 'GOODSOCIETY.settings.cabinetEnabled.name',
+    hint: 'GOODSOCIETY.settings.cabinetEnabled.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: () => { try { renderCabinet(); } catch {} },
+  });
+
+  // Post-MVP §14 chrome icons. Stacks on top of `applyFoundryChrome`.
+  game.settings.register('good-society-homebrew', 'applyChromeIcons', {
+    name: 'GOODSOCIETY.settings.applyChromeIcons.name',
+    hint: 'GOODSOCIETY.settings.applyChromeIcons.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: (value) => {
+      document.body.classList.toggle('gs-chrome-icons-on', !!value);
+    },
+  });
+
+  // Sidebar tab filter — narrows the Foundry sidebar to the player allowlist
+  // (chat / actors / items / macros / playlists). GM users always see the
+  // full sidebar regardless of this setting. The Novel Reader (post-MVP
+  // §13.3) provides player-facing access to letters / monologues / session
+  // logs / cycle reflections; the Foundry journal directory is hidden for
+  // players because the Reader supersedes it.
+  game.settings.register('good-society-homebrew', 'playerSidebarFilter', {
+    name: 'GOODSOCIETY.settings.playerSidebarFilter.name',
+    hint: 'GOODSOCIETY.settings.playerSidebarFilter.hint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: () => applySidebarFilter(),
+  });
+
   // Load and register Handlebars partials for shared components.
   // Use the v13 namespaced helper — bare global is deprecated in v13 and
   // removed in v15 (CLAUDE.md §16).
@@ -315,6 +546,32 @@ Hooks.once('init', async function () {
   Handlebars.registerHelper('gte', (a, b) => a >= b);
   Handlebars.registerHelper('gt',  (a, b) => a >  b);
   Handlebars.registerHelper('lte', (a, b) => a <= b);
+  Handlebars.registerHelper('lt',  (a, b) => a <  b);
+
+  // String / numeric helpers used by post-MVP §4 dossier templates and others.
+  Handlebars.registerHelper('firstLetter', (str) => (str ?? '').toString().charAt(0));
+  Handlebars.registerHelper('slice', (str, start, end) => {
+    // Handlebars implicitly passes an `options` object as the LAST positional
+    // argument when no `end` is provided in the template; type-check so
+    // {{slice displayName 1}} actually works (was returning just the first
+    // letter via substring(1, NaN) → swapped to substring(0, 1) — see
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring).
+    const s = (str ?? '').toString();
+    const startN = Number(start) || 0;
+    const endN = typeof end === 'number' ? end : undefined;
+    return endN != null ? s.substring(startN, endN) : s.substring(startN);
+  });
+  Handlebars.registerHelper('add', (a, b) => Number(a ?? 0) + Number(b ?? 0));
+  Handlebars.registerHelper('sub', (a, b) => Number(a ?? 0) - Number(b ?? 0));
+  // {{#repeat n}} … {{/repeat}} — render block N times. Index available as @index.
+  Handlebars.registerHelper('repeat', function(n, options) {
+    let out = '';
+    const count = Math.max(0, Number(n ?? 0));
+    for (let i = 0; i < count; i++) {
+      out += options.fn({ index: i });
+    }
+    return out;
+  });
   // ── Item DataModels ──────────────────────────────────────────────────────
   Object.assign(CONFIG.Item.dataModels, {
     'reputation-tag': ReputationTagDataModel,
@@ -322,6 +579,7 @@ Hooks.once('init', async function () {
     'inner-conflict': InnerConflictDataModel,
     'magic-skill': MagicSkillDataModel,
     'backstory-action': BackstoryActionDataModel,
+    'random-event': RandomEventDataModel,
   });
 
   // ── Actor DataModels ─────────────────────────────────────────────────────
@@ -387,6 +645,12 @@ Hooks.once('init', async function () {
     makeDefault: true,
     label: 'GOODSOCIETY.sheets.backstoryAction',
   });
+
+  foundry.documents.collections.Items.registerSheet('good-society-homebrew', RandomEventSheet, {
+    types: ['random-event'],
+    makeDefault: true,
+    label: 'GOODSOCIETY.sheets.randomEvent',
+  });
 });
 
 Hooks.once('ready', async () => {
@@ -395,6 +659,16 @@ Hooks.once('ready', async () => {
 
   const tooltipsEnabled = game.settings.get('good-society-homebrew', 'tooltipsEnabled');
   document.body.classList.toggle('gs-tooltips-disabled', !tooltipsEnabled);
+
+  // Post-MVP §2.4 world identity body class.
+  let worldIdentityEnabled = true;
+  try { worldIdentityEnabled = game.settings.get('good-society-homebrew', 'applyWorldIdentity'); } catch {}
+  document.body.classList.toggle('gs-world-identity', !!worldIdentityEnabled);
+
+  // Post-MVP §14 chrome icons body class. Stacks on top of gs-chrome-themed.
+  let chromeIconsEnabled = true;
+  try { chromeIconsEnabled = game.settings.get('good-society-homebrew', 'applyChromeIcons'); } catch {}
+  document.body.classList.toggle('gs-chrome-icons-on', !!chromeIconsEnabled);
 
   // One-time migration: derive cyclePosition from cyclePhase for worlds that
   // pre-date the cyclePosition setting (added with the 8-position cycle work).
@@ -410,8 +684,76 @@ Hooks.once('ready', async () => {
     } catch (err) { console.warn('GS | cyclePosition migration failed:', err); }
   }
 
+  // One-time migration: theme === 'mags' → 'secret' on all Majors.
+  // Per post-MVP §6.5 (Mags renamed to Secret). Idempotent — actors already
+  // on 'secret' (or never on 'mags') are skipped. GM-only single-writer.
+  if (game.user?.isGM) {
+    try {
+      const stale = game.actors.filter(a =>
+        a.type === 'major-character' && a._source?.system?.theme === 'mags'
+      );
+      if (stale.length) {
+        await Actor.updateDocuments(
+          stale.map(a => ({ _id: a.id, 'system.theme': 'secret' })),
+        );
+        console.log(`GS | Migrated ${stale.length} actor(s): theme 'mags' → 'secret'.`);
+      }
+    } catch (err) { console.warn('GS | mags→secret theme migration failed:', err); }
+  }
+
+  // One-time migration: peerage / origin rename (heir|new-arrival|foreign → gentry)
+  // AND archetype seeding for Majors. Major.bio.peerage and Family.origin both
+  // adopted a new five-tier social-standing enum (royalty / nobility / gentry /
+  // commoner / impoverished); the legacy three values map to 'gentry'. While
+  // migrating each Major we also seed bio.archetype from the legacy peerage:
+  // heir → 'heir', new-arrival → 'new-arrival', foreign → 'new-arrival'.
+  // Idempotent; GM-only single-writer. The DataModel migrateData also handles
+  // both rewrites on read, so player clients render correctly before this
+  // disk migration runs.
+  if (game.user?.isGM) {
+    try {
+      const LEGACY = new Set(['heir', 'new-arrival', 'foreign']);
+      const archetypeForLegacy = (v) => v === 'heir' ? 'heir' : 'new-arrival';
+      const staleMajors = game.actors.filter(a =>
+        a.type === 'major-character' && LEGACY.has(a._source?.system?.bio?.peerage)
+      );
+      const staleFamilies = game.actors.filter(a =>
+        a.type === 'family' && LEGACY.has(a._source?.system?.origin)
+      );
+      const updates = [
+        ...staleMajors.map(a => {
+          const oldPeerage = a._source.system.bio.peerage;
+          const update = { _id: a.id, 'system.bio.peerage': 'gentry' };
+          // Only seed archetype if the field is missing/empty on disk; never clobber.
+          if (!a._source?.system?.bio?.archetype) {
+            update['system.bio.archetype'] = archetypeForLegacy(oldPeerage);
+          }
+          return update;
+        }),
+        ...staleFamilies.map(a => ({ _id: a.id, 'system.origin': 'gentry' })),
+      ];
+      if (updates.length) {
+        await Actor.updateDocuments(updates);
+        console.log(`GS | Migrated ${staleMajors.length} Major(s) + ${staleFamilies.length} Family(ies): legacy peerage/origin → 'gentry' (Major archetype seeded from old peerage).`);
+      }
+    } catch (err) { console.warn('GS | peerage/origin rename migration failed:', err); }
+  }
+
+  // One-time backfill: tag pre-patch journal entries with `entryType` flag.
+  // Per post-MVP §13.1. Conservative pattern matching; idempotent; GM-only.
+  await migrateJournalEntryTypes();
+
+  // Initial Arrival sync — runs once after canvas first becomes available.
+  // syncArrivalToCanvas itself reads `applyWorldIdentity` and `arrivalEnabled`
+  // settings; the canvasReady hook also fires for subsequent state changes.
+  try { syncArrivalToCanvas(); } catch {}
+
   // Open the My Characters Dock if the user owns any actors.
   renderDock();
+
+  // Render the Cabinet (player module menu) — applies stored visibility flags
+  // on first render so previously-hidden surfaces stay hidden.
+  try { await renderCabinet(); } catch (err) { console.warn('GS | cabinet render failed:', err); }
 
   // Inject the Cycle Phase HUD strip above the scene navigation.
   initCycleHud();
@@ -456,12 +798,42 @@ Hooks.on('updateToken', () => renderOrganizer());
 Hooks.on('canvasReady', () => renderOrganizer());
 
 // Register hooks that must fire after init.
-registerSpeakingAs();
-registerSceneControls();
-registerCanvasContext();
-registerTokenHoverCard();
-registerUpkeep();
-registerReputationPhase();
-registerRumourPhase();
-registerRumourSocket();
-registerSessionEvents();
+//
+// Each register() call is wrapped in `safeRegister` so a runtime error inside
+// one registration doesn't cascade and silently strip every later one. The
+// classic failure mode the bare list had: a bug in (e.g.) registerChromeIcons
+// would throw, and registerSidebarFilter / registerLetterSeals / etc. below
+// it would never run — the user sees "chrome AND cabinet AND letter seals
+// are gone" with no console message tying them together. With safeRegister,
+// each failure is logged independently and the rest of the chain continues.
+//
+// Caveat: this catches RUNTIME errors inside register() bodies only. It does
+// NOT catch ES-module import-resolution failures (e.g. a broken `import`
+// path in a hook file) — those happen before this line ever runs and bring
+// the whole module down. Surface those with `node --check` + a sanity import
+// resolution check before claiming a feature is done.
+function safeRegister(name, fn) {
+  try { fn(); }
+  catch (err) { console.error(`GS | ${name} registration failed:`, err); }
+}
+safeRegister('speakingAs',       registerSpeakingAs);
+safeRegister('sceneControls',    registerSceneControls);
+safeRegister('canvasContext',    registerCanvasContext);
+safeRegister('tokenHoverCard',   registerTokenHoverCard);
+safeRegister('upkeep',           registerUpkeep);
+safeRegister('reputationPhase',  registerReputationPhase);
+safeRegister('rumourPhase',      registerRumourPhase);
+safeRegister('rumourSocket',     registerRumourSocket);
+safeRegister('randomEventSocket', registerRandomEventSocket);
+safeRegister('chatPortraits',    registerChatPortraits);
+safeRegister('sessionEvents',    registerSessionEvents);
+safeRegister('arrivalSync',      registerArrivalSync);
+safeRegister('pauseOverlay',     registerPauseOverlay);
+safeRegister('chromeIcons',      registerChromeIcons);
+safeRegister('sidebarFilter',    registerSidebarFilter);
+safeRegister('letterSeals',      registerLetterSeals);
+safeRegister('epistolaryPhase',  registerEpistolaryPhase);
+// Monologue socket binds at ready time, after game.socket exists.
+Hooks.once('ready', () => safeRegister('monologueSocket', registerMonologueSocket));
+// Novel Reader auto-open on game-end hook.
+safeRegister('novelReaderHooks', registerNovelReaderHooks);

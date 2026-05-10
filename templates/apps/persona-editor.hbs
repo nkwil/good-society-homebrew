@@ -87,6 +87,19 @@
       </div>
     </div>
 
+    {{!-- Theme — per-persona theme override. Empty = inherit the actor's
+         "true identity" theme. Switching to this persona swaps the dossier's
+         visual cascade to whichever theme is selected here. --}}
+    <div class="gs-persona-editor__field-group">
+      <label class="gs-persona-editor__label">{{localize "GOODSOCIETY.personaEditor.theme"}}</label>
+      <select data-persona-field="theme" class="gs-persona-editor__theme-select">
+        {{#each themeOptions}}
+          <option value="{{id}}" {{#if isSelected}}selected{{/if}}>{{label}}</option>
+        {{/each}}
+      </select>
+      <p class="gs-persona-editor__hint">{{localize "GOODSOCIETY.personaEditor.themeHint"}}</p>
+    </div>
+
     {{!-- Visibility Overrides --}}
     <div class="gs-persona-editor__vis-section">
       <div class="gs-persona-editor__label">{{localize "GOODSOCIETY.personaEditor.visibilityOverrides"}}</div>

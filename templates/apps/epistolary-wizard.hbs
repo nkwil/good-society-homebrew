@@ -1,0 +1,123 @@
+{{!--
+  Epistolary Wizard — post-MVP §11.
+  Three tabs (inbox / compose / outbox). Composer opens via the existing
+  letter-composer module; this surface is reading + filtering + mark-done.
+--}}
+<section class="gs-epistolary-wizard">
+
+  <header class="gs-epistolary-wizard__head">
+    <h2 class="gs-eyebrow">
+      {{localize "GOODSOCIETY.epistolary.wizard.eyebrow"}} · {{localize "GOODSOCIETY.cycle.label"}} {{cycleNumber}}
+    </h2>
+    {{#if showActorSwitcher}}
+      {{!-- Bound via a `change` listener in _onRender, NOT via data-action.
+           ApplicationV2 actions fire on click, which on a <select> would
+           trigger before the user picks an option (and would re-render the
+           template, closing the dropdown mid-flight). --}}
+      <select class="gs-epistolary-wizard__actor-select"
+              name="actorId">
+        {{#each myMajors}}
+          <option value="{{id}}" {{#if isActive}}selected{{/if}}>{{name}}</option>
+        {{/each}}
+      </select>
+    {{else}}
+      <span class="gs-epistolary-wizard__actor-name">{{actorName}}</span>
+    {{/if}}
+  </header>
+
+  <nav class="gs-epistolary-wizard__tabs" role="tablist">
+    {{#each tabs}}
+      <button type="button"
+              class="gs-epistolary-wizard__tab {{#if (eq id ../currentTab)}}is-active{{/if}}"
+              data-action="switchTab"
+              data-tab="{{id}}"
+              role="tab"
+              aria-selected="{{#if (eq id ../currentTab)}}true{{else}}false{{/if}}">
+        {{label}}
+        {{#if (gt badge 0)}}<span class="gs-epistolary-wizard__badge">{{badge}}</span>{{/if}}
+      </button>
+    {{/each}}
+  </nav>
+
+  <div class="gs-epistolary-wizard__body">
+
+    {{#if isComposeTab}}
+      <div class="gs-empty-state">
+        <p class="gs-empty-state__body">{{localize "GOODSOCIETY.epistolary.compose.intro"}}</p>
+        <button type="button"
+                class="gs-empty-state__action"
+                data-action="composeNew">
+          {{localize "GOODSOCIETY.epistolary.compose.openComposer"}} ↗
+        </button>
+      </div>
+    {{else}}
+      {{#if sealChips.length}}
+        <div class="gs-epistolary-wizard__filters">
+          <span class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.epistolary.filterBySeal"}}</span>
+          {{#each sealChips}}
+            <button type="button"
+                    class="gs-epistolary-wizard__seal-chip {{#if isActive}}is-active{{/if}}"
+                    data-action="filterBySeal"
+                    data-seal-id="{{id}}"
+                    style="--seal-color: {{color}};">
+              <span class="gs-epistolary-wizard__seal-disc" aria-hidden="true"></span>
+              {{label}}
+            </button>
+          {{/each}}
+        </div>
+      {{/if}}
+
+      {{#if lettersEmpty}}
+        <div class="gs-empty-state">
+          <p class="gs-empty-state__body">{{localize "GOODSOCIETY.epistolary.empty"}}</p>
+        </div>
+      {{else}}
+        <ul class="gs-epistolary-wizard__list">
+          {{#each letters}}
+            <li class="gs-epistolary-wizard__row gs-themed {{#if burned}}is-burned{{/if}}"
+                data-theme="{{senderTheme}}"
+                data-action="openLetter"
+                data-message-id="{{id}}">
+              <span class="gs-epistolary-wizard__seal" aria-hidden="true"
+                    {{#if sealId}}style="--seal-id: '{{sealId}}';"{{/if}}>
+                {{#if sealId}}●{{else}}○{{/if}}
+              </span>
+              <span class="gs-epistolary-wizard__portrait">
+                {{#if senderPortrait}}
+                  <img src="{{senderPortrait}}" alt="" />
+                {{else}}
+                  <span class="gs-epistolary-wizard__portrait-initial">{{firstLetter senderName}}</span>
+                {{/if}}
+              </span>
+              <span class="gs-epistolary-wizard__row-body">
+                <span class="gs-epistolary-wizard__row-meta">
+                  <strong>{{senderName}}</strong>
+                  {{#if recipientName}} → {{recipientName}}{{/if}}
+                  {{#if cycleNumber}} · {{localize "GOODSOCIETY.cycle.label"}} {{cycleNumber}}{{/if}}
+                </span>
+                {{#if subject}}<span class="gs-epistolary-wizard__row-subject">"{{subject}}"</span>{{/if}}
+                <span class="gs-epistolary-wizard__row-snippet">{{snippet}}</span>
+              </span>
+            </li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    {{/if}}
+
+  </div>
+
+  <footer class="gs-epistolary-wizard__foot">
+    {{#if epistolaryDone}}
+      <span class="gs-epistolary-wizard__done-marker">
+        ✓ {{localize "GOODSOCIETY.epistolary.markedDone"}}
+      </span>
+    {{else}}
+      <button type="button"
+              class="gs-empty-state__action"
+              data-action="markDone">
+        {{localize "GOODSOCIETY.epistolary.markDone"}} ↗
+      </button>
+    {{/if}}
+  </footer>
+
+</section>

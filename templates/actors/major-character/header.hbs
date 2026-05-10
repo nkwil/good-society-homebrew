@@ -1,61 +1,81 @@
+{{!--
+  Major Character header — post-MVP §4 dossier cameo.
+
+  Layout: cameo (left, ~140px) + main column. Cameo carries the token-based
+  profile image (per `profilePic()` resolution; persona-aware), bio chips,
+  and the persona-switcher pill (post-MVP §8.4 unified primitive). Main
+  column carries the standalone eyebrow row (theme swatches + role tag),
+  the character name with Lavishly Yours first-letter ornament, the
+  derived role/title line, and the tab nav.
+--}}
 <header class="gs-major-sheet__header">
 
-  {{!-- Side panel: portrait + bio chips + persona switcher --}}
-  <div class="gs-major-sheet__side">
+  {{!-- Cameo column: token image + bio chips + persona switcher --}}
+  <div class="gs-major-sheet__cameo">
 
-    {{#if portraitUrl}}
-      <img class="gs-major-sheet__portrait" src="{{portraitUrl}}" alt="{{displayName}}" />
-    {{else}}
-      <div class="gs-major-sheet__portrait-fallback">{{portraitInitial}}</div>
-    {{/if}}
+    <button type="button"
+            class="gs-major-sheet__cameo-frame"
+            data-action="pickToken"
+            title="{{localize "GOODSOCIETY.cameo.pickTokenTitle"}}">
+      {{#if profilePicUrl}}
+        <img class="gs-major-sheet__cameo-img" src="{{profilePicUrl}}" alt="{{displayName}}" />
+      {{else}}
+        <span class="gs-major-sheet__cameo-initial">{{portraitInitial}}</span>
+      {{/if}}
+    </button>
 
     <div class="gs-major-sheet__bio-chips">
-      {{#if system.bio.age}}age {{system.bio.age}}{{/if}}
-      {{#if system.bio.peerage}}<br>{{system.bio.peerage}}{{/if}}
+      {{#if system.bio.age}}<span class="gs-major-sheet__bio-chip">age {{system.bio.age}}</span>{{/if}}
+      {{#if archetypeLabel}}<span class="gs-major-sheet__bio-chip">{{archetypeLabel}}</span>{{/if}}
+      {{#if peerageLabel}}<span class="gs-major-sheet__bio-chip gs-major-sheet__bio-chip--muted">{{peerageLabel}}</span>{{/if}}
     </div>
 
-    <hr class="gs-hairline gs-major-sheet__side-rule">
-
-    <span class="gs-persona-picker__eyebrow">{{localize "GOODSOCIETY.personaSwitcher.eyebrow"}}</span>
-    <button type="button" class="gs-persona-picker__trigger" data-action="openPersonaSwitcher"
-            title="{{localize "GOODSOCIETY.personaSwitcher.triggerHint"}}">
-      {{#if activePersonaExplicit}}{{displayName}} ▾{{else}}{{localize "GOODSOCIETY.personaSwitcher.trueIdentity"}} ▾{{/if}}
-    </button>
+    {{!-- Persona switcher pill — post-MVP §8.4 unified primitive. The
+         popover behavior is handled by the existing delegated listener
+         in module/apps/persona-switcher-popover.js. --}}
+    {{> persona-switcher actor=actor displayName=displayName activePersonaExplicit=activePersonaExplicit}}
 
   </div>
 
-  {{!-- Main column: eyebrow row, character name, role/title, tab nav --}}
+  {{!-- Main column --}}
   <div class="gs-major-sheet__main">
 
-    <div class="gs-major-sheet__eyebrow">
-      <span class="gs-major-sheet__eyebrow-left">major character</span>
-      <select class="gs-major-sheet__theme-select" name="system.theme"
-              title="{{localize "GOODSOCIETY.personaSwitcher.themeSelectHint"}}">
-        <option value="rose"    {{#if (eq system.theme "rose"   )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.rose"}}</option>
-        <option value="roger"   {{#if (eq system.theme "roger"  )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.roger"}}</option>
-        <option value="mags"    {{#if (eq system.theme "mags"   )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.mags"}}</option>
-        <option value="avril"   {{#if (eq system.theme "avril"  )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.avril"}}</option>
-        <option value="dixon"   {{#if (eq system.theme "dixon"  )}}selected{{/if}}>{{localize "GOODSOCIETY.theme.dixon"}}</option>
-        <option value="clayton" {{#if (eq system.theme "clayton")}}selected{{/if}}>{{localize "GOODSOCIETY.theme.clayton"}}</option>
-      </select>
+    {{!-- Eyebrow row: standalone "major character" eyebrow + theme swatches.
+         Theme swatches replace the legacy <select> — clicking a swatch fires
+         setTheme action which writes actor.system.theme. --}}
+    <div class="gs-major-sheet__eyebrow-row">
+      <span class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.sheet.majorEyebrow"}}</span>
+      <div class="gs-major-sheet__theme-swatches" role="radiogroup"
+           aria-label="{{localize 'GOODSOCIETY.personaSwitcher.themeSelectHint'}}">
+        {{#each themeRegistry}}
+          <button type="button"
+                  class="gs-major-sheet__theme-swatch {{#if isActive}}is-active{{/if}}"
+                  data-action="setTheme"
+                  data-theme-id="{{id}}"
+                  style="--swatch-color: {{swatchColor}};"
+                  title="{{label}}"
+                  aria-label="{{label}}"
+                  aria-checked="{{isActive}}"
+                  role="radio"></button>
+        {{/each}}
+      </div>
     </div>
 
-    {{!-- Display name = persona name if active (including primary-persona fallback
-         when activePersonaId is empty), else actor name. When a persona is driving
-         the displayName, the input is BOTH readonly AND stripped of its name="name"
-         attribute — readonly stops the user typing into it, the missing name
-         attribute stops form-submit from writing the displayed persona name back
-         to actor.name. The earlier check used `activePersonaId` only, which had a
-         hole: when activePersonaId was '' but personas existed, the data-model
-         getter resolved displayName to the primary persona while readonly stayed
-         off, so form-submit silently renamed the actor to the persona's name.
-         To rename the actor, clear the persona via the dropdown first. --}}
-    <input class="gs-major-sheet__name"
-           type="text"
-           {{#unless hasActivePersona}}name="name"{{/unless}}
-           value="{{displayName}}"
-           {{#if hasActivePersona}}readonly title="To rename the actor, clear the persona selection first."{{/if}}
-           placeholder="{{localize 'GOODSOCIETY.sheet.namePlaceholder'}}" />
+    {{!-- Character name with Lavishly Yours-faced first-letter decoration —
+         the sole §4.2 ornament-face exception. The decorative initial is a
+         purely visual `::before`-style span on the wrapper; the editable
+         input still carries the FULL displayName so form-submit writes the
+         complete name. CSS clips the input's first character behind the
+         decorative initial so they align visually rather than duplicating. --}}
+    <div class="gs-major-sheet__name-wrap"
+         data-name-initial="{{firstLetter displayName}}">
+      <input class="gs-major-sheet__name"
+             type="text"
+             {{#unless hasActivePersona}}name="name"{{/unless}}
+             value="{{displayName}}"
+             {{#if hasActivePersona}}readonly title="To rename the actor, clear the persona selection first."{{/if}}
+             placeholder="{{localize 'GOODSOCIETY.sheet.namePlaceholder'}}" />
+    </div>
 
     <p class="gs-major-sheet__role">{{roleTitle}}</p>
 

@@ -1,0 +1,112 @@
+/* Eyebrow heading primitive — post-MVP §8.1.
+ *
+ * The eyebrow is the primary section-header device on every surface — dossier
+ * sections, dashboard panels, Cabinet group labels, Epistolary tabs, item
+ * sheets, modals. Supersedes v1 §23's eyebrow.
+ *
+ * Two variants:
+ *   .gs-eyebrow            — standalone, top-level section labels
+ *   .gs-eyebrow--subdued   — nested inside a contained block, no divider/diamond
+ *
+ * Diamond is a `::after` pseudo (invisible to copy-paste and screen readers).
+ *
+ * v1's `.gs-section-header` primitive remains in `_section-header.css` and is
+ * still in active use across many existing surfaces (Major sheet sections,
+ * dashboard internals, etc.). New surfaces should adopt `.gs-eyebrow` going
+ * forward; existing surfaces migrate as part of the dossier refactor and
+ * cosmetic facelift batches.
+ */
+
+.gs-eyebrow {
+  display: block;
+  position: relative;
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 11.5px;
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gs-brand);
+  margin: 0 0 9px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--gs-accent-2);
+}
+
+/* Accent ornament punctuating the right edge of the divider.
+ *
+ * House default: the original 6×6 gilt diamond. Themed surfaces (anything
+ * inside .gs-actor[data-theme] or .gs-themed[data-theme]) override this with
+ * a per-theme SVG ornament — see the .gs-themed/.gs-actor block below.
+ *
+ * The cream cutout box-shadow visually breaks the divider line behind the
+ * shape so the ornament reads cleanly against the rule. */
+.gs-eyebrow::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  bottom: -3px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--gs-accent-3);
+  box-shadow: 0 0 0 3px var(--gs-paper);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+/* Themed override: per-theme SVG ornament. Each theme defines `--gs-accent-svg`
+ * pointing to its own asset; here we mask the rectangle with that SVG and fill
+ * with --gs-brand so the ornament always picks up the theme color.
+ *
+ * Scoped to the seven main character themes that actually ship an SVG —
+ * Connection variants and NPC don't have ornaments yet, so they keep the
+ * house gilt diamond as their default. Add a theme to this selector list when
+ * its SVG lands in assets/theme-accents/<theme>.svg. */
+/* SVG ornament sits past the right end of the divider line — no overlap,
+ * no backing disc. The eyebrow's bottom border ends at right: 0; we offset
+ * the ornament past that so it reads as a finial / terminator rather than
+ * sitting on the rule. Vertically centered on the line. */
+:is(.gs-actor, .gs-themed):is(
+  [data-theme='rose'],
+  [data-theme='roger'],
+  [data-theme='clayton'],
+  [data-theme='dixon'],
+  [data-theme='avril'],
+  [data-theme='pearlinda'],
+  [data-theme='secret']
+) .gs-eyebrow::after {
+  right: -22px;
+  bottom: -10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 0;
+  background-color: var(--gs-brand);
+  box-shadow: none;
+  transform: none;
+  -webkit-mask: var(--gs-accent-svg) center / contain no-repeat;
+          mask: var(--gs-accent-svg) center / contain no-repeat;
+}
+
+/* Subdued variant — nested inside contained blocks (rep-criteria, conflict-title,
+ * tokens cell, item-sheet field group). No divider, no diamond — avoids
+ * double-lining with the container's outer hairline. */
+.gs-eyebrow--subdued {
+  display: block;
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  margin: 0 0 6px 0;
+  padding: 0;
+  border: none;
+}
+
+.gs-eyebrow--subdued::after {
+  content: none;
+}
+
+/* Long-label wrap: the divider extends to the wrapped width naturally because
+ * the rule is on the block element. The diamond stays anchored to the right
+ * edge of the (now wider) divider via its absolute positioning. */
