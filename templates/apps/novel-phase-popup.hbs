@@ -1,0 +1,19 @@
+<section class="gs-novel-phase-popup">
+  <header class="gs-novel-phase-popup__head">
+    <span class="gs-eyebrow">{{localize "GOODSOCIETY.cycle.label"}} {{cycleNumber}}{{#if isSecondNovel}} · {{localize "GOODSOCIETY.novelPhase.secondMarker"}}{{/if}}</span>
+    <h2 class="gs-novel-phase-popup__title">{{heading}}</h2>
+    <p class="gs-novel-phase-popup__subhead"><em>{{subhead}}</em></p>
+  </header>
+
+  <ul class="gs-novel-phase-popup__bullets">
+    {{#each bullets}}
+      <li class="gs-novel-phase-popup__bullet">{{{this}}}</li>
+    {{/each}}
+  </ul>
+
+  <footer class="gs-novel-phase-popup__foot">
+    <button type="button" class="gs-btn gs-btn--primary" data-action="dismiss">
+      {{localize "GOODSOCIETY.novelPhase.begin"}}
+    </button>
+  </footer>
+</section>

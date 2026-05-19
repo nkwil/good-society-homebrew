@@ -101,6 +101,8 @@
 @import './themes/_theme-connection-purple.css';
 @import './themes/_theme-connection-blue.css';
 @import './themes/_theme-connection-yellow.css';
+@import './themes/_theme-connection-orange.css';
+@import './themes/_theme-connection-red.css';
 @import './themes/_theme-connection-grey.css';
 
 /* Character theme presets — NPC (inherits house; file exists for consistency) */
@@ -140,6 +142,9 @@
 @import './apps/_novel-reader.css';
 @import './apps/_event-command-center.css';
 @import './apps/_event-popover.css';
+@import './apps/_novel-phase-popup.css';
+@import './apps/_pregame-checklist.css';
+@import './apps/_phase-summary-modal.css';
 
 /* World identity surfaces — post-MVP §2 (Arrival + pause overlay) + §12.2 (monologue overlay). */
 @import './apps/_arrival.css';

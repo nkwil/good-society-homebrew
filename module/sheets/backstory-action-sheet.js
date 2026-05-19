@@ -1,3 +1,5 @@
+import { openFieldEditor } from '../helpers/edit-field-dialog.js';
+
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
 
@@ -10,6 +12,7 @@ export class BackstoryActionSheet extends HandlebarsApplicationMixin(ItemSheetV2
     actions: {
       toggleUsed: BackstoryActionSheet.#toggleUsed,
       toggleExpanded: BackstoryActionSheet.#toggleExpanded,
+      editDescription: BackstoryActionSheet.#editDescription,
     },
   };
 
@@ -23,6 +26,14 @@ export class BackstoryActionSheet extends HandlebarsApplicationMixin(ItemSheetV2
     const ctx = await super._prepareContext(options);
     ctx.system = this.document.system;
     ctx.document = this.document;
+    // Description rendered read-only (enriched) + ✎ button — v13's
+    // {{editor}} helper doesn't open in ApplicationV2.
+    const TextEditor =
+      foundry.applications.ux?.TextEditor?.implementation
+      ?? globalThis.TextEditor;
+    ctx.enrichedDescription = this.document.system?.description
+      ? await TextEditor.enrichHTML(this.document.system.description, { async: true })
+      : '';
     return ctx;
   }
 
@@ -32,5 +43,13 @@ export class BackstoryActionSheet extends HandlebarsApplicationMixin(ItemSheetV2
 
   static async #toggleExpanded() {
     await this.document.update({ 'system.expanded': !this.document.system.expanded });
+  }
+
+  static async #editDescription() {
+    await openFieldEditor({
+      document: this.document,
+      field: 'description',
+      label: game.i18n.localize('GOODSOCIETY.item.backstoryAction.description'),
+    });
   }
 }

@@ -1,4 +1,5 @@
 import { ARCHETYPE_CHOICES } from '../data-models/major-character.js';
+import { openFieldEditor } from '../helpers/edit-field-dialog.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
@@ -19,6 +20,7 @@ export class RandomEventSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       removePositiveTag: RandomEventSheet.#removePositiveTag,
       addNegativeTag:    RandomEventSheet.#addNegativeTag,
       removeNegativeTag: RandomEventSheet.#removeNegativeTag,
+      editDescription:   RandomEventSheet.#editDescription,
       done:              RandomEventSheet.#done,
     },
   };
@@ -41,7 +43,23 @@ export class RandomEventSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     }));
     ctx.positiveTagOptions = sys.positiveTagOptions ?? [];
     ctx.negativeTagOptions = sys.negativeTagOptions ?? [];
+    // Description rendered read-only (enriched) + ✎ button — v13's
+    // {{editor}} helper doesn't open in ApplicationV2.
+    const TextEditor =
+      foundry.applications.ux?.TextEditor?.implementation
+      ?? globalThis.TextEditor;
+    ctx.enrichedDescription = sys?.description
+      ? await TextEditor.enrichHTML(sys.description, { async: true })
+      : '';
     return ctx;
+  }
+
+  static async #editDescription() {
+    await openFieldEditor({
+      document: this.document,
+      field: 'description',
+      label: game.i18n.localize('GOODSOCIETY.item.randomEvent.descriptionLabel'),
+    });
   }
 
   // ── Tag-shortlist editors ─────────────────────────────────────────────────

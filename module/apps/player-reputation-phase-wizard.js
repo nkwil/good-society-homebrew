@@ -15,6 +15,7 @@
 
 import { ConditionPicker } from './condition-picker.js';
 import { postSystemCard } from '../helpers/chat-cards.js';
+import { profileName } from '../helpers/profile-pic.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
@@ -65,7 +66,7 @@ export class PlayerReputationPhaseWizard extends HandlebarsApplicationMixin(Appl
 
     const cycleNum   = _getSetting('cycleNumber', 1);
     const themeId    = system.theme ?? 'npc';
-    const actorName  = system.activePersona?.name ?? actor.name;
+    const actorName  = profileName(actor);
 
     const eyebrow = game.i18n.format(
       'GOODSOCIETY.playerReputationPhaseWizard.eyebrow',
@@ -336,7 +337,7 @@ export class PlayerReputationPhaseWizard extends HandlebarsApplicationMixin(Appl
         content: game.i18n.format(
           'GOODSOCIETY.playerReputationPhaseWizard.step4.conditionClearedCard',
           {
-            name: actor.system?.activePersona?.name || actor.name,
+            name: profileName(actor),
             condition: condition.name,
           },
         ),
@@ -360,7 +361,7 @@ export class PlayerReputationPhaseWizard extends HandlebarsApplicationMixin(Appl
         content: game.i18n.format(
           'GOODSOCIETY.playerReputationPhaseWizard.step5.completionCard',
           {
-            name:                 actor.system?.activePersona?.name || actor.name,
+            name:                 profileName(actor),
             tagsAdded:            this._tagsAdded,
             conditionsTriggered:  this._conditionsTriggered,
             conditionsCleared:    this._conditionsCleared,

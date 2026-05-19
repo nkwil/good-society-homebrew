@@ -66,5 +66,14 @@ export function effectiveThemeOf(actor) {
  */
 export function displayNameOf(actor) {
   if (!actor) return '';
-  return actor.system?.activePersona?.name || actor.name || '';
+  // Explicit persona selection only — never fall back through the data-model
+  // getter's primary/first persona chain. Same anti-pattern fix as
+  // profileName in module/helpers/profile-pic.js; see post-MVP-style note
+  // about Rose-with-only-Mags showing wrong on every surface.
+  const activeId = actor.system?.activePersonaId;
+  if (activeId) {
+    const persona = (actor.system?.personas ?? []).find((p) => p.id === activeId);
+    if (persona?.name) return persona.name;
+  }
+  return actor.name || '';
 }

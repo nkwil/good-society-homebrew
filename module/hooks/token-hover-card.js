@@ -87,23 +87,27 @@ function _buildCardData(placeable) {
 
   const isGM = game.user?.isGM;
 
-  // Resolve active persona (same logic as activePersona getter on the data model).
+  // Resolve EXPLICIT active persona only (no primary/first fallback). The
+  // data-model getter falls back to "any persona," which makes "true
+  // identity" silently render as a persona — wrong for both display name
+  // and the persona-divergence GM badge.
   const activePersonaId = actor.system?.activePersonaId;
   const personas = actor.system?.personas ?? [];
   const activePersona = activePersonaId
     ? personas.find(p => p.id === activePersonaId)
-    : (personas.find(p => p.isPrimary) ?? personas[0]);
+    : null;
 
-  // GM note: flag when the active persona's name diverges from the actor's true name.
+  // GM note: flag when an EXPLICIT persona's name diverges from actor.name.
   const personaName = activePersona?.name;
   const namesDiverge = personaName && personaName !== actor.name;
   const secretPersonaNote = (isGM && namesDiverge)
     ? game.i18n.localize('GOODSOCIETY.hoverCard.secretPersona')
     : null;
 
-  // Display name: always show active persona's name (or actor name as fallback).
-  // Non-owners never see the actor's true name when a persona is active — the
-  // persona name IS what they see. This is the key persona-protection safeguard.
+  // Display name: when a persona is explicitly active, show that. Otherwise
+  // show actor.name. Non-owners never see the actor's true name when a
+  // persona is active — the persona name IS what they see. Persona-
+  // protection safeguard.
   const displayName = personaName || actor.name;
 
   // Portrait: persona overrides actor-level.

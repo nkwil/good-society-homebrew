@@ -10,6 +10,7 @@
 import { postMonologueCard } from '../helpers/chat-cards.js';
 import { themedWrap } from '../helpers/themed-wrap.js';
 import { monologueFolder, entryFlags } from '../helpers/journal-folders.js';
+import { profileName } from '../helpers/profile-pic.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 } = foundry.applications.api;
@@ -126,7 +127,7 @@ export class MonologueEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     });
 
     // Fire session-event hook so session-events.js can log this monologue.
-    const speakerName = this.actor.system?.activePersona?.name ?? this.actor.name;
+    const speakerName = profileName(this.actor);
     Hooks.callAll('goodSociety.monologuePosted', {
       actorId:     this.actor.id,
       actorName:   this.actor.name,

@@ -81,16 +81,61 @@ export const SEAL_TYPES = [
 ];
 
 /**
+ * SCRIPT_FONTS — optional calligraphy faces for a letter's greeting +
+ * signature lines, chosen per-letter in the letter composer's font picker.
+ *
+ * Each entry:
+ *   - id     — stored as the `letterScriptFont` chat-card flag + draft state
+ *   - label  — localization-key fragment (GOODSOCIETY.scriptFont.{label})
+ *   - family — CSS font-family value; '' = no script (inherit the letter's
+ *              normal faces). Faces are declared in `styles/_fonts.css` and
+ *              shipped as local woff2 under `styles/fonts/`.
+ */
+export const SCRIPT_FONTS = [
+  { id: 'none',          label: 'none',         family: '' },
+  { id: 'great-vibes',   label: 'greatVibes',   family: "'Great Vibes', cursive" },
+  { id: 'pinyon-script', label: 'pinyonScript', family: "'Pinyon Script', cursive" },
+  { id: 'parisienne',    label: 'parisienne',   family: "'Parisienne', cursive" },
+  { id: 'tangerine',     label: 'tangerine',    family: "'Tangerine', cursive" },
+];
+
+/** Resolve a script-font id → CSS font-family string ('' when none/unknown). */
+export function scriptFontFamily(id) {
+  return SCRIPT_FONTS.find(f => f.id === id)?.family ?? '';
+}
+
+/**
+ * PHASE_SPLASHES — per-phase Arrival (empty-canvas) background images.
+ *
+ * On a cycle phase change the active scene is closed and the Arrival shows a
+ * phase-specific splash (background + phase name) — see
+ * `module/hooks/phase-splash.js` + `module/apps/arrival.js`. Phases NOT keyed
+ * here (`novel`, `pre-cycle`, `ended`) fall back to the GM-configured default
+ * Arrival (`arrivalTitle` / `arrivalBackgroundUrl`).
+ *
+ * Keys are `cyclePhase` setting values. Assets live in `assets/phases/`.
+ */
+export const PHASE_SPLASHES = {
+  reputation:       `${ASSETS_BASE}/phases/reputation.jpg`,
+  'rumour-scandal': `${ASSETS_BASE}/phases/rumour-scandal.jpg`,
+  epistolary:       `${ASSETS_BASE}/phases/epistolary.jpg`,
+  upkeep:           `${ASSETS_BASE}/phases/upkeep.jpg`,
+};
+
+/** Sound played on every cycle phase change (a page turn). */
+export const PHASE_SPLASH_SOUND = `${ASSETS_BASE}/phases/page-turn.wav`;
+
+/**
  * COWORK_SURFACES — Cabinet drawer registry.
  * Per post-MVP §9. Each entry declares a UI surface that the Cabinet drawer
  * exposes. Two kinds are supported:
  *
  *   - `kind: 'toggle'` (default) — flips a body class to hide/show a
- *     persistent surface. Rendered as a toggle pill in the drawer and as a
- *     glyph button in the rail.
- *   - `kind: 'launcher'` — opens a modal/dialog when clicked. Rendered as
- *     an "Open ↗" outline button in the drawer; skipped from the rail
- *     (drawer-only) so the rail stays a coherent visibility-state surface.
+ *     persistent surface. Rendered as a toggle switch in the drawer; the
+ *     switch reflects the surface's shown/hidden state.
+ *   - `kind: 'launcher'` — opens a window. Also rendered as a toggle switch
+ *     in the drawer: on opens the window, off closes it, and the switch
+ *     reflects whether that window is currently open.
  *
  * Each entry:
  *   - id              — string key, persisted in user.flags.cabinetVisibility
@@ -121,8 +166,20 @@ export const COWORK_SURFACES = [
   { id: 'gs-dashboard-launch',   group: 'system',  label: 'GOODSOCIETY.cabinet.surface.dashboard',     railGlyph: 'PI', kind: 'launcher', launcherKey: 'dashboard'   },
   { id: 'gs-novel-reader-launch',group: 'system',  label: 'GOODSOCIETY.cabinet.surface.novelReader',   railGlyph: 'NR', kind: 'launcher', launcherKey: 'novelReader' },
   { id: 'tool-rumours',          group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.rumourBoard',   railGlyph: 'RB', kind: 'launcher', launcherKey: 'rumours'  },
-  { id: 'tool-letter',           group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.letterComposer',railGlyph: 'LC', kind: 'launcher', launcherKey: 'letter'   },
+  // Inbox: opens the Epistolary Wizard on the Inbox tab. Available outside
+  // the Epistolary phase so players can review past letters anytime. The
+  // Wizard's Compose tab covers letter-writing, so there is no separate
+  // Letter Composer entry — Inbox inherits the composer's rail icon slot.
+  { id: 'tool-inbox',            group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.inbox',         railGlyph: 'LC', kind: 'launcher', launcherKey: 'inbox'    },
+  // Monologue: opens the monologue-token spend flow (target picker → overlay).
+  // The MT-accounting is handled inside the trigger flow — see
+  // module/apps/monologue-overlay.js#openMonologueFromCabinet.
+  { id: 'tool-monologue',        group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.monologue',     railGlyph: 'MO', kind: 'launcher', launcherKey: 'monologue' },
   { id: 'tool-calendar',         group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.calendar',      railGlyph: 'ET', kind: 'launcher', launcherKey: 'calendar' },
+  // Informational popups — drawer-only (no railGlyph) so they don't clutter
+  // the rail, but always accessible from the drawer for re-reading.
+  { id: 'tool-pregame',          group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.pregame',       kind: 'launcher', launcherKey: 'pregame'    },
+  { id: 'tool-novel-phase',      group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.novelPhase',    kind: 'launcher', launcherKey: 'novelPhase' },
 
   // ── Drawer-only entries (no railGlyph → not in rail) ─────────────────────
   // Cycle HUD: persistent UI but the toggle is drawer-only so the rail stays
@@ -134,6 +191,9 @@ export const COWORK_SURFACES = [
   { id: 'gm-tool-organizer',     group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.npcOrganizer',     kind: 'launcher', gmOnly: true, launcherKey: 'organizer'   },
   { id: 'gm-tool-permissions',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.bulkPermissions',  kind: 'launcher', gmOnly: true, launcherKey: 'permissions' },
   { id: 'gm-tool-session-log',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.sessionLogOpen',   kind: 'launcher', gmOnly: true, launcherKey: 'sessionLog'  },
+  { id: 'gm-tool-conditions',    group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.conditions',       kind: 'launcher', gmOnly: true, launcherKey: 'conditions' },
+  // Destructive one-shot — sits at the end of the GM Tools list intentionally.
+  { id: 'gm-tool-reset-campaign',group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.resetCampaign',    kind: 'launcher', gmOnly: true, launcherKey: 'resetCampaign' },
 
   // Third-party modules (gated on activation)
   { id: 'module-sequencer',      group: 'modules', label: 'GOODSOCIETY.cabinet.surface.sequencer',     hideBodyClass: 'gs-hide-sequencer',   defaultVisible: true,  ifModule: 'sequencer'    },
@@ -143,7 +203,7 @@ export const COWORK_SURFACES = [
   // Foundry chrome (toggleable, drawer-only)
   { id: 'foundry-players-list',  group: 'foundry', label: 'GOODSOCIETY.cabinet.surface.playersList',   hideBodyClass: 'gs-hide-players',     defaultVisible: true  },
   { id: 'foundry-sidebar',       group: 'foundry', label: 'GOODSOCIETY.cabinet.surface.sidebar',       hideBodyClass: 'gs-hide-sidebar',     defaultVisible: true  },
-  { id: 'foundry-hotbar',        group: 'foundry', label: 'GOODSOCIETY.cabinet.surface.hotbar',        hideBodyClass: 'gs-hide-hotbar',      defaultVisible: true  },
+  { id: 'foundry-hotbar',        group: 'foundry', label: 'GOODSOCIETY.cabinet.surface.hotbar',        hideBodyClass: 'gs-hide-hotbar',      defaultVisible: false },
 ];
 
 /**
@@ -208,7 +268,11 @@ export const CHROME_ICONS = {
     'gs-dashboard-launch':    { asset: `${ASSETS_BASE}/cabinet/public-info-dashboard.svg`,  label: 'GOODSOCIETY.cabinet.surface.dashboard'      },
     'gs-novel-reader-launch': { asset: `${ASSETS_BASE}/cabinet/novel-reader.svg`,           label: 'GOODSOCIETY.cabinet.surface.novelReader'    },
     'tool-rumours':           { asset: `${ASSETS_BASE}/cabinet/rumour-board.svg`,           label: 'GOODSOCIETY.cabinet.surface.rumourBoard'    },
-    'tool-letter':            { asset: `${ASSETS_BASE}/cabinet/letter-composer.svg`,        label: 'GOODSOCIETY.cabinet.surface.letterComposer' },
+    // Inbox reuses the letter-composer rail icon — the standalone Letter
+    // Composer cabinet entry was removed (the Epistolary Wizard's Compose
+    // tab covers letter-writing).
+    'tool-inbox':             { asset: `${ASSETS_BASE}/cabinet/letter-composer.svg`,        label: 'GOODSOCIETY.cabinet.surface.inbox'          },
+    'tool-monologue':         { asset: `${ASSETS_BASE}/cabinet/monologue.svg`,              label: 'GOODSOCIETY.cabinet.surface.monologue'      },
     'tool-calendar':          { asset: `${ASSETS_BASE}/cabinet/event-timeline.svg`,         label: 'GOODSOCIETY.cabinet.surface.calendar'       },
   },
 
@@ -255,7 +319,7 @@ export const THEME_REGISTRY = [
 ];
 
 /**
- * CONNECTION_THEME_REGISTRY — the 5 dedicated connection variants. Connections
+ * CONNECTION_THEME_REGISTRY — the 7 dedicated connection variants. Connections
  * can also pick any Major theme (see CONNECTION_FULL_THEME_REGISTRY below)
  * but these are the "canonical" connection palette options.
  */
@@ -264,6 +328,8 @@ export const CONNECTION_THEME_REGISTRY = [
   { id: 'connection-purple', label: 'GOODSOCIETY.theme.connection-purple', swatchColor: '#7B3F95' },
   { id: 'connection-blue',   label: 'GOODSOCIETY.theme.connection-blue',   swatchColor: '#2A5DA0' },
   { id: 'connection-yellow', label: 'GOODSOCIETY.theme.connection-yellow', swatchColor: '#A88528' },
+  { id: 'connection-orange', label: 'GOODSOCIETY.theme.connection-orange', swatchColor: '#B5511B' },
+  { id: 'connection-red',    label: 'GOODSOCIETY.theme.connection-red',    swatchColor: '#B01E2E' },
   { id: 'connection-grey',   label: 'GOODSOCIETY.theme.connection-grey',   swatchColor: '#4F5258' },
 ];
 

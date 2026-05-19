@@ -14,6 +14,79 @@
   margin: 0;
 }
 
+/* ── Injected speaker portrait ──────────────────────────────────────────────
+ * Rendered by module/hooks/chat-portraits.js — small token-derived avatar
+ * that sits left of the sender name in every chat message header. The DOM
+ * structure is whatever v13's chat-message header looks like; we just style
+ * an <img.gs-chat-portrait> that gets prepended into it.
+ *
+ * Sized to match the message-header line-height for tidy vertical alignment.
+ * Token-derived (post-MVP §8.5) so personas show their current persona's
+ * token; cards posted long after a persona swap auto-refresh via the
+ * `goodSociety.personaSwapped` hook listener. */
+.message-header img.gs-chat-portrait,
+header.message-header img.gs-chat-portrait {
+  display: inline-block;
+  /* Lock the box hard: explicit width/height alone lose to Foundry's own
+   * chat-header `img` rules (and a flex row's align-items: stretch can
+   * pull the height). min/max + aspect-ratio + !important pin a true
+   * 28×28 square so the circular crop never distorts into an oval. */
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 28px;
+  align-self: center;
+  border-radius: 50%;
+  border: 0.5px solid var(--gs-accent-2, #708060);
+  background: var(--gs-paper-warm, #F4ECD8);
+  object-fit: cover;
+  object-position: center;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* Make sure the chat-message header is a flex row so the portrait aligns
+ * cleanly with the speaker name + metadata. Foundry's default styling for
+ * .message-header already does this on most v13 builds, but pinning it
+ * defends against future Foundry CSS changes. */
+.chat-message .message-header,
+.chat-message header.message-header {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── Per-speaker theming ──────────────────────────────────────────────────
+ * `gs-chat-themed` + data-theme is applied to the whole message row by
+ * module/hooks/chat-portraits.js, resolving the speaker's effective theme
+ * (with persona chatColor override). The theme's CSS variables cascade in,
+ * so we just bind the sender name + a left accent stripe to them. */
+
+/* Sender name in the character's header colour. */
+.chat-message.gs-chat-themed .message-sender,
+.chat-message.gs-chat-themed .message-header .message-sender {
+  color: var(--gs-headers, var(--gs-brand)) !important;
+  font-weight: 600;
+}
+
+/* A thin brand-coloured stripe down the message's leading edge ties the
+ * whole card to the character without repainting Foundry's message
+ * background (which would fight readability across light/dark themes). */
+.chat-message.gs-chat-themed {
+  border-left: 3px solid var(--gs-brand);
+  padding-left: 8px;
+}
+
+/* Timestamp / metadata — keep it quiet but tinted so it reads as part of
+ * the themed card rather than default Foundry grey. */
+.chat-message.gs-chat-themed .message-metadata {
+  color: color-mix(in srgb, var(--gs-brand) 55%, transparent);
+}
+
 /* ── Layout ── */
 .gs-chat-card__layout {
   display: flex;
@@ -57,18 +130,28 @@
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 6px;
+  /* Wrap so the card-type eyebrow drops to its own line when the header
+   * is too narrow to hold it beside the speaker name — rather than
+   * squeezing the name into a mid-word break. */
+  flex-wrap: wrap;
 }
 
 .gs-chat-card__speaker {
   display: flex;
   align-items: center;
   gap: 10px;
+  /* Take priority for horizontal space so the name gets room before the
+   * eyebrow does. min-width: 0 lets the inner stack shrink/wrap cleanly. */
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .gs-chat-card__speaker-stack {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  min-width: 0;
+  flex: 1 1 auto;     /* let the name take its share of the header */
 }
 
 .gs-chat-card__name {
@@ -77,6 +160,15 @@
   font-weight: 600;
   color: var(--gs-brand);
   line-height: 1.2;
+  /* Long multi-word names ("Pearlinda Von Opaland") wrap at SPACES to a
+   * second line — but individual words never break mid-character. The
+   * previous `overflow-wrap: anywhere` + `word-break: break-word` was
+   * snapping "Eclair" into "Eclai" / "r". `normal` word-break keeps each
+   * word whole; the header's flex-wrap gives the name room by dropping
+   * the eyebrow to its own line when cramped. */
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .gs-chat-card__persona-role {
@@ -102,6 +194,10 @@
   text-transform: uppercase;
   color: var(--gs-brand);
   white-space: nowrap;
+  /* Keep the eyebrow at its natural width — when the header can't fit it
+   * beside the name, header `flex-wrap` drops it to its own line rather
+   * than shrinking it into the name's space. */
+  flex: 0 0 auto;
 }
 
 /* ── Hairline separator ── */

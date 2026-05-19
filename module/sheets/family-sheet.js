@@ -1,4 +1,5 @@
 import { profilePic } from '../helpers/profile-pic.js';
+import { openFieldEditor } from '../helpers/edit-field-dialog.js';
 
 /**
  * @typedef {import('@league-of-foundry-developers/foundry-vtt-types').Actor} Actor
@@ -20,6 +21,7 @@ export class FamilySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       openMajor:       FamilySheet.#openMajor,
       linkMajor:       FamilySheet.#linkMajor,
       toggleVisibility: FamilySheet.#toggleVisibility,
+      editNotes:       FamilySheet.#editNotes,
     },
   };
 
@@ -46,11 +48,21 @@ export class FamilySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const memberCount = memberActors.length;
     const heirStatusPositive = HEIR_POSITIVE.has(system.heirStatus);
 
+    // GM notes rendered read-only (enriched) + ✎ button — v13's {{editor}}
+    // helper doesn't open in ApplicationV2.
+    const TextEditor =
+      foundry.applications.ux?.TextEditor?.implementation
+      ?? globalThis.TextEditor;
+    const enrichedNotes = system?.notes
+      ? await TextEditor.enrichHTML(system.notes, { async: true })
+      : '';
+
     return {
       ...ctx,
       actor: this.actor,
       system,
       familyInitial,
+      enrichedNotes,
       memberCount,
       heirStatusPositive,
       memberActors: memberActors.map(a => {
@@ -112,5 +124,13 @@ export class FamilySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const cycle = { secret: 'public', public: 'redacted', redacted: 'secret' };
     const current = this.actor.system.visibility[field] ?? 'secret';
     await this.actor.update({ [`system.visibility.${field}`]: cycle[current] });
+  }
+
+  static async #editNotes() {
+    await openFieldEditor({
+      document: this.actor,
+      field: 'notes',
+      label: game.i18n.localize('GOODSOCIETY.family.notes'),
+    });
   }
 }

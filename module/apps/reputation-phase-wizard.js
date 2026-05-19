@@ -2,21 +2,23 @@
  * ReputationPhaseWizard — GM-driven shared modal for the Reputation phase.
  * Per docs/design/29-reputation-batch.md §2.
  *
- * Five steps: roster → createTags → triggerConditions → clearConditions → complete.
+ * Four steps: roster → createTags → manageConditions → complete.
  * Single instance (id: 'gs-reputation-phase-wizard'). Width 720.
- * Steps 2–4: left-rail round-robin + right-pane step content.
- * Steps 1 and 5: full-width, no rail.
+ * Steps 2–3: left-rail round-robin + right-pane step content.
+ * Steps 1 and 4: full-width, no rail.
  *
  * Public API: openReputationPhaseWizard().
  */
 
 import { ConditionPicker } from './condition-picker.js';
 import { postSystemCard } from '../helpers/chat-cards.js';
+import { profileName } from '../helpers/profile-pic.js';
+import { openPhaseSummaryModal } from './phase-summary-modal.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
 
-const STEP_IDS = ['roster', 'createTags', 'triggerConditions', 'clearConditions', 'complete'];
+const STEP_IDS = ['roster', 'createTags', 'manageConditions', 'complete'];
 
 export class ReputationPhaseWizard extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
@@ -127,11 +129,11 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
       active: this._activeCharacters.has(a.id),
     })) : [];
 
-    // Steps 2–4 rail + pane
+    // Steps 2–3 rail + pane
     let railEntries = [];
     let focusedActor = null;
     let allRailDone = true;
-    const showRail = step >= 2 && step <= 4;
+    const showRail = step >= 2 && step <= 3;
 
     if (step === 2) {
       if (!this._focusedActorId && activeMajors.length > 0) {
@@ -149,40 +151,19 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
     }
 
     if (step === 3) {
-      const qualifying = _getStep3Actors(activeMajors);
-      if (!this._focusedActorId && qualifying.length > 0) {
-        this._focusedActorId = qualifying[0].actor.id;
+      // Manage Conditions — every active Major is selectable so the GM can
+      // freely add or clear conditions on anyone (no qualifying filter).
+      if (!this._focusedActorId && activeMajors.length > 0) {
+        this._focusedActorId = activeMajors[0].id;
       }
-      railEntries = qualifying.map(({ actor, polarities }) => ({
-        id:   actor.id,
-        name: actor.name,
-        status: _step3ActorDone(actor, polarities) ? 'done'
-              : actor.id === this._focusedActorId ? 'active' : 'pending',
-      }));
-      allRailDone = qualifying.length === 0 || qualifying.every(
-        ({ actor, polarities }) => _step3ActorDone(actor, polarities),
-      );
-      const fa = this._focusedActorId ? game.actors?.get(this._focusedActorId) : null;
-      if (fa) {
-        const entry = qualifying.find(q => q.actor.id === fa.id);
-        if (entry) focusedActor = this._buildStep3Data(fa, entry.polarities);
-      }
-    }
-
-    if (step === 4) {
-      const qualifying = _getStep4Actors(activeMajors);
-      if (!this._focusedActorId && qualifying.length > 0) {
-        this._focusedActorId = qualifying[0].actor.id;
-      }
-      railEntries = qualifying.map(a => ({
+      railEntries = activeMajors.map(a => ({
         id:   a.id,
-        name: a.name,
-        status: !_needsStep4(a) ? 'done'
-              : a.id === this._focusedActorId ? 'active' : 'pending',
+        name: profileName(a),
+        status: a.id === this._focusedActorId ? 'active' : 'pending',
       }));
-      allRailDone = qualifying.length === 0 || qualifying.every(a => !_needsStep4(a));
+      allRailDone = false; // free-form step — no per-character done state
       const fa = this._focusedActorId ? game.actors?.get(this._focusedActorId) : null;
-      if (fa) focusedActor = this._buildStep4Data(fa);
+      if (fa) focusedActor = this._buildManageConditionsData(fa);
     }
 
     return {
@@ -229,71 +210,51 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
 
     return {
       id:    actor.id,
-      name:  actor.name,
+      name:  profileName(actor),
       theme: actor.system?.theme ?? 'npc',
       familyCriterion,
       posTags,
       negTags,
       hasTags:      posTags.length > 0 || negTags.length > 0,
       isDone:       this._step2Done.has(actor.id),
-      nextCharName: next?.name ?? null,
+      nextCharName: next ? profileName(next) : null,
     };
   }
 
-  _buildStep3Data(actor, polarities) {
-    return {
-      id:   actor.id,
-      name: actor.name,
-      theme: actor.system?.theme ?? 'npc',
-      polarities: polarities.map(p => {
-        const tags = actor.items.filter(
-          i => i.type === 'reputation-tag' && i.system?.polarity === p
-        ).map(t => t.name);
-        const hasCondition = actor.items.some(
-          i => i.type === 'reputation-condition' && i.system?.polarity === p && i.system?.active,
-        );
-        const pickerResolved = !!actor.getFlag('good-society-homebrew', `pickerResolved.${p}`);
-        return {
-          polarity:   p,
-          isPositive: p === 'positive',
-          tags,
-          resolved:   hasCondition || pickerResolved,
-        };
-      }),
-    };
-  }
-
-  _buildStep4Data(actor) {
+  /** Manage Conditions step — list of the actor's active conditions (each
+   *  clearable) plus tag counts for context. Add is handled by the picker. */
+  _buildManageConditionsData(actor) {
     const conditions = actor.items.filter(
       i => i.type === 'reputation-condition' && i.system?.active,
-    ).filter(c => {
-      const tagCount = actor.items.filter(
-        i => i.type === 'reputation-tag' && i.system?.polarity === c.system?.polarity,
-      ).length;
-      return tagCount < 3;
-    }).map(c => ({
+    ).map(c => ({
       id:         c.id,
       name:       c.name,
       polarity:   c.system?.polarity ?? 'positive',
-      isPositive: c.system?.polarity === 'positive',
-      tagCount:   actor.items.filter(
-        i => i.type === 'reputation-tag' && i.system?.polarity === c.system?.polarity,
-      ).length,
+      isPositive: (c.system?.polarity ?? 'positive') === 'positive',
     }));
 
+    const posCount = actor.items.filter(
+      i => i.type === 'reputation-tag' && i.system?.polarity === 'positive',
+    ).length;
+    const negCount = actor.items.filter(
+      i => i.type === 'reputation-tag' && i.system?.polarity === 'negative',
+    ).length;
+
     return {
-      id:         actor.id,
-      name:       actor.name,
-      theme:      actor.system?.theme ?? 'npc',
+      id:            actor.id,
+      name:          profileName(actor),
+      theme:         actor.system?.theme ?? 'npc',
       conditions,
-      allCleared: conditions.length === 0,
+      hasConditions: conditions.length > 0,
+      posCount,
+      negCount,
     };
   }
 
   // ── Navigation ──────────────────────────────────────────────────────────────
 
   static async #wizNext() {
-    if (this._step === 5) { await this._completePhase(); return; }
+    if (this._step === STEP_IDS.length) { await this._completePhase(); return; }
     this._focusedActorId = null; // reset for the new step
     this._step++;
     this.render();
@@ -395,7 +356,7 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
     this.render();
   }
 
-  // ── Step 3 ──────────────────────────────────────────────────────────────────
+  // ── Step 3: Manage Conditions ───────────────────────────────────────────────
 
   static async #triggerCondition(ev, target) {
     const actorId = target.dataset.actorId ?? this._focusedActorId;
@@ -422,8 +383,6 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
     });
   }
 
-  // ── Step 4 ──────────────────────────────────────────────────────────────────
-
   static async #clearCondition(ev, target) {
     const actorId     = target.dataset.actorId ?? this._focusedActorId;
     const conditionId = target.dataset.conditionId;
@@ -444,9 +403,9 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
 
       await postSystemCard({
         content: game.i18n.format(
-          'GOODSOCIETY.reputationPhaseWizard.step4.conditionClearedCard',
+          'GOODSOCIETY.reputationPhaseWizard.step3.conditionClearedCard',
           {
-            name: actor.system?.activePersona?.name || actor.name,
+            name: profileName(actor),
             condition: condition.name,
           },
         ),
@@ -460,21 +419,82 @@ export class ReputationPhaseWizard extends HandlebarsApplicationMixin(Applicatio
   // ── Completion ──────────────────────────────────────────────────────────────
 
   async _completePhase() {
+    // Build a public per-character summary visible to the whole table. The
+    // brief one-line completion card is preserved for the running session
+    // log; the richer card below is what the players see.
     try {
-      await postSystemCard({
-        content: game.i18n.format(
-          'GOODSOCIETY.reputationPhaseWizard.step5.completionCard',
-          {
-            tagsCreated:      this._tagsCreated,
-            conditionsCleared: this._conditionsCleared,
-          },
-        ),
-        context: 'reputation',
+      await _postReputationPhaseSummary({
+        tagsCreated: this._tagsCreated,
+        conditionsCleared: this._conditionsCleared,
       });
-    } catch (err) { console.warn('GS | rep phase completion card failed:', err); }
+    } catch (err) { console.warn('GS | rep phase summary failed:', err); }
 
     await this.close();
   }
+}
+
+/**
+ * Build + show the GM preview modal for the end-of-Reputation-Phase summary.
+ * The GM can edit text inline before clicking "Post and continue", at which
+ * point the (possibly-edited) HTML is posted publicly + appended to the
+ * session log. Cancel suppresses both.
+ */
+async function _postReputationPhaseSummary({ tagsCreated, conditionsCleared }) {
+  const majors = (game.actors?.filter(a => a.type === 'major-character') ?? []);
+  // Per-character lines.
+  const lines = majors.map(a => {
+    const items = a.items ?? new Map();
+    const positiveTags = [...items].filter(i => i.type === 'reputation-tag' && i.system?.polarity === 'positive');
+    const negativeTags = [...items].filter(i => i.type === 'reputation-tag' && i.system?.polarity === 'negative');
+    const conditions = [...items].filter(i => i.type === 'reputation-condition' && i.system?.active);
+    const condText = conditions.length
+      ? conditions.map(c =>
+          `<em>${foundry.utils.escapeHTML(c.name)}</em> ${c.system?.polarity === 'positive' ? '▲' : '▼'}`,
+        ).join(', ')
+      : `<span style="opacity: 0.6;">${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.reputationPhaseWizard.summary.noConditions'))}</span>`;
+    return `<li><strong>${foundry.utils.escapeHTML(profileName(a))}</strong>: ▲${positiveTags.length} · ▼${negativeTags.length} — ${condText}</li>`;
+  }).join('');
+
+  const heading = game.i18n.localize('GOODSOCIETY.reputationPhaseWizard.summary.heading');
+  const totals = game.i18n.format('GOODSOCIETY.reputationPhaseWizard.summary.totals', {
+    tagsCreated,
+    conditionsCleared,
+  });
+
+  const content = `
+    <div class="gs-phase-summary gs-phase-summary--reputation">
+      <p style="margin: 0 0 8px;"><strong>${foundry.utils.escapeHTML(heading)}</strong></p>
+      <ul style="margin: 0 0 10px; padding-left: 18px; list-style: '— ';">
+        ${lines}
+      </ul>
+      <p style="margin: 0; font-style: italic; opacity: 0.75; font-size: 12px;">${foundry.utils.escapeHTML(totals)}</p>
+    </div>
+  `;
+
+  // The session-event entry logs the phase boundary regardless of whether
+  // the GM publishes the public recap — the log captures "this happened,"
+  // not "this was announced." Fire it first so it's never lost to a
+  // cancelled preview.
+  try {
+    const { appendSessionEvent } = await import('../hooks/session-events.js');
+    await appendSessionEvent({
+      type: 'reputationPhaseComplete',
+      details: { tagsCreated, conditionsCleared, characterCount: majors.length },
+    });
+  } catch (err) { console.warn('GS | rep phase session-event append failed:', err); }
+
+  openPhaseSummaryModal({
+    title: game.i18n.localize('GOODSOCIETY.phaseSummary.reputationTitle'),
+    summaryHtml: content,
+    onPost: async (finalHtml) => {
+      await postSystemCard({ content: finalHtml, context: 'reputation' });
+    },
+    onCancel: () => {
+      // No public post — the phase still completed silently; GM just
+      // declined to publish the recap.
+      ui.notifications?.info(game.i18n.localize('GOODSOCIETY.phaseSummary.skippedNotice'));
+    },
+  });
 }
 
 // ── Public API ──────────────────────────────────────────────────────────────
@@ -492,47 +512,4 @@ function _getSetting(key, fallback) {
 
 function _stripHtml(html) {
   return html ? html.replace(/<[^>]*>/g, '').trim() : '';
-}
-
-/** Characters qualifying for step 3: tagCount >= 3 for some polarity, no condition, not resolved. */
-function _getStep3Actors(activeMajors) {
-  return activeMajors.map(actor => {
-    const polarities = ['positive', 'negative'].filter(p => {
-      const tagCount = actor.items.filter(
-        i => i.type === 'reputation-tag' && i.system?.polarity === p,
-      ).length;
-      if (tagCount < 3) return false;
-      if (actor.items.some(
-        i => i.type === 'reputation-condition' && i.system?.polarity === p && i.system?.active,
-      )) return false;
-      if (actor.getFlag('good-society-homebrew', `pickerResolved.${p}`)) return false;
-      return true;
-    });
-    return { actor, polarities };
-  }).filter(({ polarities }) => polarities.length > 0);
-}
-
-/** True when all qualifying polarities for a step-3 actor are resolved. */
-function _step3ActorDone(actor, polarities) {
-  return polarities.every(p =>
-    actor.getFlag('good-society-homebrew', `pickerResolved.${p}`) ||
-    actor.items.some(
-      i => i.type === 'reputation-condition' && i.system?.polarity === p && i.system?.active,
-    ),
-  );
-}
-
-/** Characters qualifying for step 4: have active condition AND tagCount < 3 for it. */
-function _getStep4Actors(activeMajors) {
-  return activeMajors.filter(_needsStep4);
-}
-
-function _needsStep4(actor) {
-  return actor.items.some(condition => {
-    if (condition.type !== 'reputation-condition' || !condition.system?.active) return false;
-    const tagCount = actor.items.filter(
-      i => i.type === 'reputation-tag' && i.system?.polarity === condition.system?.polarity,
-    ).length;
-    return tagCount < 3;
-  });
 }

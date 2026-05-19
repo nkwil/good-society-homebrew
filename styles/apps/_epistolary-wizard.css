@@ -149,6 +149,33 @@
   gap: 8px;
 }
 
+/* Row container — the <li> wrapper holds layout-only state (is-burned)
+ * while the interactive surface is the inner <button>. */
+.gs-epistolary-wizard__row-li { list-style: none; padding: 0; margin: 0 0 8px; }
+.gs-epistolary-wizard__row-li.is-burned .gs-epistolary-wizard__row {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* The row's <button> is a bare click target — all Foundry button chrome
+ * reset, no layout role. The visible card is the inner .gs-epistolary-wizard__row
+ * <span>, which carries the grid + background and sizes to its content. */
+button.gs-epistolary-wizard__row-btn {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 .gs-epistolary-wizard__row {
   display: grid;
   grid-template-columns: 32px 36px 1fr;
@@ -172,6 +199,275 @@
   text-decoration: line-through;
 }
 
+/* ── Reader pane — sealed letter + tri-fold unfold ────────────────────────
+ * A selected letter renders as a folded parchment packet (3 fold panels +
+ * wax seal). Breaking the seal adds `.is-open`, which rotates the top and
+ * bottom fold panels flat (3D rotateX) and crossfades the real letter sheet
+ * in. Parchment is a layered-gradient stand-in — drop real textures into
+ * assets/parchment/ and repoint `--gs-parchment` to upgrade.
+ *
+ * Theme model: `data-theme` on .gs-letter-envelope tints ACCENTS only —
+ * the seal rim, the header rule, the signature. Body text is fixed dark
+ * ink (`--gs-letter-ink`) so a dark-theme sender's letter stays legible on
+ * light parchment. */
+.gs-epistolary-wizard__reader {
+  padding: 6px 22px 24px;
+}
+.gs-epistolary-wizard__reader-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+.gs-epistolary-wizard__reader-meta {
+  font-family: var(--gs-body);
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+}
+.gs-epistolary-wizard__back {
+  min-height: 0;
+}
+
+/* ── Envelope container ── */
+.gs-letter-envelope {
+  /* Parchment. The real torn-edge textures live in assets/parchment/ and are
+   * applied per-letter via the `.gs-parchment-v{1,2,3}` modifier below; this
+   * base value is a layered-gradient fallback used only if a texture 404s. */
+  --gs-parchment:
+    radial-gradient(ellipse 58% 48% at 26% 20%, rgba(255, 250, 236, 0.55), transparent 70%),
+    radial-gradient(ellipse 52% 60% at 80% 82%, rgba(150, 116, 70, 0.20), transparent 66%),
+    radial-gradient(ellipse 86% 74% at 58% 52%, rgba(214, 196, 156, 0.32), transparent 82%),
+    linear-gradient(168deg, #ede1c6 0%, #e2d2ab 50%, #e8dab6 100%);
+  --gs-letter-ink: #2e2418;
+
+  /* This container carries `.gs-themed` only for the data-theme variable
+   * cascade — suppress the 0.5px accent border that .gs-themed otherwise
+   * draws (it showed as a stray rectangle around the reader). */
+  border: 0;
+  position: relative;
+  overflow: visible;
+  min-height: 400px;
+  perspective: 1500px;
+}
+
+/* Real torn-edge parchment textures. The image sits ABOVE a soft parchment
+ * gradient so the torn transparent edges reveal a warm wash (and the letter
+ * still reads if the PNG fails to load). `parchmentVariantFor()` in
+ * epistolary-wizard.js hashes the letter id → a stable 1/2/3 per letter. */
+.gs-letter-envelope.gs-parchment-v1 {
+  --gs-parchment:
+    url('/systems/good-society-homebrew/assets/parchment/parchment-1.png'),
+    linear-gradient(168deg, #ede1c6 0%, #e2d2ab 50%, #e8dab6 100%);
+}
+.gs-letter-envelope.gs-parchment-v2 {
+  --gs-parchment:
+    url('/systems/good-society-homebrew/assets/parchment/parchment-2.png'),
+    linear-gradient(168deg, #ede1c6 0%, #e2d2ab 50%, #e8dab6 100%);
+}
+.gs-letter-envelope.gs-parchment-v3 {
+  --gs-parchment:
+    url('/systems/good-society-homebrew/assets/parchment/parchment-3.png'),
+    linear-gradient(168deg, #ede1c6 0%, #e2d2ab 50%, #e8dab6 100%);
+}
+
+/* Per-variant aspect ratio for the unfolded sheet — matches each texture's
+ * native proportions (parchment-N.png is 820px wide) so the full sheet
+ * renders. `aspect-ratio` sets the height when content is short; a longer
+ * letter overrides it and the box grows past the ratio. */
+.gs-letter-envelope.gs-parchment-v1 .gs-letter-sheet { aspect-ratio: 820 / 1159; }
+.gs-letter-envelope.gs-parchment-v2 .gs-letter-sheet { aspect-ratio: 820 / 1100; }
+.gs-letter-envelope.gs-parchment-v3 .gs-letter-sheet { aspect-ratio: 820 / 1122; }
+
+/* ── Folded packet (the click target while sealed) ──
+ * The sealed letter is the ribbon-tied envelope photograph; the letter's
+ * chosen wax seal is superimposed over the envelope's own seal. On break the
+ * seal lifts toward the viewer and fades, the envelope fades + drifts back,
+ * and the unfolded parchment sheet crossfades in. */
+/* The packet is a <button>; the element selector raises specificity enough
+ * to override Foundry's core button chrome (padding / border / min/max-size).
+ * Explicit width + height (NOT aspect-ratio, NOT content-driven — both are
+ * unreliable on <button>). The envelope <img> absolutely fills this box, so
+ * the box and the visible envelope are the same rectangle and the seal's
+ * percentage coordinates register correctly. 600 × 339 ≈ envelope.png's
+ * 1200 × 677 native ratio. */
+button.gs-letter-envelope__packet {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  display: block;
+  width: 600px;
+  height: 339px;
+  min-width: 0;
+  min-height: 0;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  outline: none;
+  transition: opacity 480ms ease, transform 480ms ease;
+}
+/* Kill Foundry's focus ring — after the click that breaks the seal the
+ * button keeps :focus, and Foundry's default focus box-shadow drew a
+ * stray coloured rectangle behind the opened letter. */
+button.gs-letter-envelope__packet:focus,
+button.gs-letter-envelope__packet:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.gs-letter-envelope.is-open .gs-letter-envelope__packet {
+  pointer-events: none;
+}
+
+/* The envelope photograph — absolutely fills the packet box. On break it
+ * dissolves + recedes slightly, fast — see the break choreography note on
+ * the seal below. */
+.gs-letter-envelope__envelope-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 12px 26px rgba(20, 12, 8, 0.4));
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+.gs-letter-envelope.is-open .gs-letter-envelope__envelope-img {
+  opacity: 0;
+  transform: scale(0.965);
+}
+
+/* ── Wax seal — superimposed over the envelope's printed seal ──
+ * Positioned to register on top of the envelope graphic's own red seal
+ * (centre x 49.5%, y 52.7% of the envelope; ~19% of envelope width covers
+ * the printed disc). The chosen seal PNG fills it edge-to-edge. */
+.gs-letter-envelope__seal {
+  position: absolute;
+  left: 49.5%;
+  top: 52.7%;
+  width: 19%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 3px 7px rgba(20, 12, 8, 0.55));
+  transition: transform 460ms cubic-bezier(0.4, 0, 0.3, 1), opacity 380ms ease;
+}
+.gs-letter-envelope__seal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/* Break choreography — the seal must NEVER reveal the envelope photo's own
+ * printed red seal underneath. So: the envelope dissolves FIRST (320ms),
+ * while the wax seal HOLDS dead-still on top of the printed seal, opaque,
+ * fully covering it. Only AFTER the envelope (printed seal included) has
+ * faded does the wax lift toward the viewer, tilt, and fade — by then
+ * there's nothing beneath it to expose. The 320ms delay on both the
+ * transform and the opacity is what enforces "hold, then lift". */
+.gs-letter-envelope.is-open .gs-letter-envelope__seal {
+  transform: translate(-50%, -50%) translateZ(150px) rotate(-18deg) scale(1.32);
+  opacity: 0;
+  transition: transform 480ms cubic-bezier(0.34, 0, 0.3, 1) 320ms,
+              opacity 380ms ease 340ms;
+}
+
+/* "Break the seal" hint under the packet. */
+.gs-letter-envelope__open-hint {
+  position: absolute;
+  left: 50%;
+  bottom: -34px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  transition: opacity 200ms ease;
+}
+.gs-letter-envelope.is-open .gs-letter-envelope__open-hint {
+  opacity: 0;
+}
+
+/* ── The unfolded letter sheet — parchment, fixed dark ink ──
+ * The sheet carries the parchment's own aspect ratio (set per-variant below)
+ * so the WHOLE torn-edge sheet renders even when the letter is only a line
+ * or two — a short note doesn't crop the paper to a strip. `100% 100%`
+ * sizing means a long letter just grows the box and stretches the parchment
+ * with it (organic texture — the stretch reads as a longer sheet). */
+.gs-letter-sheet {
+  position: relative;
+  width: 600px;
+  max-width: 92%;
+  margin: 0 auto;
+  background: var(--gs-parchment);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  color: var(--gs-letter-ink);
+  /* Generous padding keeps text clear of the irregular torn edges — the
+   * top especially, where the parchment curls in over the content. */
+  padding: 128px 62px 84px;
+  box-shadow: 0 10px 32px rgba(20, 12, 8, 0.42), inset 0 0 64px rgba(120, 92, 52, 0.12);
+  /* Closed: collapsed + invisible (contributes no height). */
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 420ms ease;
+}
+.gs-letter-envelope.is-open .gs-letter-sheet {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+  transition: opacity 460ms ease 380ms;    /* fade in as the envelope clears */
+}
+
+.gs-letter-sheet__subject {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 17px;
+  /* Subject in the sender's theme accent — a permitted tint. */
+  color: var(--gs-headers, var(--gs-brand));
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 0.5px solid color-mix(in srgb, var(--gs-letter-ink) 30%, transparent);
+}
+.gs-letter-sheet__body {
+  font-family: var(--gs-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--gs-letter-ink);
+}
+.gs-letter-sheet__body p { margin: 0 0 10px; }
+.gs-letter-sheet__body p:last-child { margin-bottom: 0; }
+/* Greeting ("Dear Avril,") + closing ("Yours faithfully,") — reassembled
+ * from the chat-card prose alongside the body. */
+.gs-letter-sheet__greeting { margin: 0 0 12px; }
+.gs-letter-sheet__closing {
+  margin: 16px 0 0;
+  text-align: right;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+}
+.gs-letter-sheet__signature {
+  margin: 18px 0 0;
+  text-align: right;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 15px;
+  color: var(--gs-headers, var(--gs-brand));
+}
+
 .gs-epistolary-wizard__seal {
   display: inline-flex;
   align-items: center;
@@ -186,13 +482,29 @@
   flex-shrink: 0;
 }
 
+/* Row seal with real artwork — drop the placeholder disc chrome. */
+.gs-epistolary-wizard__seal:has(.gs-epistolary-wizard__seal-icon) {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: none;
+}
+
+.gs-epistolary-wizard__seal-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(20, 12, 8, 0.4));
+}
+
 .gs-epistolary-wizard__portrait {
   width: 36px;
   height: 36px;
   border-radius: 50%;
   overflow: hidden;
   background: var(--gs-paper);
-  border: 1px solid var(--gs-brand);
+  /* No frame ring — the token art fills the circle edge-to-edge. */
+  border: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -246,6 +558,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Placeholder shown in place of the preview while a letter is still sealed —
+ * the contents stay private until the seal is broken. */
+.gs-epistolary-wizard__row-snippet--sealed {
+  color: color-mix(in srgb, var(--gs-ink) 52%, transparent);
 }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */

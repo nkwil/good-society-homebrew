@@ -14,6 +14,8 @@ import { register as registerRumourPhase, onRumourPhaseStart } from './hooks/rum
 import { register as registerRumourSocket } from './hooks/rumour-socket.js';
 import { register as registerRandomEventSocket } from './hooks/random-event-socket.js';
 import { register as registerChatPortraits } from './hooks/chat-portraits.js';
+import { register as registerLetterSocket } from './hooks/letter-socket.js';
+import { register as registerTokenDefaults } from './hooks/token-defaults.js';
 import { migrateJournalEntryTypes } from './hooks/journal-migrate.js';
 import { register as registerArrivalSync } from './hooks/arrival-sync.js';
 import { register as registerPauseOverlay } from './hooks/pause-overlay.js';
@@ -21,10 +23,14 @@ import { register as registerChromeIcons } from './hooks/chrome-icons.js';
 import { register as registerSidebarFilter, applySidebarFilter } from './hooks/sidebar-filter.js';
 import { register as registerLetterSeals } from './hooks/letter-seals.js';
 import { register as registerEpistolaryPhase } from './hooks/epistolary-phase.js';
+import { runPhaseSplash } from './hooks/phase-splash.js';
 import { registerMonologueSocket } from './apps/monologue-overlay.js';
 import { registerNovelReaderHooks, openNovelReader } from './apps/novel-reader.js';
 import { syncArrivalToCanvas } from './apps/arrival.js';
 import { renderCabinet } from './apps/cabinet.js';
+import { openNovelPhasePopup } from './apps/novel-phase-popup.js';
+import { refreshEventCommandCenter } from './apps/event-command-center.js';
+import { openPregameChecklist, maybeAutoOpenPregameChecklist } from './apps/pregame-checklist.js';
 import { checkThresholdAndPrompt } from './helpers/reputation-rules.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
@@ -42,6 +48,7 @@ import { FamilyDataModel } from './data-models/family.js';
 import { NpcDataModel } from './data-models/npc.js';
 import { ConnectionDataModel } from './data-models/connection.js';
 import { MajorCharacterDataModel } from './data-models/major-character.js';
+import { ScenePortalBehaviorType } from './data-models/scene-portal-behavior.js';
 import { MajorCharacterSheet } from './sheets/major-character-sheet.js';
 import { ConnectionSheet } from './sheets/connection-sheet.js';
 import { FamilySheet } from './sheets/family-sheet.js';
@@ -175,9 +182,21 @@ Hooks.once('init', async function () {
     onChange: (value) => {
       Hooks.callAll('goodSociety.cyclePhaseChanged', { newPhase: value });
       renderCycleHud();
+      // Phase-cycling "oomph" — page-turn sound, close the active scene,
+      // and show the phase splash on the Arrival. Runs on every client.
+      try { runPhaseSplash(value); } catch (err) { console.warn('GS | phase splash failed:', err); }
       if (value === 'upkeep') onUpkeepPhaseStart();
       if (value === 'reputation') onReputationPhaseStart();
       if (value === 'rumour-scandal') onRumourPhaseStart();
+      // Novel-chapter informational popup. Fires on every entry into the
+      // novel phase (first AND second chapter share the 'novel' phase
+      // identifier; the popup itself distinguishes via cyclePosition). The
+      // per-Major "completed flag" clear on advance (cycle-advance.js)
+      // doesn't apply here — this popup is a transient reminder, not a
+      // per-actor wizard, so it always fires.
+      if (value === 'novel') {
+        try { openNovelPhasePopup(); } catch (err) { console.warn('GS | novel popup failed:', err); }
+      }
     },
   });
 
@@ -442,6 +461,17 @@ Hooks.once('init', async function () {
     filePicker: 'image',
   });
 
+  // Phase-cycling "oomph" — on a cycle phase change, play a page-turn sound,
+  // close the active scene, and show a phase-specific splash on the Arrival.
+  game.settings.register('good-society-homebrew', 'phaseSplashEnabled', {
+    name: 'GOODSOCIETY.settings.phaseSplashEnabled.name',
+    hint: 'GOODSOCIETY.settings.phaseSplashEnabled.hint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
   // Post-MVP §12 token spend events — three settings.
   game.settings.register('good-society-homebrew', 'monologueOverlayEnabled', {
     name: 'GOODSOCIETY.settings.monologueOverlayEnabled.name',
@@ -589,6 +619,14 @@ Hooks.once('init', async function () {
     'connection': ConnectionDataModel,
     'major-character': MajorCharacterDataModel,
   });
+
+  // ── Region Behaviors ─────────────────────────────────────────────────────
+  // "Travel to Scene" portal — see module/data-models/scene-portal-behavior.js.
+  Object.assign(CONFIG.RegionBehavior.dataModels, {
+    'scenePortal': ScenePortalBehaviorType,
+  });
+  CONFIG.RegionBehavior.typeIcons ??= {};
+  CONFIG.RegionBehavior.typeIcons['scenePortal'] = 'fa-solid fa-door-open';
 
   // ── Actor sheets ─────────────────────────────────────────────────────────
   foundry.documents.collections.Actors.registerSheet('good-society-homebrew', MajorCharacterSheet, {
@@ -760,18 +798,44 @@ Hooks.once('ready', async () => {
 
   // Wire hover-tooltip system for all [data-tooltip-key] elements.
   initTooltipSystem();
+
+  // Pre-game checklist — auto-pops on first login per user. Players who
+  // dismissed it once never see it auto-open again, but can reopen from
+  // the Cabinet anytime. Deferred to next tick so other ready-time UI
+  // (dock, cabinet, sidebar) settles first; otherwise the modal can land
+  // above a still-rendering canvas and feel disjointed.
+  try { setTimeout(() => maybeAutoOpenPregameChecklist(), 500); }
+  catch (err) { console.warn('GS | pregame auto-open failed:', err); }
 });
 
 // Reputation threshold check + dashboard refresh when a tag/condition changes on a Major.
 Hooks.on('createItem', (item) => {
+  // World-level random-event Items aren't actor-embedded — keep the Event
+  // Command Center's pool counts live as the GM authors events.
+  if (item.type === 'random-event' && !item.parent) {
+    refreshEventCommandCenter();
+    return;
+  }
   if (item.parent?.type !== 'major-character') return;
   if (item.type === 'reputation-tag') {
     checkThresholdAndPrompt(item.parent, item.system?.polarity ?? 'positive');
   }
   getDashboard()?.rendered && getDashboard().refreshAndReset();
 });
+Hooks.on('updateItem', (item) => {
+  if (item.type === 'random-event' && !item.parent) refreshEventCommandCenter();
+});
 Hooks.on('deleteItem', (item) => {
+  if (item.type === 'random-event' && !item.parent) {
+    refreshEventCommandCenter();
+    return;
+  }
   if (item.parent?.type !== 'major-character') return;
+  // Removing a tag may drop the polarity below 3 — reconcile so the
+  // pickerResolved flag self-heals and a future climb re-prompts.
+  if (item.type === 'reputation-tag') {
+    checkThresholdAndPrompt(item.parent, item.system?.polarity ?? 'positive');
+  }
   getDashboard()?.rendered && getDashboard().refreshAndReset();
 });
 
@@ -826,6 +890,8 @@ safeRegister('rumourPhase',      registerRumourPhase);
 safeRegister('rumourSocket',     registerRumourSocket);
 safeRegister('randomEventSocket', registerRandomEventSocket);
 safeRegister('chatPortraits',    registerChatPortraits);
+safeRegister('letterSocket',     registerLetterSocket);
+safeRegister('tokenDefaults',    registerTokenDefaults);
 safeRegister('sessionEvents',    registerSessionEvents);
 safeRegister('arrivalSync',      registerArrivalSync);
 safeRegister('pauseOverlay',     registerPauseOverlay);

@@ -82,6 +82,20 @@
       </div>
     </div>
 
+    {{!-- SCRIPT FONT — optional calligraphy face for the greeting + signature.
+         Each <option> previews its own face via inline font-family. --}}
+    <div class="gs-letter-composer__row">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.scriptFontLabel"}}</label>
+      <div class="gs-letter-composer__control">
+        <select class="gs-letter-composer__actor-select" name="scriptFont">
+          {{#each scriptFonts}}
+            <option value="{{id}}" {{#if selected}}selected{{/if}}
+                    {{#if family}}style="font-family: {{family}};"{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
     {{!-- SEAL — image-backed wax discs. Each option is a real rendered seal
          (see assets/seals/*.png + the SEAL_TYPES registry in module/constants.js).
          The disc itself shows the asset; the rim color from the registry

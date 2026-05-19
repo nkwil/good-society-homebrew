@@ -132,21 +132,100 @@ export async function advanceTurnGM() {
   return _advanceTurn();
 }
 
-/** GM ends the phase: runs fadeout pass + posts completion. */
+/** GM ends the phase: runs fadeout pass + posts the public summary. */
 export async function finishPhase() {
   if (!game.user?.isGM) return null;
+  // Snapshot the state BEFORE fadeout so we can show players what just
+  // happened (which rumours faded vs. which were already faded before).
+  const before = getRumours();
   await _runFadeout();
+  const after = getRumours();
   await game.settings.set(NS, 'rumourPhaseState', _defaultPhaseState());
+
   try {
-    const { postSystemCard } = await import('./chat-cards.js');
-    const { active } = groupRumours();
-    await postSystemCard({
-      content: game.i18n.format('GOODSOCIETY.rumourWizard.completionCard', {
-        n: active.length,
-      }),
-      context: 'rumour',
+    await _postRumourPhaseSummary({ before, after });
+  } catch (err) { console.warn('GS | rumour phase summary failed:', err); }
+
+  // Session log ping so the phase boundary lands in the eventual log.
+  try {
+    const { appendSessionEvent } = await import('../hooks/session-events.js');
+    const { active } = groupRumours(after);
+    await appendSessionEvent({
+      type: 'rumourPhaseComplete',
+      details: { activeCount: active.length },
     });
-  } catch { /* non-fatal */ }
+  } catch (err) { console.warn('GS | rumour phase session-event append failed:', err); }
+}
+
+/** Per-bucket Rumour & Scandal summary (spread / faded this phase /
+ *  still circulating / cycled out for good). Opens a GM preview modal;
+ *  the GM can edit + post or cancel. */
+async function _postRumourPhaseSummary({ before, after }) {
+  const { postSystemCard } = await import('./chat-cards.js');
+  const { openPhaseSummaryModal } = await import('../apps/phase-summary-modal.js');
+
+  // Bucket by state AFTER fadeout, then cross-reference BEFORE to figure
+  // out which rumours just faded this phase (state was 'fading' before;
+  // 'faded' after).
+  const beforeById = new Map(before.map(r => [r.id, r]));
+  const justFaded = after.filter(r =>
+    r.state === 'faded' && beforeById.get(r.id)?.state === 'fading'
+  );
+  const spread = after.filter(r => r.state === 'spread');
+  const fading = after.filter(r => r.state === 'fading');
+
+  const _fmt = (rs) => rs.map(r =>
+    `<li><em>"${foundry.utils.escapeHTML(r.text)}"</em></li>`
+  ).join('');
+
+  const sections = [];
+  if (spread.length) {
+    sections.push(`
+      <p style="margin: 8px 0 4px;"><strong>${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.rumourWizard.summary.spreadHeading'))}</strong></p>
+      <ul style="margin: 0 0 6px; padding-left: 18px;">${_fmt(spread)}</ul>
+    `);
+  }
+  if (fading.length) {
+    sections.push(`
+      <p style="margin: 8px 0 4px;"><strong>${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.rumourWizard.summary.fadingHeading'))}</strong></p>
+      <ul style="margin: 0 0 6px; padding-left: 18px;">${_fmt(fading)}</ul>
+    `);
+  }
+  if (justFaded.length) {
+    sections.push(`
+      <p style="margin: 8px 0 4px;"><strong>${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.rumourWizard.summary.fadedHeading'))}</strong></p>
+      <ul style="margin: 0 0 6px; padding-left: 18px;">${_fmt(justFaded)}</ul>
+    `);
+  }
+  if (!sections.length) {
+    sections.push(`<p style="margin: 8px 0 0; font-style: italic;">${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.rumourWizard.summary.empty'))}</p>`);
+  }
+
+  const heading = game.i18n.localize('GOODSOCIETY.rumourWizard.summary.heading');
+  const totals = game.i18n.format('GOODSOCIETY.rumourWizard.summary.totals', {
+    spread: spread.length,
+    faded: justFaded.length,
+    fading: fading.length,
+  });
+
+  const content = `
+    <div class="gs-phase-summary gs-phase-summary--rumour">
+      <p style="margin: 0;"><strong>${foundry.utils.escapeHTML(heading)}</strong></p>
+      ${sections.join('')}
+      <p style="margin: 8px 0 0; font-style: italic; opacity: 0.75; font-size: 12px;">${foundry.utils.escapeHTML(totals)}</p>
+    </div>
+  `;
+
+  openPhaseSummaryModal({
+    title: game.i18n.localize('GOODSOCIETY.phaseSummary.rumourTitle'),
+    summaryHtml: content,
+    onPost: async (finalHtml) => {
+      await postSystemCard({ content: finalHtml, context: 'rumour' });
+    },
+    onCancel: () => {
+      ui.notifications?.info(game.i18n.localize('GOODSOCIETY.phaseSummary.skippedNotice'));
+    },
+  });
 }
 
 /** GM-only: edit a rumour's text (board admin). */

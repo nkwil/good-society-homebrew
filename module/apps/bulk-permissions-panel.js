@@ -1,4 +1,4 @@
-import { profilePic } from '../helpers/profile-pic.js';
+import { profilePic, profileName } from '../helpers/profile-pic.js';
 
 /**
  * BulkPermissionsPanel — GM-only matrix for setting actor ownership across
@@ -94,8 +94,8 @@ export class BulkPermissionsPanel extends HandlebarsApplicationMixin(Application
       if (!actors.length) continue;
       const rows = actors
         .sort((a, b) => {
-          const na = a.system?.activePersona?.name || a.name;
-          const nb = b.system?.activePersona?.name || b.name;
+          const na = profileName(a);
+          const nb = profileName(b);
           return na.localeCompare(nb);
         })
         .map(actor => this.#buildRow(actor, users));
@@ -185,7 +185,7 @@ export class BulkPermissionsPanel extends HandlebarsApplicationMixin(Application
     for (const [actorId, userMap] of this.#pending) {
       const actor = game.actors.get(actorId);
       if (!actor) continue;
-      const displayName = actor.system?.activePersona?.name || actor.name;
+      const displayName = profileName(actor);
       for (const [userId, level] of userMap) {
         const user = game.users.get(userId);
         if (!user) continue;

@@ -1103,6 +1103,66 @@
   margin-left: 4px;
 }
 
+/* GM-only authoring affordances on the active-reputation section. */
+.dossier-active-rep__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.dossier-active-rep__add {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--gs-brand);
+  background: transparent;
+  border: 0.5px dashed var(--gs-accent-2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  min-height: 0;
+}
+.dossier-active-rep__add:hover {
+  background: var(--gs-paper-warm);
+  border-style: solid;
+}
+.dossier-active-rep__empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  margin: 4px 0 0;
+}
+
+/* Polarity-tinted chips so positive vs. negative conditions read at a glance. */
+.dossier-active-rep__chip--positive { border-color: var(--gs-positive, #4A7A4A); }
+.dossier-active-rep__chip--positive .dossier-active-rep__laurel { color: var(--gs-positive, #4A7A4A); }
+.dossier-active-rep__chip--negative { border-color: var(--gs-danger, #8B2A2A); }
+.dossier-active-rep__chip--negative .dossier-active-rep__laurel { color: var(--gs-danger, #8B2A2A); }
+
+/* GM remove "x" — small ghost button inside the chip. */
+.dossier-active-rep__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-family: var(--gs-ui);
+  font-size: 12px;
+  font-style: normal;
+  color: color-mix(in srgb, var(--gs-ink) 50%, transparent);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+  margin-left: 4px;
+}
+.dossier-active-rep__remove:hover {
+  background: var(--gs-danger, #8B2A2A);
+  color: var(--gs-paper, #EFE6D2);
+}
+
 /* ── Inner conflict ledger ─────────────────────────────────────────────── */
 
 .dossier-inner-conflict__head {

@@ -11,6 +11,7 @@
 
 import { switchPersona } from './persona-swap.js';
 import { postSystemCard } from './chat-cards.js';
+import { profileName } from './profile-pic.js';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -104,7 +105,7 @@ export async function castMagicSkill(item, actor = null) {
   }
 
   // 5. Cast announcement card — whispered when cast secretly.
-  const displayName = actor.system?.activePersona?.name || actor.name;
+  const displayName = profileName(actor);
   const content = game.i18n.format('GOODSOCIETY.castSkill.castCard', {
     actor: displayName,
     skill: item.name,

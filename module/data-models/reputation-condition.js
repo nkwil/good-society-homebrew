@@ -11,6 +11,11 @@ export class ReputationConditionDataModel extends foundry.abstract.TypeDataModel
       description: new HTMLField({ initial: '' }),
       active: new BooleanField({ initial: false }),
       sourceTagIds: new ArrayField(new StringField()),
+      // Archetype gating. Each entry is a major-character archetype id
+      // (see ARCHETYPE_CHOICES). An EMPTY array means the condition is
+      // universal — available to characters of any archetype. A non-empty
+      // array restricts the condition to characters whose archetype matches.
+      archetypes: new ArrayField(new StringField()),
     };
   }
 }

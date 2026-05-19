@@ -99,6 +99,13 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
         ? (sys.negativeTagOptions ?? []).filter(Boolean)
         : [];
 
+    // The event may have no tag options authored for the rolled polarity.
+    // In that case the player has nothing to pick — so Submit must be
+    // enabled anyway (resolves with no tag) instead of soft-locking the
+    // popover with a permanently-disabled button.
+    const noTagOptions = allRolled && tagOptions.length === 0;
+    const canSubmit = allRolled && (!!this.#chosenTag || noTagOptions);
+
     return {
       themeId,
       actorName: speakerName,
@@ -120,6 +127,8 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
         selected: t === this.#chosenTag,
       })),
       hasChosenTag: !!this.#chosenTag,
+      noTagOptions,
+      canSubmit,
       submitted: this.#submitted,
     };
   }
@@ -180,13 +189,20 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
       ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventPopover.rollAllFirst'));
       return;
     }
-    if (!this.#chosenTag) {
+    const average = this.#strategies.reduce((a, s) => a + s.roll, 0) / 3;
+    const outcome = isSuccess(average) ? 'success' : 'failure';
+    // Tag options for the rolled outcome. If the event authored none, the
+    // player legitimately submits with no tag — only require a pick when
+    // options actually exist.
+    const sys = this.#event.system ?? {};
+    const opts = (outcome === 'success'
+      ? (sys.positiveTagOptions ?? [])
+      : (sys.negativeTagOptions ?? [])).filter(Boolean);
+    if (opts.length && !this.#chosenTag) {
       ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventPopover.pickTagFirst'));
       return;
     }
     this.#submitted = true;
-    const average = this.#strategies.reduce((a, s) => a + s.roll, 0) / 3;
-    const outcome = isSuccess(average) ? 'success' : 'failure';
     await resolveRandomEvent({
       actor: this.#actor,
       event: this.#event,

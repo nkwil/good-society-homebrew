@@ -15,6 +15,7 @@
  */
 
 import { postSystemCard } from '../helpers/chat-cards.js';
+import { profileName } from '../helpers/profile-pic.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
@@ -58,9 +59,12 @@ export class ConditionPicker extends HandlebarsApplicationMixin(ApplicationV2) {
   async _prepareContext(options) {
     const ctx = await super._prepareContext(options);
 
-    // Fetch conditions from packs once, then cache
+    // Fetch conditions from packs once, then cache. Conditions are filtered
+    // to those whose archetype gating matches this actor's archetype (or are
+    // universal — no archetype set).
     if (!this._conditions) {
-      this._conditions = await _fetchConditions(this._polarity);
+      const archetype = this._actor.system?.bio?.archetype ?? '';
+      this._conditions = await _fetchConditions(this._polarity, archetype);
     }
 
     const polarity  = this._polarity;
@@ -69,7 +73,7 @@ export class ConditionPicker extends HandlebarsApplicationMixin(ApplicationV2) {
     return {
       ...ctx,
       themeId:    this._actor.system?.theme ?? 'npc',
-      actorName:  this._actor.name,
+      actorName:  profileName(this._actor),
       polarity,
       isPositive,
       polarityArrow: isPositive ? '▲' : '▼',
@@ -97,9 +101,10 @@ export class ConditionPicker extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const actor = this._actor;
 
-    // Create the condition item on the actor
+    // Create the condition item on the actor, then link its id into
+    // system.reputation.activeConditions so the Major sheet renders it.
     try {
-      await actor.createEmbeddedDocuments('Item', [{
+      const [created] = await actor.createEmbeddedDocuments('Item', [{
         type:   'reputation-condition',
         name:   condition.name,
         system: {
@@ -107,8 +112,16 @@ export class ConditionPicker extends HandlebarsApplicationMixin(ApplicationV2) {
           description: condition.description ?? '',
           active:      true,
           sourceTagIds: this._sourceTags.map(t => t.id),
+          archetypes:  condition.archetypes ?? [],
         },
       }]);
+      if (created?.id) {
+        const next = [
+          ...(actor.system?.reputation?.activeConditions ?? []),
+          created.id,
+        ];
+        await actor.update({ 'system.reputation.activeConditions': next });
+      }
     } catch (err) {
       console.error('GS | condition create failed:', err);
       ui.notifications?.error(game.i18n.localize('GOODSOCIETY.conditionPicker.createError'));
@@ -124,7 +137,7 @@ export class ConditionPicker extends HandlebarsApplicationMixin(ApplicationV2) {
     try {
       await postSystemCard({
         content: game.i18n.format('GOODSOCIETY.conditionPicker.gainedCard', {
-          name:      actor.system?.activePersona?.name || actor.name,
+          name:      profileName(actor),
           condition: condition.name,
         }),
         context: 'reputation',
@@ -169,32 +182,44 @@ export function openConditionPicker(actor, polarity, sourceTags) {
  * Query all world-visible compendium packs for reputation-condition items
  * matching the given polarity. Returns condition data objects.
  *
- * @param {string} polarity 'positive' | 'negative'
+ * Conditions are also filtered by archetype: a condition is included when its
+ * `system.archetypes` array is empty (universal) OR contains the actor's
+ * archetype. An empty `archetype` argument disables archetype filtering.
+ *
+ * @param {string} polarity  'positive' | 'negative'
+ * @param {string} archetype The actor's archetype id, or '' for no filter.
  * @returns {Promise<object[]>}
  */
-async function _fetchConditions(polarity) {
+async function _fetchConditions(polarity, archetype = '') {
   const results = [];
 
   for (const pack of game.packs ?? []) {
     if (pack.documentName !== 'Item') continue;
 
     try {
-      // Fetch index with type field (Foundry v13 supports indexed fields)
-      const index = pack.index.size > 0 ? pack.index : await pack.getIndex({ fields: ['type', 'system.polarity', 'system.description'] });
-
-      const matching = index.filter(e =>
-        e.type === 'reputation-condition' &&
-        (e.system?.polarity ?? '') === polarity,
-      );
+      // Filter the index by `type` only — `type` is a core indexed field and
+      // is always present. System fields (polarity, archetypes) are NOT in the
+      // default index, so polarity is checked on the fully-loaded document
+      // below rather than against a possibly-stale index.
+      const index = pack.index?.size > 0 ? pack.index : await pack.getIndex();
+      const matching = [...index].filter(e => e.type === 'reputation-condition');
 
       for (const entry of matching) {
         try {
           const item = await pack.getDocument(entry._id);
           if (!item) continue;
+          // Polarity gate — read from the full document, not the index.
+          if ((item.system?.polarity ?? '') !== polarity) continue;
+          // Archetype gating — skip conditions restricted to other archetypes.
+          const archetypes = item.system?.archetypes ?? [];
+          if (archetype && archetypes.length && !archetypes.includes(archetype)) {
+            continue;
+          }
           results.push({
             id:          item.id,
             name:        item.name,
             polarity:    item.system?.polarity ?? polarity,
+            archetypes,
             description: item.system?.description
               ? item.system.description.replace(/<[^>]*>/g, '').trim()
               : '',

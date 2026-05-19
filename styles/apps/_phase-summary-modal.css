@@ -1,0 +1,90 @@
+/* Phase Summary Modal — GM-only preview shown before posting an end-of-
+ * phase recap publicly. The editor surface is contenteditable so the GM
+ * can fix typos / re-word before publishing. House-styled. */
+
+.gs-phase-summary-modal .window-content {
+  padding: 0;
+  background: var(--gs-paper);
+}
+
+.gs-phase-summary-modal {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--gs-body);
+  color: var(--gs-ink);
+}
+
+.gs-phase-summary-modal__head {
+  padding: 18px 24px 12px;
+  background: var(--gs-paper-warm);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-phase-summary-modal__title {
+  margin: 4px 0 6px;
+  font-family: var(--gs-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--gs-brand);
+}
+
+.gs-phase-summary-modal__intro {
+  margin: 0;
+  font-size: 13px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+}
+
+.gs-phase-summary-modal__editor-wrap {
+  padding: 14px 24px;
+}
+
+.gs-phase-summary-modal__edit-hint {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+
+/* Editable preview — looks like a chat-card surface inside the modal so
+ * the GM can see roughly what players will see. The outline only appears
+ * on focus so it doesn't compete with the paper-warm fill. */
+.gs-phase-summary-modal__editor {
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 6px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  min-height: 200px;
+  max-height: 60vh;
+  overflow-y: auto;
+  outline: none;
+}
+
+.gs-phase-summary-modal__editor:focus {
+  border-color: var(--gs-brand);
+}
+
+.gs-phase-summary-modal__editor ul,
+.gs-phase-summary-modal__editor ol {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.gs-phase-summary-modal__editor p {
+  margin: 0 0 8px;
+}
+
+.gs-phase-summary-modal__editor p:last-child {
+  margin-bottom: 0;
+}
+
+.gs-phase-summary-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 24px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+}

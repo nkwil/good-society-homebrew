@@ -11,7 +11,7 @@
   "readme": "README.md",
   "changelog": "CHANGELOG.md",
   "media": [],
-  "version": "0.1.1",
+  "version": "0.1.2",
   "compatibility": {
     "minimum": 13,
     "verified": "13"
@@ -34,6 +34,9 @@
       "magic-skill": {},
       "backstory-action": {},
       "random-event": {}
+    },
+    "RegionBehavior": {
+      "scenePortal": {}
     }
   },
   "styles": ["styles/good-society.css"],

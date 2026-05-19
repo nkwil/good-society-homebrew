@@ -36,8 +36,14 @@ function _buildContext() {
     catch { return ''; }
   })();
 
+  // All owned (or GM-visible) actors that can be a chat speaker: Majors,
+  // Connections, and NPCs. The original allowlist was Majors-only, which
+  // meant players who voiced their own Connections during a scene had to
+  // post OOC then re-label manually. Including Connection + NPC entries
+  // here lets the speaking-as bar speak as any owned actor.
+  const SPEAKER_TYPES = new Set(['major-character', 'connection', 'npc']);
   const myMajors = game.actors?.filter(a =>
-    a.type === 'major-character' &&
+    SPEAKER_TYPES.has(a.type) &&
     (game.user?.isGM || a.testUserPermission(game.user, 'OWNER'))
   ) ?? [];
 

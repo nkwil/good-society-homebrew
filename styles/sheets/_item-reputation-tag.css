@@ -17,6 +17,13 @@
   gap: 8px;
 }
 
+/* Archetype gating — wrapping chip toggles */
+.gs-item-sheet__archetype-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .gs-btn-polarity {
   flex: 1;
   padding: 7px 12px;

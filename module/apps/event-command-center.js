@@ -8,7 +8,7 @@
  * button. Per the post-MVP feature spec.
  */
 
-import { profilePic } from '../helpers/profile-pic.js';
+import { profilePic, profileName } from '../helpers/profile-pic.js';
 import { launchRandomEvent } from '../helpers/random-event.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -80,7 +80,11 @@ export class EventCommandCenter extends HandlebarsApplicationMixin(ApplicationV2
         ? allEvents.filter(e => e.system?.archetype === archetype).length
         : 0;
       const ownerOnline = _isAnyOwnerOnline(actor);
-      const displayName = sys.activePersona?.name || actor.name;
+      // profileName() honors EXPLICIT persona selection only — when
+      // activePersonaId is empty, this returns actor.name instead of falling
+      // back to a "primary persona" the data-model getter would otherwise
+      // return. Same anti-pattern fix as the other surfaces.
+      const displayName = profileName(actor);
       return {
         id: actor.id,
         name: displayName,
@@ -107,7 +111,7 @@ export class EventCommandCenter extends HandlebarsApplicationMixin(ApplicationV2
     ctx.totalMajors = roster.length;
     ctx.selectedMajor = selectedActor ? {
       id: selectedActor.id,
-      name: selectedActor.system?.activePersona?.name || selectedActor.name,
+      name: profileName(selectedActor),
       archetype: selectedArchetype,
       archetypeLabel: selectedArchetype
         ? game.i18n.localize(`GOODSOCIETY.major.archetype.${selectedArchetype}`)

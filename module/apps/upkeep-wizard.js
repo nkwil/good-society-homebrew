@@ -15,6 +15,7 @@
 import { MonologueEditor } from './monologue-editor.js';
 import { postSystemCard } from '../helpers/chat-cards.js';
 import { clearPendingChanges } from '../helpers/pending-changes.js';
+import { profileName } from '../helpers/profile-pic.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
@@ -170,7 +171,7 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     return {
       ...ctx,
       themeId:   system.theme ?? 'npc',
-      actorName: actor.name,
+      actorName: profileName(actor),
       eyebrow:   game.i18n.format('GOODSOCIETY.upkeepWizard.eyebrow', { n: cycleNum }),
       stepOf:    game.i18n.format('GOODSOCIETY.upkeepWizard.stepOf', { step: this._step }),
       currentStep: this._step,
@@ -190,7 +191,7 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       maxResolve,
       resolveState,
       monologueState,
-      monologueName: actor.name,
+      monologueName: profileName(actor),
       // Step 3
       notesText: this._notesText,
       // Step 4
@@ -270,12 +271,29 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
   static async #confirmDesire() {
     const ta = this.element.querySelector('[data-upkeep-field="newDesire"]');
     const text = ta?.value?.trim() ?? '';
-    if (!text) return;
+    if (!text) {
+      ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.upkeepWizard.step4.desireEmptyWarning'));
+      return;
+    }
 
     const oldDesire = _stripHtml(this._actor.system.desire ?? '');
-    await this._actor.update({ 'system.desire': `<p>${text}</p>` });
-    this._newDesire      = text;
-    this._desireAction   = 'change';
+    // Capture the text up-front so a failed actor.update doesn't lose the
+    // user's input — we re-render with the captured value so they can retry.
+    this._newDesire = text;
+
+    try {
+      await this._actor.update({ 'system.desire': `<p>${text}</p>` });
+    } catch (err) {
+      // Most likely cause: the local user doesn't own the actor. Surface
+      // a clear notification rather than failing silently — without this,
+      // the wizard appeared to do nothing on Save.
+      console.error('GS | desire save failed:', err);
+      ui.notifications?.error(game.i18n.format('GOODSOCIETY.upkeepWizard.step4.desireSaveFailed', {
+        error: err?.message || String(err),
+      }));
+      return;
+    }
+    this._desireAction    = 'change';
     this._desireExpanding = false;
 
     // Archive chat card — when oldDesire is empty, use a "first set" framing
@@ -287,7 +305,7 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
         : 'GOODSOCIETY.upkeepWizard.step4.desireFirstSetCard';
       await postSystemCard({
         content: game.i18n.format(cardKey, {
-          name: this._actor.system?.activePersona?.name || this._actor.name,
+          name: profileName(this._actor),
           oldDesire,
           newDesire: text,
         }),
@@ -334,7 +352,7 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     try {
       await postSystemCard({
         content: game.i18n.format('GOODSOCIETY.upkeepWizard.step6.completionCard', {
-          name: actor.system?.activePersona?.name || actor.name,
+          name: profileName(actor),
         }),
         context: 'upkeep',
       });

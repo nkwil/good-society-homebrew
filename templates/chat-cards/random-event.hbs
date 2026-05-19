@@ -37,7 +37,13 @@
     <span class="gs-random-event-card__outcome">{{outcomeLabel}}</span>
   </div>
 
-  <p class="gs-random-event-card__tag-line">
-    {{tagLabel}}: <strong>{{chosenTag}}</strong>
-  </p>
+  {{#if chosenTag}}
+    <p class="gs-random-event-card__tag-line">
+      {{tagLabel}}: <strong>{{chosenTag}}</strong>
+    </p>
+  {{else}}
+    <p class="gs-random-event-card__tag-line gs-random-event-card__tag-line--none">
+      {{noTagLabel}}
+    </p>
+  {{/if}}
 </div>

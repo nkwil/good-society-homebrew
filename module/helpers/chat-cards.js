@@ -350,6 +350,7 @@ export async function postLetterCard({
         // dispatches behavior (invitation hook / burn-after-reading) based
         // on this flag.
         letterSealId: letter?.seal ?? '',
+        letterScriptFont: letter?.scriptFont ?? 'none',
         recipientName: letter?.to ?? '',
       },
     },

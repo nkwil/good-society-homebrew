@@ -1,0 +1,34 @@
+/* Theme: connection-red — Crimson / claret.
+ *
+ * Strong color identity: pale rose-cream paper, near-black wine ink, a
+ * vivid crimson brand, and deep claret headers. Distinct from dixon's
+ * oxblood (which sits on a heraldic peach paper) — this one is cooler,
+ * cleaner, a clearer "red" on a light surface.
+ *
+ * Contrast (against paper #FBE4E2):
+ *   ink     #2E0A12 → ~15.2:1 (AAA body)
+ *   brand   #B01E2E → ~5.6:1  (AA body, AAA UI)
+ *   headers #84121F → ~8.9:1  (AAA body)
+ */
+.gs-actor[data-theme='connection-red'],
+.gs-connection[data-theme='connection-red'],
+.gs-themed[data-theme='connection-red'] {
+  --gs-paper:        #FBE4E2;          /* pale rose-cream */
+  --gs-paper-warm:   #F4D2CF;          /* deeper blush */
+  --gs-side-panel:   #F4D2CF;
+  --gs-ink:          #2E0A12;          /* near-black wine */
+
+  --gs-brand:        #B01E2E;          /* vivid crimson */
+  --gs-headers:      #84121F;          /* deep claret headers */
+  --gs-hairlines:    #C98A8E;          /* muted rose hairline */
+  --gs-metallic:     #C9A55C;          /* gilt */
+  --gs-muted-accent: #E4BEBF;          /* dusty rose mist */
+
+  --gs-accent-1:     var(--gs-headers);
+  --gs-accent-2:     var(--gs-hairlines);
+  --gs-accent-3:     var(--gs-metallic);
+
+  --gs-display:      'Lora', 'Palatino', Georgia, serif;
+  --gs-body:         'Crimson Text', 'Palatino', Georgia, serif;
+  --gs-italic:       'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+}

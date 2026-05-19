@@ -29,10 +29,24 @@
       <p class="gs-item-sheet__hint">{{localize "GOODSOCIETY.item.randomEvent.archetypeHint"}}</p>
     </div>
 
-    {{!-- Description (HTML editor) --}}
+    {{!-- Description — read-only enriched render + ✎ edit button. --}}
     <div class="gs-item-sheet__field">
-      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.randomEvent.descriptionLabel"}}</span>
-      {{editor system.description target="system.description" button=true editable=true}}
+      <div class="gs-item-sheet__label-row">
+        <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.randomEvent.descriptionLabel"}}</span>
+        <button type="button" class="gs-item-sheet__edit-btn"
+                data-action="editDescription"
+                title="{{localize 'GOODSOCIETY.common.edit'}}"
+                aria-label="{{localize 'GOODSOCIETY.common.edit'}}">
+          <span aria-hidden="true">✎</span>
+        </button>
+      </div>
+      <div class="gs-item-sheet__description-body">
+        {{#if enrichedDescription}}
+          {{{enrichedDescription}}}
+        {{else}}
+          <p class="gs-item-sheet__description-placeholder"><em>{{localize "GOODSOCIETY.common.noDescription"}}</em></p>
+        {{/if}}
+      </div>
     </div>
 
     {{!-- Positive tag shortlist --}}

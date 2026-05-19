@@ -38,7 +38,11 @@ export async function launchRandomEvent(eventItem, targetActor) {
   if (!eventItem || !targetActor) return;
   const payload = {
     type: 'randomEvent.launch',
-    eventId: eventItem.id,
+    // Carry a SNAPSHOT of the event, not just its id. This makes the
+    // player's resolution immune to the GM editing or deleting the source
+    // Item mid-flight, and removes any dependence on world-item permission
+    // / replication behaviour on the player's client.
+    event: _snapshotEvent(eventItem),
     actorId: targetActor.id,
     requestedBy: game.user.id,
   };
@@ -46,6 +50,24 @@ export async function launchRandomEvent(eventItem, targetActor) {
   // the GM happens to own the actor (rare but supported).
   if (game.socket) game.socket.emit(SOCKET_NAME, payload);
   _processIncoming(payload);
+}
+
+/** Build a plain-object snapshot of a random-event Item, shaped like a
+ *  document (`{ id, name, system }`) so every downstream consumer — the
+ *  popover, the resolver, the chat card — reads it with the same property
+ *  paths it would use on the live Item. */
+function _snapshotEvent(item) {
+  const sys = item.system ?? {};
+  return {
+    id: item.id,
+    name: item.name,
+    system: {
+      archetype: sys.archetype ?? '',
+      description: sys.description ?? '',
+      positiveTagOptions: [...(sys.positiveTagOptions ?? [])].filter(Boolean),
+      negativeTagOptions: [...(sys.negativeTagOptions ?? [])].filter(Boolean),
+    },
+  };
 }
 
 /**
@@ -65,17 +87,22 @@ export async function resolveRandomEvent({ actor, event, strategies, rolls, chos
   if (!actor || !event) return;
   const polarity = outcome === 'success' ? 'positive' : 'negative';
 
-  // Create the reputation-tag Item on the actor. The session-events createItem
-  // hook will append a pendingChange (GM-side single-writer, per B-6b/1).
-  await actor.createEmbeddedDocuments('Item', [{
-    name: chosenTag,
-    type: 'reputation-tag',
-    system: {
-      polarity,
-      description: '',
-      source: game.i18n.format('GOODSOCIETY.randomEvent.tagSource', { event: event.name }),
-    },
-  }]);
+  // Create the reputation-tag Item on the actor — but only when a tag was
+  // actually chosen. An event authored with no tag options for the rolled
+  // polarity resolves with no tag; the chat card still posts so the table
+  // sees the outcome. The session-events createItem hook appends a
+  // pendingChange (GM-side single-writer, per B-6b/1).
+  if (chosenTag) {
+    await actor.createEmbeddedDocuments('Item', [{
+      name: chosenTag,
+      type: 'reputation-tag',
+      system: {
+        polarity,
+        description: '',
+        source: game.i18n.format('GOODSOCIETY.randomEvent.tagSource', { event: event.name }),
+      },
+    }]);
+  }
 
   // Post the themed chat card with strategies, rolls, average, outcome.
   await _postRandomEventCard({ actor, event, strategies, rolls, chosenTag, outcome });
@@ -126,9 +153,11 @@ export function _processIncoming(payload) {
   }
 }
 
-async function _handleLaunch({ eventId, actorId }) {
+async function _handleLaunch({ event, actorId }) {
   const actor = game.actors?.get(actorId);
-  const event = game.items?.get(eventId);
+  // `event` is the snapshot built by _snapshotEvent — a plain object, not a
+  // live Item. No game.items lookup needed (and none wanted: the player may
+  // not have permission to open the source Item).
   if (!actor || !event) return;
   // Only the target's actual owner (not the GM, unless GM also owns) opens
   // the popover. testUserPermission returns true for the GM on every actor;
@@ -200,6 +229,7 @@ async function _postRandomEventCard({ actor, event, strategies, rolls, chosenTag
     outcomeLabel,
     tagLabel,
     chosenTag,
+    noTagLabel: game.i18n.localize('GOODSOCIETY.randomEvent.noTag'),
   });
   const content = themedWrap(actor, inner);
 

@@ -33,6 +33,24 @@ let _liveSyncTimer = null;   // debounce for textarea typing → socket emit
 const SOCKET_NAME = 'system.good-society-homebrew';
 const TEMPLATE = 'systems/good-society-homebrew/templates/apps/monologue-overlay.hbs';
 
+/** Fixed id shared by the monologue picker dialogs (spender + target/question
+ *  prompts). A fixed id makes the in-flight dialog discoverable via
+ *  `foundry.applications.instances`, so the flow can be kept to one popup and
+ *  the Cabinet toggle can find + close it. */
+const PICKER_ID = 'gs-monologue-picker';
+
+/**
+ * The monologue flow's currently-open picker dialog, or null. Used by the
+ * Cabinet to reflect/close the "Play a Monologue Token" toggle, and by the
+ * flow itself to refuse stacking a second popup.
+ *
+ * @returns {ApplicationV2|null}
+ */
+export function monologueFlowApp() {
+  const app = foundry.applications.instances?.get(PICKER_ID);
+  return app?.rendered ? app : null;
+}
+
 export class MonologueOverlayApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
     id: 'gs-monologue-overlay',
@@ -41,6 +59,7 @@ export class MonologueOverlayApp extends HandlebarsApplicationMixin(ApplicationV
     position: { width: '100vw', height: '100vh' },
     actions: {
       submitMonologue: MonologueOverlayApp.#submitMonologue,
+      endMonologue:    MonologueOverlayApp.#endMonologue,
       cancelMonologue: MonologueOverlayApp.#cancelMonologue,
     },
   };
@@ -120,10 +139,48 @@ export class MonologueOverlayApp extends HandlebarsApplicationMixin(ApplicationV
     await _persistMonologueComplete({ ..._activeState, body, cancelled: false });
   }
 
+  static async #endMonologue() {
+    if (!_activeState) return;
+    // End is the "I'm done, no further edits" escape — submits whatever's in
+    // the textarea (even empty) and closes the overlay for everyone. Only
+    // the spender (owner of the target Major) or the GM can call this; the
+    // template gates the button accordingly.
+    const ta = this.element?.querySelector('textarea[name="monologueBody"]');
+    const body = (ta?.value ?? _activeState.body ?? '').trim();
+    // If they really want to end with nothing written, mark cancelled so we
+    // don't archive an empty monologue. Spender intent: "back out cleanly."
+    if (!body) {
+      await _persistMonologueComplete({ ..._activeState, cancelled: true });
+    } else {
+      await _persistMonologueComplete({ ..._activeState, body, cancelled: false });
+    }
+  }
+
   static async #cancelMonologue() {
     if (!_activeState) return;
     if (!game.user?.isGM) return; // only GM can cancel
     await _persistMonologueComplete({ ..._activeState, cancelled: true });
+  }
+
+  /**
+   * Block close for audience users — the overlay is a synchronized scene-
+   * freeze, and previous test sessions had non-spender, non-GM users hitting
+   * Esc and dismissing their local view, leaving the rest of the table
+   * confused. Only the spender (target's owner) and GM can dismiss.
+   */
+  async close(options = {}) {
+    // The "force" flag (used by the canonical _persistMonologueComplete
+    // writer when the monologue ends for everyone) bypasses this guard.
+    if (options.gsForce) return super.close(options);
+    const state = _activeState ?? {};
+    const target = state.targetActorId ? game.actors?.get(state.targetActorId) : null;
+    const isTarget = target?.testUserPermission?.(game.user, 'OWNER') ?? false;
+    const isSpender = state.byUserId === game.user?.id;
+    if (game.user?.isGM || isTarget || isSpender) {
+      return super.close(options);
+    }
+    ui.notifications?.info(game.i18n.localize('GOODSOCIETY.tokenEvents.monologue.audienceCannotDismiss'));
+    return this; // refuse close
   }
 }
 
@@ -158,9 +215,11 @@ async function _showOverlay(state) {
   }
 }
 
-/** Hide the overlay locally. */
+/** Hide the overlay locally. Force-bypass the audience-dismiss guard since
+ *  the canonical-writer path is closing the overlay for legitimate reasons
+ *  (submit/cancel completed). */
 async function _hideOverlay() {
-  if (_instance?.rendered) await _instance.close();
+  if (_instance?.rendered) await _instance.close({ gsForce: true });
   _activeState = null;
 }
 
@@ -262,6 +321,10 @@ export async function openMonologueTrigger(spender) {
     return;
   }
 
+  // Singleton — never stack a second monologue picker.
+  const open = monologueFlowApp();
+  if (open) { open.bringToFront?.(); return; }
+
   // Singleton — reject if another monologue is in flight on this client.
   // (Cross-client race: another spender may have just emitted; the socket
   // acceptance below is idempotent — the second monologue start is dropped
@@ -301,6 +364,7 @@ export async function openMonologueTrigger(spender) {
   `;
 
   const result = await DialogV2.prompt({
+    id: PICKER_ID,
     window: { title: game.i18n.localize('GOODSOCIETY.tokenEvents.monologue.modalTitle') },
     content: html,
     ok: {
@@ -330,6 +394,65 @@ export async function openMonologueTrigger(spender) {
     payload: startState,
   });
   await _showOverlay(startState);
+}
+
+/**
+ * Cabinet entry point — resolves which of the user's Major characters is
+ * spending the monologue token, then defers to `openMonologueTrigger`
+ * (which validates the MT, picks a target, and runs the overlay flow — so
+ * the monologue-token accounting is unchanged).
+ *
+ * Zero-arg so the Cabinet's launcher map can call it directly.
+ *  - No owned Major  → notify, bail.
+ *  - One Major with the MT available → use it.
+ *  - Several with the MT available → DialogV2 picker for the spender.
+ *  - All owned Majors have already spent their MT → notify, bail.
+ */
+export async function openMonologueFromCabinet() {
+  // Singleton — if a monologue picker is already open, surface it instead
+  // of stacking another popup.
+  const inFlight = monologueFlowApp();
+  if (inFlight) { inFlight.bringToFront?.(); return; }
+
+  const owned = (game.actors?.filter(
+    a => a.type === 'major-character' && a.testUserPermission(game.user, 'OWNER'),
+  ) ?? []);
+  if (!owned.length) {
+    ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.tokenEvents.monologue.noOwnedMajor'));
+    return;
+  }
+  // The MT lives on `system.tokens.major` (true = available/unspent).
+  const spendable = owned.filter(a => a.system?.tokens?.major);
+  if (!spendable.length) {
+    ui.notifications?.info(game.i18n.localize('GOODSOCIETY.tokenEvents.monologue.allSpent'));
+    return;
+  }
+  if (spendable.length === 1) {
+    return openMonologueTrigger(spendable[0]);
+  }
+  // Multiple — let the user pick which character spends the token.
+  const DialogV2 = foundry.applications.api.DialogV2;
+  const optionsHtml = spendable
+    .map(a => `<option value="${a.id}">${foundry.utils.escapeHTML(profileName(a))}</option>`)
+    .join('');
+  const spenderId = await DialogV2.prompt({
+    id: PICKER_ID,
+    window: { title: game.i18n.localize('GOODSOCIETY.tokenEvents.monologue.pickSpenderTitle') },
+    content: `
+      <div class="gs-form-row">
+        <label>${game.i18n.localize('GOODSOCIETY.tokenEvents.monologue.pickSpenderLabel')}</label>
+        <select name="spenderId" style="width: 100%;">${optionsHtml}</select>
+      </div>
+    `,
+    ok: {
+      label: game.i18n.localize('GOODSOCIETY.tokenEvents.monologue.trigger'),
+      callback: (event, button) => button.form.elements.spenderId.value,
+    },
+    rejectClose: false,
+  });
+  if (!spenderId) return;
+  const spender = game.actors?.get(spenderId);
+  if (spender) return openMonologueTrigger(spender);
 }
 
 /** Register socket listeners. Called from good-society.js ready hook. */

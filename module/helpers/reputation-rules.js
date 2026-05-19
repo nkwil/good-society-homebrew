@@ -23,34 +23,49 @@ async function _getOpenFn() {
 // ── Threshold check ────────────────────────────────────────────────────────
 
 /**
- * Check whether a Major actor has just reached the reputation tag threshold
- * (exactly 3 tags of the given polarity) and open the Condition Picker if so.
+ * Reconcile a Major actor's reputation-tag threshold for one polarity.
  *
- * Safe to call after every tag-add operation — silently returns when the
- * threshold hasn't been hit or the setting is disabled.
+ * Opens the Condition Picker when the actor has just reached exactly 3 tags
+ * of the given polarity. Also self-heals the `pickerResolved` flag: when the
+ * count drops below 3 the flag is cleared, so a fresh climb back to 3 will
+ * re-prompt (tags get traded / erased every Reputation Phase).
+ *
+ * Safe to call after every tag-add OR tag-remove operation.
  *
  * @param {Actor}  actor    Major Character actor.
  * @param {string} polarity 'positive' | 'negative'
  */
 export async function checkThresholdAndPrompt(actor, polarity) {
-  try {
-    const enabled = game.settings.get('good-society-homebrew', 'promptOnThreeTags');
-    if (!enabled) return;
-  } catch { return; }
+  // Only act for the actor's owner (not for every client seeing the hook)
+  if (!actor?.isOwner) return;
 
-  // Only open for the actor's owner (not for every client seeing the hook)
-  if (!actor.isOwner) return;
-
-  // Skip if already resolved for this polarity (player chose "no condition")
   const resolvedFlag = `pickerResolved.${polarity}`;
-  if (actor.getFlag('good-society-homebrew', resolvedFlag)) return;
 
   // Count tags of the matching polarity directly from embedded items
   const tags = actor.items?.filter(
     i => i.type === 'reputation-tag' && i.system?.polarity === polarity,
   ) ?? [];
 
+  // Below threshold — clear any stale resolved flag so the next climb to 3
+  // re-prompts. This is the only place the flag is auto-cleared.
+  if (tags.length < 3) {
+    if (actor.getFlag('good-society-homebrew', resolvedFlag)) {
+      try {
+        await actor.unsetFlag('good-society-homebrew', resolvedFlag);
+      } catch { /* non-fatal */ }
+    }
+    return;
+  }
+
+  // At/above threshold — open the picker only at exactly 3, when enabled,
+  // and when this polarity hasn't already been resolved.
+  try {
+    const enabled = game.settings.get('good-society-homebrew', 'promptOnThreeTags');
+    if (!enabled) return;
+  } catch { return; }
+
   if (tags.length !== 3) return;
+  if (actor.getFlag('good-society-homebrew', resolvedFlag)) return;
 
   try {
     const open = await _getOpenFn();

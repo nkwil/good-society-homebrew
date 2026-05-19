@@ -295,6 +295,16 @@ function _attachListeners() {
       return;
     }
 
+    // Novel marker click — opens the Novel-phase informational popup.
+    // Anyone can click; covers both Novel¹ and Novel² occurrences.
+    const novelMarker = ev.target.closest('.gs-phase-marker[data-phase="novel"]');
+    if (novelMarker) {
+      ev.preventDefault();
+      // Lazy import to avoid a circular dep between cycle-hud and the popup.
+      import('./novel-phase-popup.js').then(m => m.openNovelPhasePopup?.());
+      return;
+    }
+
     // Remaining controls are GM-only.
     if (!_isGM()) return;
 

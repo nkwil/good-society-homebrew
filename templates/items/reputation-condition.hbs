@@ -38,10 +38,48 @@
       </div>
     </div>
 
-    {{!-- Description --}}
+    {{!-- Archetype gating — toggle chips. No selection = universal. --}}
     <div class="gs-item-sheet__field">
-      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.reputationCondition.description"}}</span>
-      {{editor system.description target="system.description" button=true editable=true}}
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.reputationCondition.archetypesLabel"}}</span>
+      <div class="gs-item-sheet__archetype-row">
+        {{#each archetypeChoices}}
+          <button type="button"
+                  class="gs-btn-flag{{#if selected}} gs-btn-flag--active{{/if}}"
+                  data-action="toggleArchetype"
+                  data-archetype="{{id}}">
+            {{label}}
+          </button>
+        {{/each}}
+      </div>
+      <p class="gs-item-sheet__hint">
+        {{#if isUniversal}}
+          {{localize "GOODSOCIETY.item.reputationCondition.archetypesUniversal"}}
+        {{else}}
+          {{localize "GOODSOCIETY.item.reputationCondition.archetypesHint"}}
+        {{/if}}
+      </p>
+    </div>
+
+    {{!-- Description — read-only enriched render + ✎ edit button. The v13
+         {{editor}} helper doesn't open in ApplicationV2; the button opens a
+         shared DialogV2 rich-text editor instead. --}}
+    <div class="gs-item-sheet__field">
+      <div class="gs-item-sheet__label-row">
+        <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.reputationCondition.description"}}</span>
+        <button type="button" class="gs-item-sheet__edit-btn"
+                data-action="editDescription"
+                title="{{localize 'GOODSOCIETY.common.edit'}}"
+                aria-label="{{localize 'GOODSOCIETY.common.edit'}}">
+          <span aria-hidden="true">✎</span>
+        </button>
+      </div>
+      <div class="gs-item-sheet__description-body">
+        {{#if enrichedDescription}}
+          {{{enrichedDescription}}}
+        {{else}}
+          <p class="gs-item-sheet__description-placeholder"><em>{{localize "GOODSOCIETY.common.noDescription"}}</em></p>
+        {{/if}}
+      </div>
     </div>
 
     {{!-- Source tag IDs (read-only count for now; full tag picker is B-5) --}}

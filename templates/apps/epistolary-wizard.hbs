@@ -5,6 +5,10 @@
 --}}
 <section class="gs-epistolary-wizard">
 
+  {{!-- The whole header bar is hidden while a letter is open — the reader's
+       own header (back button + sender→recipient) carries the context, and
+       the window titlebar still reads "Epistolary Phase". --}}
+  {{#unless isReaderView}}
   <header class="gs-epistolary-wizard__head">
     <h2 class="gs-eyebrow">
       {{localize "GOODSOCIETY.epistolary.wizard.eyebrow"}} · {{localize "GOODSOCIETY.cycle.label"}} {{cycleNumber}}
@@ -16,15 +20,30 @@
            template, closing the dropdown mid-flight). --}}
       <select class="gs-epistolary-wizard__actor-select"
               name="actorId">
-        {{#each myMajors}}
-          <option value="{{id}}" {{#if isActive}}selected{{/if}}>{{name}}</option>
-        {{/each}}
+        {{#if myMajors.length}}
+          <optgroup label="{{localize "GOODSOCIETY.epistolary.pickerMajors"}}">
+            {{#each myMajors}}
+              <option value="{{id}}" {{#if isActive}}selected{{/if}}>{{name}}</option>
+            {{/each}}
+          </optgroup>
+        {{/if}}
+        {{#if myConnections.length}}
+          <optgroup label="{{localize "GOODSOCIETY.epistolary.pickerConnections"}}">
+            {{#each myConnections}}
+              <option value="{{id}}" {{#if isActive}}selected{{/if}}>{{name}}</option>
+            {{/each}}
+          </optgroup>
+        {{/if}}
       </select>
     {{else}}
       <span class="gs-epistolary-wizard__actor-name">{{actorName}}</span>
     {{/if}}
   </header>
+  {{/unless}}
 
+  {{!-- Tab strip is hidden while a letter is open — the reader takes over
+       the whole window; "← back to letters" is the way out. --}}
+  {{#unless isReaderView}}
   <nav class="gs-epistolary-wizard__tabs" role="tablist">
     {{#each tabs}}
       <button type="button"
@@ -38,10 +57,63 @@
       </button>
     {{/each}}
   </nav>
+  {{/unless}}
 
   <div class="gs-epistolary-wizard__body">
 
-    {{#if isComposeTab}}
+    {{#if isReaderView}}
+      {{!-- Inline letter reader. A selected letter renders as a sealed
+           tri-fold parchment packet; breaking the wax seal unfolds it
+           (3D rotateX on the top/bottom fold panels) to reveal the letter.
+           `data-theme` tints ACCENTS only (seal rim, header rule, signature)
+           — the body is fixed dark ink on parchment so every sender's
+           letters stay legible regardless of theme. --}}
+      <div class="gs-epistolary-wizard__reader">
+        <header class="gs-epistolary-wizard__reader-head">
+          <button type="button"
+                  class="gs-btn gs-btn--primary gs-btn--sm gs-epistolary-wizard__back"
+                  data-action="closeLetter">
+            ← {{localize "GOODSOCIETY.epistolary.reader.back"}}
+          </button>
+          <span class="gs-epistolary-wizard__reader-meta">
+            {{#if viewerLetter.recipientName}}{{localize "GOODSOCIETY.epistolary.toLabel"}} <strong>{{viewerLetter.recipientName}}</strong> | {{/if}}{{localize "GOODSOCIETY.epistolary.fromLabel"}} <strong>{{viewerLetter.senderName}}</strong>
+            {{#if viewerLetter.cycleNumber}} · {{localize "GOODSOCIETY.cycle.label"}} {{viewerLetter.cycleNumber}}{{/if}}
+          </span>
+        </header>
+
+        <div class="gs-letter-envelope gs-themed gs-parchment-v{{viewerLetter.parchmentVariant}} {{#if viewerLetter.isOpen}}is-open{{/if}}"
+             data-theme="{{viewerLetter.senderTheme}}"
+             data-letter-id="{{viewerLetter.id}}">
+
+          {{!-- Folded packet — the ribbon-tied envelope graphic, with the
+               letter's chosen wax seal superimposed over the envelope's
+               own seal. The whole packet is the click target before
+               opening. --}}
+          <button type="button" class="gs-letter-envelope__packet" data-action="breakSeal"
+                  aria-label="{{localize 'GOODSOCIETY.epistolary.reader.breakSeal'}}">
+            <img class="gs-letter-envelope__envelope-img" aria-hidden="true"
+                 src="/systems/good-society-homebrew/assets/parchment/envelope.png" alt="" />
+            {{#if viewerLetter.sealAsset}}
+              <span class="gs-letter-envelope__seal" aria-hidden="true">
+                <img class="gs-letter-envelope__seal-img" src="{{viewerLetter.sealAsset}}" alt="" />
+              </span>
+            {{/if}}
+            <span class="gs-letter-envelope__open-hint">{{localize "GOODSOCIETY.epistolary.reader.breakSealHint"}}</span>
+          </button>
+
+          {{!-- The unfolded letter — parchment sheet, fixed dark ink. --}}
+          <article class="gs-letter-sheet">
+            {{#if viewerLetter.subject}}
+              <h3 class="gs-letter-sheet__subject">"{{viewerLetter.subject}}"</h3>
+            {{/if}}
+            <div class="gs-letter-sheet__body">{{{viewerLetter.body}}}</div>
+            <p class="gs-letter-sheet__signature"
+               {{#if viewerLetter.scriptFontFamily}}style="font-family: {{viewerLetter.scriptFontFamily}}; font-size: 1.6em; line-height: 1.35;"{{/if}}>— {{viewerLetter.senderName}}</p>
+          </article>
+        </div>
+      </div>
+
+    {{else if isComposeTab}}
       <div class="gs-empty-state">
         <p class="gs-empty-state__body">{{localize "GOODSOCIETY.epistolary.compose.intro"}}</p>
         <button type="button"
@@ -50,6 +122,7 @@
           {{localize "GOODSOCIETY.epistolary.compose.openComposer"}} ↗
         </button>
       </div>
+
     {{else}}
       {{#if sealChips.length}}
         <div class="gs-epistolary-wizard__filters">
@@ -74,30 +147,50 @@
       {{else}}
         <ul class="gs-epistolary-wizard__list">
           {{#each letters}}
-            <li class="gs-epistolary-wizard__row gs-themed {{#if burned}}is-burned{{/if}}"
-                data-theme="{{senderTheme}}"
-                data-action="openLetter"
-                data-message-id="{{id}}">
-              <span class="gs-epistolary-wizard__seal" aria-hidden="true"
-                    {{#if sealId}}style="--seal-id: '{{sealId}}';"{{/if}}>
-                {{#if sealId}}●{{else}}○{{/if}}
-              </span>
-              <span class="gs-epistolary-wizard__portrait">
-                {{#if senderPortrait}}
-                  <img src="{{senderPortrait}}" alt="" />
-                {{else}}
-                  <span class="gs-epistolary-wizard__portrait-initial">{{firstLetter senderName}}</span>
-                {{/if}}
-              </span>
-              <span class="gs-epistolary-wizard__row-body">
-                <span class="gs-epistolary-wizard__row-meta">
-                  <strong>{{senderName}}</strong>
-                  {{#if recipientName}} → {{recipientName}}{{/if}}
-                  {{#if cycleNumber}} · {{localize "GOODSOCIETY.cycle.label"}} {{cycleNumber}}{{/if}}
+            {{!-- Wrap the row in a <button> rather than putting data-action on
+                 the <li> directly. ApplicationV2's action dispatcher matches
+                 by `closest('[data-action]')` from the click target, and an
+                 <li> sometimes fails to receive clicks reliably (Foundry's
+                 chat sidebar's pointer-events: none inheritance can also bite
+                 here). Buttons are universally interactive. --}}
+            <li class="gs-epistolary-wizard__row-li {{#if burned}}is-burned{{/if}}">
+              {{!-- The <button> is a bare click target only; the grid layout
+                   + background live on the inner <span> so the card sizes
+                   to its content (a <button> is an unreliable grid host —
+                   it clips multi-line content to a short box). --}}
+              <button type="button"
+                      class="gs-epistolary-wizard__row-btn"
+                      data-action="openLetter"
+                      data-message-id="{{id}}">
+                <span class="gs-epistolary-wizard__row gs-themed" data-theme="{{senderTheme}}">
+                  <span class="gs-epistolary-wizard__seal" aria-hidden="true">
+                    {{#if sealAsset}}
+                      <img class="gs-epistolary-wizard__seal-icon" src="{{sealAsset}}" alt="" />
+                    {{else if sealId}}●{{else}}○{{/if}}
+                  </span>
+                  <span class="gs-epistolary-wizard__portrait">
+                    {{#if senderPortrait}}
+                      <img src="{{senderPortrait}}" alt="" />
+                    {{else}}
+                      <span class="gs-epistolary-wizard__portrait-initial">{{firstLetter senderName}}</span>
+                    {{/if}}
+                  </span>
+                  <span class="gs-epistolary-wizard__row-body">
+                    <span class="gs-epistolary-wizard__row-meta">
+                      {{#if recipientName}}{{localize "GOODSOCIETY.epistolary.toLabel"}} <strong>{{recipientName}}</strong> | {{/if}}{{localize "GOODSOCIETY.epistolary.fromLabel"}} <strong>{{senderName}}</strong>
+                      {{#if cycleNumber}} · {{localize "GOODSOCIETY.cycle.label"}} {{cycleNumber}}{{/if}}
+                    </span>
+                    {{!-- A still-sealed letter shows no subject or preview —
+                         the contents stay private until the seal is broken. --}}
+                    {{#if opened}}
+                      {{#if subject}}<span class="gs-epistolary-wizard__row-subject">"{{subject}}"</span>{{/if}}
+                      <span class="gs-epistolary-wizard__row-snippet">{{snippet}}</span>
+                    {{else}}
+                      <span class="gs-epistolary-wizard__row-snippet gs-epistolary-wizard__row-snippet--sealed">{{localize "GOODSOCIETY.epistolary.sealedRow"}}</span>
+                    {{/if}}
+                  </span>
                 </span>
-                {{#if subject}}<span class="gs-epistolary-wizard__row-subject">"{{subject}}"</span>{{/if}}
-                <span class="gs-epistolary-wizard__row-snippet">{{snippet}}</span>
-              </span>
+              </button>
             </li>
           {{/each}}
         </ul>
@@ -106,6 +199,9 @@
 
   </div>
 
+  {{!-- Footer (mark-done) is hidden while a letter is open — it's a
+       phase-level action, not relevant mid-read. --}}
+  {{#unless isReaderView}}
   <footer class="gs-epistolary-wizard__foot">
     {{#if epistolaryDone}}
       <span class="gs-epistolary-wizard__done-marker">
@@ -119,5 +215,6 @@
       </button>
     {{/if}}
   </footer>
+  {{/unless}}
 
 </section>

@@ -15,11 +15,16 @@ import { toggleOrganizer } from './npc-organizer.js';
 import { openBulkPermissionsPanel } from './bulk-permissions-panel.js';
 import { openSessionLogPreview } from './session-log-preview.js';
 import { openEventTimeline } from './event-timeline.js';
-import { openLetterComposer } from './letter-composer.js';
 import { openRumourBoard } from './rumour-board.js';
 import { openDashboard } from './public-info-dashboard.js';
 import { openNovelReader } from './novel-reader.js';
 import { openEventCommandCenter } from './event-command-center.js';
+import { openEpistolaryInbox } from './epistolary-wizard.js';
+import { openPregameChecklist } from './pregame-checklist.js';
+import { openNovelPhasePopup } from './novel-phase-popup.js';
+import { openConditionsCompendium, findConditionsCompendiumPack } from '../helpers/conditions-compendium.js';
+import { openMonologueFromCabinet, monologueFlowApp } from './monologue-overlay.js';
+import { openResetCampaign } from '../helpers/reset-campaign.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -49,11 +54,43 @@ const LAUNCHERS = {
   permissions: () => openBulkPermissionsPanel(),
   sessionLog:  () => openSessionLogPreview(),
   calendar:    () => openEventTimeline(),
-  letter:      () => openLetterComposer(),
   rumours:     () => openRumourBoard(),
   dashboard:   () => openDashboard(),
   novelReader: () => openNovelReader(),
   events:      () => openEventCommandCenter(),
+  inbox:       () => openEpistolaryInbox(),
+  pregame:     () => openPregameChecklist(),
+  novelPhase:  () => openNovelPhasePopup(),
+  monologue:    () => openMonologueFromCabinet(),
+  conditions:   () => openConditionsCompendium(),
+  resetCampaign: () => openResetCampaign(),
+};
+
+/**
+ * The fixed ApplicationV2 `id` each launcher opens — lets the Cabinet render
+ * launcher rows as live open/closed toggles (via `foundry.applications.
+ * instances`) rather than one-way "open" buttons.
+ *
+ * `conditions` and `monologue` have no entry: `conditions` opens a compendium
+ * pack window and `monologue` runs a multi-step picker flow — both are
+ * tracked specially in `_launcherApp`.
+ */
+const LAUNCHER_APP_IDS = {
+  organizer:   'gs-npc-organizer',
+  permissions: 'gs-bulk-permissions-panel',
+  sessionLog:  'gs-session-log-preview',
+  calendar:    'gs-event-timeline',
+  rumours:     'gs-rumour-board',
+  dashboard:   'gs-public-info-dashboard',
+  novelReader: 'gs-novel-reader',
+  events:      'gs-event-command-center',
+  inbox:       'gs-epistolary-wizard',
+  pregame:       'gs-pregame-checklist',
+  novelPhase:    'gs-novel-phase-popup',
+  // Reset Campaign is an "action" launcher — the only thing rendered is a
+  // confirm dialog. Tracking it lets a second toggle-click close the confirm
+  // and abort the reset.
+  resetCampaign: 'gs-reset-campaign-confirm',
 };
 
 export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -64,7 +101,6 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
     position: { width: 'auto', height: 'auto' },
     actions: {
       toggleSurface: CabinetApp.#toggleSurface,
-      launchSurface: CabinetApp.#launchSurface,
       toggleDrawer:  CabinetApp.#toggleDrawer,
       hideAll:       CabinetApp.#hideAll,
       showAll:       CabinetApp.#showAll,
@@ -88,6 +124,32 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const persisted = this.visibility[surfaceId];
     if (typeof persisted === 'boolean') return persisted;
     return COWORK_SURFACES.find(s => s.id === surfaceId)?.defaultVisible ?? true;
+  }
+
+  /** Resolve the live Application a launcher surface controls, if any is
+   *  currently constructed. Returns null when nothing is open. */
+  _launcherApp(surface) {
+    // `monologue` runs a multi-step picker flow — tracked by its picker id.
+    if (surface.launcherKey === 'monologue') return monologueFlowApp();
+    const appId = LAUNCHER_APP_IDS[surface.launcherKey];
+    if (appId) return foundry.applications.instances?.get(appId) ?? null;
+    // `conditions` opens a compendium pack window — tracked via the pack.
+    if (surface.launcherKey === 'conditions') {
+      const pack = findConditionsCompendiumPack();
+      return pack?.apps?.find(a => a.rendered) ?? null;
+    }
+    return null;
+  }
+
+  /** Whether a launcher surface's window is currently open. */
+  _isLauncherOpen(surface) {
+    return !!this._launcherApp(surface)?.rendered;
+  }
+
+  /** Close whatever window a launcher surface controls. */
+  async _closeLauncher(surface) {
+    const app = this._launcherApp(surface);
+    if (app?.rendered) await app.close();
   }
 
   /** Filter the registry to surfaces whose gates are satisfied:
@@ -117,7 +179,35 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const next = { ...this.visibility, [surfaceId]: value };
     await game.user.setFlag(FLAG_SCOPE, FLAG_KEY, next);
     this._applyVisibility();
-    this.render({ parts: ['cabinet'] });
+    // No re-render: the toggle's `is-on` class is flipped in place by
+    // `_reflectToggle` so the CSS transition animates. A full re-render would
+    // replace the element and skip the animation.
+  }
+
+  /**
+   * Flip a surface's toggle switch (and its rail dot, for persistent
+   * surfaces) on the live DOM. Flipping the class in place lets the CSS
+   * transition animate; it also avoids the re-render race where a launcher
+   * window's async render hasn't finished yet and the toggle reads stale.
+   *
+   * @param {string}  surfaceId
+   * @param {boolean} on
+   */
+  _reflectToggle(surfaceId, on) {
+    const root = this.element;
+    if (!root) return;
+    const sw = root.querySelector(`.gs-cabinet-toggle[data-surface-id="${surfaceId}"]`);
+    if (sw) {
+      sw.classList.toggle('is-on', on);
+      sw.setAttribute('aria-checked', String(on));
+    }
+    // Rail dots track persistent surfaces only (launcher windows can't be
+    // tracked live on the always-visible rail).
+    const surface = COWORK_SURFACES.find(s => s.id === surfaceId);
+    if (surface && surface.kind !== 'launcher') {
+      const rail = root.querySelector(`.gs-cabinet-rail-btn[data-surface-id="${surfaceId}"]`);
+      rail?.classList.toggle('is-active', on);
+    }
   }
 
   async _prepareContext(options) {
@@ -132,8 +222,10 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
       const isLauncher = s.kind === 'launcher';
       groups[s.group].push({
         ...s,
-        // Toggleable surfaces carry a real visibility flag; launchers don't.
-        visible: isLauncher ? null : this.isVisible(s.id),
+        // Every row renders as a toggle. Persistent surfaces report their
+        // body-class visibility; launchers report whether their window is
+        // currently open.
+        visible: isLauncher ? this._isLauncherOpen(s) : this.isVisible(s.id),
         isLauncher,
         label: game.i18n.localize(s.label),
         iconAsset: iconEntry?.asset ?? null,
@@ -141,8 +233,8 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     // Rail membership: any surface that ships a railGlyph or a cabinet-rail
-    // SVG icon. Launchers can be in the rail too — clicking opens the modal
-    // (launchSurface), unlike toggleables which flip a body class.
+    // SVG icon. Every rail button toggles its surface — launchers open/close
+    // their window, persistent surfaces flip a body class.
     const railGroups = Object.entries(groups).map(([key, items]) => ({
       key,
       items: items.filter(i => i.railGlyph || i.iconAsset),
@@ -222,11 +314,15 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
   _anchorAboveHotbar() {
     if (!this.element) return;
     const hotbar = document.querySelector('#hotbar');
-    if (!hotbar) {
-      this.element.style.bottom = '80px';
+    const rect = hotbar?.getBoundingClientRect();
+    // Hotbar absent OR hidden (display:none → zero-size rect): the Cabinet
+    // rests at a fixed margin off the viewport bottom rather than trying to
+    // measure a surface that isn't there. Without this, a hidden hotbar
+    // reports rect.top = 0 and the Cabinet would fly to the top of the screen.
+    if (!hotbar || !rect || rect.height === 0) {
+      this.element.style.bottom = '24px';
       return;
     }
-    const rect = hotbar.getBoundingClientRect();
     // Distance from viewport bottom to hotbar's top edge.
     const hotbarTopFromBottom = window.innerHeight - rect.top;
     // 2 px gap so the two surfaces read as one composite UI without
@@ -257,29 +353,60 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   // ── Action handlers ──────────────────────────────────────────────────────
 
+  /** Toggle a surface. Persistent surfaces flip a body class; launcher
+   *  surfaces open their window when off and close it when on. The switch
+   *  is flipped optimistically on the live DOM (so it animates and never
+   *  lags an async window render); state is only re-read on the next full
+   *  render (e.g. when the drawer is reopened). */
   static async #toggleSurface(event, target) {
     const surfaceId = target.dataset.surfaceId;
     if (!surfaceId) return;
-    const wasVisible = this.isVisible(surfaceId);
-    return this._setVisible(surfaceId, !wasVisible);
-  }
-
-  /** Open the launcher modal for a `kind: 'launcher'` surface. Does NOT
-   *  toggle visibility (launchers don't have visibility state). */
-  static async #launchSurface(event, target) {
-    const surfaceId = target.dataset.surfaceId;
-    if (!surfaceId) return;
     const surface = COWORK_SURFACES.find(s => s.id === surfaceId);
-    const fn = surface?.launcherKey ? LAUNCHERS[surface.launcherKey] : null;
-    if (typeof fn !== 'function') {
-      console.warn(`[GS Cabinet] No launcher registered for surface "${surfaceId}".`);
+    if (!surface) return;
+
+    if (surface.kind === 'launcher') {
+      const wasOpen = this._isLauncherOpen(surface);
+      if (wasOpen) {
+        // Closing — flip the switch in place, keep the drawer open.
+        this._reflectToggle(surfaceId, false);
+        try {
+          await this._closeLauncher(surface);
+        } catch (err) {
+          console.error(`[GS Cabinet] Launcher "${surfaceId}" close failed:`, err);
+          this._reflectToggle(surfaceId, true); // revert on failure
+        }
+        return;
+      }
+      // Opening — flip the switch on, launch the window, and keep the
+      // drawer open. The window is lifted above the Cabinet afterwards.
+      this._reflectToggle(surfaceId, true);
+      try {
+        const fn = LAUNCHERS[surface.launcherKey];
+        if (typeof fn === 'function') await fn();
+        else console.warn(`[GS Cabinet] No launcher registered for "${surfaceId}".`);
+      } catch (err) {
+        console.error(`[GS Cabinet] Launcher "${surfaceId}" open failed:`, err);
+        this._reflectToggle(surfaceId, false); // revert on failure
+        return;
+      }
+      // Defer one frame so the window has finished its async render, then
+      // pull it to the front above the still-open Cabinet drawer, AND
+      // re-sync the switch with reality. The sync matters for "action"
+      // launchers (Reset Campaign): after the confirm dialog dismisses,
+      // nothing is rendered, so the switch should flip back to OFF instead
+      // of staying optimistically ON.
+      requestAnimationFrame(() => {
+        const app = this._launcherApp(surface);
+        if (app?.bringToFront) app.bringToFront();
+        else if (app?.bringToTop) app.bringToTop();
+        this._reflectToggle(surface.id, !!app?.rendered);
+      });
       return;
     }
-    try {
-      await fn();
-    } catch (err) {
-      console.error(`[GS Cabinet] Launcher "${surfaceId}" failed:`, err);
-    }
+
+    const next = !this.isVisible(surfaceId);
+    this._reflectToggle(surfaceId, next);
+    await this._setVisible(surfaceId, next);
   }
 
   static #toggleDrawer() {
@@ -288,11 +415,22 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static async #hideAll() {
-    const next = this._activeSurfaces()
+    const surfaces = this._activeSurfaces();
+    // Persistent surfaces — hide via body class.
+    const next = surfaces
       .filter(s => s.kind !== 'launcher')
       .reduce((o, s) => ({ ...o, [s.id]: false }), {});
     await game.user.setFlag(FLAG_SCOPE, FLAG_KEY, next);
     this._applyVisibility();
+    // Launcher surfaces — close any open popup windows too.
+    for (const s of surfaces) {
+      if (s.kind !== 'launcher' || !this._isLauncherOpen(s)) continue;
+      try {
+        await this._closeLauncher(s);
+      } catch (err) {
+        console.error(`[GS Cabinet] hideAll: closing "${s.id}" failed:`, err);
+      }
+    }
     this.render({ parts: ['cabinet'] });
   }
 

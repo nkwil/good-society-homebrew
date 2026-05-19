@@ -2,7 +2,7 @@ const { StringField, NumberField, ArrayField, SchemaField, EmbeddedDataField, HT
 import { PersonaModel } from './persona.js';
 
 /**
- * Connection theme choices — the 5 dedicated connection variants PLUS every
+ * Connection theme choices — the 7 dedicated connection variants PLUS every
  * Major theme (including secret) so connections can pick from the full
  * palette. Default stays at `connection-green` for fresh actors. The Major
  * themes use light cream paper or dark themes (avril/pearlinda/secret) and
@@ -11,7 +11,7 @@ import { PersonaModel } from './persona.js';
 const CONNECTION_THEMES = [
   // Connection-dedicated variants
   'connection-green', 'connection-purple', 'connection-blue',
-  'connection-yellow', 'connection-grey',
+  'connection-yellow', 'connection-orange', 'connection-red', 'connection-grey',
   // Major themes — connections may opt into the full palette
   'rose', 'roger', 'clayton', 'dixon', 'avril', 'pearlinda', 'secret',
 ];

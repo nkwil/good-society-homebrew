@@ -7,6 +7,12 @@
       <header class="gs-section-header" data-tooltip-key="familyNotes">
         {{localize "GOODSOCIETY.family.notes"}}
       </header>
+      <button type="button" class="gs-item-sheet__edit-btn"
+              data-action="editNotes"
+              title="{{localize 'GOODSOCIETY.common.edit'}}"
+              aria-label="{{localize 'GOODSOCIETY.common.edit'}}">
+        <span aria-hidden="true">✎</span>
+      </button>
     </div>
     <button class="gs-visibility-flag gs-visibility-flag--{{system.visibility.notes}}"
             type="button"
@@ -16,8 +22,14 @@
     </button>
   </div>
 
-  <div class="gs-family-sheet__notes-body">
-    {{editor system.notes target="system.notes" button=true editable=true}}
+  {{!-- Notes — read-only enriched render; editing opens a DialogV2 via the
+       ✎ button. v13's {{editor}} helper doesn't open in ApplicationV2. --}}
+  <div class="gs-family-sheet__notes-body gs-item-sheet__description-body">
+    {{#if enrichedNotes}}
+      {{{enrichedNotes}}}
+    {{else}}
+      <p class="gs-item-sheet__description-placeholder"><em>{{localize "GOODSOCIETY.common.noDescription"}}</em></p>
+    {{/if}}
   </div>
 
 </section>

@@ -66,6 +66,7 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       submitSpread:    RumourWizard.#submitSpread,
       gmAdvance:       RumourWizard.#gmAdvance,
       runFadeout:      RumourWizard.#runFadeout,
+      forceComplete:   RumourWizard.#forceComplete,
     },
   };
 
@@ -296,6 +297,22 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #runFadeout() {
     if (!game.user?.isGM) return;
+    await finishPhase();
+    await this.close();
+  }
+
+  /**
+   * GM escape hatch — force-end the phase from any state. Useful when a
+   * player on their turn disconnected, or when the GM wants to short-circuit
+   * the round-robin and run fadeout immediately. Same as runFadeout but
+   * callable from the active-phase view, not just the fadeout view.
+   */
+  static async #forceComplete() {
+    if (!game.user?.isGM) return;
+    const confirmed = window.confirm(
+      game.i18n.localize('GOODSOCIETY.rumourWizard.forceCompleteConfirm'),
+    );
+    if (!confirmed) return;
     await finishPhase();
     await this.close();
   }

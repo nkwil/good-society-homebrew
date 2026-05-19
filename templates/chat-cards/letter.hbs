@@ -21,13 +21,15 @@
   <p class="gs-letter-card__subject">{{letter.subject}}</p>
 {{/if}}
 {{#if letter.greetingLine}}
-  <p class="gs-letter-card__greeting">{{letter.greetingLine}}</p>
+  <p class="gs-letter-card__greeting"
+     {{#if letter.scriptFontFamily}}style="font-family: {{letter.scriptFontFamily}}; font-size: 1.5em; line-height: 1.35;"{{/if}}>{{letter.greetingLine}}</p>
 {{/if}}
 <div class="gs-letter-card__body">{{letter.body}}</div>
 {{#if letter.closingLine}}
   <p class="gs-letter-card__closing">{{letter.closingLine}}</p>
 {{/if}}
-<p class="gs-letter-card__signature">{{speakerName}}</p>
+<p class="gs-letter-card__signature"
+   {{#if letter.scriptFontFamily}}style="font-family: {{letter.scriptFontFamily}}; font-size: 1.6em; line-height: 1.35;"{{/if}}>{{speakerName}}</p>
 {{#if letter.seal}}
   <div class="gs-letter-card__footer">
     {{!-- The disc indicator pulls its imagery from the seal's iconAsset via

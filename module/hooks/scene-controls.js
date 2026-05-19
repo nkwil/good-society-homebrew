@@ -22,6 +22,25 @@ import { openRumourBoard } from '../apps/rumour-board.js';
 import { openNovelReader } from '../apps/novel-reader.js';
 import { openEventCommandCenter } from '../apps/event-command-center.js';
 
+/**
+ * Deactivate the active scene so the canvas drops to the Arrival splash —
+ * without needing another scene to activate. Foundry has no built-in
+ * "no active scene" control; this provides one. The Arrival then renders
+ * the current phase's splash (or the default) via arrival-sync.
+ */
+async function _returnToSplash() {
+  const active = game.scenes?.active;
+  if (!active) {
+    ui.notifications?.info(game.i18n.localize('GOODSOCIETY.phaseSplash.noActiveScene'));
+    return;
+  }
+  try {
+    await active.update({ active: false });
+  } catch (err) {
+    console.warn('GS | return-to-splash failed:', err);
+  }
+}
+
 export function register() {
   Hooks.on('getSceneControlButtons', (controls) => {
     // Prefer the 'notes' control group; fall back to the first group.
@@ -120,19 +139,30 @@ export function register() {
       visible: game.user?.isGM,
     };
 
+    // Deactivate the active scene → drop to the Arrival splash. GM-only.
+    const splashTool = {
+      name: 'gs-return-to-splash',
+      title: 'GOODSOCIETY.phaseSplash.sceneControlTitle',
+      icon: 'fa-solid fa-door-open',
+      button: true,
+      onChange: () => _returnToSplash(),
+      visible: game.user?.isGM,
+    };
+
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool, rumourTool, novelReaderTool, eventsTool);
+      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool, rumourTool, novelReaderTool, eventsTool, splashTool);
     } else {
-      target.tools['gs-dashboard']    = dashboardTool;
-      target.tools['gs-organizer']    = organizerTool;
-      target.tools['gs-permissions']  = permissionsTool;
-      target.tools['gs-end-session']  = endSessionTool;
-      target.tools['gs-calendar']     = calendarTool;
-      target.tools['gs-letter']       = letterTool;
-      target.tools['gs-rumours']      = rumourTool;
-      target.tools['gs-novel-reader'] = novelReaderTool;
-      target.tools['gs-events']       = eventsTool;
+      target.tools['gs-dashboard']        = dashboardTool;
+      target.tools['gs-organizer']        = organizerTool;
+      target.tools['gs-permissions']      = permissionsTool;
+      target.tools['gs-end-session']      = endSessionTool;
+      target.tools['gs-calendar']         = calendarTool;
+      target.tools['gs-letter']           = letterTool;
+      target.tools['gs-rumours']          = rumourTool;
+      target.tools['gs-novel-reader']     = novelReaderTool;
+      target.tools['gs-events']           = eventsTool;
+      target.tools['gs-return-to-splash'] = splashTool;
     }
   });
 }

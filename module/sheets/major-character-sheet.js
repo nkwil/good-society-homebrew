@@ -98,6 +98,12 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       // edit theme via the persona editor; this handler covers the
       // true-identity case where there's no persona to edit.
       editTrueIdentityTheme: MajorCharacterSheet.#editTrueIdentityTheme,
+      // GM-only: author + grant a reputation condition directly. Opens a
+      // DialogV2 to pick polarity + name + description; creates the
+      // condition item on the actor with `active: true` and adds it to
+      // system.reputation.activeConditions.
+      addCondition:     MajorCharacterSheet.#addCondition,
+      removeCondition:  MajorCharacterSheet.#removeCondition,
     },
   };
 
@@ -326,6 +332,33 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
         };
       });
 
+    // Connection alt-spreads — paginated TWO-PER-SPREAD so the dossier reads
+    // as a real book: each spread is a left page + right page, both filled
+    // with a connection (the right page falls back to a quiet blank slot
+    // only when there's an odd connection out). Flip between spreads with
+    // the prev/next pager. Each spread's data-spread id is `conn-spread-N`.
+    //
+    // Every resolved connection is tagged with `spreadId` so the connection
+    // chips on the character spread can jump straight to the spread that
+    // CONTAINS that connection (chip click → showSpread → conn-spread-N).
+    const connectionSpreads = [];
+    for (let i = 0; i < connectionsResolved.length; i += 2) {
+      const idx = connectionSpreads.length;
+      const spreadId = `conn-spread-${idx}`;
+      const left  = connectionsResolved[i];
+      const right = connectionsResolved[i + 1] ?? null;
+      if (left)  left.spreadId  = spreadId;
+      if (right) right.spreadId = spreadId;
+      connectionSpreads.push({ index: idx, spreadId, left, right });
+    }
+    // Wire prev/next ids now that the array is complete.
+    connectionSpreads.forEach((s, i) => {
+      s.prevId = i > 0 ? connectionSpreads[i - 1].spreadId : null;
+      s.nextId = i < connectionSpreads.length - 1 ? connectionSpreads[i + 1].spreadId : null;
+      s.pageLabel = `${i + 1} / ${connectionSpreads.length}`;
+      s.hasMultiple = connectionSpreads.length > 1;
+    });
+
     // Backstory pages — split by `<hr class="page-break">` (option B in the
     // patch). Authors insert page breaks deliberately; no migration needed.
     //
@@ -463,6 +496,11 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       activeConditions,
       activeConflicts,
       completedConflicts,
+      // Show the Active Reputation section for the GM even when empty,
+      // so they always have a "+ add condition" affordance. Players only
+      // see the section when conditions actually exist.
+      isGM: !!game.user?.isGM,
+      showActiveRepSection: activeConditions.length > 0 || !!game.user?.isGM,
       // Private tab
       visibility: system.visibility ?? {},
       connectionActors,
@@ -470,6 +508,7 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       // Post-MVP §4 dossier extras
       currentSpread: this._currentSpread,
       connectionsResolved,
+      connectionSpreads,
       backstoryPages,
       backstoryHasMultiplePages,
       backstoryTeaser,
@@ -1014,6 +1053,106 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
   static async #openActor(event, target) {
     const actor = game.actors?.get(target.dataset.actorId);
     actor?.sheet?.render(true);
+  }
+
+  /**
+   * GM: author + grant a reputation condition directly on this Major.
+   * Opens a DialogV2 with polarity + name + description fields. On submit
+   * creates the reputation-condition Item with `active: true` and adds
+   * its id to system.reputation.activeConditions so it renders in the
+   * Active Reputation chip strip immediately.
+   */
+  static async #addCondition() {
+    if (!game.user?.isGM) return;
+    const DialogV2 = foundry.applications.api.DialogV2;
+    const result = await DialogV2.prompt({
+      window: { title: game.i18n.localize('GOODSOCIETY.dossier.addConditionTitle') },
+      position: { width: 480 },
+      content: `
+        <p style="margin: 0 0 12px 0; font-size: 12px; opacity: 0.75;">
+          <em>${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.dossier.addConditionHelp'))}</em>
+        </p>
+        <div style="display: flex; gap: 12px; margin-bottom: 10px;">
+          <label style="display: inline-flex; align-items: center; gap: 6px;">
+            <input type="radio" name="polarity" value="positive" checked />
+            <span>${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.polarity.positive'))}</span>
+          </label>
+          <label style="display: inline-flex; align-items: center; gap: 6px;">
+            <input type="radio" name="polarity" value="negative" />
+            <span>${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.polarity.negative'))}</span>
+          </label>
+        </div>
+        <label style="display: block; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;">
+          ${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.dossier.conditionNameLabel'))}
+        </label>
+        <input type="text" name="name" required
+               placeholder="${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.dossier.conditionNamePlaceholder'))}"
+               style="width: 100%; padding: 6px 10px; margin-bottom: 10px;" />
+        <label style="display: block; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;">
+          ${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.dossier.conditionDescriptionLabel'))}
+        </label>
+        <textarea name="description" rows="3"
+                  placeholder="${foundry.utils.escapeHTML(game.i18n.localize('GOODSOCIETY.dossier.conditionDescriptionPlaceholder'))}"
+                  style="width: 100%; padding: 6px 10px;"></textarea>
+      `,
+      ok: {
+        label: game.i18n.localize('GOODSOCIETY.dossier.addConditionConfirm'),
+        callback: (event, button) => {
+          const form = button.form;
+          return {
+            polarity:    form.elements.polarity.value || 'positive',
+            name:        form.elements.name.value?.trim() ?? '',
+            description: form.elements.description.value?.trim() ?? '',
+          };
+        },
+      },
+      rejectClose: false,
+    });
+    if (!result?.name) return;
+
+    // Create the condition item and link it into activeConditions.
+    const created = await this.actor.createEmbeddedDocuments('Item', [{
+      name:        result.name,
+      type:        'reputation-condition',
+      system: {
+        polarity:    result.polarity,
+        description: result.description ? `<p>${result.description}</p>` : '',
+        active:      true,
+        sourceTagIds: [],
+      },
+    }]);
+    const newId = created?.[0]?.id;
+    if (newId) {
+      const next = [...(this.actor.system?.reputation?.activeConditions ?? []), newId];
+      await this.actor.update({ 'system.reputation.activeConditions': next });
+    }
+  }
+
+  /**
+   * GM: revoke a granted reputation condition from this Major. Removes
+   * the id from activeConditions AND deletes the underlying item (GM
+   * intent: "this condition no longer applies"). Player-visible chip
+   * disappears on next render.
+   */
+  static async #removeCondition(event, target) {
+    // Stop the parent chip's openItem action from firing too.
+    event?.stopPropagation?.();
+    if (!game.user?.isGM) return;
+    const itemId = target?.dataset?.itemId;
+    if (!itemId) return;
+    const item = this.actor.items?.get(itemId);
+    if (!item) return;
+    const DialogV2 = foundry.applications.api.DialogV2;
+    const confirmed = await DialogV2.confirm({
+      window: { title: game.i18n.localize('GOODSOCIETY.dossier.removeConditionTitle') },
+      content: `<p>${foundry.utils.escapeHTML(game.i18n.format(
+        'GOODSOCIETY.dossier.removeConditionConfirm', { name: item.name },
+      ))}</p>`,
+    });
+    if (!confirmed) return;
+    const next = (this.actor.system?.reputation?.activeConditions ?? []).filter(id => id !== itemId);
+    await this.actor.update({ 'system.reputation.activeConditions': next });
+    await item.delete();
   }
 
   /**

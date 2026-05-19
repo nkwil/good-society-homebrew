@@ -1,0 +1,24 @@
+<section class="gs-pregame">
+  <header class="gs-pregame__head">
+    <span class="gs-eyebrow">{{localize "GOODSOCIETY.pregame.eyebrow"}}</span>
+    <h2 class="gs-pregame__title">{{heading}}</h2>
+    <p class="gs-pregame__intro">{{{intro}}}</p>
+  </header>
+
+  <div class="gs-pregame__body">
+    {{#each sections}}
+      <article class="gs-pregame__section">
+        <span class="gs-pregame__section-eyebrow">{{eyebrow}}</span>
+        <h3 class="gs-pregame__section-title">{{title}}</h3>
+        <div class="gs-pregame__section-body">{{{body}}}</div>
+      </article>
+    {{/each}}
+  </div>
+
+  <footer class="gs-pregame__foot">
+    <p class="gs-pregame__foot-hint">{{localize "GOODSOCIETY.pregame.reopenHint"}}</p>
+    <button type="button" class="gs-btn gs-btn--primary" data-action="dismiss">
+      {{localize "GOODSOCIETY.pregame.dismissBtn"}}
+    </button>
+  </footer>
+</section>

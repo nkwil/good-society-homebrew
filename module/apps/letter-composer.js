@@ -10,12 +10,14 @@
 import { postLetterCard } from '../helpers/chat-cards.js';
 import { themedWrap } from '../helpers/themed-wrap.js';
 import { letterFolder, entryFlags } from '../helpers/journal-folders.js';
-import { SEAL_TYPES } from '../constants.js';
+import { profileName, explicitPersona } from '../helpers/profile-pic.js';
+import { SEAL_TYPES, SCRIPT_FONTS, scriptFontFamily } from '../constants.js';
 
 const { HandlebarsApplicationMixin, ApplicationV2, DialogV2 } = foundry.applications.api;
 
 const TEMPLATE   = 'systems/good-society-homebrew/templates/apps/letter-composer.hbs';
 const LETTER_TPL = 'systems/good-society-homebrew/templates/chat-cards/letter.hbs';
+const NS         = 'good-society-homebrew';
 
 /**
  * Seal vocabulary — sourced from the typed registry in `module/constants.js`.
@@ -78,8 +80,20 @@ function _formatSalutation(kind, id, vars = {}) {
 
 let _composer = null;
 
-export function openLetterComposer() {
+/**
+ * Open the letter composer. Pass `fromActorId` to pre-select the sender — used
+ * when launching from the Epistolary Wizard so the inbox's active character is
+ * already chosen in the FROM dropdown. Ignored if the actor isn't a sendable
+ * (owned Major/Connection).
+ */
+export function openLetterComposer(fromActorId = null) {
   if (!_composer) _composer = new LetterComposer();
+  if (fromActorId) {
+    const actor = game.actors?.get(fromActorId);
+    if (actor?.isOwner && (actor.type === 'major-character' || actor.type === 'connection')) {
+      _composer._state.fromActorId = fromActorId;
+    }
+  }
   _composer.render(true);
 }
 
@@ -95,6 +109,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       seal:        '',
       greeting:    DEFAULT_GREETING,
       closing:     DEFAULT_CLOSING,
+      scriptFont:  'none',
     };
     this._lastSaved       = null;
     this._draftInterval   = null;
@@ -138,9 +153,12 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     const ownedActors = game.actors
       .filter(a => a.isOwner && (a.type === 'major-character' || a.type === 'connection'))
       .map(a => {
-        const persona     = a.system.activePersona;
-        const displayName = persona?.name || a.name;
-        const subtitle    = (persona && !persona.isPrimary)
+        // Resolve persona/name via the explicit-only helpers — the data-model
+        // `activePersona` getter falls back to the primary/first persona when
+        // `activePersonaId` is empty (the "Mags stuck" bug).
+        const persona     = explicitPersona(a);
+        const displayName = profileName(a);
+        const subtitle    = persona
           ? `${game.i18n.localize('GOODSOCIETY.letterComposer.as')} ${persona.name} · ${a.system.theme}`
           : a.system.theme;
         return { id: a.id, displayName, subtitle };
@@ -161,7 +179,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
         return td !== 0 ? td : (a.name || '').localeCompare(b.name || '');
       })
       .map(a => {
-        const displayName = a.system.activePersona?.name || a.name;
+        const displayName = profileName(a);
         const typeLabel   = game.i18n.localize(`TYPES.Actor.${a.type}`) || a.type;
         return { id: a.id, displayName, typeLabel };
       });
@@ -189,6 +207,14 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     });
     ctx.greetings = GREETING_IDS.map(id => _optionFor('greetings', id, id === this._state.greeting));
     ctx.closings  = CLOSING_IDS .map(id => _optionFor('closings',  id, id === this._state.closing));
+
+    // Script-font picker — calligraphy faces for the greeting + signature.
+    ctx.scriptFonts = SCRIPT_FONTS.map(f => ({
+      id: f.id,
+      label: game.i18n.localize(`GOODSOCIETY.scriptFont.${f.label}`) || f.label,
+      family: f.family,
+      selected: f.id === this._state.scriptFont,
+    }));
 
     ctx.state     = { ...this._state };
 
@@ -283,6 +309,8 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     if (greeting) this._state.greeting = greeting;
     const closing  = get('closing');
     if (closing)  this._state.closing  = closing;
+    const scriptFont = get('scriptFont');
+    if (scriptFont) this._state.scriptFont = scriptFont;
   }
 
   /**
@@ -294,7 +322,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
   _buildLetterPayload() {
     const recipientName = this._resolveToName();
     const actor         = game.actors.get(this._state.fromActorId);
-    const senderName    = actor ? (actor.system?.activePersona?.name || actor.name) : '';
+    const senderName    = actor ? profileName(actor) : '';
     // Resolve the localized seal label + the asset path so the preview +
     // archive render both the human-readable string and the actual wax-seal
     // image in the chat-card footer.
@@ -323,6 +351,8 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       closing:      this._state.closing  || '',
       greetingLine: _formatSalutation('greetings', this._state.greeting, { name: recipientName }),
       closingLine:  _formatSalutation('closings',  this._state.closing,  { sender: senderName }),
+      scriptFont:       this._state.scriptFont || 'none',
+      scriptFontFamily: scriptFontFamily(this._state.scriptFont),
     };
   }
 
@@ -353,13 +383,13 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
 
   _resolveToName() {
     const actor = game.actors.get(this._state.toActorId);
-    return actor ? (actor.system.activePersona?.name || actor.name) : '';
+    return actor ? profileName(actor) : '';
   }
 
   async _buildPreviewHtml(cycleNumber = null) {
     const actor       = game.actors.get(this._state.fromActorId) ?? null;
-    const persona     = actor?.system?.activePersona ?? null;
-    const speakerName = persona?.name || actor?.name || '—';
+    const persona     = explicitPersona(actor);
+    const speakerName = actor ? profileName(actor) : '—';
     const letter      = this._buildLetterPayload();
     const inner = await foundry.applications.handlebars.renderTemplate(LETTER_TPL, {
       actor, persona, letter, cycleNumber, speakerName,
@@ -371,7 +401,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _archiveToJournal(actor, persona, letter, cycleNumber, recipientActor) {
     try {
-      const speakerName    = persona?.name || actor.name;
+      const speakerName    = profileName(actor);
       const recipientLabel = letter.to || game.i18n.localize('GOODSOCIETY.letterComposer.unknownRecipient');
       const cycleLabel     = game.i18n.localize('GOODSOCIETY.letterComposer.cycle');
       const entryName      = cycleNumber
@@ -383,7 +413,9 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       });
       const html = themedWrap(actor, inner, ['gs-letter-card']);
 
-      // Build ownership — sender is OWNER, recipient's owners get OBSERVER
+      // Build ownership — sender is OWNER, recipient's owners get OBSERVER.
+      // Use the sending user's id, but if archive is GM-delegated we keep the
+      // sender in the ownership map so they retain OWNER on the entry.
       const ownership = { default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE };
       ownership[game.user.id] = CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
       if (recipientActor) {
@@ -394,15 +426,33 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
           });
       }
 
-      // Resolve recipient inbox folder via the centralized helper.
-      // Use the recipient actor's display name (persona-aware) when available;
-      // otherwise fall back to the literal TO field text — both produce a
-      // valid Foundry folder name.
       const recipientFolderKey = recipientActor
-        ? (recipientActor.system?.activePersona?.name || recipientActor.name)
+        ? profileName(recipientActor)
         : recipientLabel;
-      const folder = await letterFolder(recipientFolderKey);
 
+      // GM-only privileges: creating folders and JournalEntries both require
+      // permissions players don't have by default. If a non-GM user calls
+      // this, delegate the whole archive step to the first GM client via the
+      // system socket. The send-to-chat step itself already succeeded by the
+      // time we get here; the archive is the only privileged write.
+      if (!game.user?.isGM) {
+        if (game.socket) {
+          game.socket.emit(`system.${NS}`, {
+            type: 'letter.archiveRequest',
+            entryName,
+            html,
+            ownership,
+            recipientFolderKey,
+            cycleNumber,
+            speakerActorId: actor.id,
+            requestedBy: game.user.id,
+          });
+        }
+        return;
+      }
+
+      // GM-side direct write.
+      const folder = await letterFolder(recipientFolderKey);
       await JournalEntry.create({
         name: entryName,
         ...(folder ? { folder: folder.id } : {}),
@@ -457,7 +507,8 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       return;
     }
 
-    const persona = actor.system.activePersona ?? null;
+    // Explicit persona only — never the data-model getter's primary fallback.
+    const persona = explicitPersona(actor);
     // Build via the same helper the preview uses so archived + chat-emitted
     // letters render identically. trim body to drop trailing whitespace
     // that snuck in via the textarea.
@@ -477,7 +528,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     Hooks.callAll('goodSociety.epistolarySent', {
       actorId:          actor.id,
       actorName:        actor.name,
-      speakerName:      persona?.name || actor.name,
+      speakerName:      profileName(actor),
       recipientActorId: recipientActor.id,
       letter,
       cycleNumber,

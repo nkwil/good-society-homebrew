@@ -19,12 +19,20 @@
 #gs-cabinet,
 .application.gs-cabinet {
   position: fixed !important;
-  bottom: 64px !important;       /* Clear the macro hotbar (~50–58 px) plus breathing room. */
+  /* Initial resting position only — `_anchorAboveHotbar()` overrides this
+   * inline on every render: flush above the macro hotbar when it's shown,
+   * or 24px off the viewport bottom when the hotbar is hidden. No
+   * `!important` here so the JS inline style wins. */
+  bottom: 24px;
   left: 50% !important;
   top: auto !important;
   right: auto !important;
   transform: translateX(-50%);
-  z-index: 50 !important;
+  /* The Cabinet is a tray — always on top of every application window, so
+   * neither the rail nor the open drawer is ever hidden behind a popup.
+   * Launched modules use Foundry's normal window z-range (~100s) and so
+   * naturally sit in front of other windows but behind this tray. */
+  z-index: 1000 !important;
   background: transparent;
   border: 0;
   padding: 0;
@@ -62,34 +70,34 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 11px;
+  padding: 11px 22px;
   background: var(--gs-paper);
   border: 0.5px solid var(--gs-accent-2);
   /* Rounded rectangle to match the macro hotbar — was a 100px stadium pill;
    * the flatter ends keep the rail and hotbar visually consistent. */
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(20, 12, 14, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 3px 16px rgba(20, 12, 14, 0.14);
 }
 
 /* Divider is now a vertical hairline between horizontal buttons. */
 .gs-cabinet-rail__divider {
   width: 0.5px;
-  height: 18px;
+  height: 32px;
   background: var(--gs-accent-2);
   opacity: 0.4;
-  margin: 0 2px;
+  margin: 0 4px;
 }
 
 .gs-cabinet-rail-btn {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: var(--gs-paper-warm);
   border: 1px solid var(--gs-accent-2);
   font-family: var(--gs-display);
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: 0;
   color: var(--gs-brand);
@@ -110,10 +118,10 @@
 .gs-cabinet-rail-btn.is-active::after {
   content: '';
   position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 6px;
-  height: 6px;
+  top: 3px;
+  right: 3px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--gs-brand);
   box-shadow: 0 0 0 1px var(--gs-paper);
@@ -146,21 +154,15 @@
   transform: scale(1.06);
 }
 
-/* Launcher rail buttons don't carry an "is-active" state — they always open
- * a modal on click. Suppress the active dot for them. */
-.gs-cabinet-rail-btn--launcher.is-active::after {
-  content: none;
-}
-
 .gs-cabinet-rail-toggle {
-  width: 28px;
-  height: 28px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: var(--gs-brand);
   color: var(--gs-paper);
   border: 1px solid var(--gs-brand);
   font-family: var(--gs-display);
-  font-size: 14px;
+  font-size: 23px;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -176,9 +178,11 @@
 /* ── Drawer ──────────────────────────────────────────────────────────────── */
 
 .gs-cabinet-drawer {
-  width: 320px;
-  max-height: 70vh;              /* Slightly tighter than vertical layout to keep room above the hotbar. */
-  margin-bottom: 8px;            /* Gap between drawer-above and rail-below. */
+  width: 460px;
+  max-height: 74vh;              /* Slightly tighter than vertical layout to keep room above the hotbar. */
+  margin-bottom: 10px;           /* Gap between drawer-above and rail-below. */
+  /* The rail stays centred; the expanded menu opens a little to the right. */
+  transform: translateX(180px);
   background: var(--gs-paper);
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 10px;
@@ -207,15 +211,15 @@
 .gs-cabinet-drawer__head {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 14px 16px 10px;
+  gap: 3px;
+  padding: 17px 20px 12px;
   background: var(--gs-paper-warm);
   border-bottom: 0.5px solid var(--gs-accent-2);
 }
 
 .gs-cabinet-drawer__head h3 {
   font-family: var(--gs-display);
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--gs-brand);
   margin: 0;
@@ -224,15 +228,15 @@
 .gs-cabinet-drawer__head small {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 12px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-cabinet-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 10px 16px 12px;
+  gap: 6px;
+  padding: 13px 20px 15px;
 }
 
 .gs-cabinet-group + .gs-cabinet-group {
@@ -243,13 +247,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 0;
-  gap: 12px;
+  padding: 6px 0;
+  gap: 14px;
 }
 
 .gs-cabinet-row__name {
   font-family: var(--gs-body);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--gs-ink);
   flex: 1;
   min-width: 0;
@@ -319,49 +323,26 @@
   transform: translateX(20px);
 }
 
-/* Launcher button — for `kind: 'launcher'` rows (GM Tools group). Opens a
- * modal/dialog when clicked instead of toggling visibility. Same outline-pill
- * vocabulary as the drawer's footer buttons so it reads as "action you can
- * take" rather than "state to switch." */
-.gs-cabinet-launcher {
-  font-family: var(--gs-display);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--gs-brand);
-  background: transparent;
-  border: 1px solid var(--gs-brand);
-  border-radius: 100px;
-  padding: 3px 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 120ms ease;
-}
-
-.gs-cabinet-launcher:hover {
-  background: color-mix(in srgb, var(--gs-brand) 8%, transparent);
-}
-
 /* Footer */
 .gs-cabinet-drawer__foot {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 12px 20px;
   background: var(--gs-paper-warm);
   border-top: 0.5px solid var(--gs-accent-2);
 }
 
 .gs-cabinet-drawer__btn {
   font-family: var(--gs-display);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--gs-brand);
   background: transparent;
   border: 1px solid var(--gs-brand);
   border-radius: 100px;
-  padding: 4px 12px;
+  padding: 5px 14px;
   cursor: pointer;
 }
 
@@ -373,7 +354,7 @@
   margin-left: auto;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 10px;
+  font-size: 11px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 

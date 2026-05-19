@@ -117,6 +117,28 @@
   color: var(--gs-brand);
 }
 
+/* Connection-spread pager — flip between facing-page connection spreads.
+ * Absolutely positioned in the spread's top-right corner (mirror of the
+ * back-chip top-left) so it stays OUT of the 2-column grid flow — a grid
+ * item would otherwise steal a column and shove the pages around. */
+.dossier-conn-spread__pager {
+  position: absolute;
+  top: -28px;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dossier-conn-spread__pager-marker {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+
 /* Right-side blank page — same paper card chrome as the active page so the
  * two read as a true book spread, but with reduced visual weight. The hint
  * text + ornament sit centered, italic, subdued. */

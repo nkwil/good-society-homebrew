@@ -305,24 +305,37 @@
           </div>
         </section>
 
-        {{!-- Active reputation chip (collapses entirely when no condition) --}}
-        {{#if activeConditions.length}}
+        {{!-- Active reputation chip — always renders for GMs so they have a
+             clear "+ add condition" affordance. Players see the section
+             only when conditions exist. --}}
+        {{#if showActiveRepSection}}
           <section class="dossier-section dossier-active-rep">
-            <header class="gs-eyebrow">{{localize "GOODSOCIETY.dossier.activeReputation"}}</header>
-            <div class="dossier-active-rep__list">
-              {{#each activeConditions}}
+            <header class="gs-eyebrow dossier-active-rep__head">
+              <span>{{localize "GOODSOCIETY.dossier.activeReputation"}}</span>
+              {{#if isGM}}
                 <button type="button"
-                        class="dossier-active-rep__chip"
-                        data-action="openItem"
-                        data-item-id="{{this.id}}">
-                  <span class="dossier-active-rep__laurel" aria-hidden="true">⚜</span>
-                  <em>{{this.name}}</em>
-                  {{#if this.system.cycleEarned}}
-                    <span class="dossier-active-rep__earned">{{localize "GOODSOCIETY.dossier.earnedCycle"}} {{this.system.cycleEarned}}</span>
-                  {{/if}}
+                        class="dossier-active-rep__add"
+                        data-action="addCondition"
+                        title="{{localize 'GOODSOCIETY.dossier.addConditionTitle'}}">
+                  + {{localize "GOODSOCIETY.dossier.addCondition"}}
                 </button>
-              {{/each}}
-            </div>
+              {{/if}}
+            </header>
+            {{#if activeConditions.length}}
+              <div class="dossier-active-rep__list">
+                {{#each activeConditions}}
+                  <button type="button"
+                          class="dossier-active-rep__chip dossier-active-rep__chip--{{this.system.polarity}}"
+                          data-action="openItem"
+                          data-item-id="{{this.id}}">
+                    <span class="dossier-active-rep__laurel" aria-hidden="true">{{#if (eq this.system.polarity "positive")}}▲{{else}}▼{{/if}}</span>
+                    <em>{{this.name}}</em>
+                  </button>
+                {{/each}}
+              </div>
+            {{else}}
+              <p class="dossier-active-rep__empty">{{localize "GOODSOCIETY.dossier.noConditionsGMHint"}}</p>
+            {{/if}}
           </section>
         {{/if}}
 
@@ -607,7 +620,7 @@
                         class="dossier-connection-chip gs-themed{{#if this.isNpc}} dossier-connection-chip--npc{{/if}}"
                         data-theme="{{this.theme}}"
                         data-action="showSpread"
-                        data-goto="conn-{{this.id}}"
+                        data-goto="{{this.spreadId}}"
                         data-actor-id="{{this.id}}"
                         title="{{this.displayName}}">
                   <span class="dossier-connection-chip__disc" aria-hidden="true">

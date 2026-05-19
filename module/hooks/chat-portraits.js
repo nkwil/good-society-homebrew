@@ -1,77 +1,125 @@
 /**
- * chat-portraits.js — swap Foundry's default chat-message speaker portrait
- * (which uses `actor.img`) for the post-MVP §8.5 token-based profile pic.
+ * chat-portraits.js — render a speaker portrait (token-based, persona-aware)
+ * next to the sender name on every Good Society chat message.
  *
- * Foundry v13 renders the speaker portrait inside each chat message at one of
- * a few selectors depending on the build (`.message-sender img.avatar`,
- * `.chat-message header .avatar`, `img.message-portrait`, etc.). We listen to
- * `renderChatMessageHTML` (v13) AND legacy `renderChatMessage` (older v13
- * builds and other systems' message styles) and rewrite any portrait img we
- * find to the result of `profilePic(actor)`.
+ * Foundry v13's default chat message renders only a text sender — no avatar.
+ * This hook injects a small circular portrait based on `profilePic(actor)`
+ * (post-MVP §8.5 — token image, with active-persona override) right before
+ * the sender name in `.message-header`.
  *
- * Defensive — we never fail loudly if the portrait can't be resolved; we
- * just leave the original src in place.
+ * Speaker resolution prefers `message.speaker.actor` (set by speaking-as +
+ * every chat-card helper), then falls back to `flags['good-society-homebrew']
+ * .speakerActorId` we stamp on themed cards.
  */
 
-import { profilePic } from '../helpers/profile-pic.js';
+import { profilePic, profileName } from '../helpers/profile-pic.js';
+import { effectiveThemeOf } from '../helpers/themed-wrap.js';
 
 const NS = 'good-society-homebrew';
+const PORTRAIT_CLASS = 'gs-chat-portrait';
 
-/** Resolve the actor a chat message is "speaking as." Prefers the explicit
- *  speaker.actor (set by the speaking-as pipeline + every chat-card helper),
- *  with a fallback to the chat-card flag we stamp on themed cards. */
 function _resolveSpeakerActor(message) {
-  const speakerActorId = message?.speaker?.actor;
-  if (speakerActorId) {
-    const actor = game.actors?.get(speakerActorId);
-    if (actor) return actor;
-  }
   const flagActorId = message?.flags?.[NS]?.speakerActorId;
   if (flagActorId) {
     const actor = game.actors?.get(flagActorId);
     if (actor) return actor;
   }
+  const speakerActorId = message?.speaker?.actor;
+  if (speakerActorId) {
+    const actor = game.actors?.get(speakerActorId);
+    if (actor) return actor;
+  }
   return null;
 }
 
-/** Swap the avatar img src on a rendered chat message element. */
+/** Inject the portrait into the rendered chat-message DOM AND theme the
+ *  message to the speaker's effective theme. Idempotent — safe to re-run
+ *  on re-renders / persona swaps. */
 function _applyPortrait(message, root) {
   if (!root) return;
   const actor = _resolveSpeakerActor(message);
   if (!actor) return;
-  const url = profilePic(actor);
-  if (!url) return;
-  // v13 renders one of these depending on the build / chat style. Patch all
-  // matches so the change works across versions.
-  const selectors = [
-    '.message-sender img.avatar',
-    '.message-header img.avatar',
-    'header.message-header img',
-    'img.message-portrait',
-    '.chat-portrait',
-    'img.chat-portrait',
-  ];
-  for (const sel of selectors) {
-    const imgs = root.querySelectorAll(sel);
-    for (const img of imgs) {
-      if (img.tagName === 'IMG' && img.src !== url) {
-        img.src = url;
-      }
+
+  // ── Theme the whole message row to the speaker's effective theme ────────
+  // `gs-themed` + data-theme cascades the theme's CSS variables to every
+  // descendant, so the sender name, timestamp, and card chrome all pick up
+  // the character's palette. The inner themedWrap()'d card content keeps
+  // its own wrapper, which simply re-asserts the same theme — no conflict.
+  const theme = effectiveThemeOf(actor);
+  if (theme) {
+    root.classList.add('gs-themed', 'gs-chat-themed');
+    root.dataset.theme = theme;
+    // Persona chatColor override — if the active persona has a custom chat
+    // color, apply it as an inline --gs-brand override (mirrors themedWrap).
+    const persona = actor.system?.activePersonaId
+      ? (actor.system.personas ?? []).find(p => p.id === actor.system.activePersonaId)
+      : null;
+    if (persona?.chatColor) {
+      root.style.setProperty('--gs-brand', persona.chatColor);
+    } else {
+      root.style.removeProperty('--gs-brand');
     }
   }
+
+  // ── Portrait ────────────────────────────────────────────────────────────
+  const url = profilePic(actor);
+  if (!url) return;
+  const name = profileName(actor);
+
+  // Find or create the portrait img. Prefer to refresh the existing one
+  // (re-renders can fire with stale src on persona swaps).
+  let img = root.querySelector(`img.${PORTRAIT_CLASS}`);
+  if (!img) {
+    // Locate the insertion point: just before the sender name in the header.
+    const header = root.querySelector('.message-header, header.message-header');
+    if (!header) return;
+    img = document.createElement('img');
+    img.classList.add(PORTRAIT_CLASS);
+    img.alt = name;
+    img.title = name;
+    img.loading = 'lazy';
+    header.prepend(img);
+  }
+  if (img.src !== url) img.src = url;
+  if (img.alt !== name) img.alt = name;
+  if (img.title !== name) img.title = name;
+}
+
+/** Refresh every currently-rendered chat message — used when a persona swap
+ *  happens so existing cards re-pick the new portrait without a reload. */
+function _refreshAll() {
+  document.querySelectorAll('li.chat-message, .chat-message').forEach((row) => {
+    const id = row.dataset?.messageId;
+    if (!id) return;
+    const msg = game.messages?.get(id);
+    if (msg) _applyPortrait(msg, row);
+  });
 }
 
 export function register() {
   // v13 (newer builds): renderChatMessageHTML — root is an HTMLElement.
   Hooks.on('renderChatMessageHTML', (message, html) => {
     try { _applyPortrait(message, html); }
-    catch (err) { console.warn('GS | chat portrait swap (HTML) failed:', err); }
+    catch (err) { console.warn('GS | chat portrait inject (HTML) failed:', err); }
   });
   // v12 / older v13: renderChatMessage — html is a jQuery-like wrapper.
   Hooks.on('renderChatMessage', (message, html) => {
     try {
       const root = html?.[0] ?? html;
       _applyPortrait(message, root);
-    } catch (err) { console.warn('GS | chat portrait swap failed:', err); }
+    } catch (err) { console.warn('GS | chat portrait inject failed:', err); }
   });
+
+  // Persona swap → refresh all currently-visible cards so their portraits
+  // re-pick the new token image. The actor.update fires updateActor; we
+  // also listen to the canonical goodSociety.personaSwapped hook in case
+  // a swap path emits that without a top-level actor.update.
+  Hooks.on('updateActor', (actor, changes) => {
+    if (changes?.system?.activePersonaId !== undefined ||
+        changes?.system?.personas !== undefined ||
+        changes?.prototypeToken?.texture?.src !== undefined) {
+      _refreshAll();
+    }
+  });
+  Hooks.on('goodSociety.personaSwapped', () => _refreshAll());
 }

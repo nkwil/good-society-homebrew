@@ -570,6 +570,32 @@
   margin: 2px 0 0;
 }
 
+/* Within a clear-row the heading sits inline with its button — drop the
+   stacked bottom margin so the two align on one line. */
+.gs-rep-wizard__condition-clear-row .gs-rep-wizard__condition-heading {
+  margin: 0;
+  align-self: center;
+}
+
+/* ── Step 3: Manage Conditions ───────────────────────────────────────────── */
+
+.gs-rep-wizard__manage-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.gs-rep-wizard__manage-heading {
+  font-family: var(--gs-ui);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+  color: var(--gs-ink);
+  opacity: 0.75;
+}
+
 /* ── Step 5: Summary ─────────────────────────────────────────────────────── */
 
 .gs-rep-wizard__summary-list {

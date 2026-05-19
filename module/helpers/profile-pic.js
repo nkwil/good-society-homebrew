@@ -75,5 +75,24 @@ export function profilePic(actor) {
  */
 export function profileName(actor) {
   if (!actor) return '';
-  return actor.system?.activePersona?.name || actor.name || '';
+  // Honor only EXPLICIT persona selection — same fix as profilePic above.
+  // The data-model getter falls back to primary/first persona when
+  // activePersonaId is empty, so a Major with one persona "Mags" would
+  // resolve to "Mags" even when the user picked "true identity / Rose."
+  const persona = explicitPersona(actor);
+  return persona?.name || actor.name || '';
+}
+
+/**
+ * Resolve the EXPLICITLY active persona object — only when `activePersonaId`
+ * is set and matches a persona. Returns null otherwise. Never the data-model
+ * `activePersona` getter's primary/first fallback (the "Mags stuck" bug).
+ *
+ * @param {Actor} actor
+ * @returns {object|null}
+ */
+export function explicitPersona(actor) {
+  const activeId = actor?.system?.activePersonaId;
+  if (!activeId) return null;
+  return (actor.system?.personas ?? []).find(p => p.id === activeId) ?? null;
 }

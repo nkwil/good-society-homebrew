@@ -1,0 +1,76 @@
+/* Novel Phase popup — informational modal. House-styled (always-house per
+ * §16; not theme-bound to any actor). One screen, six reminder bullets. */
+
+.gs-novel-phase-popup .window-content {
+  padding: 0;
+  background: var(--gs-paper);
+}
+
+.gs-novel-phase-popup {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--gs-body);
+  color: var(--gs-ink);
+}
+
+.gs-novel-phase-popup__head {
+  padding: 18px 24px 12px;
+  background: var(--gs-paper-warm);
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-novel-phase-popup__title {
+  margin: 4px 0 0;
+  font-family: var(--gs-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--gs-brand);
+}
+
+.gs-novel-phase-popup__subhead {
+  margin: 6px 0 0;
+  font-style: italic;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+}
+
+.gs-novel-phase-popup__bullets {
+  list-style: none;
+  padding: 16px 24px;
+  margin: 0;
+}
+
+.gs-novel-phase-popup__bullet {
+  position: relative;
+  padding: 8px 6px 8px 22px;
+  border-bottom: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 35%, transparent);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.gs-novel-phase-popup__bullet:last-child {
+  border-bottom: 0;
+}
+
+.gs-novel-phase-popup__bullet::before {
+  content: '◆';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  color: var(--gs-accent-3);
+  font-size: 10px;
+}
+
+.gs-novel-phase-popup__bullet strong {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  color: var(--gs-brand);
+}
+
+.gs-novel-phase-popup__foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 24px;
+  background: var(--gs-paper-warm);
+  border-top: 0.5px solid var(--gs-accent-2);
+}

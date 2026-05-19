@@ -5,7 +5,7 @@
 import { switchPersona } from '../helpers/persona-swap.js';
 import { openPersonaEditor } from '../apps/persona-editor.js';
 import { openPersonaSwitcherPopover } from '../apps/persona-switcher-popover.js';
-import { profilePic } from '../helpers/profile-pic.js';
+import { profilePic, profileName } from '../helpers/profile-pic.js';
 import { fitDossierNames } from '../helpers/responsive-name.js';
 import { pronounsFor } from '../helpers/pronouns.js';
 
@@ -53,14 +53,12 @@ export class NpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const ctx = await super._prepareContext(options);
     const system = this.actor.system;
 
-    const activePersona = system.activePersona;
-    const portraitUrl = profilePic(this.actor);  // §8.5 token-based
-    // Initial follows displayed name (active persona name preferred over
-    // actor.name) so it stays consistent when a persona is in play.
-    const displayName = activePersona?.name || this.actor.name;
+    // Display name + portrait follow explicit-persona-only resolution.
+    const portraitUrl = profilePic(this.actor);
+    const displayName = profileName(this.actor);
     const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
-    const hasActivePersona = !!activePersona;
     const activePersonaExplicit = !!system.activePersonaId;
+    const hasActivePersona = activePersonaExplicit;
 
     // Enrich description for read-only render on the dossier card; editing
     // happens via DialogV2 textarea (#editDescription action handler).

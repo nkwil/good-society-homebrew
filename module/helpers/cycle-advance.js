@@ -136,6 +136,25 @@ export async function advanceCyclePhase() {
     }
   }
 
+  // Clear per-phase "completed" flags whenever we advance OUT of a phase,
+  // so the per-Major popup fires fresh next time that phase begins. Without
+  // this clear, a player who completed the Reputation Phase wizard in
+  // position 2 would have their popup silently skipped at position 6 (and
+  // every subsequent reputation phase in future cycles). Same applies for
+  // upkeepCompletedAt across cycles. Cheap and idempotent; safe on every
+  // advance regardless of which phase we're leaving.
+  {
+    const majors = game.actors?.filter(a => a.type === 'major-character') ?? [];
+    const FLAGS_TO_CLEAR = ['reputationPhaseCompletedAt', 'upkeepCompletedAt'];
+    for (const actor of majors) {
+      for (const flagKey of FLAGS_TO_CLEAR) {
+        if (actor.getFlag?.(NS, flagKey)) {
+          updates.push(actor.unsetFlag(NS, flagKey));
+        }
+      }
+    }
+  }
+
   // On game end, clear isFinalCycle so that if the GM starts a new game in the
   // same world (advancing past 'ended' isn't supported, but they could reset
   // settings manually), the next game starts clean.

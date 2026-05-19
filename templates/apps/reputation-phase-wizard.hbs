@@ -89,7 +89,6 @@
             <li>{{localize "GOODSOCIETY.reputationPhaseWizard.step1.overview1"}}</li>
             <li>{{localize "GOODSOCIETY.reputationPhaseWizard.step1.overview2"}}</li>
             <li>{{localize "GOODSOCIETY.reputationPhaseWizard.step1.overview3"}}</li>
-            <li>{{localize "GOODSOCIETY.reputationPhaseWizard.step1.overview4"}}</li>
           </ol>
         </div>
       {{/if}}
@@ -225,7 +224,7 @@
         {{/if}}
       {{/if}}
 
-      {{!-- ── Step 3: Trigger Conditions ─────────────────────────────── --}}
+      {{!-- ── Step 3: Manage Conditions ──────────────────────────────── --}}
       {{#if (eq step 3)}}
         <h3 class="gs-rep-wizard__step-title">
           {{localize "GOODSOCIETY.reputationPhaseWizard.step3.title"}}
@@ -234,121 +233,82 @@
           <p class="gs-rep-wizard__step-prompt">
             {{localize "GOODSOCIETY.reputationPhaseWizard.step3.prompt" name=focusedActor.name}}
           </p>
-          {{#each focusedActor.polarities}}
-            <div class="gs-rep-wizard__condition-block gs-rep-wizard__condition-block--{{polarity}}">
-              <h4 class="gs-rep-wizard__condition-heading">
-                {{#if isPositive}}▲{{else}}▼{{/if}}
-                {{localize "GOODSOCIETY.reputationPhaseWizard.step3.polarityLabel"}}
-                ({{tags.length}} {{localize "GOODSOCIETY.reputationPhaseWizard.step3.tagsLabel"}})
-              </h4>
-              <div class="gs-rep-wizard__condition-tags">
-                {{#each tags}}
-                  <span class="gs-rep-wizard__tag-chip gs-rep-wizard__tag-chip--{{../polarity}}">
-                    {{#if ../isPositive}}▲{{else}}▼{{/if}} {{this}}
-                  </span>
-                {{/each}}
-              </div>
-              {{#if resolved}}
-                <p class="gs-rep-wizard__sub-status gs-rep-wizard__sub-status--ok">
-                  ✓ {{localize "GOODSOCIETY.reputationPhaseWizard.step3.conditionResolved"}}
-                </p>
-              {{else}}
-                <button type="button"
-                        class="gs-btn gs-btn--primary"
-                        data-action="triggerCondition"
-                        data-actor-id="{{../focusedActor.id}}"
-                        data-polarity="{{polarity}}">
-                  {{localize "GOODSOCIETY.reputationPhaseWizard.step3.openPickerBtn"}}
-                </button>
-              {{/if}}
-            </div>
-          {{/each}}
-        {{else}}
-          {{#if railEntries.length}}
-            <p class="gs-rep-wizard__empty">
-              {{localize "GOODSOCIETY.reputationPhaseWizard.step3.selectCharacter"}}
-            </p>
-          {{else}}
-            <p class="gs-rep-wizard__empty">
-              {{localize "GOODSOCIETY.reputationPhaseWizard.step3.noneQualify"}}
-            </p>
-          {{/if}}
-        {{/if}}
-      {{/if}}
 
-      {{!-- ── Step 4: Clear Conditions ────────────────────────────────── --}}
-      {{#if (eq step 4)}}
-        <h3 class="gs-rep-wizard__step-title">
-          {{localize "GOODSOCIETY.reputationPhaseWizard.step4.title"}}
-        </h3>
-        {{#if focusedActor}}
-          <p class="gs-rep-wizard__step-prompt">
-            {{localize "GOODSOCIETY.reputationPhaseWizard.step4.prompt" name=focusedActor.name}}
-          </p>
-          {{#if focusedActor.allCleared}}
-            <p class="gs-rep-wizard__sub-status gs-rep-wizard__sub-status--ok">
-              ✓ {{localize "GOODSOCIETY.reputationPhaseWizard.step4.allCleared" name=focusedActor.name}}
-            </p>
-          {{else}}
+          {{!-- Add condition --}}
+          <div class="gs-rep-wizard__manage-add">
+            <button type="button"
+                    class="gs-btn gs-btn--primary"
+                    data-action="triggerCondition"
+                    data-actor-id="{{focusedActor.id}}"
+                    data-polarity="positive">
+              {{localize "GOODSOCIETY.reputationPhaseWizard.step3.addPositiveBtn"}}
+            </button>
+            <button type="button"
+                    class="gs-btn gs-btn--primary"
+                    data-action="triggerCondition"
+                    data-actor-id="{{focusedActor.id}}"
+                    data-polarity="negative">
+              {{localize "GOODSOCIETY.reputationPhaseWizard.step3.addNegativeBtn"}}
+            </button>
+          </div>
+
+          {{!-- Active conditions — each clearable --}}
+          <h4 class="gs-rep-wizard__manage-heading">
+            {{localize "GOODSOCIETY.reputationPhaseWizard.step3.activeHeading"}}
+          </h4>
+          {{#if focusedActor.hasConditions}}
             {{#each focusedActor.conditions}}
               <div class="gs-rep-wizard__condition-block gs-rep-wizard__condition-block--{{polarity}}">
                 <div class="gs-rep-wizard__condition-clear-row">
-                  <div>
-                    <h4 class="gs-rep-wizard__condition-heading">
-                      {{#if isPositive}}▲{{else}}▼{{/if}} {{name}}
-                    </h4>
-                    <p class="gs-rep-wizard__condition-count">
-                      {{localize "GOODSOCIETY.reputationPhaseWizard.step4.tagCount" n=tagCount}}
-                    </p>
-                  </div>
+                  <h4 class="gs-rep-wizard__condition-heading">
+                    {{#if isPositive}}▲{{else}}▼{{/if}} {{name}}
+                  </h4>
                   <button type="button"
                           class="gs-btn gs-btn--secondary"
                           data-action="clearCondition"
                           data-actor-id="{{../focusedActor.id}}"
                           data-condition-id="{{id}}">
-                    {{localize "GOODSOCIETY.reputationPhaseWizard.step4.clearBtn"}}
+                    {{localize "GOODSOCIETY.reputationPhaseWizard.step3.clearBtn"}}
                   </button>
                 </div>
               </div>
             {{/each}}
+          {{else}}
+            <p class="gs-rep-wizard__sub-status">
+              {{localize "GOODSOCIETY.reputationPhaseWizard.step3.noConditions" name=focusedActor.name}}
+            </p>
           {{/if}}
         {{else}}
-          {{#if railEntries.length}}
-            <p class="gs-rep-wizard__empty">
-              {{localize "GOODSOCIETY.reputationPhaseWizard.step4.selectCharacter"}}
-            </p>
-          {{else}}
-            <p class="gs-rep-wizard__empty">
-              {{localize "GOODSOCIETY.reputationPhaseWizard.step4.noneQualify"}}
-            </p>
-          {{/if}}
+          <p class="gs-rep-wizard__empty">
+            {{localize "GOODSOCIETY.reputationPhaseWizard.step3.selectCharacter"}}
+          </p>
         {{/if}}
       {{/if}}
 
-      {{!-- ── Step 5: Complete ────────────────────────────────────────── --}}
-      {{#if (eq step 5)}}
+      {{!-- ── Step 4: Complete ────────────────────────────────────────── --}}
+      {{#if (eq step 4)}}
         <h3 class="gs-rep-wizard__step-title">
-          {{localize "GOODSOCIETY.reputationPhaseWizard.step5.title"}}
+          {{localize "GOODSOCIETY.reputationPhaseWizard.step4.title"}}
         </h3>
         <p class="gs-rep-wizard__step-prompt">
-          {{localize "GOODSOCIETY.reputationPhaseWizard.step5.prompt"}}
+          {{localize "GOODSOCIETY.reputationPhaseWizard.step4.prompt"}}
         </p>
         <ul class="gs-rep-wizard__summary-list">
           <li>
-            {{localize "GOODSOCIETY.reputationPhaseWizard.step5.tagsCreated"
+            {{localize "GOODSOCIETY.reputationPhaseWizard.step4.tagsCreated"
               n=summary.tagsCreated}}
           </li>
           <li>
-            {{localize "GOODSOCIETY.reputationPhaseWizard.step5.conditionsCleared"
+            {{localize "GOODSOCIETY.reputationPhaseWizard.step4.conditionsCleared"
               n=summary.conditionsCleared}}
           </li>
           <li>
-            {{localize "GOODSOCIETY.reputationPhaseWizard.step5.charactersReviewed"
+            {{localize "GOODSOCIETY.reputationPhaseWizard.step4.charactersReviewed"
               n=summary.activeCount}}
           </li>
         </ul>
         <p class="gs-rep-wizard__step-note">
-          {{localize "GOODSOCIETY.reputationPhaseWizard.step5.advanceNote"}}
+          {{localize "GOODSOCIETY.reputationPhaseWizard.step4.advanceNote"}}
         </p>
       {{/if}}
 
@@ -369,7 +329,7 @@
               data-action="wizNext">
         {{#if (eq step 1)}}
           {{localize "GOODSOCIETY.reputationPhaseWizard.beginBtn"}}
-        {{else if (eq step 5)}}
+        {{else if (eq step 4)}}
           {{localize "GOODSOCIETY.reputationPhaseWizard.completeBtn"}}
         {{else}}
           {{localize "GOODSOCIETY.reputationPhaseWizard.nextStepBtn"}}

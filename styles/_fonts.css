@@ -122,3 +122,36 @@
   font-display: swap;
   src: url('./fonts/cinzel/cinzel-latin-600-normal.woff2') format('woff2');
 }
+
+/* ── Letter calligraphy faces — post-MVP letter immersion ──────────────────
+ * Optional script/calligraphy fonts for a letter's greeting + signature
+ * lines, chosen per-letter in the composer's font picker. Downloaded from
+ * Google Fonts (latin subset) and shipped locally so they work offline. */
+@font-face {
+  font-family: 'Great Vibes';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/great-vibes.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pinyon Script';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/pinyon-script.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Parisienne';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/parisienne.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Tangerine';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/tangerine.woff2') format('woff2');
+}

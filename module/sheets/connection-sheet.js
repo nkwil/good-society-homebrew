@@ -5,7 +5,7 @@
 import { switchPersona } from '../helpers/persona-swap.js';
 import { openPersonaEditor } from '../apps/persona-editor.js';
 import { openPersonaSwitcherPopover } from '../apps/persona-switcher-popover.js';
-import { profilePic } from '../helpers/profile-pic.js';
+import { profilePic, profileName } from '../helpers/profile-pic.js';
 import { CONNECTION_FULL_THEME_REGISTRY } from '../constants.js';
 import { fitDossierNames } from '../helpers/responsive-name.js';
 import { pronounsFor } from '../helpers/pronouns.js';
@@ -69,12 +69,11 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const ctx = await super._prepareContext(options);
     const system = this.actor.system;
 
-    // Portrait: active persona > bio.portraitUrl > actor.img
-    const activePersona = system.activePersona;
-    const portraitUrl = profilePic(this.actor);  // §8.5 token-based
-    // Initial follows the displayed name (active persona name preferred over
-    // actor.name) so it stays consistent when a persona is in play.
-    const displayName = activePersona?.name || this.actor.name;
+    // Portrait + display name follow the post-MVP §8.5 rules: explicit
+    // persona selection only, never the data-model getter's primary/first
+    // fallback. profileName/profilePic encapsulate that contract.
+    const portraitUrl = profilePic(this.actor);
+    const displayName = profileName(this.actor);
     const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
 
     // Linked Major
@@ -127,7 +126,14 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       : '';
 
     // Display name follows persona override (matches Major dossier behavior).
-    const hasActivePersona = !!activePersona;
+    // `hasActivePersona` is true ONLY when an explicit persona is selected
+    // (activePersonaId resolves to a real persona) — not the data-model
+    // getter's primary/first fallback. Gates the cameo name input's
+    // readonly state, same as the Major sheet.
+    const explicitPersona = system.activePersonaId
+      ? (system.personas ?? []).find(p => p.id === system.activePersonaId)
+      : null;
+    const hasActivePersona = !!explicitPersona;
     // Distinguishes "no explicit selection" (true identity, show fallback)
     // from "persona chosen". The persona-switcher partial uses this to pick
     // its label between the persona's name and "true identity".

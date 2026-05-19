@@ -14,27 +14,19 @@
           {{#each surfaces}}
             <div class="gs-cabinet-row">
               <div class="gs-cabinet-row__name">{{label}}</div>
-              {{#if isLauncher}}
-                {{!-- Launcher rows open a modal/dialog when clicked. --}}
-                <button type="button"
-                        class="gs-cabinet-launcher"
-                        data-action="launchSurface"
-                        data-surface-id="{{id}}"
-                        title="{{label}}">
-                  {{localize "GOODSOCIETY.cabinet.openLauncher"}}
-                </button>
-              {{else}}
-                <button type="button"
-                        class="gs-cabinet-toggle {{#if visible}}is-on{{/if}}"
-                        data-action="toggleSurface"
-                        data-surface-id="{{id}}"
-                        role="switch"
-                        aria-checked="{{visible}}"
-                        title="{{label}}">
-                  <span class="gs-cabinet-toggle__track" aria-hidden="true"></span>
-                  <span class="gs-cabinet-toggle__knob" aria-hidden="true"></span>
-                </button>
-              {{/if}}
+              {{!-- Every row is a toggle. Persistent surfaces toggle their
+                   on-board visibility; launcher surfaces toggle their window
+                   open / closed. --}}
+              <button type="button"
+                      class="gs-cabinet-toggle {{#if visible}}is-on{{/if}}"
+                      data-action="toggleSurface"
+                      data-surface-id="{{id}}"
+                      role="switch"
+                      aria-checked="{{visible}}"
+                      title="{{label}}">
+                <span class="gs-cabinet-toggle__track" aria-hidden="true"></span>
+                <span class="gs-cabinet-toggle__knob" aria-hidden="true"></span>
+              </button>
             </div>
           {{/each}}
         </section>
@@ -55,9 +47,13 @@
   <nav class="gs-cabinet-rail" aria-label="Cabinet rail">
     {{#each railGroups}}
       {{#each items}}
+        {{!-- Persistent surfaces show a live state dot; launcher rail buttons
+             don't (their window's open-state can't be tracked without a
+             cabinet re-render, so a dot would go stale on the always-visible
+             rail). The drawer rows carry the full live toggle state. --}}
         <button type="button"
-                class="gs-cabinet-rail-btn {{#if isLauncher}}gs-cabinet-rail-btn--launcher{{/if}} {{#if visible}}is-active{{/if}}"
-                data-action="{{#if isLauncher}}launchSurface{{else}}toggleSurface{{/if}}"
+                class="gs-cabinet-rail-btn {{#unless isLauncher}}{{#if visible}}is-active{{/if}}{{/unless}}"
+                data-action="toggleSurface"
                 data-surface-id="{{id}}"
                 title="{{label}}"
                 {{#if iconAsset}}

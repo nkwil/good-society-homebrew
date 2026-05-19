@@ -66,14 +66,12 @@
   margin: 0;
 }
 
+/* No CSS frame — the character token art already carries its own
+ * decorative border. We only size + centre it; the token shows raw. */
 .gs-monologue-overlay__cameo {
   width: 380px;
   max-width: 60vw;
   aspect-ratio: 1;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 1px solid var(--gs-accent-2);
-  background: var(--gs-paper);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,7 +80,9 @@
 .gs-monologue-overlay__cameo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* `contain`, not `cover` — show the whole token (frame and all) without
+   * cropping its edges. */
+  object-fit: contain;
 }
 
 .gs-monologue-overlay__cameo-initial {
@@ -152,7 +152,7 @@
 .gs-monologue-overlay__actions,
 .gs-monologue-overlay__gm-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-top: 8px;
 }
 
@@ -163,7 +163,49 @@
   margin: 0;
 }
 
+/* Solid, high-contrast buttons. The overlay sits over a busy backdrop
+ * (Arrival video / leather desk), where the faint outline-pill default
+ * of `gs-empty-state__action` nearly disappears. Force a filled
+ * treatment so the controls read clearly.
+ *
+ * Submit / primary → solid brand fill, paper text.
+ * End / cancel    → solid paper fill, brand outline + text (clearly
+ *                   visible, distinct from the primary). */
+.gs-monologue-overlay__actions .gs-empty-state__action,
+.gs-monologue-overlay__gm-actions .gs-empty-state__action {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border: 1px solid var(--gs-brand);
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.12s ease, background 0.12s ease;
+}
+
+.gs-monologue-overlay__actions .gs-empty-state__action:hover,
+.gs-monologue-overlay__gm-actions .gs-empty-state__action:hover {
+  opacity: 0.88;
+}
+
+/* "End the monologue" — secondary treatment: paper fill, brand outline. */
+.gs-monologue-overlay__end {
+  background: var(--gs-paper) !important;
+  color: var(--gs-brand) !important;
+  border: 1px solid var(--gs-brand) !important;
+  font-weight: 600;
+}
+.gs-monologue-overlay__end:hover {
+  background: var(--gs-paper-warm) !important;
+}
+
+/* GM cancel — solid paper fill, danger outline + text. */
 .gs-monologue-overlay__cancel {
-  border-color: var(--gs-danger);
-  color: var(--gs-danger);
+  background: var(--gs-paper) !important;
+  border: 1px solid var(--gs-danger) !important;
+  color: var(--gs-danger) !important;
+  font-weight: 600;
+}
+.gs-monologue-overlay__cancel:hover {
+  background: color-mix(in srgb, var(--gs-danger) 10%, var(--gs-paper)) !important;
 }
