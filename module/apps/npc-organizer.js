@@ -378,3 +378,28 @@ export function toggleOrganizer() {
 export function renderOrganizer() {
   if (_instance?.rendered) _instance.render({ force: true });
 }
+
+// ── Auto-refresh on world actor changes ──────────────────────────────────────
+//
+// Without these hooks, the organizer renders its actor list once and never
+// notices when an actor is created, renamed, repainted, or deleted. That
+// includes the organizer's OWN "+ NPCs" / "+ Connections" buttons — the new
+// actor lands in the world but doesn't appear in the panel until the user
+// closes and reopens it. Listening at module level (not inside the class)
+// means the listeners survive close/reopen cycles. Listed-type filter
+// keeps the re-render cheap when the GM creates items, journals, etc.
+
+function _refreshOnRelevantActorChange(actor) {
+  if (!actor || !LISTED_TYPES.includes(actor.type)) return;
+  renderOrganizer();
+}
+Hooks.on('createActor',  _refreshOnRelevantActorChange);
+Hooks.on('deleteActor',  _refreshOnRelevantActorChange);
+Hooks.on('updateActor',  _refreshOnRelevantActorChange);
+
+// Scene changes affect the "on scene" dot per row. Cheap to re-render on
+// canvas activation / token placement; falls back to a no-op when the
+// organizer is closed.
+Hooks.on('canvasReady',  () => renderOrganizer());
+Hooks.on('createToken',  () => renderOrganizer());
+Hooks.on('deleteToken',  () => renderOrganizer());

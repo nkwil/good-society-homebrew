@@ -39,7 +39,17 @@
   color: var(--gs-ink);
   font-family: var(--gs-body);
   width: 100%;
+  /* Fill the constrained outer wrapper (#gs-npc-organizer) so the body's
+   * `overflow-y: auto` has a fixed-height parent to scroll inside. Without
+   * `flex: 1 + min-height: 0` here, the inner <section> sizes to its
+   * content, blows past the outer's `max-height: 80vh`, and the outer's
+   * `overflow: hidden` clips the overflow instead of letting the body
+   * scroll. Both pieces are required: `flex: 1` to stretch, `min-height:
+   * 0` to allow shrinking below content size (a flex item's default
+   * min-height is `auto = content size`, which blocks scroll-overflow). */
+  flex: 1 1 auto;
   min-height: 0;
+  max-height: 100%;
   pointer-events: auto;
 }
 

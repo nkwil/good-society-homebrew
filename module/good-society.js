@@ -31,6 +31,7 @@ import { register as registerEpistolaryPhase } from './hooks/epistolary-phase.js
 import { register as registerCycleMinimize } from './hooks/cycle-minimize.js';
 import { register as registerStoryBeatEvents } from './hooks/story-beat-events.js';
 import { register as registerWindowControls } from './hooks/window-controls.js';
+import { register as registerAudioDefaults } from './hooks/audio-defaults.js';
 import { runPhaseSplash } from './hooks/phase-splash.js';
 import { registerMonologueSocket } from './apps/monologue-overlay.js';
 import { registerStoryBeatSocket } from './apps/story-beat-overlay.js';
@@ -1011,6 +1012,7 @@ safeRegister('epistolaryPhase',  registerEpistolaryPhase);
 safeRegister('cycleMinimize',    registerCycleMinimize);
 safeRegister('storyBeatEvents',  registerStoryBeatEvents);
 safeRegister('windowControls',   registerWindowControls);
+safeRegister('audioDefaults',    registerAudioDefaults);
 // Monologue + Story Beat sockets bind at ready time, after game.socket exists.
 Hooks.once('ready', () => safeRegister('monologueSocket', registerMonologueSocket));
 Hooks.once('ready', () => safeRegister('storyBeatSocket', registerStoryBeatSocket));
