@@ -378,6 +378,17 @@
                             title="{{localize 'GOODSOCIETY.dossier.undoPending'}}">
                       ↺ {{localize "GOODSOCIETY.dossier.undo"}}
                     </button>
+                    {{!-- × deletes the log entry WITHOUT touching the world.
+                         GM-only at the data layer (removePendingChangeByTs
+                         guards on isGM); rendered for everyone so the GM
+                         can use it from any open dossier they own. Used to
+                         clear stale history when assigning starter tags. --}}
+                    <button type="button"
+                            class="dossier-pending__delete"
+                            data-action="deletePendingChange"
+                            data-ts="{{ts}}"
+                            data-tooltip="{{localize 'GOODSOCIETY.dossier.deletePending'}}"
+                            aria-label="{{localize 'GOODSOCIETY.dossier.deletePending'}}">×</button>
                   </li>
                 {{/each}}
               </ul>

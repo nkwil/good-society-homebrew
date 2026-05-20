@@ -107,6 +107,7 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       addCondition:     MajorCharacterSheet.#addCondition,
       removeCondition:  MajorCharacterSheet.#removeCondition,
       undoPendingChange: MajorCharacterSheet.#undoPendingChange,
+      deletePendingChange: MajorCharacterSheet.#deletePendingChange,
     },
   };
 
@@ -1244,6 +1245,24 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     }
 
     // Drop the entry from the log now that the world matches it again.
+    await removePendingChangeByTs(this.actor, ts);
+  }
+
+  /**
+   * Delete a pending-change entry from the log WITHOUT touching the world
+   * state. Used by the GM to assign starter tags with no history — e.g. add
+   * the player's two opening tags during Pre-Cycle and then clear the
+   * "gained X" entries so the Reputation Phase wizard starts on a clean
+   * tentative list. Unlike `#undoPendingChange`, this does NOT recreate /
+   * delete any tag items; it's a log-only operation.
+   *
+   * `removePendingChangeByTs` already guards GM-only writes internally.
+   */
+  static async #deletePendingChange(event, target) {
+    const ts = Number(target.dataset.ts);
+    if (!Number.isFinite(ts)) return;
+    const { removePendingChangeByTs } =
+      await import('../helpers/pending-changes.js');
     await removePendingChangeByTs(this.actor, ts);
   }
 

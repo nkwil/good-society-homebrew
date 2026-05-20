@@ -62,7 +62,19 @@ async function _runReset() {
   }
 
   // ── World-scope history arrays ────────────────────────────────────────────
-  for (const k of ['sessionEvents', 'rumours', 'calendarEvents']) {
+  // Every per-cycle setting whose value is a list of accumulated events,
+  // queued items, or in-flight wizard state. Identity / config settings
+  // (chrome toggles, arrival splash, novel title, default resolve, etc.)
+  // are intentionally NOT cleared — they're table-level preferences, not
+  // cycle state.
+  for (const k of [
+    'sessionEvents',     // session log entries
+    'rumours',           // rumour board state
+    'calendarEvents',    // event timeline entries
+    'rumourPhaseState',  // in-flight R&S wizard turn/round tracking
+    'letterQueue',       // letters drafted outside the Epistolary phase
+    'savedStoryBeats',   // story-beat command-center history
+  ]) {
     try { await game.settings.set(SYS, k, []); } catch {}
   }
 
@@ -77,7 +89,21 @@ async function _runReset() {
 
   // ── Per-Major reset ───────────────────────────────────────────────────────
   const majors = game.actors.filter(a => a.type === 'major-character');
+  // Lazy import keeps the reset helper standalone (no top-level circular
+  // imports between reset-campaign and pending-changes).
+  const { beginUndoPending, endUndoPending } =
+    await import('./pending-changes.js');
   for (const actor of majors) {
+    // Silence the deleteItem hook for the duration of the per-actor reset.
+    // Without this, deleting the embedded reputation tags below fires the
+    // session-events hook → appendPendingChange races the actor.update
+    // that empties `system.reputation.pendingChanges`, and the log ends up
+    // refilled with stray "removed New reputation-tag" entries. The guard
+    // is the same one used by Undo clicks — same semantics here ("this
+    // isn't a user action that should be logged"). Wrapped in try/finally
+    // so an exception inside the loop body can't leave the guard stuck on.
+    beginUndoPending(actor.id);
+    try {
     // Drop embedded reputation tags + conditions.
     const repIds = actor.items
       .filter(i => i.type === 'reputation-tag' || i.type === 'reputation-condition')
@@ -129,12 +155,43 @@ async function _runReset() {
       'system.reputation.pendingChanges':  [],
       'system.innerConflictsActiveIds':    conflicts.map(c => c.id),
       'system.innerConflictsCompletedIds': [],
+      // Revert active persona to true identity. Doing the prototype-token
+      // revert in the same .update keeps the actor's identity-on-canvas
+      // consistent (otherwise newly-placed tokens after reset would still
+      // pull the persona's image). Inline rather than via switchPersona()
+      // so we don't fire `goodSociety.personaSwitched` and re-log a
+      // session event into the array we just cleared.
+      'system.activePersonaId': '',
+      'prototypeToken.texture.src': actor.img,
+      'prototypeToken.name': actor.name,
+      // Tactical scratch space — not biographical, accumulates per cycle.
+      'system.notesObjectives': '',
     });
+
+    // Already-placed tokens on scenes carry their own texture/name (set
+    // by switchPersona during play). Mirror the prototype revert across
+    // every scene so the canvas matches the actor's true identity too.
+    for (const scene of game.scenes ?? []) {
+      const tokens = scene.tokens?.filter(t => t.actorId === actor.id) ?? [];
+      if (!tokens.length) continue;
+      try {
+        await scene.updateEmbeddedDocuments('Token', tokens.map(t => ({
+          _id: t.id,
+          'texture.src': actor.img,
+          name: actor.name,
+        })));
+      } catch (err) {
+        console.warn(`GS | resetCampaign: token revert on scene "${scene.name}" failed (non-fatal):`, err);
+      }
+    }
 
     // Clear cycle-bound flags.
     for (const flag of ['pickerResolved', 'reputationPhaseCompletedAt',
                         'upkeepCompletedAt', 'epistolaryDone']) {
       try { await actor.unsetFlag(SYS, flag); } catch {}
+    }
+    } finally {
+      endUndoPending(actor.id);
     }
   }
 
@@ -144,9 +201,59 @@ async function _runReset() {
   // max would give every Connection a full bar of resolve from day one,
   // which isn't how the game is supposed to start. Hard-coded 1 here
   // matches the DataModel's `initial: 1` on system.resolve.current.
+  //
+  // Also clear `impressions` (MCs' written observations accumulate during
+  // play — cycle history, not bio) and revert any active persona to the
+  // true identity (same prototype-token + scene-token sweep as Majors).
   const connections = game.actors.filter(a => a.type === 'connection');
   for (const c of connections) {
-    await c.update({ 'system.resolve.current': 1 });
+    await c.update({
+      'system.resolve.current': 1,
+      'system.impressions': [],
+      'system.activePersonaId': '',
+      'prototypeToken.texture.src': c.img,
+      'prototypeToken.name': c.name,
+    });
+    for (const scene of game.scenes ?? []) {
+      const tokens = scene.tokens?.filter(t => t.actorId === c.id) ?? [];
+      if (!tokens.length) continue;
+      try {
+        await scene.updateEmbeddedDocuments('Token', tokens.map(t => ({
+          _id: t.id,
+          'texture.src': c.img,
+          name: c.name,
+        })));
+      } catch (err) {
+        console.warn(`GS | resetCampaign: connection token revert on scene "${scene.name}" failed (non-fatal):`, err);
+      }
+    }
+  }
+
+  // ── NPCs — clear active persona only ──────────────────────────────────
+  // NPCs have no cycle-bound mechanics (no resolve track, no reputation,
+  // no inner conflict) so all that needs resetting is any active persona
+  // swap. Same identity-revert pattern as Majors + Connections.
+  const npcs = game.actors.filter(a => a.type === 'npc');
+  for (const npc of npcs) {
+    if (!npc.system?.activePersonaId) continue;
+    await npc.update({
+      'system.activePersonaId': '',
+      'prototypeToken.texture.src': npc.img,
+      'prototypeToken.name': npc.name,
+    });
+    for (const scene of game.scenes ?? []) {
+      const tokens = scene.tokens?.filter(t => t.actorId === npc.id) ?? [];
+      if (!tokens.length) continue;
+      try {
+        await scene.updateEmbeddedDocuments('Token', tokens.map(t => ({
+          _id: t.id,
+          'texture.src': npc.img,
+          name: npc.name,
+        })));
+      } catch (err) {
+        console.warn(`GS | resetCampaign: NPC token revert on scene "${scene.name}" failed (non-fatal):`, err);
+      }
+    }
   }
 
   ui.notifications?.info(

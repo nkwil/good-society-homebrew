@@ -1245,7 +1245,8 @@
 }
 .dossier-pending__entry {
   display: grid;
-  grid-template-columns: 26px auto 1fr auto auto;
+  /* Columns: icon | verb | value | scene | undo | delete-x */
+  grid-template-columns: 26px auto 1fr auto auto auto;
   align-items: center;
   gap: 10px;
   padding: 5px 10px;
@@ -1341,6 +1342,32 @@
 .dossier-pending__undo:hover {
   background: var(--gs-brand);
   color: var(--gs-paper);
+}
+
+/* × log-delete button — sibling of the Undo pill. Used by GMs to clear
+ * stale pending entries when assigning starter tags or cleaning up after
+ * a playtest. Hidden by default (zero-width); expands on entry hover so
+ * normal scanning of the log isn't crowded by extra controls. Same
+ * collapse-and-reveal affordance the connection/tag chips use. */
+.dossier-pending__delete {
+  width: 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  font-size: 15px;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  transition: width 120ms ease, padding 120ms ease, color 120ms ease;
+}
+.dossier-pending__entry:hover .dossier-pending__delete {
+  width: 22px;
+  padding: 0 4px;
+}
+.dossier-pending__delete:hover {
+  color: var(--gs-danger, #8B2A2A);
 }
 
 /* GM remove "x" — small ghost button inside the chip. */
