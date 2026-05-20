@@ -291,8 +291,8 @@ button.gs-epistolary-wizard__row-btn {
  * Explicit width + height (NOT aspect-ratio, NOT content-driven — both are
  * unreliable on <button>). The envelope <img> absolutely fills this box, so
  * the box and the visible envelope are the same rectangle and the seal's
- * percentage coordinates register correctly. 600 × 339 ≈ envelope.png's
- * 1200 × 677 native ratio. */
+ * percentage coordinates register correctly. 600 × 438 ≈ envelope.png's
+ * 1200 × 876 native ratio (≈ 1.37, a standard 5×7-ish envelope). */
 button.gs-letter-envelope__packet {
   position: absolute;
   left: 50%;
@@ -300,7 +300,7 @@ button.gs-letter-envelope__packet {
   transform: translateX(-50%);
   display: block;
   width: 600px;
-  height: 339px;
+  height: 438px;
   min-width: 0;
   min-height: 0;
   max-width: none;
@@ -345,14 +345,15 @@ button.gs-letter-envelope__packet:focus-visible {
   transform: scale(0.965);
 }
 
-/* ── Wax seal — superimposed over the envelope's printed seal ──
- * Positioned to register on top of the envelope graphic's own red seal
- * (centre x 49.5%, y 52.7% of the envelope; ~19% of envelope width covers
- * the printed disc). The chosen seal PNG fills it edge-to-edge. */
+/* ── Wax seal — placed on the V-flap's tip so it visually secures the
+ * envelope closed (half on the flap, half on the body). Centre x 50%,
+ * y ~62% of the envelope (the flap's lower point on the new kraft
+ * envelope at aspect ~1.37). ~19% of the envelope's width covers the
+ * disc nicely. */
 .gs-letter-envelope__seal {
   position: absolute;
-  left: 49.5%;
-  top: 52.7%;
+  left: 50%;
+  top: 62%;
   width: 19%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);

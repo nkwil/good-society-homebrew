@@ -12,11 +12,6 @@
        - Seal disc + label live in the footer; theme designation cut.
 
      Per docs/design/05-epistolary-ui.md §"Letter card spec" + 2026-05 polish. --}}
-<div class="gs-letter-card__header">
-  <span class="gs-letter-card__meta-left">
-    {{localize "GOODSOCIETY.chatCard.letter.epistolary"}}{{#if cycleNumber}} · {{localize "GOODSOCIETY.chatCard.letter.cycle"}} {{cycleNumber}}{{/if}}
-  </span>
-</div>
 {{#if letter.subject}}
   <p class="gs-letter-card__subject">{{letter.subject}}</p>
 {{/if}}

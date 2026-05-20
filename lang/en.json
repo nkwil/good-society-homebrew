@@ -731,17 +731,29 @@
     },
     "npcOrganizer": {
       "sceneControlTitle": "NPC Organizer",
-      "eyebrow": "SCENE TOKENS",
+      "eyebrow": "CHARACTERS",
+      "majorsLabel": "Majors",
       "connectionsLabel": "Connections",
       "npcsLabel": "NPCs",
-      "empty": "No Connection or NPC tokens on this scene yet. Right-click empty canvas to create one.",
-      "footerHint": "click to focus · right-click for actions",
+      "empty": "No character actors yet. Create one with the buttons above.",
+      "footerHint": "drag a row onto the canvas to place a token · double-click to open · right-click for more",
+      "onSceneHint": "A token for this character is on the active scene.",
       "minimize": "Minimize organizer",
       "expand": "Expand organizer",
+      "createConnection": "Create a new Connection actor",
+      "createNpc": "Create a new NPC actor",
+      "newConnectionName": "New Connection",
+      "newNpcName": "New NPC",
+      "newMajorName": "New Major",
+      "createFailed": "Could not create the actor. See the console for details.",
       "ctx": {
         "openSheet": "Open sheet",
+        "placeAtCenter": "Place token at viewport centre",
+        "panToToken": "Pan to existing token",
         "removeToken": "Remove from scene",
-        "removeConfirm": "Remove {name} from this scene? The actor is not deleted."
+        "removeConfirm": "Remove all tokens of {name} from this scene? The actor is not deleted.",
+        "deleteActor": "Delete actor",
+        "deleteActorConfirm": "Delete the actor \"{name}\" permanently? Any tokens of theirs will also be removed."
       }
     },
     "publicInfoCard": {
@@ -1167,28 +1179,28 @@
       "noEvents": "No events recorded yet — write what passed."
     },
     "phaseSummary": {
-      "modalTitle": "Phase summary — preview",
+      "modalTitle": "Phase summary preview",
       "eyebrow": "GM only · review before posting",
       "reputationTitle": "End of the Reputation Phase",
       "rumourTitle": "End of the Rumour & Scandal Phase",
-      "intro": "This is what everyone at the table is about to see. You can edit any of it before posting, or cancel to skip the public recap entirely.",
+      "intro": "This is what the rest of the table is about to see. Edit any of it before posting, or cancel to skip the public recap.",
       "editHint": "Click into the box below to edit. Formatting (lists, italics) is preserved.",
       "post": "Post and continue ↗",
       "cancel": "Skip recap",
-      "skippedNotice": "Phase recap skipped — the phase has still completed."
+      "skippedNotice": "Phase recap skipped. The phase has still completed."
     },
     "novelPhase": {
       "popupTitle": "Novel Chapter",
       "headingFirst": "The cycle's first chapter begins.",
-      "headingSecond": "Back to the page — the cycle's second chapter begins.",
-      "subhead": "Scenes happen now. Aim for moments that change something.",
+      "headingSecond": "The cycle's second chapter begins.",
+      "subhead": "Scenes happen during the Novel chapter. Aim for moments that change something.",
       "secondMarker": "second chapter",
       "bullet": {
-        "desire": "<strong>Bring a desire to every scene.</strong> Your character wants something — let it leak out, or break against the world.",
+        "desire": "<strong>Bring a desire to every scene.</strong> Your character wants something. Let it surface, or let it collide with the world.",
         "reputation": "<strong>Lean into your reputation.</strong> Spend Resolve to land a tag on someone. Acknowledge the tags people already wear.",
-        "rumours": "<strong>Pay attention to rumours.</strong> Spread what's already circulating; let what's whispered shape what a scene means.",
-        "monologue": "<strong>One inner monologue per cycle.</strong> When a beat hits, take the moment. Once spent, it's gone until Upkeep.",
-        "connections": "<strong>Talk to Connections.</strong> They notice things Majors miss — and they remember.",
+        "rumours": "<strong>Pay attention to rumours.</strong> Spread what is already circulating, and let what is whispered shape what a scene means.",
+        "monologue": "<strong>One inner monologue per cycle.</strong> When a beat hits, take the moment. Once spent, it is gone until Upkeep.",
+        "connections": "<strong>Talk to Connections.</strong> They notice things Majors miss, and they remember.",
         "choices": "<strong>Make choices that matter.</strong> When you could end a scene early on a real beat, do."
       },
       "begin": "Begin"
@@ -1196,40 +1208,40 @@
     "pregame": {
       "windowTitle": "Welcome to the cycle",
       "eyebrow": "Pre-game · how this works",
-      "heading": "A short reminder before you take the stage.",
-      "intro": "Six things to keep in mind as you settle into your character. You can reopen this anytime from the Cabinet.",
-      "reopenHint": "Open this again from the Cabinet whenever you want.",
-      "dismissBtn": "Got it — let's play",
+      "heading": "A quick reference for how the system works.",
+      "intro": "Six things to know as you settle into your character. You can reopen this anytime from the Cabinet.",
+      "reopenHint": "Open this again from the Cabinet whenever you need it.",
+      "dismissBtn": "Got it, let's play",
       "sections": {
         "desire": {
-          "eyebrow": "1 · Your desire is the engine",
-          "title": "What does this character want?",
-          "body": "<p>Your <strong>Desire</strong> is the one thing pulling your character through the story. It's on the right page of your dossier — written in italics, hard to miss.</p><p>Every scene should test it, advance it, complicate it, or threaten it. If a scene doesn't touch your desire, ask: <em>why is my character here?</em></p><p>You can change your desire at <strong>Upkeep</strong> between cycles. For now: commit to it.</p>"
+          "eyebrow": "1 · Desire",
+          "title": "What your character wants",
+          "body": "<p>Your <strong>Desire</strong> is the main thing driving your character through the story. It appears in italics on the right page of your dossier.</p><p>Every scene should test, advance, complicate, or threaten it. If a scene does not engage your desire, ask whether your character should be in it.</p><p>You can revise your desire during <strong>Upkeep</strong> between cycles. For now, commit to it.</p>"
         },
         "family": {
           "eyebrow": "2 · Family and Connections",
-          "title": "The people who hold your character in place.",
-          "body": "<p>Your <strong>Family</strong> sits read-only on your dossier — its Reputation Criteria is what society judges every member by. You don't author it; your character lives under it.</p><p>Your <strong>Connections</strong> are the non-Major characters you have a real relationship with — a parent, a confidant, a rival servant, anyone whose opinion of you matters. You'll roleplay with them when no other Major is in the scene.</p><p>Click any Connection chip on the right page to see what they think of you (and other Majors).</p>"
+          "title": "The people in your character's orbit",
+          "body": "<p>Your <strong>Family</strong> appears read-only on your dossier. Its Reputation Criteria is the standard society uses to judge every family member. You do not author it; your character lives under it.</p><p>Your <strong>Connections</strong> are non-Major characters with a real relationship to your character: a parent, a confidant, a rival servant, anyone whose opinion matters. You will roleplay them when no other Major is in the scene.</p><p>Click any Connection chip on the right page to see what they think of you and the other Majors.</p>"
         },
         "reputation": {
-          "eyebrow": "3 · How reputation works",
-          "title": "Tags become conditions.",
-          "body": "<p>You start with no <strong>Reputation Tags</strong>. As scenes play out, characters earn tags — ▲ for positive (\"capable,\" \"charming\") or ▼ for negative (\"reckless,\" \"uncouth\"). They're traded in scenes, awarded at the end, and reviewed during the Reputation Phase.</p><p>When you hit <strong>three of one polarity</strong>, a <strong>Reputation Condition</strong> triggers — a more permanent mechanical label that affects how the world treats you (\"Beloved,\" \"Disgraced\"). Drop below three and it clears.</p><p>The GM can also grant or revoke conditions directly on your dossier.</p>"
+          "eyebrow": "3 · Reputation",
+          "title": "Tags become conditions",
+          "body": "<p>You start with no <strong>Reputation Tags</strong>. Characters earn tags as scenes play out: ▲ for positive (\"capable,\" \"charming\") or ▼ for negative (\"reckless,\" \"uncouth\"). Tags are traded in scenes, awarded at the end, and reviewed during the Reputation Phase.</p><p>When you reach <strong>three tags of one polarity</strong>, a <strong>Reputation Condition</strong> triggers. Conditions are more permanent labels that affect how the world treats you, such as \"Beloved\" or \"Disgraced.\" The condition clears if you drop below three tags.</p><p>The GM can also grant or revoke conditions directly on your dossier.</p>"
         },
         "innerConflict": {
-          "eyebrow": "4 · Inner conflict",
-          "title": "Two values held in tension.",
-          "body": "<p>Your <strong>Inner Conflict</strong> names two things your character holds in tension — Duty vs Freedom, Family vs Love, Honor vs Survival. Each side has five boxes.</p><p>Fill boxes when an action you take leans that way. The conflict resolves when you hit <strong>six boxes total OR five on one side</strong> — at which point your character has chosen, and the unfilled side closes off.</p><p>Conflicts are public on your dossier. They're meant to be felt by the table, not hidden.</p>"
+          "eyebrow": "4 · Inner Conflict",
+          "title": "Two values held in tension",
+          "body": "<p>Your <strong>Inner Conflict</strong> names two values your character holds in tension, such as Duty vs Freedom, Family vs Love, or Honor vs Survival. Each side has five boxes.</p><p>Fill a box when an action you take leans that way. The conflict resolves when you reach <strong>six boxes total or five boxes on one side</strong>. At that point your character has chosen, and the unfilled side closes off.</p><p>Conflicts are public on your dossier. They are meant to be felt by the table, not hidden.</p>"
         },
         "tokens": {
-          "eyebrow": "5 · Your tokens",
-          "title": "Resolve, Major Token, Monologue.",
-          "body": "<p><strong>Resolve Tokens</strong> (the row of pips on your strip): the fuel for offering tags and pushing back in scenes. Default 3 of 5; refresh at Upkeep.</p><p><strong>MT (Major Token)</strong>: one per cycle. Spend it to anchor a major moment — a binding negotiation, a decisive scene.</p><p><strong>Monologue Token</strong> (the dot next to MT): one per cycle. Spend it for a private inner-voice scene that the table watches but doesn't interrupt.</p><p>All three refresh during Upkeep at the cycle's close.</p>"
+          "eyebrow": "5 · Tokens",
+          "title": "Resolve, Major Token, and Monologue",
+          "body": "<p><strong>Resolve Tokens</strong> (the row of pips on your strip) are the fuel for offering tags and pushing back in scenes. Default is 3 of 5. They refresh at Upkeep.</p><p><strong>MT (Major Token)</strong>: one per cycle. Spend it to anchor a major moment, such as a binding negotiation or a decisive scene.</p><p><strong>Monologue Token</strong> (the dot next to MT): one per cycle. Spend it for a private inner-voice scene that the table watches but does not interrupt.</p><p>All three refresh during Upkeep at the close of each cycle.</p>"
         },
         "personas": {
           "eyebrow": "6 · Personas (optional)",
-          "title": "Hidden faces.",
-          "body": "<p>Your character may have <strong>Personas</strong> — secondary identities (a secret alter-ego, a formal court face, a disguised traveler). When a persona is active, your portrait, name, chat theme, and token image all swap to that persona's settings system-wide.</p><p>If you don't have any personas, you're always your <em>true identity</em> — that's fine; most characters never need more than one.</p><p>Add or edit personas from the picker pill in your dossier's cameo.</p>"
+          "title": "Secondary identities",
+          "body": "<p>Your character may have <strong>Personas</strong>: secondary identities such as a secret alter-ego, a formal court face, or a disguised traveler. When a persona is active, your portrait, name, chat theme, and token image all swap to that persona's settings system-wide.</p><p>If you have no personas, you are always your <em>true identity</em>. Most characters never need more than one.</p><p>Add or edit personas from the picker pill in your dossier's cameo.</p>"
         }
       }
     },
@@ -1360,8 +1372,8 @@
         "completeUpkeep": "complete upkeep ↗"
       },
       "step1": {
-        "title": "It is Upkeep.",
-        "prompt": "A breath between cycles. Let us tend to the close together.",
+        "title": "Upkeep",
+        "prompt": "Upkeep happens between cycles. Walk through these steps to wrap up this character.",
         "resolveLabel": "Resolve",
         "pendingLabel": "Pending reputation changes",
         "conflictLabel": "Inner conflict",
@@ -1369,7 +1381,7 @@
       },
       "step2": {
         "title": "Tokens",
-        "prompt": "Resolve is restored. The cycle begins again.",
+        "prompt": "Refresh resolve tokens for this character.",
         "resolveCardTitle": "RESOLVE",
         "resolveCurrentLabel": "current:",
         "resolveAfterLabel": "after refresh:",
@@ -1387,12 +1399,12 @@
       },
       "step3": {
         "title": "Notes & Objectives",
-        "prompt": "Where are you, in yourself? What do you want to do next?",
+        "prompt": "What did this character think about during this cycle? What do they want to do next?",
         "placeholder": "Write notes and plans for the next cycle..."
       },
       "step4": {
         "title": "Desire",
-        "prompt": "Has your desire shifted? Or does it still drive you?",
+        "prompt": "Has this character's desire shifted, or does it still drive them?",
         "currentDesireLabel": "CURRENT DESIRE",
         "noDesire": "(no desire recorded)",
         "changeBtn": "change desire",
@@ -1405,7 +1417,7 @@
       },
       "step5": {
         "title": "Reputation since the last Upkeep",
-        "prompt": "A small audit of how the world has come to think of you. Acknowledge each change.",
+        "prompt": "Review the reputation changes from this cycle. Acknowledge each one.",
         "noChanges": "No reputation changes this cycle. Nothing to review.",
         "gained": "gained",
         "removed": "removed",
@@ -1414,7 +1426,7 @@
       },
       "step6": {
         "title": "Upkeep complete.",
-        "prompt": "Until the cycle resumes.",
+        "prompt": "This character is ready for the next cycle.",
         "resolveRefreshed": "✓ Resolve refreshed to {current} of {max}",
         "resolveAlreadyDefault": "✓ Resolve already at default",
         "resolveSkipped": "○ Resolve not refreshed",
@@ -1439,9 +1451,9 @@
       "eyebrow": "Reputation Threshold",
       "polarityPositive": "positive",
       "polarityNegative": "negative",
-      "thresholdPositive": "The world has begun to notice you.",
-      "thresholdNegative": "The world has begun to talk.",
-      "prompt": "Three tags this cycle. Society has formed an opinion. Choose a Reputation Condition to mark it, or dismiss to handle later.",
+      "thresholdPositive": "Society has noticed.",
+      "thresholdNegative": "Society has begun to talk.",
+      "prompt": "This character has reached three tags of one polarity. Choose a Reputation Condition to mark it, or dismiss to handle it later.",
       "canonical": "canonical",
       "pickBtn": "pick ↗",
       "laterBtn": "later",
@@ -1449,7 +1461,7 @@
       "sourceTagsLabel": "Source Tags",
       "noConditions": "No conditions available. Check that a conditions compendium is loaded.",
       "gainedCard": "{name} has gained the Reputation Condition: {condition}.",
-      "createError": "Failed to create condition — see console."
+      "createError": "Failed to create condition. See the console for details."
     },
     "upkeepRoster": {
       "windowTitle": "Upkeep Roster",
@@ -1501,7 +1513,7 @@
     },
     "reputationPhaseWizard": {
       "windowTitle": "Reputation Phase",
-      "eyebrow": "Cycle {n} — Reputation Phase",
+      "eyebrow": "Cycle {n} · Reputation Phase",
       "stepOf": "Step {step} of {total}",
       "back": "Back",
       "beginBtn": "Begin →",
@@ -1519,12 +1531,12 @@
         "allDone": "All done."
       },
       "step1": {
-        "title": "Reputation Phase — Roster",
+        "title": "Reputation Phase · Roster",
         "prompt": "Select which major characters are active in this cycle.",
         "noMajors": "No major characters have been created yet.",
         "overviewTitle": "This phase has three steps:",
         "overview1": "Create new reputation tags based on what each character did this chapter.",
-        "overview2": "Manage reputation conditions — add or clear them for each character.",
+        "overview2": "Manage reputation conditions: add or clear them for each character.",
         "overview3": "Post a summary and close the wizard."
       },
       "step2": {
@@ -1564,21 +1576,21 @@
       },
       "step4": {
         "title": "Phase Complete",
-        "prompt": "The reputation phase is wrapped up. A summary will be posted to the chat log.",
+        "prompt": "The Reputation Phase is complete. A summary will be posted to the chat log.",
         "tagsCreated": "{n} reputation tag(s) created this phase.",
         "conditionsCleared": "{n} condition(s) cleared this phase.",
         "charactersReviewed": "{n} character(s) reviewed.",
         "advanceNote": "Advance the cycle phase manually via the Cycle HUD when ready."
       },
       "summary": {
-        "heading": "Reputation phase complete — where everyone stands:",
+        "heading": "Reputation Phase complete. Where everyone stands:",
         "noConditions": "no active conditions",
         "totals": "{tagsCreated} new tag(s) this phase · {conditionsCleared} condition(s) cleared."
       }
     },
     "playerReputationPhaseWizard": {
       "windowTitle": "Reputation Phase",
-      "eyebrow": "Cycle {n} — {name}",
+      "eyebrow": "Cycle {n} · {name}",
       "stepOf": "Step {step} of {total}",
       "back": "Back",
       "nextStepBtn": "Next →",
@@ -1616,7 +1628,7 @@
           "desireVsDuty": "Chose desire over duty or morality",
           "familyNegative": "Family criteria (negative)"
         },
-        "noFamily": "No family linked — no unique criteria."
+        "noFamily": "No family linked. No unique criteria."
       },
       "step3": {
         "title": "Add Tags",
@@ -1638,7 +1650,7 @@
         "clearHeading": "Clear a condition",
         "clearBtn": "Clear Condition",
         "tagCount": "{n} tags remaining",
-        "conditionClearedCard": "{name}'s reputation condition \"{condition}\" has cleared — tag count dropped below 3.",
+        "conditionClearedCard": "{name}'s reputation condition \"{condition}\" has cleared. Their tag count dropped below 3.",
         "nothingToDo": "No conditions to trigger or clear. Move on."
       },
       "step5": {
@@ -1774,13 +1786,13 @@
       "heading": "Rumour & Scandal",
       "subtitleSetup": "Pick the turn order, then begin.",
       "subtitleFadeout": "Time to fade unspread rumours.",
-      "round1": "Round 1 — first pass around the circle",
-      "round2": "Round 2 — reverse direction, second pass",
+      "round1": "Round 1: first pass around the circle",
+      "round2": "Round 2: reverse direction, second pass",
       "setupEyebrow": "Turn order",
       "setupHelp": "Each included player will take two turns. The order reverses for round two. Use the arrows to reorder; uncheck a name to exclude.",
       "beginBtn": "Begin Rumour & Scandal",
       "waitingForGMSetup": "Waiting on the Facilitator to set up the turn order…",
-      "yourTurn": "⚜  Your turn — create a rumour, or spread one.",
+      "yourTurn": "⚜  Your turn. Create a rumour, or spread one.",
       "waitingFor": "Waiting on {name}…",
       "actionCreate": "Create a new rumour",
       "newRumourPlaceholder": "Henry has been disinherited…",
@@ -1788,18 +1800,18 @@
       "actionSpread": "Or spread an existing rumour",
       "actionSpreadHelp": "Spreading costs your Major Character 1 resolve and attaches that token to the rumour. Anyone can later spend it during a novel chapter or epistolary phase.",
       "spreadBtn": "Spread",
-      "mustCreateNote": "No spreadable rumours — your only option is to create a new one.",
+      "mustCreateNote": "No spreadable rumours. Your only option is to create a new one.",
       "skipTurnBtn": "Skip this turn",
       "skipTurnConfirm": "Skip this player’s turn?",
       "forceCompleteBtn": "Force end phase",
-      "forceCompleteHint": "GM only — fast-forward to fade-out and close the wizard if the phase is stuck (e.g. a player disconnected mid-turn).",
+      "forceCompleteHint": "GM only. Fast-forward to fade-out and close the wizard if the phase is stuck (e.g. a player disconnected mid-turn).",
       "forceCompleteConfirm": "End the Rumour & Scandal phase now? Any unspread rumours will fade. This cannot be undone.",
       "summary": {
-        "heading": "Rumour & Scandal phase complete — what circulates now:",
+        "heading": "Rumour & Scandal phase complete. What circulates now:",
         "spreadHeading": "Spread (still in play, each with a resolve token attached):",
         "fadingHeading": "Created this phase but not yet spread (will fade if not spread next time):",
-        "fadedHeading": "Faded this phase (cycled out — no longer circulating):",
-        "empty": "No rumours circulated this phase. The drawing rooms are quiet.",
+        "fadedHeading": "Faded this phase (cycled out, no longer circulating):",
+        "empty": "No rumours circulated this phase.",
         "totals": "{spread} spread · {faded} faded · {fading} still pending."
       },
       "errorEmptyText": "Type a rumour first.",
@@ -1816,7 +1828,7 @@
         "used": "used"
       },
       "spreadCostHint": "Spreading costs {name} 1 resolve. Currently {n} available.",
-      "spreadCostBlocked": "{name} has no resolve to spend — you must create a rumour instead.",
+      "spreadCostBlocked": "{name} has no resolve to spend. You must create a rumour instead.",
       "errorNoMajor": "You don't own a Major Character to spend resolve from.",
       "errorNoResolve": "{name} has no resolve to spend."
     },

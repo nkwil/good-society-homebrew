@@ -20,6 +20,7 @@
 import { openLetterComposer } from './letter-composer.js';
 import { profilePic, profileName } from '../helpers/profile-pic.js';
 import { SEAL_TYPES, scriptFontFamily } from '../constants.js';
+import { parchmentVariantFor } from '../helpers/parchment.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -27,21 +28,6 @@ const FLAG_SCOPE = 'good-society-homebrew';
 const TEMPLATE = 'systems/good-society-homebrew/templates/apps/epistolary-wizard.hbs';
 
 let _instance = null;
-
-/**
- * Deterministically map a letter id to one of the three parchment textures
- * (1 / 2 / 3) shipped in `assets/parchment/`. A given letter always renders on
- * the same sheet, but different letters vary — so an inbox doesn't read as one
- * uniform slab of paper. Simple multiplicative string hash.
- */
-function parchmentVariantFor(id) {
-  let h = 0;
-  const str = String(id ?? '');
-  for (let i = 0; i < str.length; i++) {
-    h = (h * 31 + str.charCodeAt(i)) | 0;
-  }
-  return (Math.abs(h) % 3) + 1;
-}
 
 export class EpistolaryWizard extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {

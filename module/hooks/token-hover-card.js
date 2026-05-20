@@ -39,7 +39,8 @@ export function register() {
   document.addEventListener('mousemove', (ev) => {
     _lastMouseX = ev.clientX;
     _lastMouseY = ev.clientY;
-    // While the card is visible, follow the cursor for a "sticky" feel.
+    // The card is purely informational (no buttons) and follows the cursor
+    // for a sticky feel — dismisses on mouse-out via the hoverToken hook.
     if (_card && _card.isConnected) _positionCard(_card);
   }, { passive: true });
 
@@ -117,11 +118,11 @@ function _buildCardData(placeable) {
     || '';
   const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
 
-  // Role label: type-specific format.
+  // Role label: type-specific format. Majors intentionally omit the archetype
+  // line on the hover card — the focus there is the reputation snapshot.
   let roleLabel, roleLabelStyle;
   if (actor.type === 'major-character') {
-    const archetype = actor.system?.bio?.archetype;
-    roleLabel = archetype ? game.i18n.localize(`GOODSOCIETY.major.archetype.${archetype}`) : '';
+    roleLabel = '';
     roleLabelStyle = 'branded';
   } else if (actor.type === 'connection') {
     const rel = actor.system?.bio?.relationshipLabel?.trim();
@@ -173,18 +174,16 @@ function _buildCardData(placeable) {
   // world-scope setting `hoverCardMajorAutoSummary` — when off, render only
   // the header (name + role/peerage subtitle).
   let reputationTags = [];
-  let activeCondition = null;
+  let activeConditions = [];
   let familyCriteria = '';
-  let showOpenDossier = false;
 
   if (actor.type === 'major-character') {
     let majorAuto = true;
     try { majorAuto = game.settings.get('good-society-homebrew', 'hoverCardMajorAutoSummary'); } catch {}
-    showOpenDossier = true; // always show "open dossier ↗" for Majors
 
     if (majorAuto) {
-      // Top 3 rep tags total, prioritizing the highest pinned positive +
-      // highest pinned negative + one more of either polarity.
+      // All positive tags followed by all negative tags — no cap. Hovering a
+      // Major should give the viewer the full reputation picture at a glance.
       const posItems = (actor.system?.reputation?.positiveTags ?? [])
         .map(id => actor.items.get(id))
         .filter(i => i?.type === 'reputation-tag')
@@ -193,21 +192,18 @@ function _buildCardData(placeable) {
         .map(id => actor.items.get(id))
         .filter(i => i?.type === 'reputation-tag')
         .map(item => ({ label: '▼ ' + item.name, polarity: 'negative' }));
-      const slot1 = posItems[0] ?? null;
-      const slot2 = negItems[0] ?? null;
-      const slot3 = posItems[1] ?? negItems[1] ?? null;
-      reputationTags = [slot1, slot2, slot3].filter(Boolean);
+      reputationTags = [...posItems, ...negItems];
 
-      // Active condition — first item from reputation.activeConditions.
+      // EVERY active reputation condition. Each renders as its own pill in
+      // the card so the viewer sees the full state, not just the first.
       const condIds = actor.system?.reputation?.activeConditions ?? [];
       for (const id of condIds) {
         const item = actor.items.get(id);
         if (item?.type === 'reputation-condition' && item.system?.active) {
-          activeCondition = {
+          activeConditions.push({
             name: item.name,
             polarity: item.system?.polarity ?? 'positive',
-          };
-          break;
+          });
         }
       }
 
@@ -237,9 +233,8 @@ function _buildCardData(placeable) {
     hoverSummaryIsHtml,
     publicTags,
     reputationTags,
-    activeCondition,
+    activeConditions,
     familyCriteria,
-    showOpenDossier,
   };
 }
 
@@ -255,10 +250,7 @@ function _esc(str) {
 }
 
 function _buildInnerHtml(data) {
-  // Portrait
-  const portraitInner = data.portraitUrl
-    ? `<img class="gs-token-hover-card__portrait-img" src="${_esc(data.portraitUrl)}" alt="" />`
-    : `<span class="gs-token-hover-card__portrait-initial">${_esc(data.portraitInitial)}</span>`;
+  // No portrait — the token is already on the canvas next to the card.
 
   // Title — editable subhead from system.bio.title. Sits directly under
   // the name (above roleLabel/subtitle) on every actor type.
@@ -281,9 +273,13 @@ function _buildInnerHtml(data) {
     ? `<div class="gs-token-hover-card__secret-note">${_esc(data.secretPersonaNote)}</div>`
     : '';
 
-  // Active condition (Major-only, post-MVP §10.2 auto-summary).
-  const conditionHtml = data.activeCondition
-    ? `<div class="gs-token-hover-card__condition gs-token-hover-card__condition--${data.activeCondition.polarity}">◆ ${_esc(data.activeCondition.name)}</div>`
+  // Active conditions (Major-only). One pill per condition.
+  const conditionHtml = (data.activeConditions?.length)
+    ? `<div class="gs-token-hover-card__conditions">${
+        data.activeConditions.map(c =>
+          `<div class="gs-token-hover-card__condition gs-token-hover-card__condition--${c.polarity}">◆ ${_esc(c.name)}</div>`
+        ).join('')
+      }</div>`
     : '';
 
   // Family criteria (Major-only, when visible).
@@ -313,12 +309,7 @@ function _buildInnerHtml(data) {
     ? `<div class="gs-token-hover-card__tags">${allTagsHtml}</div>`
     : '';
 
-  // Open dossier footer (Major-only).
-  const footerHtml = data.showOpenDossier
-    ? `<div class="gs-token-hover-card__footer"><em>${_esc(game.i18n.localize('GOODSOCIETY.hoverCard.openDossier'))} ↗</em></div>`
-    : '';
-
-  return `<header class="gs-token-hover-card__header"><div class="gs-token-hover-card__portrait">${portraitInner}</div><div class="gs-token-hover-card__identity"><div class="gs-token-hover-card__name">${_esc(data.displayName)}</div>${titleHtml}${roleLabelHtml}${subtitleHtml}${secretNoteHtml}</div></header>${conditionHtml}${criteriaHtml}${summaryHtml}${tagsHtml}${footerHtml}`;
+  return `<header class="gs-token-hover-card__header"><div class="gs-token-hover-card__identity"><div class="gs-token-hover-card__name">${_esc(data.displayName)}</div>${titleHtml}${roleLabelHtml}${subtitleHtml}${secretNoteHtml}</div></header>${conditionHtml}${criteriaHtml}${summaryHtml}${tagsHtml}`;
 }
 
 // ── Show / hide ───────────────────────────────────────────────────────────────
@@ -339,15 +330,10 @@ function _showCard(placeable, data) {
   document.body.appendChild(cardEl);
   _card = cardEl;
 
-  // Wire card interactivity.
-  cardEl.addEventListener('mouseover', _cancelDismiss);
-  cardEl.addEventListener('mouseout', (ev) => {
-    if (!cardEl.contains(ev.relatedTarget)) _scheduleDismiss();
-  });
-  cardEl.addEventListener('click', () => {
-    data.actor?.sheet?.render(true);
-    _clearCard();
-  });
+  // Card is passive — no clicks, no enter/leave interactions. It dismisses
+  // when Foundry's `hoverToken(false)` fires (with a 200ms grace) or when
+  // another token is hovered. The dossier is reachable via the Public Info
+  // Dashboard, so no in-card affordance is needed.
 
   // Position relative to the cursor (tracked globally via mousemove).
   _positionCard(cardEl);

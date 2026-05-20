@@ -88,6 +88,34 @@
   text-overflow: ellipsis;
 }
 
+/* "+ Connection" / "+ NPC" quick-create buttons in the header. */
+.gs-npc-organizer__create-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.gs-npc-organizer__create-btn {
+  flex: 1;
+  padding: 4px 8px;
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+  font-family: var(--gs-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  min-height: 0;
+  line-height: 1.2;
+}
+
+.gs-npc-organizer__create-btn:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: var(--gs-paper);
+}
+
 /* Minimize button — mirrors .gs-dock__minimize */
 .gs-npc-organizer__minimize {
   flex-shrink: 0;
@@ -167,19 +195,36 @@
 
 .gs-npc-organizer__row {
   display: grid;
-  grid-template-columns: 32px 1fr;
+  grid-template-columns: 32px 1fr auto;
   gap: 8px;
   align-items: center;
   padding: 5px 8px;
   border-radius: 4px;
   background: var(--gs-paper-warm);
-  cursor: pointer;
+  cursor: grab;
   pointer-events: auto;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, box-shadow 0.12s;
 }
 
 .gs-npc-organizer__row:hover {
-  opacity: 0.82;
+  opacity: 0.92;
+  box-shadow: 0 0 0 0.5px var(--gs-accent-2);
+}
+
+.gs-npc-organizer__row:active,
+.gs-npc-organizer__row.is-dragging {
+  cursor: grabbing;
+  opacity: 0.55;
+}
+
+/* Small dot on the trailing edge indicating a token of this actor is on the
+ * currently-viewed scene. Purely informational; the row stays draggable to
+ * place additional tokens. */
+.gs-npc-organizer__row-onscene {
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--gs-positive, #4A7A4A);
+  opacity: 0.85;
 }
 
 .gs-npc-organizer__row-portrait {

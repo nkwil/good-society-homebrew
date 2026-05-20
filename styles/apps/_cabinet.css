@@ -36,7 +36,12 @@
   background: transparent;
   border: 0;
   padding: 0;
-  pointer-events: auto;
+  /* The wrapper's layout box is wider than the visible rail (because of the
+   * drawer's `translateX(180px)` shift), leaving a transparent strip on the
+   * LEFT that would otherwise catch clicks meant to close the drawer (and
+   * keep them out of the canvas / window underneath). Make the wrapper
+   * itself click-through; the inner shell re-enables hits on actual UI. */
+  pointer-events: none;
 }
 
 #gs-cabinet .window-content,
@@ -44,18 +49,23 @@
   padding: 0;
   background: transparent;
   overflow: visible;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 /* Shell stacks vertically: drawer (when open) on top, rail at bottom.
  * The template renders drawer first, rail second — natural document order
- * matches the visual stacking under flex-direction: column. */
+ * matches the visual stacking under flex-direction: column.
+ *
+ * Shell itself is click-through (same reason as the wrapper above — the
+ * drawer's `translateX(180px)` leaves a transparent strip on the LEFT that
+ * would otherwise eat outside-clicks). Children re-enable `pointer-events`
+ * so the actual visible rail + drawer + their controls catch clicks. */
 .gs-cabinet-shell {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .gs-cabinet-shell *,
@@ -247,8 +257,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  /* Generous vertical padding makes the row a forgiving click target — the
+   * 46×26 switch alone was small enough to miss. The whole row carries the
+   * data-action attribute; the switch inside is decorative. */
+  padding: 10px 8px;
+  margin: 0 -8px;
   gap: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 120ms ease;
+}
+
+.gs-cabinet-row:hover {
+  background: color-mix(in srgb, var(--gs-accent-2) 14%, transparent);
+}
+
+.gs-cabinet-row:focus-visible {
+  outline: 2px solid var(--gs-brand);
+  outline-offset: -2px;
 }
 
 .gs-cabinet-row__name {
@@ -278,8 +304,13 @@
  *   - Knob keeps a subtle drop shadow so it lifts visibly off the coloured
  *     track in both states.
  */
+/* Decorative switch — clicks are handled by the parent .gs-cabinet-row,
+ * so the switch and its children pass pointer events through to the row.
+ * (`!important` resets are kept harmlessly in case Foundry styles a span
+ * with button-like rules under .application.) */
 .gs-cabinet-toggle {
   position: relative;
+  display: inline-block;
   width: 46px !important;
   height: 26px !important;
   background: transparent !important;
@@ -287,9 +318,9 @@
   padding: 0 !important;
   margin: 0 !important;
   line-height: 1 !important;
-  cursor: pointer;
   flex-shrink: 0;
   box-sizing: border-box;
+  pointer-events: none;
 }
 
 .gs-cabinet-toggle__track {

@@ -64,14 +64,21 @@
 }
 .gs-ecc__roster-list { list-style: none; padding: 0; margin: 0; }
 
-.gs-ecc__roster-row {
-  display: grid;
-  grid-template-columns: 32px 1fr auto;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 6px 8px;
-  margin-bottom: 2px;
+/* The roster row is a <button>, which means Foundry's core
+ * `.application button { ... }` rule (specificity 0,1,1) competes with
+ * anything we declare on `.gs-ecc__roster-row` alone (0,1,0). Use a
+ * compound selector so the system rules take precedence by specificity,
+ * not just by load order — and keep !important on the layout block
+ * because Foundry has been known to ship `!important` declarations on
+ * button defaults too. */
+.gs-ecc__roster-list .gs-ecc__roster-row {
+  display: grid !important;
+  grid-template-columns: 40px 1fr auto !important;
+  align-items: center !important;
+  gap: 14px !important;
+  width: 100% !important;
+  padding: 16px 14px !important;
+  margin: 0 0 14px 0 !important;
   background: transparent;
   border: 0.5px solid transparent;
   border-radius: 4px;
@@ -82,26 +89,34 @@
   text-align: left;
   cursor: pointer;
   transition: background 120ms ease, border-color 120ms ease;
-  /* Prevent autofocus glow from making the first row look "pressed". */
   outline: none;
+  /* Foundry buttons sometimes carry min-height defaults that fight the
+   * grid layout — pin both ends to auto so our padding controls the size. */
+  min-height: 0 !important;
+  height: auto !important;
 }
-.gs-ecc__roster-row:hover {
+.gs-ecc__roster-list .gs-ecc__roster-row:hover {
   background: var(--gs-paper-warm);
   border-color: var(--gs-accent-2);
 }
-.gs-ecc__roster-row--selected {
+.gs-ecc__roster-list .gs-ecc__roster-row--selected {
   background: var(--gs-paper-warm);
   border-color: var(--gs-brand);
 }
-.gs-ecc__roster-row:focus-visible {
+.gs-ecc__roster-list .gs-ecc__roster-row:focus-visible {
   outline: 1.5px solid var(--gs-brand);
   outline-offset: -1.5px;
+}
+/* Clear the trailing row's margin so the list ends flush with whatever sits
+ * below it. */
+.gs-ecc__roster-list li:last-child .gs-ecc__roster-row {
+  margin-bottom: 0 !important;
 }
 
 .gs-ecc__roster-portrait,
 .gs-ecc__roster-initial {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   background: var(--gs-paper-warm);
@@ -120,13 +135,13 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  gap: 1px;
+  gap: 4px;
 }
 .gs-ecc__roster-name {
   font-family: var(--gs-display) !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
-  line-height: 1.2 !important;
+  line-height: 1.25 !important;
   color: var(--gs-ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -135,9 +150,9 @@
 .gs-ecc__roster-meta {
   font-family: var(--gs-body) !important;
   font-style: italic !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   font-weight: 400 !important;
-  line-height: 1.2 !important;
+  line-height: 1.3 !important;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
   overflow: hidden;
   text-overflow: ellipsis;

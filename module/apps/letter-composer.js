@@ -12,6 +12,7 @@ import { themedWrap } from '../helpers/themed-wrap.js';
 import { letterFolder, entryFlags } from '../helpers/journal-folders.js';
 import { profileName, explicitPersona } from '../helpers/profile-pic.js';
 import { SEAL_TYPES, SCRIPT_FONTS, scriptFontFamily } from '../constants.js';
+import { parchmentVariantFor } from '../helpers/parchment.js';
 
 const { HandlebarsApplicationMixin, ApplicationV2, DialogV2 } = foundry.applications.api;
 
@@ -394,7 +395,11 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     const inner = await foundry.applications.handlebars.renderTemplate(LETTER_TPL, {
       actor, persona, letter, cycleNumber, speakerName,
     });
-    return themedWrap(actor, inner, ['gs-letter-card']);
+    // A parchment variant keyed to the sender — each character writes on
+    // their own stable stationery in the preview (same logic the Epistolary
+    // Wizard's inbox uses for delivered letters).
+    const variant = parchmentVariantFor(actor?.id ?? 'no-actor');
+    return themedWrap(actor, inner, ['gs-letter-card', `gs-parchment-v${variant}`]);
   }
 
   // ── Journal archive / inbox ───────────────────────────────────────────────
@@ -522,20 +527,57 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       .filter(([uid, lvl]) => uid !== 'default' && lvl >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)
       .map(([uid]) => uid);
 
-    await postLetterCard({ actor, persona, letter, cycleNumber, whisper: true, whisperIds });
-    await this._archiveToJournal(actor, persona, letter, cycleNumber, recipientActor);
-
-    Hooks.callAll('goodSociety.epistolarySent', {
-      actorId:          actor.id,
-      actorName:        actor.name,
-      speakerName:      profileName(actor),
-      recipientActorId: recipientActor.id,
-      letter,
-      cycleNumber,
-    });
+    // Run the send work and the fold-and-seal animation in parallel — the
+    // visual finishes ~720ms after click, by which time the chat card and
+    // journal archive are also done.
+    const sendWork = (async () => {
+      await postLetterCard({ actor, persona, letter, cycleNumber, whisper: true, whisperIds });
+      await this._archiveToJournal(actor, persona, letter, cycleNumber, recipientActor);
+      Hooks.callAll('goodSociety.epistolarySent', {
+        actorId:          actor.id,
+        actorName:        actor.name,
+        speakerName:      profileName(actor),
+        recipientActorId: recipientActor.id,
+        letter,
+        cycleNumber,
+      });
+    })();
+    await Promise.all([sendWork, this._playSendAnimation()]);
 
     await this._clearDraft();
     this.close();
+  }
+
+  /**
+   * Reverse of the Epistolary Wizard's "open letter" animation. The unfolded
+   * parchment scales-and-fades away while a folded envelope crossfades in
+   * with the chosen wax seal stamping on top. ~720ms total.
+   */
+  async _playSendAnimation() {
+    const zone = this.element?.querySelector('.gs-letter-composer__preview-zone');
+    if (!zone) return;
+
+    const seal = SEAL_TYPES.find(s => s.id === this._state.seal);
+    const sealAsset = seal?.iconAsset ?? '';
+    const sealAccent = seal?.color ?? 'var(--gs-brand)';
+
+    // Inject the folded-envelope overlay. The CSS-keyframes-driven animation
+    // is gated on `.is-sending` on the preview zone.
+    const overlay = document.createElement('div');
+    overlay.className = 'gs-letter-composer__envelope-overlay';
+    overlay.innerHTML = `
+      <img class="gs-letter-composer__envelope-img"
+           src="/systems/good-society-homebrew/assets/parchment/envelope.png" alt="" />
+      ${sealAsset
+        ? `<div class="gs-letter-composer__envelope-seal"
+                 style="background-image: url('${sealAsset}'); --gs-seal-accent: ${sealAccent};"></div>`
+        : ''}
+    `;
+    zone.appendChild(overlay);
+    // One frame later so the keyframe transition fires from initial state.
+    await new Promise(r => requestAnimationFrame(r));
+    zone.classList.add('is-sending');
+    await new Promise(r => setTimeout(r, 720));
   }
 
   static async #saveDraft(event, target) {

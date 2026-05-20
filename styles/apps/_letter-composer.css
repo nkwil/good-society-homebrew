@@ -181,11 +181,15 @@
 }
 
 .gs-letter-composer__seal-row {
-  display: flex;
+  /* Fixed grid: 8 columns of 32px so the 15 seals fit in two rows (with the
+   * label taking a third row). Switching from `flex-wrap` keeps the last
+   * seal from spilling below the form's visible bounds. */
+  display: grid;
+  grid-template-columns: repeat(8, 32px);
+  gap: 8px;
+  row-gap: 10px;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  row-gap: 12px;
+  justify-content: start;
 }
 
 /* Each seal is a circular button rendered with the asset as background.
@@ -194,10 +198,10 @@
  * artwork alone isn't enough to signal state. */
 .gs-letter-composer__seal-circle {
   position: relative;
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  min-height: 38px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   padding: 0;
   border-radius: 50%;
   cursor: pointer;
@@ -235,8 +239,8 @@
   font-style: italic;
   font-size: 12px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
-  /* Pushed onto its own visual line below the wrap when the row is full. */
-  flex-basis: 100%;
+  /* In the grid layout the label always sits on its own row below the seals. */
+  grid-column: 1 / -1;
   margin-top: 2px;
 }
 
@@ -293,6 +297,121 @@
 .gs-letter-composer__preview-zone .gs-letter-card {
   flex: 1;
   min-height: 0;
+}
+
+/* Parchment textures for the composer preview — one of three torn-edge
+ * sheets keyed by the sender's id (`parchmentVariantFor()`), the same
+ * variant system the Epistolary Wizard's inbox uses for delivered letters.
+ *
+ * Approach mirrors the Wizard (`.gs-letter-sheet`):
+ *
+ *   - The card is sized to MATCH the PNG's aspect ratio (per variant), so
+ *     the image fits the card exactly — its torn edges land right at the
+ *     card's bounds. No cream gap; no torn-edge cropping.
+ *   - `background-size: 100% 100%` stretches the PNG to fill the
+ *     aspect-matched card. Because the card's aspect matches the PNG's,
+ *     this is a 1:1 fill with no distortion.
+ *   - `flex: 0 0 auto` overrides the `flex: 1` from `.gs-letter-card`
+ *     above, so aspect-ratio actually drives sizing. The card then sits
+ *     centred horizontally in the preview zone.
+ *   - `background-color` is a parchment-matched tan rather than cream, so
+ *     if the PNG fails to load you still see parchment-toned paper.
+ *
+ * Scoped to the composer preview so the chat-card letter keeps its
+ * existing cream-gradient look. */
+.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v1,
+.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v2,
+.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v3 {
+  /* Fill the preview cell entirely so there's no empty cream space below
+   * the parchment crowding the Send button. The PNG stretches to fill —
+   * the mottled parchment texture absorbs the slight aspect distortion
+   * (you can't read it as "stretched paper"). Torn edges of the PNG sit
+   * exactly at the card's bounds. */
+  flex:                1 !important;
+  width:               100% !important;
+  height:              100% !important;
+  margin:              0 !important;
+  background-color:    #cdb88a !important;
+  background-size:     100% 100% !important;
+  background-position: center center !important;
+  background-repeat:   no-repeat !important;
+}
+.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v1 {
+  background-image: url('/systems/good-society-homebrew/assets/parchment/parchment-1.png') !important;
+}
+.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v2 {
+  background-image: url('/systems/good-society-homebrew/assets/parchment/parchment-2.png') !important;
+}
+.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v3 {
+  background-image: url('/systems/good-society-homebrew/assets/parchment/parchment-3.png') !important;
+}
+
+/* ── Send animation — fold the parchment + stamp the seal on an envelope ──
+ *
+ * Reverse of the Epistolary Wizard's "break the wax seal → unfold" reader
+ * animation. When the user clicks Send, the unfolded parchment scales-and-
+ * fades down while a folded envelope crossfades in; the wax seal then
+ * stamps in with a brief overshoot. ~720ms total, then the modal closes.
+ *
+ * Triggered by `.gs-letter-composer__preview-zone.is-sending`, added by
+ * `LetterComposer#_playSendAnimation`. The overlay markup is injected
+ * dynamically in that handler — no need for it in the template. */
+.gs-letter-composer__envelope-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 5;
+}
+.gs-letter-composer__envelope-img {
+  max-width: 72%;
+  max-height: 80%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 22px rgba(20, 12, 8, 0.45));
+}
+.gs-letter-composer__envelope-seal {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
+  transform: scale(0);
+  opacity: 0;
+}
+
+/* Active state ─ trigger the keyframes. */
+.gs-letter-composer__preview-zone.is-sending .gs-letter-card {
+  animation: gs-letter-fold 700ms cubic-bezier(.4, 0, .2, 1) forwards;
+}
+.gs-letter-composer__preview-zone.is-sending .gs-letter-composer__envelope-overlay {
+  animation: gs-envelope-arrive 700ms cubic-bezier(.4, 0, .2, 1) forwards;
+}
+.gs-letter-composer__preview-zone.is-sending .gs-letter-composer__envelope-seal {
+  animation: gs-seal-stamp 600ms cubic-bezier(.34, 1.4, .64, 1) forwards;
+  animation-delay: 240ms;
+}
+
+@keyframes gs-letter-fold {
+  0%   { transform: scale(1)    rotate(0deg);  opacity: 1; }
+  55%  { transform: scale(0.62) rotate(-2deg); opacity: 0.55; }
+  100% { transform: scale(0.42) rotate(-3deg); opacity: 0; }
+}
+@keyframes gs-envelope-arrive {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.92); }
+  60%  { opacity: 1; transform: translateY(0)   scale(1); }
+  100% { opacity: 1; transform: translateY(0)   scale(1); }
+}
+@keyframes gs-seal-stamp {
+  0%   { transform: scale(0)    rotate(-12deg); opacity: 0; }
+  45%  { transform: scale(1.35) rotate(2deg);   opacity: 1; }
+  72%  { transform: scale(0.93) rotate(-1deg);  opacity: 1; }
+  100% { transform: scale(1)    rotate(0deg);   opacity: 1; }
 }
 
 /* ── Action bar — footer ──────────────────────────────────────────────────── */

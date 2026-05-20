@@ -196,10 +196,12 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
   _reflectToggle(surfaceId, on) {
     const root = this.element;
     if (!root) return;
-    const sw = root.querySelector(`.gs-cabinet-toggle[data-surface-id="${surfaceId}"]`);
-    if (sw) {
-      sw.classList.toggle('is-on', on);
-      sw.setAttribute('aria-checked', String(on));
+    // The clickable row carries data-surface-id + the aria-checked state;
+    // the inner span renders the visual on/off via its is-on class.
+    const row = root.querySelector(`.gs-cabinet-row[data-surface-id="${surfaceId}"]`);
+    if (row) {
+      row.setAttribute('aria-checked', String(on));
+      row.querySelector('.gs-cabinet-toggle')?.classList.toggle('is-on', on);
     }
     // Rail dots track persistent surfaces only (launcher windows can't be
     // tracked live on the always-visible rail).
@@ -271,6 +273,30 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
     };
     document.addEventListener('keydown', this._escHandler);
 
+    // Click-outside to close the drawer. Belt-and-suspenders: register the
+    // same closure for `pointerdown`, `mousedown`, AND `click`, both on
+    // `window` and `document.body`, all in capture phase. Some Foundry
+    // surfaces stop propagation deep in the canvas chain on one specific
+    // event type but not another — listening to all three guarantees we
+    // see *something* on every interaction outside the Cabinet.
+    if (this._outsideClickHandler) {
+      for (const t of ['pointerdown', 'mousedown', 'click']) {
+        window.removeEventListener(t, this._outsideClickHandler, true);
+        document.body.removeEventListener(t, this._outsideClickHandler, true);
+      }
+    }
+    this._outsideClickHandler = (ev) => {
+      if (!this._drawerOpen) return;
+      if (ev.target?.closest?.('#gs-cabinet, .gs-cabinet')) return;
+      console.debug('[GS Cabinet] outside click → close drawer', ev.type, ev.target);
+      this._drawerOpen = false;
+      this.render({ parts: ['cabinet'] });
+    };
+    for (const t of ['pointerdown', 'mousedown', 'click']) {
+      window.addEventListener(t, this._outsideClickHandler, true);
+      document.body.addEventListener(t, this._outsideClickHandler, true);
+    }
+
     // Anchor immediately, then again after the next paint (Foundry's
     // hotbar styles sometimes finish resolving after our render runs).
     this._anchorAboveHotbar();
@@ -335,6 +361,13 @@ export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (this._escHandler) {
       document.removeEventListener('keydown', this._escHandler);
       this._escHandler = null;
+    }
+    if (this._outsideClickHandler) {
+      for (const t of ['pointerdown', 'mousedown', 'click']) {
+        window.removeEventListener(t, this._outsideClickHandler, true);
+        document.body.removeEventListener(t, this._outsideClickHandler, true);
+      }
+      this._outsideClickHandler = null;
     }
     if (this._resizeHandler) {
       window.removeEventListener('resize', this._resizeHandler);

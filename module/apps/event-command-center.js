@@ -157,10 +157,13 @@ export class EventCommandCenter extends HandlebarsApplicationMixin(ApplicationV2
       ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventCommandCenter.archetypeMismatch'));
       return;
     }
-    if (!_isAnyOwnerOnline(actor)) {
-      ui.notifications?.warn(game.i18n.format('GOODSOCIETY.eventCommandCenter.ownerOffline', { name: actor.name }));
-      return;
-    }
+    // Don't block the launch when the player owner is offline. The GM is by
+    // definition online (they're clicking Launch) and is also an owner — the
+    // downstream `_handleLaunch` routes the popover to a non-GM owner if
+    // one's connected, and falls back to the local GM client when not. That
+    // covers solo-GM and GM-PC setups where the GM is also the character's
+    // player. The "OWNER OFFLINE" badge in the right pane still informs the
+    // GM that no real player is on the line.
     await launchRandomEvent(event, actor);
     ui.notifications?.info(game.i18n.format('GOODSOCIETY.eventCommandCenter.launched', { event: event.name, target: actor.name }));
   }

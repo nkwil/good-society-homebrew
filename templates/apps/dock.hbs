@@ -44,48 +44,8 @@
     {{/unless}}
   </div>
 
-  {{#if hasAny}}
-    <footer class="gs-dock__footer">
-      <span class="gs-dock__hint">{{localize "GOODSOCIETY.dock.clickToOpen"}}</span>
-
-      {{!-- Speaking-As mirror — same template the chat-input bar uses, with a
-           variant data-attribute so the chat-input's _doInject doesn't strip
-           this copy. The delegated click handlers in speaking-as.js match by
-           class so both surfaces share behavior. --}}
-      <div class="gs-speaking-as gs-speaking-as--dock"
-           data-variant="dock"
-           data-active-actor="{{activeSpeakerActorId}}"
-           data-active-persona="{{activeSpeakerPersonaId}}">
-        <button type="button" class="gs-speaking-as__pill" aria-haspopup="listbox" aria-expanded="false">
-          <span class="gs-speaking-as__pill-name">
-            {{#if speakerLabel}}{{speakerLabel}}{{else}}— {{localize "GOODSOCIETY.speakingAs.none"}} —{{/if}}
-          </span>
-          <span class="gs-speaking-as__pill-chevron" aria-hidden="true">▾</span>
-        </button>
-        <div class="gs-speaking-as__popover" role="listbox" hidden>
-          <button type="button" class="gs-speaking-as__option" role="option" data-actor-id="" data-persona-id="">
-            — {{localize "GOODSOCIETY.speakingAs.none"}} —
-          </button>
-          {{#each myMajors as |actor|}}
-            <button type="button"
-                    class="gs-speaking-as__option {{#if (eq ../activeSpeakerActorId actor.id)}}is-active{{/if}}"
-                    role="option"
-                    data-actor-id="{{actor.id}}"
-                    data-persona-id="">
-              {{actor.name}}
-            </button>
-            {{#each actor.system.personas as |persona|}}
-              <button type="button"
-                      class="gs-speaking-as__option gs-speaking-as__option--persona {{#if (and (eq ../../activeSpeakerActorId ../actor.id) (eq ../../activeSpeakerPersonaId persona.id))}}is-active{{/if}}"
-                      role="option"
-                      data-actor-id="{{../actor.id}}"
-                      data-persona-id="{{persona.id}}">
-              ↳ {{persona.name}}
-              </button>
-            {{/each}}
-          {{/each}}
-        </div>
-      </div>
-    </footer>
-  {{/if}}
+  {{!-- Footer cut: clicking any character card already opens the sheet, so
+       the "click any to open" hint was noise. The Speaking-As switcher lives
+       in the chat-input bar; the duplicate here was confusing rather than
+       useful. --}}
 </aside>

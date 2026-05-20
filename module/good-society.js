@@ -855,7 +855,12 @@ Hooks.on('deleteActor', () => {
 // Mirror speaker-changed events from the chat-input switcher.
 Hooks.on('goodSociety.activeSpeakerChanged', () => renderDock());
 
-// Re-render the organizer when the token list on the active scene changes.
+// Re-render the organizer on relevant world events. It lists every character
+// actor (not just scene tokens), plus a per-row "on scene" indicator, so it
+// needs to refresh on both actor-list AND scene-token changes.
+Hooks.on('createActor', () => renderOrganizer());
+Hooks.on('deleteActor', () => renderOrganizer());
+Hooks.on('updateActor', () => renderOrganizer());
 Hooks.on('createToken', () => renderOrganizer());
 Hooks.on('deleteToken', () => renderOrganizer());
 Hooks.on('updateToken', () => renderOrganizer());

@@ -12,21 +12,21 @@
         <section class="gs-cabinet-group">
           <h4 class="gs-eyebrow gs-eyebrow--subdued">{{lookup ../groupLabels groupKey}}</h4>
           {{#each surfaces}}
-            <div class="gs-cabinet-row">
+            {{!-- Every row is a toggle. The whole row is the click target
+                 (46×26 switch alone is too small a target and clicks often
+                 miss); the switch inside is purely visual. --}}
+            <div class="gs-cabinet-row"
+                 data-action="toggleSurface"
+                 data-surface-id="{{id}}"
+                 role="switch"
+                 aria-checked="{{visible}}"
+                 tabindex="0"
+                 title="{{label}}">
               <div class="gs-cabinet-row__name">{{label}}</div>
-              {{!-- Every row is a toggle. Persistent surfaces toggle their
-                   on-board visibility; launcher surfaces toggle their window
-                   open / closed. --}}
-              <button type="button"
-                      class="gs-cabinet-toggle {{#if visible}}is-on{{/if}}"
-                      data-action="toggleSurface"
-                      data-surface-id="{{id}}"
-                      role="switch"
-                      aria-checked="{{visible}}"
-                      title="{{label}}">
-                <span class="gs-cabinet-toggle__track" aria-hidden="true"></span>
-                <span class="gs-cabinet-toggle__knob" aria-hidden="true"></span>
-              </button>
+              <span class="gs-cabinet-toggle {{#if visible}}is-on{{/if}}" aria-hidden="true">
+                <span class="gs-cabinet-toggle__track"></span>
+                <span class="gs-cabinet-toggle__knob"></span>
+              </span>
             </div>
           {{/each}}
         </section>

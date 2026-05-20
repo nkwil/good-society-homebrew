@@ -13,73 +13,118 @@
       </button>
     </div>
     {{#if sceneName}}
-    <div class="gs-npc-organizer__scene-name">{{sceneName}}</div>
+      <div class="gs-npc-organizer__scene-name">{{sceneName}}</div>
     {{/if}}
+    <div class="gs-npc-organizer__create-row">
+      <button type="button"
+              class="gs-npc-organizer__create-btn"
+              data-action="create-actor"
+              data-actor-type="connection"
+              title="{{localize 'GOODSOCIETY.npcOrganizer.createConnection'}}">
+        + {{localize "GOODSOCIETY.npcOrganizer.connectionsLabel"}}
+      </button>
+      <button type="button"
+              class="gs-npc-organizer__create-btn"
+              data-action="create-actor"
+              data-actor-type="npc"
+              title="{{localize 'GOODSOCIETY.npcOrganizer.createNpc'}}">
+        + {{localize "GOODSOCIETY.npcOrganizer.npcsLabel"}}
+      </button>
+    </div>
   </header>
 
   <div class="gs-npc-organizer__body">
     {{#unless total}}
-    <p class="gs-npc-organizer__empty">{{localize "GOODSOCIETY.npcOrganizer.empty"}}</p>
+      <p class="gs-npc-organizer__empty">{{localize "GOODSOCIETY.npcOrganizer.empty"}}</p>
     {{else}}
+
+      {{#if majors.length}}
+        <div class="gs-npc-organizer__section">
+          <div class="gs-npc-organizer__section-eyebrow">
+            {{localize "GOODSOCIETY.npcOrganizer.majorsLabel"}} · {{majors.length}}
+          </div>
+          {{#each majors}}
+            <div class="gs-npc-organizer__row gs-themed{{#if onScene}} is-on-scene{{/if}}"
+                 data-theme="{{theme}}"
+                 data-actor-id="{{actorId}}"
+                 data-actor-uuid="{{actorUuid}}"
+                 draggable="true"
+                 title="{{actorName}}">
+              <div class="gs-npc-organizer__row-portrait">
+                {{#if portraitUrl}}
+                  <img class="gs-npc-organizer__row-img" src="{{portraitUrl}}" alt="" draggable="false" />
+                {{else}}
+                  <span class="gs-npc-organizer__row-initial">{{portraitInitial}}</span>
+                {{/if}}
+              </div>
+              <div class="gs-npc-organizer__row-text">
+                <div class="gs-npc-organizer__row-name">{{actorName}}</div>
+                {{#if title}}<div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>{{/if}}
+              </div>
+              {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+
       {{#if connections.length}}
-      <div class="gs-npc-organizer__section">
-        <div class="gs-npc-organizer__section-eyebrow">
-          {{localize "GOODSOCIETY.npcOrganizer.connectionsLabel"}} · {{connections.length}}
-        </div>
-        {{#each connections}}
-        <div class="gs-npc-organizer__row gs-themed"
-          data-theme="{{theme}}"
-          data-token-id="{{tokenId}}"
-          data-actor-id="{{actorId}}"
-          title="{{tokenName}}"
-        >
-          <div class="gs-npc-organizer__row-portrait">
-            {{#if portraitUrl}}
-            <img class="gs-npc-organizer__row-img" src="{{portraitUrl}}" alt="" />
-            {{else}}
-            <span class="gs-npc-organizer__row-initial">{{portraitInitial}}</span>
-            {{/if}}
+        <div class="gs-npc-organizer__section">
+          <div class="gs-npc-organizer__section-eyebrow">
+            {{localize "GOODSOCIETY.npcOrganizer.connectionsLabel"}} · {{connections.length}}
           </div>
-          <div class="gs-npc-organizer__row-text">
-            <div class="gs-npc-organizer__row-name">{{tokenName}}</div>
-            {{#if title}}
-              <div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>
-            {{/if}}
-          </div>
+          {{#each connections}}
+            <div class="gs-npc-organizer__row gs-themed{{#if onScene}} is-on-scene{{/if}}"
+                 data-theme="{{theme}}"
+                 data-actor-id="{{actorId}}"
+                 data-actor-uuid="{{actorUuid}}"
+                 draggable="true"
+                 title="{{actorName}}">
+              <div class="gs-npc-organizer__row-portrait">
+                {{#if portraitUrl}}
+                  <img class="gs-npc-organizer__row-img" src="{{portraitUrl}}" alt="" draggable="false" />
+                {{else}}
+                  <span class="gs-npc-organizer__row-initial">{{portraitInitial}}</span>
+                {{/if}}
+              </div>
+              <div class="gs-npc-organizer__row-text">
+                <div class="gs-npc-organizer__row-name">{{actorName}}</div>
+                {{#if title}}<div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>{{/if}}
+              </div>
+              {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+            </div>
+          {{/each}}
         </div>
-        {{/each}}
-      </div>
       {{/if}}
 
       {{#if npcs.length}}
-      <div class="gs-npc-organizer__section">
-        <div class="gs-npc-organizer__section-eyebrow">
-          {{localize "GOODSOCIETY.npcOrganizer.npcsLabel"}} · {{npcs.length}}
-        </div>
-        {{#each npcs}}
-        <div class="gs-npc-organizer__row gs-themed"
-          data-theme="npc"
-          data-token-id="{{tokenId}}"
-          data-actor-id="{{actorId}}"
-          title="{{tokenName}}"
-        >
-          <div class="gs-npc-organizer__row-portrait">
-            {{#if portraitUrl}}
-            <img class="gs-npc-organizer__row-img" src="{{portraitUrl}}" alt="" />
-            {{else}}
-            <span class="gs-npc-organizer__row-initial">{{portraitInitial}}</span>
-            {{/if}}
+        <div class="gs-npc-organizer__section">
+          <div class="gs-npc-organizer__section-eyebrow">
+            {{localize "GOODSOCIETY.npcOrganizer.npcsLabel"}} · {{npcs.length}}
           </div>
-          <div class="gs-npc-organizer__row-text">
-            <div class="gs-npc-organizer__row-name">{{tokenName}}</div>
-            {{#if title}}
-              <div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>
-            {{/if}}
-          </div>
+          {{#each npcs}}
+            <div class="gs-npc-organizer__row gs-themed{{#if onScene}} is-on-scene{{/if}}"
+                 data-theme="npc"
+                 data-actor-id="{{actorId}}"
+                 data-actor-uuid="{{actorUuid}}"
+                 draggable="true"
+                 title="{{actorName}}">
+              <div class="gs-npc-organizer__row-portrait">
+                {{#if portraitUrl}}
+                  <img class="gs-npc-organizer__row-img" src="{{portraitUrl}}" alt="" draggable="false" />
+                {{else}}
+                  <span class="gs-npc-organizer__row-initial">{{portraitInitial}}</span>
+                {{/if}}
+              </div>
+              <div class="gs-npc-organizer__row-text">
+                <div class="gs-npc-organizer__row-name">{{actorName}}</div>
+                {{#if title}}<div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>{{/if}}
+              </div>
+              {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+            </div>
+          {{/each}}
         </div>
-        {{/each}}
-      </div>
       {{/if}}
+
     {{/unless}}
   </div>
 
