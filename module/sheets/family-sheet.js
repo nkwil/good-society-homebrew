@@ -22,6 +22,8 @@ export class FamilySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       linkMajor:       FamilySheet.#linkMajor,
       toggleVisibility: FamilySheet.#toggleVisibility,
       editNotes:       FamilySheet.#editNotes,
+      pickCrest:       FamilySheet.#pickCrest,
+      clearCrest:      FamilySheet.#clearCrest,
     },
   };
 
@@ -132,5 +134,41 @@ export class FamilySheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       field: 'notes',
       label: game.i18n.localize('GOODSOCIETY.family.notes'),
     });
+  }
+
+  /**
+   * Pick or upload an image for the family crest. Opens Foundry's
+   * FilePicker scoped to images and writes the chosen path to
+   * `system.crest.imageUrl`. The picker's upload button lets the GM
+   * drag a fresh asset in if they don't already have one on the server.
+   *
+   * Default location: the world's data folder when no crest is set yet,
+   * the current crest's folder when re-picking. This puts the upload
+   * button next to the user's working files instead of dumping them at
+   * the system root.
+   */
+  static async #pickCrest() {
+    const FP = foundry.applications.apps.FilePicker?.implementation ?? globalThis.FilePicker;
+    if (!FP) {
+      ui.notifications?.error('FilePicker is unavailable in this Foundry build.');
+      return;
+    }
+    const stored = this.actor.system?.crest?.imageUrl ?? '';
+    const isCustomImage = stored && !stored.startsWith('icons/');
+    const current = isCustomImage ? stored : `worlds/${game.world?.id ?? ''}/`;
+
+    const picker = new FP({
+      type: 'image',
+      current,
+      callback: async (path) => {
+        await this.actor.update({ 'system.crest.imageUrl': path });
+      },
+    });
+    return picker.render(true);
+  }
+
+  /** Remove the family crest image (revert to the monogram fallback). */
+  static async #clearCrest() {
+    await this.actor.update({ 'system.crest.imageUrl': '' });
   }
 }

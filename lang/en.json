@@ -191,6 +191,8 @@
       "linkMajor": "link a Major",
       "houseMotto": "House Motto",
       "mottoPlaceholder": "Probity. Patience. Honour.",
+      "pickCrest": "Pick or upload a crest image",
+      "clearCrest": "Remove crest image",
       "origin": {
         "label": "Origin",
         "royalty": "royalty",

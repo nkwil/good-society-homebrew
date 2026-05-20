@@ -3,9 +3,16 @@
 
   <div class="gs-family-sheet__crest-grid">
 
-    {{!-- Left: crest medallion + engraving label --}}
+    {{!-- Left: crest medallion + engraving label.
+         Clicking the medallion opens Foundry's FilePicker so the GM
+         can pick or upload a crest image (writes to system.crest.imageUrl).
+         When a crest is set, a small × appears on hover to clear it. --}}
     <div class="gs-family-sheet__crest-col">
-      <div class="gs-crest-medallion">
+      <button type="button"
+              class="gs-crest-medallion"
+              data-action="pickCrest"
+              data-tooltip="{{localize 'GOODSOCIETY.family.pickCrest'}}"
+              aria-label="{{localize 'GOODSOCIETY.family.pickCrest'}}">
         {{#if system.crest.imageUrl}}
           <img class="gs-crest-medallion__image"
                src="{{system.crest.imageUrl}}"
@@ -15,7 +22,14 @@
         {{else}}
           <span class="gs-crest-medallion__monogram">{{familyInitial}}</span>
         {{/if}}
-      </div>
+      </button>
+      {{#if system.crest.imageUrl}}
+        <button type="button"
+                class="gs-crest-medallion__clear"
+                data-action="clearCrest"
+                data-tooltip="{{localize 'GOODSOCIETY.family.clearCrest'}}"
+                aria-label="{{localize 'GOODSOCIETY.family.clearCrest'}}">×</button>
+      {{/if}}
       <span class="gs-crest-medallion__label">{{system.familyName}}</span>
     </div>
 

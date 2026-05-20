@@ -105,14 +105,9 @@ export class NpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this._nameFitAbort = new AbortController();
     fitDossierNames(this.element, { signal: this._nameFitAbort.signal });
 
-    const sliceInput = this.element.querySelector('.dossier-cameo__name-input');
-    const hiddenFull = this.element.querySelector('input[data-name-full]');
-    if (sliceInput && hiddenFull) {
-      sliceInput.addEventListener('input', () => {
-        const initial = sliceInput.dataset.nameInitial ?? '';
-        hiddenFull.value = initial + sliceInput.value;
-      }, { signal: this._nameFitAbort.signal });
-    }
+    // Cameo name input is a plain `name="name"` text field — Foundry's
+    // form serializer handles persistence directly. (See npc/book.hbs for
+    // the rationale on dropping the previous slice + hidden-mirror split.)
   }
 
   static async #promoteToConnection() {

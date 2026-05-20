@@ -572,22 +572,12 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     this.element.classList.add('gs-actor');
     this.element.dataset.theme = effectiveTheme;
 
-    // Cameo name input — keeps the visible "slice" input and the hidden
-    // full-name field in sync. Visible input shows everything after the
-    // first letter (so the Lavishly Yours ornament IS the first letter,
-    // not a duplicate of it). Hidden input carries the reconstructed full
-    // name for form-submit. Wired on every render via AbortController so
-    // re-renders don't leak listeners.
+    // Cameo name input is a plain `name="name"` text field — Foundry's
+    // form serializer handles persistence directly. AbortController kept
+    // here as a shared cleanup signal for the listeners attached below
+    // (theme select, responsive-name resize).
     if (this._nameSyncAbort) this._nameSyncAbort.abort();
     this._nameSyncAbort = new AbortController();
-    const sliceInput = this.element.querySelector('.dossier-cameo__name-input');
-    const hiddenFull = this.element.querySelector('input[data-name-full]');
-    if (sliceInput && hiddenFull) {
-      sliceInput.addEventListener('input', () => {
-        const initial = sliceInput.dataset.nameInitial ?? '';
-        hiddenFull.value = initial + sliceInput.value;
-      }, { signal: this._nameSyncAbort.signal });
-    }
 
     // Responsive name sizing — long names shrink so they don't overflow
     // the cameo's body column. Re-runs on every render and on every input

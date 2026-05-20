@@ -223,18 +223,11 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this._nameFitAbort = new AbortController();
     fitDossierNames(this.element, { signal: this._nameFitAbort.signal });
 
-    // Cameo name input sync — the visible "slice" input (everything after
-    // the ornament initial) and the hidden full-name input must stay in
-    // sync, otherwise form-submit serializes the stale full value and
-    // typing has no effect on actor.name. Same pattern as the Major sheet.
-    const sliceInput = this.element.querySelector('.dossier-cameo__name-input');
-    const hiddenFull = this.element.querySelector('input[data-name-full]');
-    if (sliceInput && hiddenFull) {
-      sliceInput.addEventListener('input', () => {
-        const initial = sliceInput.dataset.nameInitial ?? '';
-        hiddenFull.value = initial + sliceInput.value;
-      }, { signal: this._nameFitAbort.signal });
-    }
+    // Cameo name input is a plain `name="name"` text field — Foundry's
+    // form serializer handles persistence directly. (Previously this was
+    // a sliced visible input + hidden mirror that the JS handler stitched
+    // back together; the freeze-the-first-letter bug from that pattern is
+    // documented in connection/book.hbs.)
 
     if (!this.#resolveListenerAttached) {
       this.#resolveListenerAttached = true;

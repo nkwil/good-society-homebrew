@@ -52,21 +52,15 @@
             {{!-- Name with Lavishly Yours-faced ornament initial. Same
                  pattern as Major / Connection — when a persona is active
                  the input is read-only (rename via persona editor). --}}
+            {{!-- See major-character/book.hbs for the rationale on
+                 collapsing this to a single full-value input. --}}
             <h1 class="dossier-cameo__name">
-              <span class="dossier-cameo__name-initial" aria-hidden="true">{{firstLetter displayName}}</span>
               <input class="dossier-cameo__name-input"
                      type="text"
-                     value="{{slice displayName 1}}"
-                     data-name-initial="{{firstLetter displayName}}"
-                     data-name-target="full"
+                     {{#unless hasActivePersona}}name="name"{{/unless}}
+                     value="{{displayName}}"
                      {{#if hasActivePersona}}readonly title="To rename the actor, clear the persona selection first."{{/if}}
                      placeholder="{{localize 'GOODSOCIETY.npc.namePlaceholder'}}" />
-              {{#unless hasActivePersona}}
-                <input type="hidden"
-                       name="name"
-                       data-name-full
-                       value="{{displayName}}" />
-              {{/unless}}
             </h1>
 
             {{!-- Subhead — system.bio.title. Quiet honorific directly

@@ -65,21 +65,20 @@
                  reconstructed name back to form-submit so actor.name
                  stays correct. The pair is kept in sync by a small
                  listener wired in major-character-sheet.js#_onRender. --}}
+            {{!-- Name input is the canonical name field. Previously split
+                 between an ornament span ({{firstLetter}}) + a sliced
+                 input + a hidden mirror, with a JS handler stitching them
+                 back together — but that froze the FIRST letter at render
+                 time, so users couldn't change it (typing "Burt" into the
+                 input would save as "NBurt"). Single field, full value,
+                 `name="name"` directly: type what you mean. --}}
             <h1 class="dossier-cameo__name">
-              <span class="dossier-cameo__name-initial" aria-hidden="true">{{firstLetter displayName}}</span>
               <input class="dossier-cameo__name-input"
                      type="text"
-                     value="{{slice displayName 1}}"
-                     data-name-initial="{{firstLetter displayName}}"
-                     data-name-target="full"
+                     {{#unless hasActivePersona}}name="name"{{/unless}}
+                     value="{{displayName}}"
                      {{#if hasActivePersona}}readonly title="To rename the actor, clear the persona selection first."{{/if}}
                      placeholder="{{localize 'GOODSOCIETY.sheet.namePlaceholder'}}" />
-              {{#unless hasActivePersona}}
-                <input type="hidden"
-                       name="name"
-                       data-name-full
-                       value="{{displayName}}" />
-              {{/unless}}
             </h1>
             {{!-- Subhead — system.bio.title. Reads as a quiet honorific
                  directly below the name (e.g. "Duke of Cloudcandle").
