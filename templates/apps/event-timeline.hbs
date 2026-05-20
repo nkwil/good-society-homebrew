@@ -25,7 +25,7 @@
     <div class="gs-event-timeline__group gs-event-timeline__group--today">
       <div class="gs-event-timeline__group-eyebrow gs-event-timeline__group-eyebrow--today">{{localize "GOODSOCIETY.eventTimeline.bucket.today"}}</div>
       {{#each today}}
-        {{> evt-row this stage="today" editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
+        {{> evt-row this stage="today" editingId=../editingId isGM=../isGM choices=../visibilityChoices scenes=../scenes}}
       {{/each}}
     </div>
   {{/if}}
@@ -35,7 +35,7 @@
     <div class="gs-event-timeline__group">
       <div class="gs-event-timeline__group-eyebrow">{{localize "GOODSOCIETY.eventTimeline.bucket.comingSoon"}}</div>
       {{#each comingSoon}}
-        {{> evt-row this stage="coming-soon" editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
+        {{> evt-row this stage="coming-soon" editingId=../editingId isGM=../isGM choices=../visibilityChoices scenes=../scenes}}
       {{/each}}
     </div>
   {{/if}}
@@ -52,7 +52,7 @@
       </button>
       {{#if showPast}}
         {{#each past}}
-          {{> evt-row this stage="past" editingId=../editingId isGM=../isGM choices=../visibilityChoices}}
+          {{> evt-row this stage="past" editingId=../editingId isGM=../isGM choices=../visibilityChoices scenes=../scenes}}
         {{/each}}
       {{/if}}
     </div>
@@ -74,6 +74,15 @@
           <div class="gs-event-timeline__form-row">
             <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.descriptionLabel"}}</label>
             <textarea data-evt-field="description" class="gs-event-timeline__textarea" rows="3"></textarea>
+          </div>
+          <div class="gs-event-timeline__form-row">
+            <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.sceneFieldLabel"}}</label>
+            <select data-evt-field="sceneId" class="gs-event-timeline__input">
+              <option value="">{{localize "GOODSOCIETY.eventTimeline.sceneFieldNone"}}</option>
+              {{#each scenes}}
+                <option value="{{id}}">{{name}}{{#if active}} ({{localize "GOODSOCIETY.eventTimeline.sceneFieldActive"}}){{/if}}</option>
+              {{/each}}
+            </select>
           </div>
           <div class="gs-event-timeline__form-row gs-event-timeline__form-row--vis">
             <span class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.visibilityLabel"}}</span>

@@ -84,23 +84,59 @@
       <span class="gs-item-sheet__hint"><em>{{localize "GOODSOCIETY.item.magicSkill.referenceUrlHint"}}</em></span>
     </div>
 
-    {{!-- VFX / Sound (GM fields) --}}
+    {{!-- VFX / Sound (GM fields).
+         Each field has picker buttons inline: VFX gets Browse (opens
+         Sequencer's library) + Preview (plays at controlled token);
+         Sound gets Browse (Foundry FilePicker). --}}
     <div class="gs-item-sheet__field">
       <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.vfxKey"}}</span>
-      <input class="gs-item-sheet__input gs-item-sheet__input--mono"
-             type="text"
-             name="system.vfxKey"
-             value="{{system.vfxKey}}"
-             placeholder="{{localize "GOODSOCIETY.item.magicSkill.vfxKeyPlaceholder"}}" />
+      <div class="gs-item-sheet__input-row">
+        <input class="gs-item-sheet__input gs-item-sheet__input--mono"
+               type="text"
+               name="system.vfxKey"
+               value="{{system.vfxKey}}"
+               placeholder="{{localize "GOODSOCIETY.item.magicSkill.vfxKeyPlaceholder"}}" />
+        <button type="button"
+                class="gs-item-sheet__picker-btn"
+                data-action="browseVfx"
+                title="{{localize "GOODSOCIETY.item.magicSkill.browseVfxTitle"}}"
+                aria-label="Browse effect library">
+          🔍
+        </button>
+        <button type="button"
+                class="gs-item-sheet__picker-btn"
+                data-action="previewVfx"
+                title="{{localize "GOODSOCIETY.item.magicSkill.previewVfxTitle"}}"
+                aria-label="Preview effect on canvas">
+          ▶
+        </button>
+      </div>
+      <span class="gs-item-sheet__hint"><em>{{localize "GOODSOCIETY.item.magicSkill.vfxKeyHint"}}</em></span>
     </div>
 
     <div class="gs-item-sheet__field">
       <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.magicSkill.soundUrl"}}</span>
-      <input class="gs-item-sheet__input gs-item-sheet__input--mono"
-             type="text"
-             name="system.soundUrl"
-             value="{{system.soundUrl}}"
-             placeholder="{{localize "GOODSOCIETY.item.magicSkill.soundUrlPlaceholder"}}" />
+      <div class="gs-item-sheet__input-row">
+        <input class="gs-item-sheet__input gs-item-sheet__input--mono"
+               type="text"
+               name="system.soundUrl"
+               value="{{system.soundUrl}}"
+               placeholder="{{localize "GOODSOCIETY.item.magicSkill.soundUrlPlaceholder"}}" />
+        <button type="button"
+                class="gs-item-sheet__picker-btn"
+                data-action="browseSound"
+                title="{{localize "GOODSOCIETY.item.magicSkill.browseSoundTitle"}}"
+                aria-label="Browse for sound file">
+          📁
+        </button>
+        <button type="button"
+                class="gs-item-sheet__picker-btn"
+                data-action="previewSound"
+                title="{{localize "GOODSOCIETY.item.magicSkill.previewSoundTitle"}}"
+                aria-label="Preview sound locally">
+          ▶
+        </button>
+      </div>
     </div>
 
   </div>

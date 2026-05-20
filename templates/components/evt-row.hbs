@@ -23,6 +23,15 @@
         <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.descriptionLabel"}}</label>
         <textarea data-evt-field="description" data-event-id="{{id}}" class="gs-event-timeline__textarea" rows="3">{{description}}</textarea>
       </div>
+      <div class="gs-event-timeline__form-row">
+        <label class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.sceneFieldLabel"}}</label>
+        <select data-evt-field="sceneId" data-event-id="{{id}}" class="gs-event-timeline__input">
+          <option value="">{{localize "GOODSOCIETY.eventTimeline.sceneFieldNone"}}</option>
+          {{#each scenes}}
+            <option value="{{id}}" {{#if (eq id ../sceneId)}}selected{{/if}}>{{name}}{{#if active}} ({{localize "GOODSOCIETY.eventTimeline.sceneFieldActive"}}){{/if}}</option>
+          {{/each}}
+        </select>
+      </div>
       <div class="gs-event-timeline__form-row gs-event-timeline__form-row--vis">
         <span class="gs-event-timeline__label">{{localize "GOODSOCIETY.eventTimeline.visibilityLabel"}}</span>
         {{#each choices}}

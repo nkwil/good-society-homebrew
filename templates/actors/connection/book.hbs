@@ -96,14 +96,17 @@
 
             {{!-- Bio line — Connection's "role/relationship" replaces the
                  Major's "[N] years of age | Archetype" line. Free-form
-                 italic input that blends inline with surrounding text. --}}
+                 italic textarea (rows="1" + `field-sizing: content`) so
+                 long relationship blurbs ("Clayton's childhood friend.
+                 Daughter of a gentleman…") wrap to the next line instead
+                 of clipping at the cameo's right edge. --}}
             <p class="dossier-cameo__bio-line">
-              <input type="text"
-                     class="dossier-cameo__bio-line-input"
-                     name="system.bio.relationshipLabel"
-                     value="{{system.bio.relationshipLabel}}"
-                     placeholder="{{localize 'GOODSOCIETY.connection.rolePlaceholder'}}"
-                     aria-label="{{localize 'GOODSOCIETY.connection.roleLabel'}}" />
+              <textarea class="dossier-cameo__bio-line-input"
+                        rows="1"
+                        data-autogrow
+                        name="system.bio.relationshipLabel"
+                        placeholder="{{localize 'GOODSOCIETY.connection.rolePlaceholder'}}"
+                        aria-label="{{localize 'GOODSOCIETY.connection.roleLabel'}}">{{system.bio.relationshipLabel}}</textarea>
             </p>
 
             {{!-- Persona switcher pill + theme ✎ button — same plumbing as the
@@ -124,44 +127,59 @@
               {{/unless}}
             </div>
 
-            {{!-- Linked Major pill — sits below the persona/theme controls
-                 since it's a relationship anchor, not an identity control.
-                 The pill itself opens the Major's sheet when linked; the ✎
-                 pencil opens a DialogV2 picker that lets the user assign,
-                 change, or clear the link. --}}
+            {{!-- Resolve track — moved up into the cameo body for top-of-
+                 sheet access (the player's most-clicked affordance shouldn't
+                 require a scroll). 5 pips + a count, click to toggle. --}}
+            <div class="dossier-cameo__resolve-row">
+              <span class="dossier-cameo__resolve-label">{{localize "GOODSOCIETY.strip.resolve"}}</span>
+              <div class="gs-resolve-track">
+                {{#each resolvePips}}
+                  <button class="gs-resolve-pip{{#if this.filled}} filled{{/if}}"
+                          type="button"
+                          data-action="toggleResolvePip"
+                          data-pip="{{this.index}}"
+                          aria-label="{{this.label}}">
+                  </button>
+                {{/each}}
+              </div>
+              <span class="dossier-cameo__resolve-count">
+                {{resolveCurrent}} of {{resolveMax}}
+              </span>
+            </div>
+
+            {{!-- Linked Majors — read-only chip list. Source of truth lives
+                 on each Major's dossier (Major.system.connections array);
+                 this row just reflects which Majors currently include this
+                 Connection. --}}
             <div class="dossier-connection-linked-row">
               <span class="dossier-connection-linked-row__label">{{localize "GOODSOCIETY.connection.linkedTo"}}</span>
-              {{#if linkedMajor}}
-                <button class="dossier-connection-linked-major gs-themed"
-                        data-theme="{{linkedMajorTheme}}"
-                        type="button"
-                        data-action="openMajor"
-                        data-actor-id="{{linkedMajor.id}}">
-                  {{#if linkedMajor.system.bio.portraitUrl}}
-                    <img class="dossier-connection-linked-major__portrait"
-                         src="{{linkedMajor.system.bio.portraitUrl}}"
-                         alt="{{linkedMajor.name}}" />
-                  {{else}}
-                    <span class="dossier-connection-linked-major__initial">{{linkedMajorInitial}}</span>
-                  {{/if}}
-                  <span class="dossier-connection-linked-major__name">{{linkedMajor.name}}</span>
-                </button>
+              {{#if hasLinkedMajors}}
+                <div class="dossier-connection-linked-row__chips">
+                  {{#each linkedMajors}}
+                    <button class="dossier-connection-linked-major gs-themed"
+                            data-theme="{{theme}}"
+                            type="button"
+                            data-action="openMajor"
+                            data-actor-id="{{id}}"
+                            title="{{localize 'GOODSOCIETY.connection.openMajorTitle'}}">
+                      {{#if portraitUrl}}
+                        <img class="dossier-connection-linked-major__portrait"
+                             src="{{portraitUrl}}"
+                             alt="{{name}}" />
+                      {{else}}
+                        <span class="dossier-connection-linked-major__initial">{{initial}}</span>
+                      {{/if}}
+                      <span class="dossier-connection-linked-major__name">{{name}}</span>
+                    </button>
+                  {{/each}}
+                </div>
               {{else}}
-                <button class="dossier-connection-linked-row__none"
-                        type="button"
-                        data-action="editLinkedMajor"
-                        title="{{localize 'GOODSOCIETY.connection.editLinkedMajorTitle'}}">
-                  <em>{{localize "GOODSOCIETY.connection.noMajor"}}</em>
-                </button>
+                <span class="dossier-connection-linked-row__none-hint">
+                  <em>{{localize "GOODSOCIETY.connection.noMajorsLinkedHint"}}</em>
+                </span>
               {{/if}}
-              <button class="dossier-connection-linked-row__edit"
-                      type="button"
-                      data-action="editLinkedMajor"
-                      title="{{localize 'GOODSOCIETY.connection.editLinkedMajorTitle'}}"
-                      aria-label="{{localize 'GOODSOCIETY.connection.editLinkedMajorTitle'}}">
-                <span aria-hidden="true">✎</span>
-              </button>
             </div>
+
           </div>
         </header>
 
@@ -241,68 +259,23 @@
           {{/if}}
         </section>
 
-        {{!-- Scene info — public tags + hover summary ───────────────────── --}}
-        <section class="dossier-section dossier-scene-info">
-          <div class="dossier-scene-info__grid">
-
-            <div class="dossier-scene-info__col">
-              <div class="dossier-section__head">
-                <header class="gs-eyebrow gs-eyebrow--subdued" data-tooltip-key="publicTags">
-                  {{localize "GOODSOCIETY.connection.publicTags"}}
-                </header>
-                <button class="gs-empty-state__action dossier-section__add-btn"
-                        type="button"
-                        data-action="addPublicTag">+</button>
-              </div>
-              <div class="dossier-scene-info__tag-list">
-                {{#each publicTags}}
-                  <span class="gs-scene-tag">{{this}}</span>
-                {{/each}}
-                {{#unless publicTags.length}}
-                  <span class="dossier-scene-info__empty">
-                    <em>{{localize "GOODSOCIETY.connection.noTags"}}</em>
-                  </span>
-                {{/unless}}
-              </div>
-            </div>
-
-            <div class="dossier-scene-info__col">
-              <header class="gs-eyebrow gs-eyebrow--subdued" data-tooltip-key="hoverSummary">
-                {{localize "GOODSOCIETY.connection.hoverSummary"}}
-              </header>
-              <input class="dossier-scene-info__subtitle"
-                     type="text"
-                     name="system.sceneInfo.subtitle"
-                     placeholder="{{localize "GOODSOCIETY.connection.hoverSubtitlePlaceholder"}}"
-                     value="{{system.sceneInfo.subtitle}}" />
-              <textarea class="dossier-scene-info__hover-summary"
-                        name="system.sceneInfo.hoverSummary"
-                        placeholder="{{localize "GOODSOCIETY.connection.hoverSummaryPlaceholder"}}"
-                        rows="3">{{hoverSummary}}</textarea>
-            </div>
-
-          </div>
-        </section>
-
-        {{!-- State — resolve track only. Persona switcher lives in the cameo
-             controls now (canonical), so the bottom section is single-column. --}}
-        <section class="dossier-section dossier-state">
-          <header class="gs-eyebrow gs-eyebrow--subdued">{{localize "GOODSOCIETY.strip.resolve"}}</header>
-          <div class="dossier-state__resolve-row">
-            <div class="gs-resolve-track">
-              {{#each resolvePips}}
-                <button class="gs-resolve-pip{{#if this.filled}} filled{{/if}}"
-                        type="button"
-                        data-action="toggleResolvePip"
-                        data-pip="{{this.index}}"
-                        aria-label="{{this.label}}">
-                </button>
-              {{/each}}
-            </div>
-            <span class="dossier-state__resolve-count">
-              {{resolveCurrent}} of {{resolveMax}}
-            </span>
-          </div>
+        {{!-- Hover Summary section — single-column now that Resolve moved
+             up into the cameo body and Public Tags was cut. This block
+             feeds the token hover-card players see on canvas: short
+             subtitle line above + richer prose textarea below. --}}
+        <section class="dossier-section dossier-scene-info dossier-scene-info--single">
+          <header class="gs-eyebrow gs-eyebrow--subdued" data-tooltip-key="hoverSummary">
+            {{localize "GOODSOCIETY.connection.hoverSummary"}}
+          </header>
+          <input class="dossier-scene-info__subtitle"
+                 type="text"
+                 name="system.sceneInfo.subtitle"
+                 placeholder="{{localize "GOODSOCIETY.connection.hoverSubtitlePlaceholder"}}"
+                 value="{{system.sceneInfo.subtitle}}" />
+          <textarea class="dossier-scene-info__hover-summary"
+                    name="system.sceneInfo.hoverSummary"
+                    placeholder="{{localize "GOODSOCIETY.connection.hoverSummaryPlaceholder"}}"
+                    rows="3">{{hoverSummary}}</textarea>
         </section>
 
       </div>{{!-- /.dossier-page --}}

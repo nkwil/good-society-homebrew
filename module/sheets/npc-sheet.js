@@ -8,6 +8,7 @@ import { openPersonaSwitcherPopover } from '../apps/persona-switcher-popover.js'
 import { profilePic, profileName } from '../helpers/profile-pic.js';
 import { fitDossierNames } from '../helpers/responsive-name.js';
 import { pronounsFor } from '../helpers/pronouns.js';
+import { bindAutogrowTextareas } from '../helpers/textarea-autogrow.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -95,6 +96,11 @@ export class NpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
    *  submit and typing has no visible effect. */
   _onRender(context, options) {
     super._onRender(context, options);
+
+    // Auto-grow wrapping textareas (bio-line role, etc.) — belt-and-
+    // suspenders alongside CSS `field-sizing: content` for older Chromium.
+    bindAutogrowTextareas(this.element);
+
     if (this._nameFitAbort) this._nameFitAbort.abort();
     this._nameFitAbort = new AbortController();
     fitDossierNames(this.element, { signal: this._nameFitAbort.signal });

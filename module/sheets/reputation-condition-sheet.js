@@ -24,6 +24,38 @@ export class ReputationConditionSheet extends HandlebarsApplicationMixin(ItemShe
     },
   };
 
+  /**
+   * Save the name as the user types (debounced) AND wire a blur fallback.
+   * `submitOnChange: true` only fires `change` events; for text inputs that
+   * means "on blur." If the user closes the sheet before blurring (clicks
+   * the X immediately after typing), the change event never fires and the
+   * new name is lost. Explicit `input` + `change` listeners guarantee the
+   * write — even a 400 ms idle persists.
+   */
+  _onRender(context, options) {
+    super._onRender?.(context, options);
+    const input = this.element?.querySelector?.('input[name="name"]');
+    if (!input || input._gsNameBound) return;
+    input._gsNameBound = true;
+    let timer = null;
+    const commit = () => {
+      const value = input.value;
+      if (value !== this.document.name) {
+        this.document.update({ name: value }).catch((err) => {
+          console.warn('GS | reputation-condition name save failed:', err);
+        });
+      }
+    };
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(commit, 400);
+    });
+    input.addEventListener('change', () => {
+      clearTimeout(timer);
+      commit();
+    });
+  }
+
   async _prepareContext(options) {
     const ctx = await super._prepareContext(options);
     ctx.system = this.document.system;

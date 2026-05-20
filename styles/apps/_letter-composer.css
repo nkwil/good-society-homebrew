@@ -28,20 +28,43 @@
     radial-gradient(ellipse at 30% 70%,    rgba(0, 0, 0, 0.10), transparent 60%),
     var(--gs-paper);
   padding: 24px 28px;
+  /* Scroll if window is shrunk below the parchment's natural size. The
+   * parchment is fixed at 600×847 (per-variant) so all torn edges always
+   * show — better to let the user scroll than to scale-fit the sheet and
+   * break torn-edge alignment. */
   overflow: auto;
 }
 
 .gs-letter-composer__wrapper {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  grid-template-rows: auto 1fr auto;
+  /* Two-page book layout. Form is fixed at 420px (labels + dropdowns +
+   * the 6-col seal grid). Preview column is capped at 600px — the
+   * parchment's natural rendered width — so the cell hugs the sheet
+   * instead of stretching across the window and leaving the parchment
+   * floating in cream. `justify-content: center` then pins the whole
+   * form+parchment pair to the middle of the window, so they read as
+   * two facing pages with a tight gutter rather than two disconnected
+   * panels at opposite edges.
+   *
+   * Rows are `auto auto` — each row sizes to content. The form panel
+   * is whatever height its inputs need; the preview is the parchment's
+   * aspect-ratio-derived height (~848px on v1). `align-items: start`
+   * keeps the form at the top of its column without stretching it to
+   * match the taller parchment.
+   *
+   * If the window is shrunk below ~1040px wide, `minmax(0, 600px)`
+   * lets the preview cell shrink (parchment uses `max-width: 100%`
+   * and stays in aspect); `.window-content` has `overflow: auto` as a
+   * last-resort scroll. */
+  grid-template-columns: 420px minmax(0, 600px);
+  grid-template-rows: auto auto;
   grid-template-areas:
     "form    preview"
-    "form    preview"
     "actions actions";
-  gap: 16px;
+  align-items: start;
+  justify-content: center;
+  gap: 24px;
   background: transparent;
-  min-height: 0;
 }
 
 /* When the window is narrow, stack vertically (form on top, preview below). */
@@ -61,8 +84,8 @@
   grid-area: form;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 24px 28px 28px;
+  gap: 10px;
+  padding: 20px 24px 24px;
   background: var(--gs-paper-warm);
   border-radius: 4px;
   border: 0;
@@ -161,7 +184,12 @@
 }
 
 .gs-letter-composer__textarea {
-  min-height: 160px;
+  /* Default min-height tuned so the form panel's total height
+   * (header + 8 rows + textarea + seal grid + padding) lands close to the
+   * parchment's ~848px on v1, making the pair read as two facing pages of
+   * matched length rather than a short form next to a tall sheet. User can
+   * still drag the resize handle if they want more room. */
+  min-height: 340px;
   line-height: 1.6;
   resize: vertical;
   font-family: var(--gs-italic, var(--gs-body));
@@ -181,11 +209,15 @@
 }
 
 .gs-letter-composer__seal-row {
-  /* Fixed grid: 8 columns of 32px so the 15 seals fit in two rows (with the
-   * label taking a third row). Switching from `flex-wrap` keeps the last
-   * seal from spilling below the form's visible bounds. */
+  /* Fixed grid: 6 columns of 32px so the seal picker actually fits in the
+   * form row's right-hand slot. The .gs-letter-composer__row uses
+   * `grid-template-columns: 80px 1fr`, so the right slot at the 420px form
+   * width is roughly 272px. 8 cols × 32px + 7 × 8px gap = 312px, which
+   * OVERFLOWED the slot and pushed the picker's bottom row outside the
+   * form's cream panel. 6 cols × 32px + 5 × 8px gap = 232px, fits cleanly
+   * with margin to spare; 15 seals lay out in 3 tidy rows. */
   display: grid;
-  grid-template-columns: repeat(8, 32px);
+  grid-template-columns: repeat(6, 32px);
   gap: 8px;
   row-gap: 10px;
   align-items: center;
@@ -264,86 +296,171 @@
   position: relative;
 }
 
-/* "PREVIEW" eyebrow floats at the top-left of the preview, like a section
- * header. Uses the dossier eyebrow style (small-caps, brand-color, with
- * a right-side trailing dot via ::after).  */
-.gs-letter-composer__preview-zone::before {
-  content: 'PREVIEW';
-  display: block;
-  font-family: var(--gs-display);
-  font-weight: 600;
-  font-size: 11.5px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
-  margin: 0 4px 10px 4px;
-  padding-bottom: 6px;
-  border-bottom: 0.5px solid color-mix(in srgb, var(--gs-ink) 25%, transparent);
-}
-
-/* The themedWrap'd letter card lives inside .gs-letter-composer__preview-zone.
- * The .gs-themed wrapper supplies brand/ink variables; the inner
- * .gs-letter-card owns its own parchment chrome (cream paper, aged
- * texture, deckled-edge shadow) — see _letter-card.css. So we only need
- * the wrapper to flex correctly inside the composer's right page; no
- * background override here, or we'd paint over the parchment. */
-.gs-letter-composer__preview-zone > .gs-themed {
-  flex: 1;
-  min-height: 0;
+/* The themedWrap'd letter sheet lives inside .gs-letter-composer__preview-zone.
+ * The host wrapper just centres the parchment horizontally — no flex-fill,
+ * no height constraint. The sheet underneath uses fixed width + aspect-
+ * ratio to size itself to the PNG dimensions; the wrapper just holds it. */
+.gs-letter-composer__preview-zone > .gs-themed,
+.gs-letter-composer__preview-zone > .gs-letter-composer__preview-host {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
-.gs-letter-composer__preview-zone .gs-letter-card {
-  flex: 1;
-  min-height: 0;
+/* ── The parchment sheet — composer-only letter primitive ──────────────────
+ *
+ * Mirrors the Epistolary Wizard's reader (`.gs-letter-sheet`) approach:
+ * FIXED width (600px), per-variant aspect-ratio, `background-size: 100% 100%`.
+ * No max-height fitting against any constraint chain — the sheet is
+ * always at its natural PNG-aspect size, so all four torn edges always
+ * land at the card bounds. Window is sized to hold this naturally; if
+ * the user shrinks the window, `.window-content` scrolls.
+ *
+ * Inset model:
+ *   - 140px top — clears the parchment's torn / curled TOP edge (it bites
+ *     ~120px into the sheet on the deepest-cut variant).
+ *   - 90px bottom — clears the bottom torn edge.
+ *   - 64px sides — clears the side tears and gives a real reading column.
+ */
+.gs-letter-composer__sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  width: 600px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 140px 64px 90px;
+  box-sizing: border-box;
+
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center center;
+
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+
+  /* Letter ink — warm brown-black, readable on parchment. Independent of
+   * the theme cascade (theme `--gs-ink` can be light on dark themes and
+   * would be invisible against the parchment cream). */
+  color: #3D2F26;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 14.5px;
+  line-height: 1.7;
 }
 
-/* Parchment textures for the composer preview — one of three torn-edge
- * sheets keyed by the sender's id (`parchmentVariantFor()`), the same
- * variant system the Epistolary Wizard's inbox uses for delivered letters.
+/* Parchment texture + matching aspect ratio. The aspect ratio matches the
+ * PNG's native 820×1159 exactly so `background-size: 100% 100%` fills the
+ * card with no distortion — every torn edge sits at the card's bounds.
  *
- * Approach mirrors the Wizard (`.gs-letter-sheet`):
- *
- *   - The card is sized to MATCH the PNG's aspect ratio (per variant), so
- *     the image fits the card exactly — its torn edges land right at the
- *     card's bounds. No cream gap; no torn-edge cropping.
- *   - `background-size: 100% 100%` stretches the PNG to fill the
- *     aspect-matched card. Because the card's aspect matches the PNG's,
- *     this is a 1:1 fill with no distortion.
- *   - `flex: 0 0 auto` overrides the `flex: 1` from `.gs-letter-card`
- *     above, so aspect-ratio actually drives sizing. The card then sits
- *     centred horizontally in the preview zone.
- *   - `background-color` is a parchment-matched tan rather than cream, so
- *     if the PNG fails to load you still see parchment-toned paper.
- *
- * Scoped to the composer preview so the chat-card letter keeps its
- * existing cream-gradient look. */
-.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v1,
-.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v2,
-.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v3 {
-  /* Fill the preview cell entirely so there's no empty cream space below
-   * the parchment crowding the Send button. The PNG stretches to fill —
-   * the mottled parchment texture absorbs the slight aspect distortion
-   * (you can't read it as "stretched paper"). Torn edges of the PNG sit
-   * exactly at the card's bounds. */
-  flex:                1 !important;
-  width:               100% !important;
-  height:              100% !important;
-  margin:              0 !important;
-  background-color:    #cdb88a !important;
-  background-size:     100% 100% !important;
-  background-position: center center !important;
-  background-repeat:   no-repeat !important;
+ * Single variant for now: parchment-1.png is the only texture with
+ * dramatic torn-edge curls on all four sides. See `module/helpers/parchment.js`
+ * for the rationale; v2/v3 rules will return when those PNGs are regenerated
+ * with comparable curl detail. */
+.gs-letter-composer__sheet.gs-parchment-v1 {
+  aspect-ratio:     820 / 1159;
+  background-image: url('/systems/good-society-homebrew/assets/parchment/parchment-1.png');
 }
-.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v1 {
-  background-image: url('/systems/good-society-homebrew/assets/parchment/parchment-1.png') !important;
+
+/* ── Letter typography ──────────────────────────────────────────────────── */
+
+/* Subject — display script, brand-tinted, centred. Sits at the top of the
+ * page like a title; if the user hasn't entered one, a ghost placeholder
+ * keeps the page balanced. */
+.gs-letter-composer__sheet-subject {
+  margin: 0 0 8px;
+  text-align: center;
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  color: var(--gs-brand);
 }
-.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v2 {
-  background-image: url('/systems/good-society-homebrew/assets/parchment/parchment-2.png') !important;
+
+/* Greeting — "Dear Avril," — flush-left, opening salutation. */
+.gs-letter-composer__sheet-greeting {
+  margin: 4px 0 8px;
+  text-align: left;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.4;
 }
-.gs-letter-composer__preview-zone .gs-letter-card.gs-parchment-v3 {
-  background-image: url('/systems/good-society-homebrew/assets/parchment/parchment-3.png') !important;
+
+/* Body — player prose. Flush-left, italic, generous line-height. The
+ * `flex: 1 1 auto` lets the body absorb whatever vertical space is left
+ * between the greeting and the closing block, so the closing/signature
+ * always anchor to the lower-right of the parchment regardless of body
+ * length. */
+.gs-letter-composer__sheet-body {
+  flex: 1 1 auto;
+  margin: 0;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Closing — "Yours faithfully," — flush-right under the body. */
+.gs-letter-composer__sheet-closing {
+  margin: 12px 0 4px;
+  text-align: right;
+  font-style: italic;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+
+/* Signature — sender's name in display script, brand-tinted. Larger
+ * than the closing line so the name reads as the focal mark of the
+ * letter, the way a real period signature would. */
+.gs-letter-composer__sheet-signature {
+  margin: 0;
+  text-align: right;
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: 0.01em;
+  color: var(--gs-brand);
+}
+
+/* Ghost placeholders — visible in all empty fields so the preview always
+ * reads as a complete letter while the user is filling it in. ~30% opacity
+ * keeps them clearly secondary. */
+.gs-letter-composer__sheet .gs-is-ghost {
+  color: rgba(61, 47, 38, 0.32);
+  font-style: italic;
+}
+
+/* Wax seal — anchored on the LEFT of the parchment, vertically in line
+ * with the signature block on the right. The signature lives bottom-right;
+ * putting the seal in the same corner had the disc sitting on top of the
+ * signature glyphs. In real period letters the seal often sits opposite
+ * the signature (a personal mark to the left of the closing block), which
+ * is what we mirror here. Raised off the bottom curl so the disc doesn't
+ * read as falling off the edge of the page.
+ * Sized as a 56px document stamp so it reads as a mark, not a coin. */
+.gs-letter-composer__sheet-seal {
+  position: absolute;
+  left: 56px;
+  bottom: 150px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--gs-seal-accent, var(--gs-brand));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter:
+    drop-shadow(0 3px 6px rgba(20, 12, 8, 0.32))
+    drop-shadow(0 0 0.5px rgba(0, 0, 0, 0.4));
 }
 
 /* ── Send animation — fold the parchment + stamp the seal on an envelope ──
@@ -366,52 +483,91 @@
   opacity: 0;
   z-index: 5;
 }
-.gs-letter-composer__envelope-img {
-  max-width: 72%;
-  max-height: 80%;
-  object-fit: contain;
+/* Frame wrapper — sized to the envelope's natural aspect (~1.37 from the
+ * 1200×876 source) so the seal can be positioned in % terms of the
+ * envelope. Without this, the seal floats relative to the whole overlay
+ * and lands at the top-left corner. */
+.gs-letter-composer__envelope-frame {
+  position: relative;
+  width: min(72%, 560px);
+  aspect-ratio: 1200 / 876;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   filter: drop-shadow(0 8px 22px rgba(20, 12, 8, 0.45));
 }
+.gs-letter-composer__envelope-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+/* Seal sits on the V-flap tip — same 62% top the Wizard's reader uses
+ * to "secure the envelope closed." Centered horizontally via translate.
+ * The translate must persist in every keyframe of `gs-seal-stamp` so
+ * scale + rotate stay anchored at this point. */
 .gs-letter-composer__envelope-seal {
   position: absolute;
-  width: 64px;
-  height: 64px;
+  left: 50%;
+  top: 62%;
+  width: 22%;
+  aspect-ratio: 1;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
-  transform: scale(0);
+  transform: translate(-50%, -50%) scale(0);
   opacity: 0;
 }
 
-/* Active state ─ trigger the keyframes. */
-.gs-letter-composer__preview-zone.is-sending .gs-letter-card {
-  animation: gs-letter-fold 700ms cubic-bezier(.4, 0, .2, 1) forwards;
+/* Active state ─ trigger the keyframes. Total timeline ~1500 ms:
+ *   0-1100 ms — parchment folds away + envelope arrives
+ *   500-1450 ms — wax seal stamps in (delay = 500 ms so it lands AFTER
+ *                 the envelope has visibly settled). */
+.gs-letter-composer__preview-zone.is-sending .gs-letter-composer__sheet {
+  animation: gs-letter-fold 1100ms cubic-bezier(.4, 0, .2, 1) forwards;
 }
 .gs-letter-composer__preview-zone.is-sending .gs-letter-composer__envelope-overlay {
-  animation: gs-envelope-arrive 700ms cubic-bezier(.4, 0, .2, 1) forwards;
+  animation: gs-envelope-arrive 1100ms cubic-bezier(.4, 0, .2, 1) forwards;
 }
 .gs-letter-composer__preview-zone.is-sending .gs-letter-composer__envelope-seal {
-  animation: gs-seal-stamp 600ms cubic-bezier(.34, 1.4, .64, 1) forwards;
-  animation-delay: 240ms;
+  animation: gs-seal-stamp 900ms cubic-bezier(.34, 1.4, .64, 1) forwards;
+  animation-delay: 500ms;
 }
 
+/* Fold the parchment closed. A small pre-scale-up at the top ("pick it up"),
+ * then a 3D X-axis rotate as it shrinks, gives the impression of the page
+ * being lifted off the desk and folded forward toward the camera, rather
+ * than just scaling down in 2D. */
 @keyframes gs-letter-fold {
-  0%   { transform: scale(1)    rotate(0deg);  opacity: 1; }
-  55%  { transform: scale(0.62) rotate(-2deg); opacity: 0.55; }
-  100% { transform: scale(0.42) rotate(-3deg); opacity: 0; }
+  0%   { transform: scale(1)    rotate(0deg)  perspective(800px) rotateX(0deg);   opacity: 1; }
+  18%  { transform: scale(1.02) rotate(0.5deg) perspective(800px) rotateX(0deg);  opacity: 1; }
+  52%  { transform: scale(0.72) rotate(-2deg)  perspective(800px) rotateX(-30deg); opacity: 0.72; }
+  100% { transform: scale(0.42) rotate(-3deg)  perspective(800px) rotateX(-58deg); opacity: 0; }
 }
+
+/* The envelope arrives from slightly below + rotated, settles with a
+ * small overshoot. One arrival, no separate "settle" animation. */
 @keyframes gs-envelope-arrive {
-  0%   { opacity: 0; transform: translateY(8px) scale(0.92); }
-  60%  { opacity: 1; transform: translateY(0)   scale(1); }
-  100% { opacity: 1; transform: translateY(0)   scale(1); }
+  0%   { opacity: 0; transform: translateY(22px) scale(0.85) rotate(-2.5deg); }
+  55%  { opacity: 1; transform: translateY(-2px) scale(1.03) rotate(0.8deg); }
+  78%  { opacity: 1; transform: translateY(0)    scale(0.99) rotate(-0.3deg); }
+  100% { opacity: 1; transform: translateY(0)    scale(1)    rotate(0deg); }
 }
+
+/* The seal stamps in with a hard initial pop, a bigger first overshoot,
+ * then TWO recoil bounces so the wax reads as actually compressing on the
+ * envelope before settling. The dual bounces are the "tactile" part. */
+/* Each keyframe keeps the `translate(-50%, -50%)` so the seal stays
+ * anchored on the V-flap point while it scales / rotates / bounces. */
 @keyframes gs-seal-stamp {
-  0%   { transform: scale(0)    rotate(-12deg); opacity: 0; }
-  45%  { transform: scale(1.35) rotate(2deg);   opacity: 1; }
-  72%  { transform: scale(0.93) rotate(-1deg);  opacity: 1; }
-  100% { transform: scale(1)    rotate(0deg);   opacity: 1; }
+  0%   { transform: translate(-50%, -50%) scale(0)    rotate(-15deg); opacity: 0; }
+  32%  { transform: translate(-50%, -50%) scale(1.50) rotate(4deg);   opacity: 1; }
+  52%  { transform: translate(-50%, -50%) scale(0.85) rotate(-2deg);  opacity: 1; }
+  72%  { transform: translate(-50%, -50%) scale(1.08) rotate(1deg);   opacity: 1; }
+  88%  { transform: translate(-50%, -50%) scale(0.97) rotate(0deg);   opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1)    rotate(0deg);   opacity: 1; }
 }
 
 /* ── Action bar — footer ──────────────────────────────────────────────────── */

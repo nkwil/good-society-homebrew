@@ -42,11 +42,17 @@
       <div class="gs-dock__row-conditions" aria-label="{{localize 'GOODSOCIETY.dock.conditionsRailLabel'}}">
         {{#each positiveConditions}}
           <span class="gs-dock__condition-pill gs-dock__condition-pill--positive"
-                data-condition-id="{{id}}" title="{{name}}">▲ {{name}}</span>
+                data-condition-id="{{id}}" title="{{name}}">
+            <span class="gs-dock__condition-pill__seal" aria-hidden="true">▲</span>
+            {{name}}
+          </span>
         {{/each}}
         {{#each negativeConditions}}
           <span class="gs-dock__condition-pill gs-dock__condition-pill--negative"
-                data-condition-id="{{id}}" title="{{name}}">▼ {{name}}</span>
+                data-condition-id="{{id}}" title="{{name}}">
+            <span class="gs-dock__condition-pill__seal" aria-hidden="true">▼</span>
+            {{name}}
+          </span>
         {{/each}}
       </div>
     {{/if}}

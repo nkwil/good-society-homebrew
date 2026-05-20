@@ -17,7 +17,6 @@
  * @param {string} toPersonaId The target persona id, or '' for true identity.
  */
 
-import { postPersonaSwitchCard } from './chat-cards.js';
 
 export async function switchPersona(actor, toPersonaId) {
   const fromPersona = actor.system?.activePersona ?? null;
@@ -64,16 +63,7 @@ export async function switchPersona(actor, toPersonaId) {
     return;
   }
 
-  // 2. Chat announcement card (only when switching TO a persona, not when clearing).
-  if (toPersona) {
-    try {
-      await postPersonaSwitchCard({ actor, fromPersona, toPersona });
-    } catch (err) {
-      console.warn('[Good Society] switchPersona: chat card failed (non-fatal):', err);
-    }
-  }
-
-  // 3. Update every placed token across all scenes.
+  // 2. Update every placed token across all scenes.
   for (const scene of game.scenes ?? []) {
     const tokens = scene.tokens?.filter(t => t.actorId === actor.id) ?? [];
     if (!tokens.length) continue;
@@ -88,7 +78,7 @@ export async function switchPersona(actor, toPersonaId) {
     }
   }
 
-  // 3b. Fire session-event hook for persona swap logging.
+  // 3. Fire session-event hook for persona swap logging.
   Hooks.callAll('goodSociety.personaSwitched', {
     actorId:          actor.id,
     actorName:        actor.name,

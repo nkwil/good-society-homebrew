@@ -45,28 +45,73 @@ export function buildSceneLabel() {
 /**
  * Append one pending reputation change to a Major actor's log.
  *
- * `tagId` lets a later updateItem hook re-sync `value` when the source tag
- * gets renamed after creation (the createItem hook fires while the tag still
- * has its placeholder name "New reputation-tag", before the user has typed
- * the real name on the item sheet). When tagId is omitted (e.g. the entry
- * doesn't correspond to a single source item) the rename-sync simply skips it.
- *
  * @param {Actor}  actor      Must be type 'major-character'.
  * @param {string} kind       'gained-positive' | 'gained-negative' | 'removed'
  * @param {string} tagName    Display name of the tag at append time.
  * @param {string} sceneLabel Human-readable context (from buildSceneLabel()).
- * @param {string} [tagId]    Optional — the source reputation-tag's ID.
+ * @param {object} [opts]
+ * @param {string} [opts.tagId]    The source reputation-tag's ID — kept on
+ *                                 the entry so the Undo handler can find /
+ *                                 delete the tag, and so rename-sync via the
+ *                                 updateItem hook can refresh `value` after
+ *                                 the user types a real name on the item
+ *                                 sheet (createItem fires while the tag is
+ *                                 still "New reputation-tag").
+ * @param {string} [opts.polarity] 'positive' | 'negative' — required for
+ *                                 entries the Undo handler may re-create.
+ *                                 Auto-derived from `kind` for gains.
  */
-export async function appendPendingChange(actor, kind, tagName, sceneLabel, tagId = '') {
+export async function appendPendingChange(actor, kind, tagName, sceneLabel, opts = {}) {
   if (!game.user?.isGM) return;
   if (actor.type !== 'major-character') return;
+  // Backward-compat: callers used to pass a tagId string as the 5th arg.
+  if (typeof opts === 'string') opts = { tagId: opts };
+
+  const polarity = opts.polarity
+    ?? (kind === 'gained-positive' ? 'positive'
+        : kind === 'gained-negative' ? 'negative'
+        : '');
+
   const current = actor.system.reputation?.pendingChanges ?? [];
   await actor.update({
     'system.reputation.pendingChanges': [
       ...current,
-      { kind, value: tagName, tagId, scene: sceneLabel, ts: Date.now() },
+      {
+        kind,
+        value:    tagName,
+        polarity,
+        tagId:    opts.tagId ?? '',
+        scene:    sceneLabel,
+        ts:       Date.now(),
+      },
     ],
   });
+}
+
+/**
+ * Undo-guard — set true on the actor's id while an Undo action is in flight.
+ * The `createItem` / `deleteItem` hooks in session-events.js check this and
+ * skip the `appendPendingChange` call, so undoing a tag-removal doesn't add
+ * a stray "gained" entry (and vice versa).
+ */
+const _undoingActors = new Set();
+export function isUndoingPending(actorId) { return _undoingActors.has(actorId); }
+export function beginUndoPending(actorId) { _undoingActors.add(actorId); }
+export function endUndoPending(actorId)   { _undoingActors.delete(actorId); }
+
+/**
+ * Remove ONE entry from the pending log by its timestamp.
+ * The timestamp is unique-enough as a key (millisecond resolution, single
+ * writer) — using a synthetic id would require a schema change for the
+ * thousands of existing entries already on disk.
+ */
+export async function removePendingChangeByTs(actor, ts) {
+  if (!game.user?.isGM) return;
+  if (actor.type !== 'major-character') return;
+  const current = actor.system.reputation?.pendingChanges ?? [];
+  const next = current.filter(e => e.ts !== ts);
+  if (next.length === current.length) return;
+  await actor.update({ 'system.reputation.pendingChanges': next });
 }
 
 /**

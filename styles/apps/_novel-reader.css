@@ -72,7 +72,7 @@
 .gs-novel-reader__title-button {
   margin-top: 8px;
   border-color: var(--gs-accent-3);
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
 }
 
 .gs-novel-reader__empty {
@@ -277,6 +277,77 @@
 
 .gs-novel-reader__entry-body p {
   margin: 0 0 10px;
+}
+.gs-novel-reader__entry-body p:last-child { margin-bottom: 0; }
+
+/* Headings inside the entry body — previously unstyled, so they fell
+ * through to browser defaults (which inherited the faded entry-body
+ * color and lost the section structure). The cycle divider's auto-
+ * generated body uses <h3> for event-type sections; letter / monologue /
+ * session-log entries may carry their own <h2>/<h3> from the GM's edit. */
+.gs-novel-reader__entry-body h2 {
+  font-family: var(--gs-display);
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--gs-brand);
+  margin: 0 0 12px;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+.gs-novel-reader__entry-body h3 {
+  font-family: var(--gs-display);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 78%, transparent);
+  margin: 14px 0 6px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+  padding-bottom: 4px;
+}
+.gs-novel-reader__entry-body h3:first-child { margin-top: 0; }
+.gs-novel-reader__entry-body h4 {
+  font-family: var(--gs-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  margin: 10px 0 4px;
+}
+
+/* Lists — the cycle divider emits one <ul> per event-type group. The
+ * default browser list-style is fine; we just need to constrain the
+ * indent and tune line-height so it reads as a tidy index, not a wall. */
+.gs-novel-reader__entry-body ul,
+.gs-novel-reader__entry-body ol {
+  margin: 0 0 12px;
+  padding-left: 22px;
+}
+.gs-novel-reader__entry-body li {
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+.gs-novel-reader__entry-body li:last-child { margin-bottom: 0; }
+
+/* The format strings (`Advanced to <em>{phase}</em>.`, `gained ▲ <em>{tag}</em>`)
+ * use <em> for emphasis. Crimson Text Italic doesn't have a glyph for
+ * arrows like ↗ — but it does render Latin italic correctly, so emphasis
+ * stays styled. The arrow glyph itself is hoisted out of <em> further
+ * down (see .gs-novel-reader__entry-link-arrow). */
+.gs-novel-reader__entry-body em {
+  font-style: italic;
+  color: var(--gs-brand);
+}
+
+/* "open in journal" affordance — the arrow ↗ needs to be OUT of the
+ * italic context because the system's italic face (Crimson Text Italic)
+ * has no glyph for U+2197 and substitutes a slash. We split the link
+ * into italic-text-then-upright-arrow so the arrow paints from a
+ * different (system-sans) stack that does have the glyph. */
+.gs-novel-reader__entry-link-arrow {
+  font-style: normal;
+  font-family: var(--gs-ui, system-ui, sans-serif);
+  margin-left: 4px;
+  display: inline-block;
 }
 
 .gs-novel-reader__entry-link {

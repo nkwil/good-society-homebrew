@@ -1,0 +1,22 @@
+{{!-- Story Beat Overlay — frameless full-viewport. Outer shell handles
+     palette + dismiss; the inner template (rendered via `innerHtml` in
+     `_prepareContext`) carries the beat-specific visual content. --}}
+<div class="gs-story-beat gs-story-beat--{{beat.paletteClass}}"
+     role="dialog"
+     aria-label="{{beat.label}}">
+  <div class="gs-story-beat__veil" aria-hidden="true"></div>
+
+  <div class="gs-story-beat__content">
+    {{{innerHtml}}}
+  </div>
+
+  {{#if canDismiss}}
+    <button type="button"
+            class="gs-story-beat__dismiss"
+            data-action="dismiss"
+            aria-label="{{localize 'GOODSOCIETY.storyBeats.dismiss'}}">
+      <span class="gs-story-beat__dismiss-label">{{localize "GOODSOCIETY.storyBeats.dismiss"}}</span>
+      <span class="gs-story-beat__dismiss-x" aria-hidden="true">×</span>
+    </button>
+  {{/if}}
+</div>

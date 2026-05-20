@@ -31,12 +31,14 @@ export class MyCharactersDock extends HandlebarsApplicationMixin(ApplicationV2) 
     position: {
       width: 290,
       height: 'auto',
-      // Default position — left side of canvas, below scene navigation, clear
-      // of the chat sidebar on the right and the tools panel on the very-left.
+      // Default position — upper-left canvas, to the right of the Desire
+      // Reminder panel (which sits at left:100, width:260, so its right edge
+      // lands at ~360 — start the dock at ~400 with a small gap). Clears
+      // Foundry's scene-controls icon column and the chat sidebar.
       // CSS sets position: fixed on .application.gs-my-characters-dock so
       // these inline left/top values actually apply (frameless ApplicationV2
       // doesn't auto-position via the window manager).
-      left: 70,
+      left: 400,
       top: 100,
     },
   };

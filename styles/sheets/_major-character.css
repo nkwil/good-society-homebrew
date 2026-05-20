@@ -414,7 +414,13 @@
  */
 
 /* Subhead — quiet honorific directly below the name. Tighter spacing so
- * the whole header column reads as a single block. */
+ * the whole header column reads as a single block.
+ *
+ * Implemented as a <textarea rows="1"> rather than an <input> so long
+ * titles wrap to a second line instead of being clipped at the cameo's
+ * right edge. `field-sizing: content` auto-grows the textarea to fit
+ * its content (Chromium 123+ / Foundry v13's Electron). `resize: none`
+ * hides the corner drag-handle since this isn't a free-text body. */
 .dossier-cameo__subhead {
   display: block;
   width: 100%;
@@ -433,6 +439,13 @@
   /* Foundry's input min-height was forcing extra vertical space here. */
   min-height: 0;
   height: auto;
+  /* Textarea-specific: wrap, auto-grow, no drag-handle, no scrollbars. */
+  field-sizing: content;
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--gs-italic, var(--gs-body)); /* re-assert; browser default for textarea is monospace */
 }
 .dossier-cameo__subhead::placeholder {
   color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
@@ -529,10 +542,15 @@
   white-space: nowrap;
 }
 
-/* Inline italic input that blends into the bio-line — used by Connection
- * and NPC dossiers in place of the Major's age + archetype combo. Reads
- * as a single italic role/relationship phrase ("the family's bookish
- * heir", "town crier, prone to rumormongering"). */
+/* Inline italic textarea that blends into the bio-line — used by
+ * Connection and NPC dossiers in place of the Major's age + archetype
+ * combo. Reads as a single italic role/relationship phrase ("the
+ * family's bookish heir", "town crier, prone to rumormongering"), but
+ * long blurbs ("Clayton's childhood friend. Daughter of a gentleman,
+ * but not very wealthy.") wrap to a second line instead of clipping
+ * at the cameo's right edge. `field-sizing: content` auto-grows the
+ * textarea to fit; `resize: none` hides the drag-handle since this
+ * isn't a free-text body field. */
 .dossier-cameo__bio-line-input {
   flex: 1 1 auto;
   background: transparent;
@@ -542,12 +560,19 @@
   margin: 0;
   font: inherit;
   font-style: italic;
+  font-family: var(--gs-italic, var(--gs-body)); /* re-assert; browser textarea default is monospace */
   color: var(--gs-headers);
   outline: none;
   height: auto;
   min-height: 0;
   width: 100%;
   min-width: 0;
+  /* Textarea-specific: wrap, auto-grow, no drag-handle, no scrollbars. */
+  field-sizing: content;
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 .dossier-cameo__bio-line-input::placeholder {
   color: color-mix(in srgb, var(--gs-ink) 35%, var(--gs-paper));
@@ -1072,29 +1097,57 @@
   gap: 6px;
 }
 
+/* Conditions = "wax-seal medallion + name plaque." A polarity-coloured
+ * filled disc on the left holds the polarity arrow in cream; the name
+ * sits to the right in display type. Distinct from the lighter italic
+ * outline-pill style of reputation TAGS by an unmistakable visual hook —
+ * the stamped medallion. */
 .dossier-active-rep__chip {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 14px 4px 10px;
-  background: var(--gs-paper);
-  border: 1px solid var(--gs-accent-3);
+  padding: 3px 14px 3px 3px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
   border-radius: 100px;
   cursor: pointer;
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
+  font-family: var(--gs-display);
+  font-style: normal;
+  font-weight: 600;
   font-size: 13px;
+  letter-spacing: 0.03em;
   color: var(--gs-ink);
-  transition: background 120ms ease;
+  text-transform: none;
+  line-height: 1.2;
+  box-shadow: none;
+  transition: background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
 }
 
 .dossier-active-rep__chip:hover {
-  background: var(--gs-paper-warm);
+  transform: translateY(-1px);
+  background: var(--gs-paper);
+  box-shadow: 0 2px 6px rgba(20, 12, 8, 0.18);
 }
 
+/* The template's `<em>` is a layout wrapper, not an italic cue. */
+.dossier-active-rep__chip em { font-style: normal; }
+
+/* The medallion — circular, filled with the polarity colour, arrow in
+ * cream. This is the visual hook that says "this is a condition, not a
+ * tag." */
 .dossier-active-rep__laurel {
-  font-size: 18px;
-  color: var(--gs-accent-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--gs-accent-3);
+  color: var(--gs-paper);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 -1px 1px rgba(0, 0, 0, 0.15);
+  flex: 0 0 auto;
 }
 
 .dossier-active-rep__earned {
@@ -1136,11 +1189,159 @@
   margin: 4px 0 0;
 }
 
-/* Polarity-tinted chips so positive vs. negative conditions read at a glance. */
-.dossier-active-rep__chip--positive { border-color: var(--gs-positive, #4A7A4A); }
-.dossier-active-rep__chip--positive .dossier-active-rep__laurel { color: var(--gs-positive, #4A7A4A); }
-.dossier-active-rep__chip--negative { border-color: var(--gs-danger, #8B2A2A); }
-.dossier-active-rep__chip--negative .dossier-active-rep__laurel { color: var(--gs-danger, #8B2A2A); }
+/* Polarity colours the medallion (the small filled disc) AND tints the
+ * pill's border subtly. The pill body stays parchment-toned for legibility
+ * of the name text. */
+.dossier-active-rep__chip--positive {
+  border-color: color-mix(in srgb, var(--gs-positive, #4A7A4A) 40%, var(--gs-accent-2));
+}
+.dossier-active-rep__chip--positive .dossier-active-rep__laurel {
+  background: var(--gs-positive, #4A7A4A);
+  color: var(--gs-paper);
+}
+.dossier-active-rep__chip--negative {
+  border-color: color-mix(in srgb, var(--gs-danger, #8B2A2A) 40%, var(--gs-accent-2));
+}
+.dossier-active-rep__chip--negative .dossier-active-rep__laurel {
+  background: var(--gs-danger, #8B2A2A);
+  color: var(--gs-paper);
+}
+
+/* ── Pending Changes Log ──────────────────────────────────────────────────
+ * Tentative-state log of tag adds/removes made in any phase. Visually
+ * lighter than the Active Reputation list above it — dashed border,
+ * italic, faint backdrop — so a player reading the sheet can tell at a
+ * glance that these are pending and not yet "official." Each row has an
+ * Undo affordance on the right.
+ *
+ * Owner + GM only (gated in the template). The user picked this
+ * visibility tier in the phase-gated commit design discussion. */
+.dossier-pending {
+  padding: 12px 16px 14px;
+  background: color-mix(in srgb, var(--gs-paper-warm) 75%, transparent);
+  border: 0.5px dashed color-mix(in srgb, var(--gs-accent-2) 70%, transparent);
+  border-radius: 6px;
+}
+.dossier-pending__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.dossier-pending__hint {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+.dossier-pending__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dossier-pending__entry {
+  display: grid;
+  grid-template-columns: 26px auto 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  background: color-mix(in srgb, var(--gs-paper) 75%, transparent);
+  border-radius: 4px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 35%, transparent);
+}
+
+/* Pending-change indicators — styled like miniature wax stamps so they
+ * sit in the same visual family as the letter seals + sender marks.
+ * The disc gets a radial highlight (wax dome lit from above), an inset
+ * rim shadow (the bevel where wax meets paper), and a soft drop shadow
+ * (sitting on the page). The glyph is a creamy off-white to read crisply
+ * against every polarity background. */
+.dossier-pending__icon {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(255, 252, 244, 0.96);
+  /* Fallback base — overridden per polarity below. */
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.22) 0%, transparent 55%),
+    var(--gs-accent-3);
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.20),
+    inset 0 -1px 1.5px rgba(20, 12, 8, 0.30),
+    0 1.5px 3px rgba(20, 12, 8, 0.22);
+}
+
+.dossier-pending__entry--gained-positive .dossier-pending__icon {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.24) 0%, transparent 55%),
+    var(--gs-positive, #4A7A4A);
+}
+.dossier-pending__entry--gained-negative .dossier-pending__icon {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.22) 0%, transparent 55%),
+    var(--gs-danger, #8B2A2A);
+}
+.dossier-pending__entry--removed .dossier-pending__icon {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.16) 0%, transparent 55%),
+    color-mix(in srgb, var(--gs-ink) 58%, transparent);
+}
+.dossier-pending__verb {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+.dossier-pending__value {
+  font-family: var(--gs-display);
+  font-weight: 600;
+  color: var(--gs-ink);
+  letter-spacing: 0.02em;
+}
+.dossier-pending__entry--removed .dossier-pending__value {
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--gs-danger, #8B2A2A) 55%, transparent);
+  text-decoration-thickness: 1.5px;
+}
+.dossier-pending__scene {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  white-space: nowrap;
+}
+.dossier-pending__undo {
+  font-family: var(--gs-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--gs-brand);
+  background: transparent;
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 100px;
+  padding: 3px 10px;
+  cursor: pointer;
+  min-height: 0;
+  height: auto;
+  transition: background 120ms, color 120ms;
+}
+.dossier-pending__undo:hover {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+}
 
 /* GM remove "x" — small ghost button inside the chip. */
 .dossier-active-rep__remove {
@@ -1831,6 +2032,40 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* Wrapper holds the chip + its sibling × delete button. Mirrors the
+ * dossier-tag-pill pattern — a span (not a button) wraps two side-by-side
+ * <button>s, because nesting buttons in buttons is invalid HTML. Hovering
+ * anywhere inside the wrapper reveals the otherwise-collapsed × button. */
+.dossier-connection-chip-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* × delete button. Collapsed to zero-width by default so it stays out of
+ * the chip's visual weight; expands on wrapper hover. Matches the tag-pill
+ * delete affordance exactly so users learn the gesture once. */
+.dossier-connection-chip__delete {
+  width: 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  font-size: 14px;
+  line-height: 1;
+  transition: width 120ms ease, padding 120ms ease, color 120ms ease;
+  padding: 0;
+}
+
+.dossier-connection-chip-wrap:hover .dossier-connection-chip__delete {
+  width: 22px;
+  padding: 0 4px;
+}
+
+.dossier-connection-chip__delete:hover {
+  color: var(--gs-brand);
 }
 
 /* Chip is identity-only — token + name, no description, no hairline frame

@@ -202,35 +202,62 @@
   scrollbar-width: thin;
 }
 
+/* Condition pills on the dock — same "medallion + plaque" vocabulary as
+ * the Major sheet, scaled compact to fit the denser dock row. */
 .gs-dock__condition-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  height: 22px;
-  padding: 0 8px;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px 0 3px;
   flex-shrink: 0;
-  font-family: var(--gs-italic, var(--gs-body));
-  font-style: italic;
+  font-family: var(--gs-display);
+  font-style: normal;
+  font-weight: 600;
   font-size: 11.5px;
+  letter-spacing: 0.02em;
   line-height: 1;
+  color: var(--gs-ink);
   background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
   border-radius: 100px;
   cursor: pointer;
-  transition: background 120ms;
+  transition: background 120ms, transform 120ms, box-shadow 120ms;
 }
 
 .gs-dock__condition-pill:hover {
   background: var(--gs-paper);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(20, 12, 8, 0.18);
+}
+
+/* The medallion — the visual hook. Smaller than on the sheet but same
+ * shape: filled polarity disc with the arrow in cream. */
+.gs-dock__condition-pill__seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--gs-accent-3);
+  color: var(--gs-paper);
+  box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.32), inset 0 -1px 1px rgba(0, 0, 0, 0.15);
+  flex: 0 0 auto;
+  line-height: 1;
 }
 
 .gs-dock__condition-pill--positive {
-  color: var(--gs-positive);
-  border: 1px solid var(--gs-positive);
-  background: var(--rep-positive-bg);
+  border-color: color-mix(in srgb, var(--gs-positive) 40%, var(--gs-accent-2));
 }
-
+.gs-dock__condition-pill--positive .gs-dock__condition-pill__seal {
+  background: var(--gs-positive);
+}
 .gs-dock__condition-pill--negative {
-  color: var(--gs-danger);
-  border: 1px solid var(--gs-danger);
-  background: var(--rep-negative-bg);
+  border-color: color-mix(in srgb, var(--gs-danger) 40%, var(--gs-accent-2));
+}
+.gs-dock__condition-pill--negative .gs-dock__condition-pill__seal {
+  background: var(--gs-danger);
 }

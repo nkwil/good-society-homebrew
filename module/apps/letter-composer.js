@@ -13,11 +13,13 @@ import { letterFolder, entryFlags } from '../helpers/journal-folders.js';
 import { profileName, explicitPersona } from '../helpers/profile-pic.js';
 import { SEAL_TYPES, SCRIPT_FONTS, scriptFontFamily } from '../constants.js';
 import { parchmentVariantFor } from '../helpers/parchment.js';
+import { queueLetter } from '../helpers/letter-queue.js';
 
 const { HandlebarsApplicationMixin, ApplicationV2, DialogV2 } = foundry.applications.api;
 
-const TEMPLATE   = 'systems/good-society-homebrew/templates/apps/letter-composer.hbs';
-const LETTER_TPL = 'systems/good-society-homebrew/templates/chat-cards/letter.hbs';
+const TEMPLATE    = 'systems/good-society-homebrew/templates/apps/letter-composer.hbs';
+const LETTER_TPL  = 'systems/good-society-homebrew/templates/chat-cards/letter.hbs';
+const PREVIEW_TPL = 'systems/good-society-homebrew/templates/apps/letter-preview.hbs';
 const NS         = 'good-society-homebrew';
 
 /**
@@ -87,13 +89,21 @@ let _composer = null;
  * already chosen in the FROM dropdown. Ignored if the actor isn't a sendable
  * (owned Major/Connection).
  */
-export function openLetterComposer(fromActorId = null) {
+export function openLetterComposer(fromActorId = null, options = {}) {
   if (!_composer) _composer = new LetterComposer();
   if (fromActorId) {
     const actor = game.actors?.get(fromActorId);
     if (actor?.isOwner && (actor.type === 'major-character' || actor.type === 'connection')) {
       _composer._state.fromActorId = fromActorId;
     }
+  }
+  // Optional `prefill` — used to hydrate the composer from a queued letter
+  // that the player chose to "Edit" at Epistolary phase start. Merges into
+  // the existing state so a partially-typed draft isn't blown away.
+  if (options?.prefill && typeof options.prefill === 'object') {
+    Object.assign(_composer._state, options.prefill);
+    if (options.prefill.fromActorId) _composer._state.fromActorId = options.prefill.fromActorId;
+    if (options.prefill.toActorId)   _composer._state.toActorId   = options.prefill.toActorId;
   }
   _composer.render(true);
 }
@@ -102,12 +112,18 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
     super(options);
     // toActorId replaces the old toName free-text field
+    // Default seal — pick the first registry entry (yellow plain wax) so
+    // every letter ships with a visible wax seal in the chat card, the
+    // Wizard reader, and the composer's send animation. Players can still
+    // change it via the seal picker. Without a default, brand-new drafts
+    // had `seal: ''` and the seal disc never rendered.
+    const DEFAULT_SEAL = SEAL_TYPES[0]?.id ?? '';
     this._state = {
       fromActorId: '',
       toActorId:   '',
       subject:     '',
       body:        '',
-      seal:        '',
+      seal:        DEFAULT_SEAL,
       greeting:    DEFAULT_GREETING,
       closing:     DEFAULT_CLOSING,
       scriptFont:  'none',
@@ -125,7 +141,15 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     // Width bumped to 1080 so the new two-page book layout has room for
     // the form (left page) + live preview (right page) side-by-side. On
     // narrow windows CSS falls back to a stacked layout automatically.
-    position: { width: 1080, height: 720 },
+    // Window is sized to hold the parchment at its NATURAL aspect-ratio
+    // size (600px wide × ~847px tall for v1, ~825px for v2/v3) without
+    // fitting / scaling tricks. Width: 420 form + 20 gap + 680 preview
+    // cell + 28×2 padding ≈ 1180. Height: 30 chrome + 24 padding-top + 870
+    // sheet + 60 action bar + 24 padding-bottom ≈ 1010. Matches the
+    // Epistolary Wizard's reader approach — the sheet is fixed-size,
+    // every torn edge always lands at the card bounds, no max-height
+    // fitting against a constraint chain that kept breaking.
+    position: { width: 1180, height: 1010 },
     window: { title: 'GOODSOCIETY.letterComposer.windowTitle', resizable: true },
     actions: {
       selectSeal: LetterComposer.#selectSeal,
@@ -224,7 +248,19 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     // canSend requires sender + recipient + body. The button is also updated
     // dynamically in _updateSendButton() after every form input.
     ctx.canSend    = !!(this._state.fromActorId && this._state.toActorId && this._state.body?.trim());
-    ctx.statusText = game.i18n.localize('GOODSOCIETY.letterComposer.draftStatus');
+
+    // Phase awareness — the Send button text + status line change depending
+    // on whether we're in Epistolary. Outside Epistolary, "Send" queues for
+    // delivery at the next Epistolary phase start.
+    let currentPhase = null;
+    try { currentPhase = game.settings.get('good-society-homebrew', 'cyclePhase'); } catch {}
+    ctx.isEpistolaryPhase = currentPhase === 'epistolary';
+    ctx.sendLabel = ctx.isEpistolaryPhase
+      ? game.i18n.localize('GOODSOCIETY.letterComposer.send')
+      : game.i18n.localize('GOODSOCIETY.letterComposer.queueForEpistolary');
+    ctx.statusText = ctx.isEpistolaryPhase
+      ? game.i18n.localize('GOODSOCIETY.letterComposer.draftStatus')
+      : game.i18n.localize('GOODSOCIETY.letterComposer.draftStatusOffPhase');
 
     return ctx;
   }
@@ -263,6 +299,10 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
         const { ts, ...rest } = draft;
         Object.assign(this._state, rest);
         this._lastSaved = ts ?? null;
+        // Old drafts predate the default-seal default and saved seal: ''.
+        // Upgrade them to the current default so the letter still ships
+        // with a wax seal.
+        if (!this._state.seal) this._state.seal = SEAL_TYPES[0]?.id ?? '';
       }
     } catch { /* setting not yet registered at construction time */ }
   }
@@ -392,14 +432,19 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     const persona     = explicitPersona(actor);
     const speakerName = actor ? profileName(actor) : '—';
     const letter      = this._buildLetterPayload();
-    const inner = await foundry.applications.handlebars.renderTemplate(LETTER_TPL, {
-      actor, persona, letter, cycleNumber, speakerName,
-    });
     // A parchment variant keyed to the sender — each character writes on
     // their own stable stationery in the preview (same logic the Epistolary
     // Wizard's inbox uses for delivered letters).
-    const variant = parchmentVariantFor(actor?.id ?? 'no-actor');
-    return themedWrap(actor, inner, ['gs-letter-card', `gs-parchment-v${variant}`]);
+    const parchmentVariant = parchmentVariantFor(actor?.id ?? 'no-actor');
+    // Composer preview uses a DEDICATED template (not the chat-card letter)
+    // — see templates/apps/letter-preview.hbs for the rationale. The wrapper
+    // does NOT carry `.gs-letter-card`, so none of the chat-card chrome
+    // (border, ::before frame, cream gradient, drop shadow) cascades onto
+    // the parchment. Theme wrap still provides `--gs-brand`.
+    const inner = await foundry.applications.handlebars.renderTemplate(PREVIEW_TPL, {
+      actor, persona, letter, cycleNumber, speakerName, parchmentVariant,
+    });
+    return themedWrap(actor, inner, ['gs-letter-composer__preview-host']);
   }
 
   // ── Journal archive / inbox ───────────────────────────────────────────────
@@ -522,6 +567,27 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     let cycleNumber = null;
     try { cycleNumber = game.settings.get('good-society-homebrew', 'cycleNumber'); } catch {}
 
+    // Phase-gating: if it's not currently the Epistolary phase, the letter
+    // goes into the world's outbox queue. The Epistolary phase-start hook
+    // will prompt the sender to confirm/edit/discard when the phase opens.
+    let currentPhase = null;
+    try { currentPhase = game.settings.get('good-society-homebrew', 'cyclePhase'); } catch {}
+    const isEpistolaryPhase = currentPhase === 'epistolary';
+
+    if (!isEpistolaryPhase) {
+      await queueLetter({
+        fromActorId: actor.id,
+        toActorId:   recipientActor.id,
+        letter,
+        cycleQueued: cycleNumber,
+      });
+      ui.notifications?.info(game.i18n.localize('GOODSOCIETY.letterComposer.queuedForEpistolary'));
+      await this._playSendAnimation();
+      await this._clearDraft();
+      this.close();
+      return;
+    }
+
     // Whisper targets: sender + recipient owners + GM (postLetterCard adds GM automatically)
     const whisperIds = Object.entries(recipientActor.ownership ?? {})
       .filter(([uid, lvl]) => uid !== 'default' && lvl >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)
@@ -565,19 +631,26 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     // is gated on `.is-sending` on the preview zone.
     const overlay = document.createElement('div');
     overlay.className = 'gs-letter-composer__envelope-overlay';
+    // Frame wrapper sizes itself to the envelope img and provides the
+    // positioning context for the seal — without it, the seal's `top: 62%`
+    // would be relative to the overlay (the whole preview cell), not the
+    // envelope, and the seal would land near the top-left corner.
     overlay.innerHTML = `
-      <img class="gs-letter-composer__envelope-img"
-           src="/systems/good-society-homebrew/assets/parchment/envelope.png" alt="" />
-      ${sealAsset
-        ? `<div class="gs-letter-composer__envelope-seal"
-                 style="background-image: url('${sealAsset}'); --gs-seal-accent: ${sealAccent};"></div>`
-        : ''}
+      <div class="gs-letter-composer__envelope-frame">
+        <img class="gs-letter-composer__envelope-img"
+             src="/systems/good-society-homebrew/assets/parchment/envelope.png" alt="" />
+        ${sealAsset
+          ? `<div class="gs-letter-composer__envelope-seal"
+                   style="background-image: url('${sealAsset}'); --gs-seal-accent: ${sealAccent};"></div>`
+          : ''}
+      </div>
     `;
     zone.appendChild(overlay);
     // One frame later so the keyframe transition fires from initial state.
     await new Promise(r => requestAnimationFrame(r));
     zone.classList.add('is-sending');
-    await new Promise(r => setTimeout(r, 720));
+    // Doubled from 720 ms — the user found the original too fast to read.
+    await new Promise(r => setTimeout(r, 1500));
   }
 
   static async #saveDraft(event, target) {

@@ -98,17 +98,15 @@
           {{/if}}
 
           <p class="dossier-cameo__bio-chips">
+            {{!-- pronouns only. The relationshipLabel is already shown in
+                 italic above (.dossier-cameo__role); rendering it again as
+                 a single-line "role: X" chip here was redundant AND clipped
+                 at the cameo's right edge on long values ("Clayton's
+                 childhood friend. Daughter of a gentleman, but n…"). --}}
             {{#if conn.pronouns}}
               <span class="dossier-bio-chip">
                 <span class="dossier-bio-chip__label">{{localize "GOODSOCIETY.connection.pronounsLabel"}}</span>
                 <span class="dossier-bio-chip__static">{{conn.pronouns}}</span>
-              </span>
-            {{/if}}
-            {{#if conn.relationshipLabel}}
-              {{#if conn.pronouns}}<span class="dossier-bio-chip__sep" aria-hidden="true">·</span>{{/if}}
-              <span class="dossier-bio-chip">
-                <span class="dossier-bio-chip__label">{{localize "GOODSOCIETY.connection.roleLabel"}}</span>
-                <span class="dossier-bio-chip__static">{{conn.relationshipLabel}}</span>
               </span>
             {{/if}}
           </p>
@@ -177,20 +175,12 @@
         {{/if}}
       </section>
 
-      <section class="dossier-section dossier-conn-spread__public-tags">
-        <header class="gs-eyebrow gs-eyebrow--subdued">
-          {{localize "GOODSOCIETY.connection.publicTags"}}
-        </header>
-        {{#if conn.publicTags.length}}
-          <div class="dossier-conn-spread__public-tags-row">
-            {{#each conn.publicTags}}
-              <span class="gs-scene-tag">{{this}}</span>
-            {{/each}}
-          </div>
-        {{else}}
-          <p class="dossier-conn-spread__empty"><em>{{localize "GOODSOCIETY.dossier.noPublicTags"}}</em></p>
-        {{/if}}
-      </section>
+      {{!-- Public Tags section removed for connections — the surface was
+           always empty in playtests because there's no longer a path to
+           author them on the connection sheet, and the empty stub
+           cluttered every connection's public spread. The data field
+           (system.sceneInfo.publicTags) is preserved at the schema level
+           but no longer surfaces here. --}}
 
       {{#if conn.tiedTo.length}}
         <section class="dossier-section dossier-conn-spread__tied">

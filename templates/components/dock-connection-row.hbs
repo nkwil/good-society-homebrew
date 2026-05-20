@@ -15,11 +15,14 @@
   </div>
   <div class="gs-dock__row-stack">
     <div class="gs-dock__row-name">{{name}}</div>
+    {{!-- Sidebar view shows name + bio.title only. The relationship label
+         (bio.relationshipLabel) is intentionally hidden here so cards like
+         Lavinia's don't stack two subtitles ("Apprentice Alchemist" +
+         "Clayton's childhood friend…") and look cluttered against the other
+         single-line rows. The label still surfaces on the connection sheet
+         itself and in the aria-label for screen readers. --}}
     {{#if title}}
       <div class="gs-dock__row-title"><em>{{title}}</em></div>
-    {{/if}}
-    {{#if role}}
-      <div class="gs-dock__row-role">{{role}}</div>
     {{/if}}
   </div>
   <div class="gs-dock__resolve gs-dock__resolve--mini">

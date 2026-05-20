@@ -72,7 +72,7 @@
 .gs-inner-conflict-grid__vs {
   font-family: var(--gs-italic);
   font-size: 13px;
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
   text-align: center;
   user-select: none;
 }

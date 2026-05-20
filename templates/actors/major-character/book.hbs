@@ -82,12 +82,17 @@
               {{/unless}}
             </h1>
             {{!-- Subhead — system.bio.title. Reads as a quiet honorific
-                 directly below the name (e.g. "Duke of Cloudcandle"). --}}
-            <input class="dossier-cameo__subhead"
-                   type="text"
-                   name="system.bio.title"
-                   value="{{system.bio.title}}"
-                   placeholder="{{localize 'GOODSOCIETY.cameo.titlePlaceholder'}}" />
+                 directly below the name (e.g. "Duke of Cloudcandle").
+                 Rendered as a <textarea rows="1"> instead of <input> so
+                 long titles ("Young Master of the Willowood House…") wrap
+                 to a second line instead of being clipped. `field-sizing:
+                 content` (CSS) handles auto-grow; `rows="1"` is the
+                 collapsed default. --}}
+            <textarea class="dossier-cameo__subhead"
+                      rows="1"
+                      data-autogrow
+                      name="system.bio.title"
+                      placeholder="{{localize 'GOODSOCIETY.cameo.titlePlaceholder'}}">{{system.bio.title}}</textarea>
 
             {{!-- Pronouns — small footnote line under the subhead. A real
                  `<select>` (not a `<datalist>`) so all options stay available
@@ -337,6 +342,47 @@
               <p class="dossier-active-rep__empty">{{localize "GOODSOCIETY.dossier.noConditionsGMHint"}}</p>
             {{/if}}
           </section>
+        {{/if}}
+
+        {{!-- Pending reputation changes — tag adds/removes made in any phase,
+             rendered as "tentative" until the Rep Phase wizard / Upkeep
+             wizard confirms them. Owner + GM only (other viewers don't see
+             this; one of the design forks resolved 2026-05-20). Each entry
+             has an Undo. --}}
+        {{#if canSeePending}}
+          {{#if pendingChanges.length}}
+            <section class="dossier-section dossier-pending">
+              <div class="dossier-pending__head">
+                <header class="gs-eyebrow gs-eyebrow--subdued">
+                  {{localize "GOODSOCIETY.dossier.pendingChanges"}}
+                </header>
+                <span class="dossier-pending__hint">
+                  {{localize "GOODSOCIETY.dossier.pendingHint"}}
+                </span>
+              </div>
+              <ul class="dossier-pending__list">
+                {{#each pendingChanges}}
+                  <li class="dossier-pending__entry dossier-pending__entry--{{kind}}">
+                    <span class="dossier-pending__icon" aria-hidden="true">
+                      {{#if isAdd}}{{#if (eq polarity "positive")}}▲{{else}}▼{{/if}}{{else}}✕{{/if}}
+                    </span>
+                    <span class="dossier-pending__verb">
+                      {{#if isAdd}}{{localize "GOODSOCIETY.dossier.pendingGained"}}{{else}}{{localize "GOODSOCIETY.dossier.pendingRemoved"}}{{/if}}
+                    </span>
+                    <span class="dossier-pending__value">{{value}}</span>
+                    <span class="dossier-pending__scene">{{scene}}</span>
+                    <button type="button"
+                            class="dossier-pending__undo"
+                            data-action="undoPendingChange"
+                            data-ts="{{ts}}"
+                            title="{{localize 'GOODSOCIETY.dossier.undoPending'}}">
+                      ↺ {{localize "GOODSOCIETY.dossier.undo"}}
+                    </button>
+                  </li>
+                {{/each}}
+              </ul>
+            </section>
+          {{/if}}
         {{/if}}
 
         {{!-- Inner conflict ledger (single big box; one entry per active conflict) --}}
@@ -616,30 +662,42 @@
           {{#if connectionsResolved.length}}
             <div class="dossier-connections__list">
               {{#each connectionsResolved}}
-                <button type="button"
-                        class="dossier-connection-chip gs-themed{{#if this.isNpc}} dossier-connection-chip--npc{{/if}}"
-                        data-theme="{{this.theme}}"
-                        data-action="showSpread"
-                        data-goto="{{this.spreadId}}"
-                        data-actor-id="{{this.id}}"
-                        title="{{this.displayName}}">
-                  <span class="dossier-connection-chip__disc" aria-hidden="true">
-                    {{#if this.portraitUrl}}
-                      <img src="{{this.portraitUrl}}" alt="" />
-                    {{else}}
-                      <span class="dossier-connection-chip__initial">{{firstLetter this.displayName}}</span>
-                    {{/if}}
-                  </span>
-                  <span class="dossier-connection-chip__body">
-                    <span class="dossier-connection-chip__name">
-                      {{#if this.isNpc}}<span class="dossier-connection-chip__npc-flag" aria-hidden="true">GM</span>{{/if}}
-                      {{this.displayName}}
+                {{!-- Wrapper mirrors the dossier-tag-pill pattern: two
+                     side-by-side <button>s share a span (nesting buttons in
+                     buttons is invalid HTML). Main button opens the spread;
+                     the small × unlinks the connection from this Major. --}}
+                <span class="dossier-connection-chip-wrap">
+                  <button type="button"
+                          class="dossier-connection-chip gs-themed{{#if this.isNpc}} dossier-connection-chip--npc{{/if}}"
+                          data-theme="{{this.theme}}"
+                          data-action="showSpread"
+                          data-goto="{{this.spreadId}}"
+                          data-actor-id="{{this.id}}"
+                          title="{{this.displayName}}">
+                    <span class="dossier-connection-chip__disc" aria-hidden="true">
+                      {{#if this.portraitUrl}}
+                        <img src="{{this.portraitUrl}}" alt="" />
+                      {{else}}
+                        <span class="dossier-connection-chip__initial">{{firstLetter this.displayName}}</span>
+                      {{/if}}
                     </span>
-                    {{!-- Relationship label intentionally omitted — the chip is
-                         identity-only; full description lives on the connection
-                         sheet itself (open via click). --}}
-                  </span>
-                </button>
+                    <span class="dossier-connection-chip__body">
+                      <span class="dossier-connection-chip__name">
+                        {{#if this.isNpc}}<span class="dossier-connection-chip__npc-flag" aria-hidden="true">GM</span>{{/if}}
+                        {{this.displayName}}
+                      </span>
+                      {{!-- Relationship label intentionally omitted — the chip is
+                           identity-only; full description lives on the connection
+                           sheet itself (open via click). --}}
+                    </span>
+                  </button>
+                  <button type="button"
+                          class="dossier-connection-chip__delete"
+                          data-action="removeConnection"
+                          data-actor-id="{{this.id}}"
+                          data-tooltip="{{localize 'GOODSOCIETY.private.removeConnection'}}"
+                          aria-label="{{localize 'GOODSOCIETY.private.removeConnection'}}">×</button>
+                </span>
               {{/each}}
             </div>
           {{else}}

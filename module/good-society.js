@@ -16,15 +16,25 @@ import { register as registerRandomEventSocket } from './hooks/random-event-sock
 import { register as registerChatPortraits } from './hooks/chat-portraits.js';
 import { register as registerLetterSocket } from './hooks/letter-socket.js';
 import { register as registerTokenDefaults } from './hooks/token-defaults.js';
-import { migrateJournalEntryTypes } from './hooks/journal-migrate.js';
+import { register as registerSceneDefaults } from './hooks/scene-defaults.js';
+import { register as registerReputationTagRegister } from './hooks/reputation-tag-register.js';
+import { register as registerInnerConflictRegister } from './hooks/inner-conflict-register.js';
+import { migrateJournalEntryTypes, migrateCycleDividerBodies } from './hooks/journal-migrate.js';
+import { migrateConnectionResolveDefaults } from './hooks/actor-data-migrate.js';
 import { register as registerArrivalSync } from './hooks/arrival-sync.js';
 import { register as registerPauseOverlay } from './hooks/pause-overlay.js';
 import { register as registerChromeIcons } from './hooks/chrome-icons.js';
+import { castMagicSkill } from './helpers/cast-magic.js';
 import { register as registerSidebarFilter, applySidebarFilter } from './hooks/sidebar-filter.js';
 import { register as registerLetterSeals } from './hooks/letter-seals.js';
 import { register as registerEpistolaryPhase } from './hooks/epistolary-phase.js';
+import { register as registerCycleMinimize } from './hooks/cycle-minimize.js';
+import { register as registerStoryBeatEvents } from './hooks/story-beat-events.js';
+import { register as registerWindowControls } from './hooks/window-controls.js';
 import { runPhaseSplash } from './hooks/phase-splash.js';
 import { registerMonologueSocket } from './apps/monologue-overlay.js';
+import { registerStoryBeatSocket } from './apps/story-beat-overlay.js';
+import { registerLetterQueueSocket } from './helpers/letter-queue.js';
 import { registerNovelReaderHooks, openNovelReader } from './apps/novel-reader.js';
 import { syncArrivalToCanvas } from './apps/arrival.js';
 import { renderCabinet } from './apps/cabinet.js';
@@ -33,6 +43,7 @@ import { refreshEventCommandCenter } from './apps/event-command-center.js';
 import { openPregameChecklist, maybeAutoOpenPregameChecklist } from './apps/pregame-checklist.js';
 import { checkThresholdAndPrompt } from './helpers/reputation-rules.js';
 import { renderDock } from './apps/my-characters-dock.js';
+import { renderDesireReminder } from './apps/desire-reminder.js';
 import { getDashboard } from './apps/public-info-dashboard.js';
 import { initCycleHud, renderCycleHud } from './apps/cycle-hud.js';
 import { renderOrganizer } from './apps/npc-organizer.js';
@@ -116,12 +127,38 @@ Hooks.once('init', async function () {
     default: false,
   });
 
+  // Same pattern as dockMinimized — collapsed-state for the Desire Reminder
+  // panel. Client-scoped so each user controls their own. Re-render on
+  // change so toggling from elsewhere (Cabinet, scripts) updates the UI
+  // without needing a full reload.
+  game.settings.register('good-society-homebrew', 'desiresMinimized', {
+    scope: 'client',
+    config: false,
+    type: Boolean,
+    default: false,
+    onChange: () => {
+      import('./apps/desire-reminder.js')
+        .then(m => m.renderDesireReminder?.())
+        .catch(() => {});
+    },
+  });
+
   // Per-user draft auto-saved by LetterComposer every 10s; restored on re-open.
   game.settings.register('good-society-homebrew', 'letterDraft', {
     scope: 'client',
     config: false,
     type: Object,
     default: null,
+  });
+
+  // World-scope outbox for letters drafted outside the Epistolary phase.
+  // Each entry is `{id, userId, fromActorId, toActorId, letter, cycleQueued, ts}`.
+  // The Epistolary phase-start hook prompts each player to confirm/discard.
+  game.settings.register('good-society-homebrew', 'letterQueue', {
+    scope: 'world',
+    config: false,
+    type: Array,
+    default: [],
   });
 
   game.settings.register('good-society-homebrew', 'organizerMinimized', {
@@ -254,6 +291,23 @@ Hooks.once('init', async function () {
     default: { phase: 'idle', round: 0, turnOrder: [], currentIdx: 0, startedAtCycle: 0 },
     onChange: () => {
       import('./apps/rumour-wizard.js').then(m => m.refreshRumourWizard?.()).catch(() => {});
+    },
+  });
+
+  // Saved story beats (drafts) — GM can compose an invitation (or any other
+  // beat) ahead of time and deploy when ready. Each entry stores its beatId,
+  // a display label, and the form payload. Read/write helpers live in
+  // module/helpers/saved-story-beats.js (GM-only writes). The Command Center
+  // renders the saved list above the new-beat grid; re-render on change.
+  game.settings.register('good-society-homebrew', 'savedStoryBeats', {
+    scope: 'world',
+    config: false,
+    type: Object,
+    default: [],
+    onChange: () => {
+      import('./apps/story-beats-command-center.js')
+        .then(m => m.refreshStoryBeatsCommandCenter?.())
+        .catch(() => {});
     },
   });
 
@@ -692,6 +746,43 @@ Hooks.once('init', async function () {
 });
 
 Hooks.once('ready', async () => {
+  /**
+   * Public API surface — exposed on `game.goodSociety` so macros, hotbar
+   * shortcuts, and external modules have a stable entry point. Keep this
+   * namespace small and well-documented; everything here is treated as a
+   * stable contract.
+   *
+   *   game.goodSociety.cast(actorRef, skillRef)
+   *     Cast a Magic/Skill by name/id. Used by hotbar macros so players
+   *     don't have to write 5-line lookups in their macro body.
+   *     - actorRef: an Actor instance, an actor id, or an actor name
+   *     - skillRef: an Item instance, an item id, or an item name
+   *     Returns the cast pipeline's Promise.
+   */
+  game.goodSociety = {
+    cast: async (actorRef, skillRef) => {
+      const actor = actorRef instanceof Actor
+        ? actorRef
+        : (game.actors.get(actorRef) ?? game.actors.getName(actorRef));
+      if (!actor) {
+        ui.notifications?.error(`Good Society: actor "${actorRef}" not found.`);
+        return;
+      }
+      const skill = skillRef instanceof Item
+        ? skillRef
+        : (actor.items.get(skillRef) ?? actor.items.getName(skillRef));
+      if (!skill) {
+        ui.notifications?.error(`Good Society: "${actor.name}" has no skill named "${skillRef}".`);
+        return;
+      }
+      if (skill.type !== 'magic-skill') {
+        ui.notifications?.warn(`Good Society: "${skill.name}" is not a Magic/Skill item.`);
+        return;
+      }
+      return castMagicSkill(skill, actor);
+    },
+  };
+
   const chromeEnabled = game.settings.get('good-society-homebrew', 'applyFoundryChrome');
   document.body.classList.toggle('gs-chrome-themed', chromeEnabled);
 
@@ -780,6 +871,8 @@ Hooks.once('ready', async () => {
   // One-time backfill: tag pre-patch journal entries with `entryType` flag.
   // Per post-MVP §13.1. Conservative pattern matching; idempotent; GM-only.
   await migrateJournalEntryTypes();
+  await migrateCycleDividerBodies();
+  await migrateConnectionResolveDefaults();
 
   // Initial Arrival sync — runs once after canvas first becomes available.
   // syncArrivalToCanvas itself reads `applyWorldIdentity` and `arrivalEnabled`
@@ -788,6 +881,10 @@ Hooks.once('ready', async () => {
 
   // Open the My Characters Dock if the user owns any actors.
   renderDock();
+
+  // Render the Desire Reminder — top-right peripheral, hidden if the user
+  // toggled it off (Cabinet applies the body class).
+  try { await renderDesireReminder(); } catch (err) { console.warn('GS | desire reminder render failed:', err); }
 
   // Render the Cabinet (player module menu) — applies stored visibility flags
   // on first render so previously-hidden surfaces stay hidden.
@@ -839,17 +936,21 @@ Hooks.on('deleteItem', (item) => {
   getDashboard()?.rendered && getDashboard().refreshAndReset();
 });
 
-// Re-render the dock and dashboard whenever actor data changes.
+// Re-render the dock, desire reminder, and dashboard whenever actor data
+// changes — covers desire edits, ownership changes, new/removed Majors.
 Hooks.on('updateActor', () => {
   renderDock();
+  renderDesireReminder();
   getDashboard()?.rendered && getDashboard().refreshAndReset();
 });
 Hooks.on('createActor', () => {
   renderDock();
+  renderDesireReminder();
   getDashboard()?.rendered && getDashboard().refreshAndReset();
 });
 Hooks.on('deleteActor', () => {
   renderDock();
+  renderDesireReminder();
   getDashboard()?.rendered && getDashboard().refreshAndReset();
 });
 // Mirror speaker-changed events from the chat-input switcher.
@@ -897,6 +998,9 @@ safeRegister('randomEventSocket', registerRandomEventSocket);
 safeRegister('chatPortraits',    registerChatPortraits);
 safeRegister('letterSocket',     registerLetterSocket);
 safeRegister('tokenDefaults',    registerTokenDefaults);
+safeRegister('sceneDefaults',    registerSceneDefaults);
+safeRegister('repTagRegister',   registerReputationTagRegister);
+safeRegister('innerConflictRegister', registerInnerConflictRegister);
 safeRegister('sessionEvents',    registerSessionEvents);
 safeRegister('arrivalSync',      registerArrivalSync);
 safeRegister('pauseOverlay',     registerPauseOverlay);
@@ -904,7 +1008,12 @@ safeRegister('chromeIcons',      registerChromeIcons);
 safeRegister('sidebarFilter',    registerSidebarFilter);
 safeRegister('letterSeals',      registerLetterSeals);
 safeRegister('epistolaryPhase',  registerEpistolaryPhase);
-// Monologue socket binds at ready time, after game.socket exists.
+safeRegister('cycleMinimize',    registerCycleMinimize);
+safeRegister('storyBeatEvents',  registerStoryBeatEvents);
+safeRegister('windowControls',   registerWindowControls);
+// Monologue + Story Beat sockets bind at ready time, after game.socket exists.
 Hooks.once('ready', () => safeRegister('monologueSocket', registerMonologueSocket));
+Hooks.once('ready', () => safeRegister('storyBeatSocket', registerStoryBeatSocket));
+Hooks.once('ready', () => safeRegister('letterQueueSocket', registerLetterQueueSocket));
 // Novel Reader auto-open on game-end hook.
 safeRegister('novelReaderHooks', registerNovelReaderHooks);

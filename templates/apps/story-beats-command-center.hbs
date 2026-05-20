@@ -1,0 +1,51 @@
+{{!-- Story Beats Command Center — GM picker. Single root for ApplicationV2. --}}
+<section class="gs-story-beats-cc__wrapper">
+  <header class="gs-story-beats-cc__head">
+    <h3 class="gs-story-beats-cc__title">{{localize "GOODSOCIETY.storyBeats.commandCenterTitle"}}</h3>
+    <p class="gs-story-beats-cc__subtitle">{{localize "GOODSOCIETY.storyBeats.commandCenterSubtitle"}}</p>
+  </header>
+
+  {{#if hasSaved}}
+    <section class="gs-story-beats-cc__saved">
+      <h4 class="gs-story-beats-cc__saved-eyebrow">{{localize "GOODSOCIETY.storyBeats.savedHeading"}}</h4>
+      <ul class="gs-story-beats-cc__saved-list">
+        {{#each saved}}
+          <li class="gs-story-beats-cc__saved-row gs-story-beats-cc__saved-row--{{paletteClass}}">
+            <span class="gs-story-beats-cc__saved-icon" aria-hidden="true">{{icon}}</span>
+            <span class="gs-story-beats-cc__saved-body">
+              <span class="gs-story-beats-cc__saved-label">{{label}}</span>
+              <span class="gs-story-beats-cc__saved-kind">{{beatLabel}}</span>
+            </span>
+            <button type="button"
+                    class="gs-story-beats-cc__saved-btn gs-story-beats-cc__saved-btn--play"
+                    data-action="deploySaved"
+                    data-saved-id="{{id}}"
+                    title="{{localize 'GOODSOCIETY.storyBeats.playSaved'}}">
+              {{localize "GOODSOCIETY.storyBeats.play"}}
+            </button>
+            <button type="button"
+                    class="gs-story-beats-cc__saved-btn gs-story-beats-cc__saved-btn--delete"
+                    data-action="deleteSaved"
+                    data-saved-id="{{id}}"
+                    title="{{localize 'GOODSOCIETY.storyBeats.deleteSaved'}}"
+                    aria-label="{{localize 'GOODSOCIETY.storyBeats.deleteSaved'}}">×</button>
+          </li>
+        {{/each}}
+      </ul>
+    </section>
+  {{/if}}
+
+  <h4 class="gs-story-beats-cc__grid-eyebrow">{{localize "GOODSOCIETY.storyBeats.newHeading"}}</h4>
+  <div class="gs-story-beats-cc__grid">
+    {{#each beats}}
+      <button type="button"
+              class="gs-story-beats-cc__card gs-story-beats-cc__card--{{paletteClass}}"
+              data-action="pickBeat"
+              data-beat-id="{{id}}"
+              title="{{description}}">
+        <span class="gs-story-beats-cc__icon" aria-hidden="true">{{icon}}</span>
+        <span class="gs-story-beats-cc__label">{{label}}</span>
+      </button>
+    {{/each}}
+  </div>
+</section>

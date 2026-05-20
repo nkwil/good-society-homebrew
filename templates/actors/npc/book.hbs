@@ -95,15 +95,17 @@
             </p>
 
             {{!-- Bio line — NPC's "role" replaces the Major's "[N] years
-                 of age | Archetype" line. Free-form italic input that
-                 blends inline with surrounding text. --}}
+                 of age | Archetype" line. Free-form italic textarea
+                 (rows="1" + `field-sizing: content`) so long role blurbs
+                 wrap to the next line instead of clipping at the cameo's
+                 right edge. --}}
             <p class="dossier-cameo__bio-line">
-              <input type="text"
-                     class="dossier-cameo__bio-line-input"
-                     name="system.bio.role"
-                     value="{{system.bio.role}}"
-                     placeholder="{{localize 'GOODSOCIETY.npc.rolePlaceholder'}}"
-                     aria-label="{{localize 'GOODSOCIETY.connection.roleLabel'}}" />
+              <textarea class="dossier-cameo__bio-line-input"
+                        rows="1"
+                        data-autogrow
+                        name="system.bio.role"
+                        placeholder="{{localize 'GOODSOCIETY.npc.rolePlaceholder'}}"
+                        aria-label="{{localize 'GOODSOCIETY.connection.roleLabel'}}">{{system.bio.role}}</textarea>
             </p>
 
             {{!-- Persona switcher pill — sits in the cameo controls slot

@@ -57,7 +57,7 @@
   position: absolute;
   left: 4px;
   top: 8px;
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
   font-size: 10px;
 }
 

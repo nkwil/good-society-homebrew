@@ -21,7 +21,7 @@
                  role="switch"
                  aria-checked="{{visible}}"
                  tabindex="0"
-                 title="{{label}}">
+                 data-tooltip="{{label}}">
               <div class="gs-cabinet-row__name">{{label}}</div>
               <span class="gs-cabinet-toggle {{#if visible}}is-on{{/if}}" aria-hidden="true">
                 <span class="gs-cabinet-toggle__track"></span>
@@ -55,7 +55,8 @@
                 class="gs-cabinet-rail-btn {{#unless isLauncher}}{{#if visible}}is-active{{/if}}{{/unless}}"
                 data-action="toggleSurface"
                 data-surface-id="{{id}}"
-                title="{{label}}"
+                data-tooltip="{{label}}"
+                aria-label="{{label}}"
                 {{#if iconAsset}}
                   data-cabinet-icon
                   style="--cabinet-icon: url('{{iconAsset}}');"
@@ -69,7 +70,8 @@
     <button type="button"
             class="gs-cabinet-rail-toggle"
             data-action="toggleDrawer"
-            title="{{localize "GOODSOCIETY.cabinet.toggleHint"}}"
+            data-tooltip="{{localize "GOODSOCIETY.cabinet.toggleHint"}}"
+            aria-label="{{localize "GOODSOCIETY.cabinet.toggleHint"}}"
             aria-pressed="{{drawerOpen}}">
       ≡
     </button>

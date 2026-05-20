@@ -167,7 +167,7 @@
 }
 
 .gs-condition-picker__card-provenance--canonical {
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
 }
 
 .gs-condition-picker__card-provenance--homebrew {
@@ -220,7 +220,7 @@
   font-variant: small-caps;
   font-size: 9px;
   letter-spacing: 0.1em;
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
   text-transform: lowercase;
 }
 

@@ -23,6 +23,7 @@ import { profilePic, profileName } from '../helpers/profile-pic.js';
 import { postMonologueCard } from '../helpers/chat-cards.js';
 import { themedWrap } from '../helpers/themed-wrap.js';
 import { monologueFolder, entryFlags } from '../helpers/journal-folders.js';
+import { minimizeOtherWindowsForFocus } from '../hooks/window-controls.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -213,6 +214,10 @@ async function _showOverlay(state) {
   } else {
     await app.render(true);
   }
+  // Player-only: collapse any other framed windows so the monologue reads
+  // as the only thing on screen. State is preserved (just minimized), and
+  // the player restores each one when they're ready.
+  minimizeOtherWindowsForFocus({ exceptIds: ['gs-monologue-overlay'] });
 }
 
 /** Hide the overlay locally. Force-bypass the audience-dismiss guard since

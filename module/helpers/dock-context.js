@@ -152,7 +152,10 @@ export function buildDockContext() {
     }
   }
 
-  // Sort: Majors by family then name; Connections by linkedMajorId then name.
+  // Sort: Majors by family then name; Connections alpha by name.
+  // (Previously sorted by Connection's `linkedMajorId` first — that field
+  // is legacy now that linking is bidirectional via Major.system.
+  // connections, so plain alpha is the stable order.)
   majors.sort((a, b) => a.name.localeCompare(b.name));
   connections.sort((a, b) => a.name.localeCompare(b.name));
 

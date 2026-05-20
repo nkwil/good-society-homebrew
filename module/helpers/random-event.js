@@ -122,10 +122,20 @@ export async function resolveRandomEvent({ actor, event, strategies, rolls, chos
   // If the resolver is the GM, append directly.
   if (game.user?.isGM) {
     try {
+      // Human-readable summary baked in so the cycle-divider's novel page
+      // renders something useful instead of a bare "randomEventResolved" line.
+      const verb = outcome === 'success' ? 'rose to' : 'fell short of';
+      const tagBit = chosenTag
+        ? ` and gained ${outcome === 'success' ? '▲' : '▼'} <em>${chosenTag}</em>`
+        : '';
+      const summary =
+        `<strong>${actor.name}</strong> ${verb} <em>${event.name}</em>` +
+        `${tagBit} (avg roll ${payload.average}).`;
       await appendSessionEvent({
         type: 'randomEventResolved',
         actorId: actor.id,
         actorName: actor.name,
+        summary,
         details: {
           eventName: event.name,
           chosenTag,

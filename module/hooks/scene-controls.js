@@ -23,21 +23,62 @@ import { openNovelReader } from '../apps/novel-reader.js';
 import { openEventCommandCenter } from '../apps/event-command-center.js';
 
 /**
- * Deactivate the active scene so the canvas drops to the Arrival splash —
- * without needing another scene to activate. Foundry has no built-in
- * "no active scene" control; this provides one. The Arrival then renders
- * the current phase's splash (or the default) via arrival-sync.
+ * Drop the local canvas to the Arrival splash — without needing another
+ * scene to activate. Three cases:
+ *   1. There IS an active scene → deactivate it (Foundry tears down the
+ *      canvas for all clients).
+ *   2. No active scene but the GM is still viewing one (a non-active scene
+ *      pulled up just to look at) → tear down the local canvas explicitly.
+ *   3. Already at the splash → toast "splash already showing" and bail.
+ *
+ * Either path ends with arrival-sync deciding to show the Arrival.
  */
 async function _returnToSplash() {
   const active = game.scenes?.active;
-  if (!active) {
+  const viewed = canvas?.scene ?? game.scenes?.viewed;
+
+  // Case 3: nothing to do.
+  if (!active && !viewed) {
     ui.notifications?.info(game.i18n.localize('GOODSOCIETY.phaseSplash.noActiveScene'));
+    // Belt-and-suspenders — re-run the arrival sync just in case it didn't
+    // render on the most recent canvas/scene transition.
+    try {
+      const { syncArrivalToCanvas } = await import('../apps/arrival.js');
+      await syncArrivalToCanvas();
+    } catch { /* arrival unavailable */ }
     return;
   }
+
+  // Case 1: deactivate the active scene world-wide.
+  if (active) {
+    try {
+      await active.update({ active: false });
+    } catch (err) {
+      console.warn('GS | return-to-splash deactivate failed:', err);
+      ui.notifications?.error('Could not deactivate the active scene.');
+      return;
+    }
+  }
+
+  // Case 2 (or case 1 fallback): tear down the local canvas if anything
+  // is still being viewed. Foundry doesn't expose a public "unview" API;
+  // tearDown clears the canvas, and the canvasReady-style hooks let the
+  // arrival-sync re-evaluate and show the splash.
   try {
-    await active.update({ active: false });
+    if (canvas?.scene) {
+      await canvas.tearDown();
+    }
   } catch (err) {
-    console.warn('GS | return-to-splash failed:', err);
+    console.warn('GS | return-to-splash tearDown failed:', err);
+  }
+
+  // Final defensive push — ensure the Arrival renders even if the hook
+  // chain (updateScene → arrival-sync) didn't fire for some reason.
+  try {
+    const { syncArrivalToCanvas } = await import('../apps/arrival.js');
+    await syncArrivalToCanvas();
+  } catch (err) {
+    console.warn('GS | return-to-splash arrival render failed:', err);
   }
 }
 

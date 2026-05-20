@@ -338,11 +338,18 @@ button.gs-letter-envelope__packet:focus-visible {
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 12px 26px rgba(20, 12, 8, 0.4));
-  transition: opacity 320ms ease, transform 320ms ease;
+  /* Slowed ~1.7× from the original 320ms timings so the envelope-dissolve
+   * feels deliberate rather than snapping past. */
+  transition: opacity 560ms ease, transform 620ms cubic-bezier(.4, 0, .6, 1),
+              filter 560ms ease;
 }
+/* On break, the envelope photo drifts UPWARD (not just fades in place) and
+ * the shadow lightens — looks like the envelope is being lifted away by
+ * the wax-seal as it pops up. */
 .gs-letter-envelope.is-open .gs-letter-envelope__envelope-img {
   opacity: 0;
-  transform: scale(0.965);
+  transform: translateY(-14px) scale(0.965);
+  filter: drop-shadow(0 4px 10px rgba(20, 12, 8, 0.15));
 }
 
 /* ── Wax seal — placed on the V-flap's tip so it visually secures the
@@ -369,17 +376,29 @@ button.gs-letter-envelope__packet:focus-visible {
   object-fit: contain;
 }
 /* Break choreography — the seal must NEVER reveal the envelope photo's own
- * printed red seal underneath. So: the envelope dissolves FIRST (320ms),
- * while the wax seal HOLDS dead-still on top of the printed seal, opaque,
- * fully covering it. Only AFTER the envelope (printed seal included) has
- * faded does the wax lift toward the viewer, tilt, and fade — by then
- * there's nothing beneath it to expose. The 320ms delay on both the
- * transform and the opacity is what enforces "hold, then lift". */
+ * printed red seal underneath. So: the envelope dissolves FIRST (560 ms),
+ * while the wax seal HOLDS dead-still, opaque, covering the print.
+ *
+ * Then a multi-stage keyframe animation takes over: the seal first does a
+ * small JITTER in place (the wax cracking) before lifting toward the
+ * viewer and fading. One animation owns the full transform timeline so
+ * jitter → lift reads as continuous physical motion, not two separate
+ * tweens. The 400 ms animation-delay keeps the seal holding while the
+ * envelope photo dissolves underneath. */
 .gs-letter-envelope.is-open .gs-letter-envelope__seal {
-  transform: translate(-50%, -50%) translateZ(150px) rotate(-18deg) scale(1.32);
-  opacity: 0;
-  transition: transform 480ms cubic-bezier(0.34, 0, 0.3, 1) 320ms,
-              opacity 380ms ease 340ms;
+  animation: gs-seal-break 960ms cubic-bezier(0.34, 0, 0.3, 1) 400ms forwards;
+}
+@keyframes gs-seal-break {
+  /* 0-20%: the wax cracks — short shake, ~5 frames of position jitter. */
+  0%   { transform: translate(-50%, -50%) rotate(0deg);   opacity: 1; }
+  4%   { transform: translate(calc(-50% - 2.5px), calc(-50% + 1px))   rotate(-3deg); opacity: 1; }
+  8%   { transform: translate(calc(-50% + 2.5px), calc(-50% - 1px))   rotate(3deg);  opacity: 1; }
+  12%  { transform: translate(calc(-50% - 1.5px), calc(-50% + 1.5px)) rotate(-2deg); opacity: 1; }
+  16%  { transform: translate(calc(-50% + 1px),   calc(-50% - 1px))   rotate(1deg);  opacity: 1; }
+  20%  { transform: translate(-50%, -50%) rotate(0deg);   opacity: 1; }
+  /* 20-100%: the seal lifts toward the viewer, tilts, scales up, fades. */
+  55%  { transform: translate(-50%, -50%) translateZ(80px) rotate(-10deg) scale(1.20); opacity: 1; }
+  100% { transform: translate(-50%, -50%) translateZ(150px) rotate(-18deg) scale(1.34); opacity: 0; }
 }
 
 /* "Break the seal" hint under the packet. */
@@ -416,21 +435,33 @@ button.gs-letter-envelope__packet:focus-visible {
   color: var(--gs-letter-ink);
   /* Generous padding keeps text clear of the irregular torn edges — the
    * top especially, where the parchment curls in over the content. */
-  padding: 128px 62px 84px;
+  /* Top padding generous enough to clear the torn / curled top edge of the
+   * parchment textures (which can bite ~140 px into the sheet on the
+   * deeper-cut variants). Side / bottom paddings keep text well away from
+   * the ragged horizontal edges too. */
+  padding: 150px 70px 90px;
   box-shadow: 0 10px 32px rgba(20, 12, 8, 0.42), inset 0 0 64px rgba(120, 92, 52, 0.12);
-  /* Closed: collapsed + invisible (contributes no height). */
+  /* Closed: collapsed + invisible (contributes no height). The translateY
+   * starts the sheet below its resting position so on .is-open it slides
+   * upward into place — looks like the letter is being drawn UP out of
+   * the envelope rather than just appearing. */
   opacity: 0;
   visibility: hidden;
   height: 0;
   overflow: hidden;
-  transition: opacity 420ms ease;
+  transform: translateY(50px);
+  transition: opacity 420ms ease, transform 420ms ease;
 }
 .gs-letter-envelope.is-open .gs-letter-sheet {
   opacity: 1;
   visibility: visible;
   height: auto;
   overflow: visible;
-  transition: opacity 460ms ease 380ms;    /* fade in as the envelope clears */
+  transform: translateY(0);
+  /* The slight back-easing on the transform gives the sheet a tiny
+   * settle / "thud" when it lands in place. The fade-in is plain ease. */
+  transition: opacity 760ms ease 680ms,
+              transform 880ms cubic-bezier(.34, 1.25, .64, 1) 680ms;
 }
 
 .gs-letter-sheet__subject {
@@ -478,7 +509,7 @@ button.gs-letter-envelope__packet:focus-visible {
   border-radius: 50%;
   border: 2px solid var(--gs-accent-3);
   background: var(--gs-paper);
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
   font-size: 14px;
   flex-shrink: 0;
 }
@@ -675,6 +706,43 @@ button.gs-letter-envelope__packet:focus-visible {
 
 .gs-epistolary-roster__status.is-pending {
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+}
+
+/* GM-only undoable ✓ — when the row is done, the status renders as a button
+ * instead of a span so the GM can click to roll back the player's mark-done.
+ * Reset Foundry's default button chrome and give a clear hover affordance
+ * that telegraphs "click to undo." */
+button.gs-epistolary-roster__status--undoable {
+  background: transparent;
+  border: 0;
+  padding: 0 4px;
+  margin: 0;
+  cursor: pointer;
+  line-height: 1;
+  border-radius: 4px;
+  transition: background 120ms, color 120ms, transform 80ms;
+}
+
+button.gs-epistolary-roster__status--undoable:hover {
+  background: color-mix(in srgb, var(--gs-danger, #8B2A2A) 14%, transparent);
+  color: var(--gs-danger, #8B2A2A);
+  transform: scale(1.05);
+}
+
+button.gs-epistolary-roster__status--undoable:hover::after {
+  content: ' ↶';
+  font-size: 0.85em;
+  margin-left: 1px;
+  vertical-align: 1px;
+}
+
+button.gs-epistolary-roster__status--undoable:active {
+  transform: scale(0.95);
+}
+
+button.gs-epistolary-roster__status--undoable:focus-visible {
+  outline: 2px solid var(--gs-brand);
+  outline-offset: 1px;
 }
 
 .gs-epistolary-roster__foot {

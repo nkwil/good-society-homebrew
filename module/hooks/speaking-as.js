@@ -216,8 +216,8 @@ function _onPreCreateChatMessage(message, data) {
   if (data.rolls?.length || data.roll) return;
 
   // Skip messages that came through one of our chat-card helpers
-  // (postSystemCard, postPersonaSwitchCard, postCompletionCard, postLetterCard,
-  // postMonologueCard, postInCharacterCard). They already set their intended
+  // (postSystemCard, postCompletionCard, postLetterCard, postMonologueCard,
+  // postInCharacterCard). They already set their intended
   // speaker via the chat-cards.js pipeline; rewriting would clobber it. Detect
   // by the presence of any cardType flag in our namespace.
   const gsCardType = data.flags?.['good-society-homebrew']?.cardType;

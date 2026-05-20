@@ -78,6 +78,38 @@
    * 4px, double shadow) from _major-character.css. */
 }
 
+/* ── Resolve row in the cameo body ───────────────────────────────────────── */
+
+/* Sits just below the persona switcher in the cameo body. Compact —
+ * small uppercase label, 5 pips inline, count at the end. The pips
+ * themselves keep the standard `.gs-resolve-pip` styling from
+ * styles/components/_resolve-track.css. */
+.dossier-cameo__resolve-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.dossier-cameo__resolve-label {
+  font-family: var(--gs-body);
+  font-variant: small-caps;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+}
+.dossier-cameo__resolve-count {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+}
+
+/* Single-column variant of the scene-info section (used after the cut of
+ * Public Tags + Resolve from this row). Drops the 2-col grid in favor of
+ * a stacked block so the Hover Summary input + textarea use full width. */
+.dossier-scene-info--single .dossier-scene-info__grid { display: block; }
+
 /* ── Linked Major row in the cameo header ────────────────────────────────── */
 
 /* Sits in the cameo's controls slot (where Majors put the persona switcher).
@@ -95,6 +127,27 @@
   font-size: 11px;
   letter-spacing: 0.14em;
   color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+}
+
+/* Multi-chip wrapper — when a Connection is linked from more than one
+ * Major, lay them out as a wrapping row of themed pills. The outer row
+ * already has `flex-wrap: wrap`, but the chip group benefits from its
+ * own gap so chips breathe independently of the label. */
+.dossier-connection-linked-row__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Empty-state hint — was a button (the pencil-edit affordance), now just
+ * a plain italic ghost line directing the user to manage links from the
+ * Major's dossier. Same visual weight as the previous placeholder. */
+.dossier-connection-linked-row__none-hint {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  font-style: italic;
 }
 
 /* The "no Major assigned" placeholder is also a button — clicking it opens

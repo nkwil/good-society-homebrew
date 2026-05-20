@@ -47,3 +47,43 @@
   font-size: 11px;
   letter-spacing: 0.01em;
 }
+
+/* Input row with picker buttons — wraps the input and 1-2 small square
+ * action buttons (🔍 browse library, ▶ preview, 📁 file picker). The input
+ * flexes to fill the row; the buttons stay compact and inline. */
+.gs-item-sheet__input-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.gs-item-sheet__input-row .gs-item-sheet__input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gs-item-sheet__picker-btn {
+  flex: 0 0 auto;
+  width: 30px;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  padding: 0;
+  background: color-mix(in srgb, var(--gs-paper) 75%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 22%, transparent);
+  border-radius: 4px;
+  color: var(--gs-ink);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, transform 80ms;
+}
+
+.gs-item-sheet__picker-btn:hover {
+  background: var(--gs-paper);
+  border-color: color-mix(in srgb, var(--gs-ink) 40%, transparent);
+}
+
+.gs-item-sheet__picker-btn:active {
+  transform: translateY(0.5px);
+}

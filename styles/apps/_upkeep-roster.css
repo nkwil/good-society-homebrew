@@ -175,7 +175,7 @@
 }
 
 .gs-upkeep-roster__status--done        { color: var(--gs-positive); }
-.gs-upkeep-roster__status--in-progress { color: var(--gs-accent-3); }
+.gs-upkeep-roster__status--in-progress { color: var(--gs-text-muted); }
 .gs-upkeep-roster__status--waiting     { color: var(--gs-brand); }
 .gs-upkeep-roster__status--offline     { color: color-mix(in srgb, var(--gs-ink) 75%, transparent); }
 

@@ -18,12 +18,16 @@
  * actor.system.reputation.pendingChanges (populated by the same hooks here).
  */
 
-import { appendPendingChange, buildSceneLabel, syncPendingChangeName } from '../helpers/pending-changes.js';
+import { appendPendingChange, buildSceneLabel, syncPendingChangeName, isUndoingPending } from '../helpers/pending-changes.js';
 
 const NS = 'good-society-homebrew';
 const KEY = 'sessionEvents';
 
-/** Append one structured event to the world-scoped session event log. */
+/** Append one structured event to the world-scoped session event log.
+ *  Auto-stamps `cycleNumber` (from the current world setting) and `timestamp`
+ *  so consumers like the cycle divider can filter by cycle without callers
+ *  having to remember to include it. Callers may pre-set either field to
+ *  override. */
 export async function appendSessionEvent(event) {
   if (!game.user?.isGM) return;
   const existing = (() => {
@@ -31,9 +35,11 @@ export async function appendSessionEvent(event) {
     catch { return []; }
   })();
   if (!Array.isArray(existing)) return;
+  let cycleNumber = null;
+  try { cycleNumber = game.settings.get(NS, 'cycleNumber'); } catch {}
   await game.settings.set(NS, KEY, [
     ...existing,
-    { ...event, timestamp: Date.now() },
+    { cycleNumber, ...event, timestamp: Date.now() },
   ]);
 }
 
@@ -70,13 +76,18 @@ export function register() {
           source: item.system?.source ?? '',
         },
       });
-      await appendPendingChange(
-        item.parent,
-        polarity === 'positive' ? 'gained-positive' : 'gained-negative',
-        item.name,
-        buildSceneLabel(),
-        item.id,  // tagId for rename-sync via updateItem hook below
-      );
+      // Skip the append if THIS create is the result of an in-flight Undo
+      // on this actor — otherwise undoing a "removed" entry would
+      // immediately re-log it as "gained" and the cycle never settles.
+      if (!isUndoingPending(item.parent.id)) {
+        await appendPendingChange(
+          item.parent,
+          polarity === 'positive' ? 'gained-positive' : 'gained-negative',
+          item.name,
+          buildSceneLabel(),
+          { tagId: item.id, polarity },
+        );
+      }
     } else if (item.type === 'reputation-condition') {
       await appendSessionEvent({
         type: 'conditionAdded',
@@ -116,7 +127,12 @@ export function register() {
         polarity: item.system?.polarity ?? 'positive',
       },
     });
-    await appendPendingChange(item.parent, 'removed', item.name, buildSceneLabel());
+    if (!isUndoingPending(item.parent.id)) {
+      await appendPendingChange(item.parent, 'removed', item.name, buildSceneLabel(), {
+        tagId:    item.id,
+        polarity: item.system?.polarity ?? 'positive',
+      });
+    }
   });
 
   // Monologues — fired from monologue-editor.js after posting the chat card
@@ -139,4 +155,83 @@ export function register() {
       details: { personaName: data.personaName },
     });
   });
+}
+
+/* ── Pretty-print helpers ─────────────────────────────────────────────────────
+ *
+ * Session events are stored as compact `{type, actorName, details}` objects
+ * — the cycle divider (and any future log / digest surface) needs them as
+ * readable prose. The map below translates each event type into a
+ * (heading, summary) pair. Falls back to the raw type when an unknown
+ * shape is encountered, so adding a new event type is a one-line addition
+ * to the switch rather than a sprawl across renderers. */
+
+/** Human-readable section heading for a given event type. */
+export function eventTypeHeading(type) {
+  const KEY = `GOODSOCIETY.sessionEvent.heading.${type}`;
+  const txt = game.i18n.localize(KEY);
+  return (txt && txt !== KEY) ? txt : type;
+}
+
+/** Build a single-line HTML-safe summary for an event row. */
+export function formatSessionEventSummary(ev) {
+  // If the event was already authored with a summary (e.g. random-event
+  // resolved), respect it.
+  if (typeof ev?.summary === 'string' && ev.summary.trim()) return ev.summary;
+
+  const d = ev?.details ?? {};
+  const actor = ev?.actorName ? `<strong>${ev.actorName}</strong>` : '';
+  switch (ev?.type) {
+    case 'phaseChange': {
+      const phaseKey = `GOODSOCIETY.cyclePhase.${_phaseKey(d.newPhase)}`;
+      const label = game.i18n.localize(phaseKey);
+      const phaseLabel = (label && label !== phaseKey) ? label : (d.newPhase ?? 'unknown');
+      return game.i18n.format('GOODSOCIETY.sessionEvent.fmt.phaseChange', { phase: phaseLabel });
+    }
+    case 'tagAdded': {
+      const arrow = d.polarity === 'negative' ? '▼' : '▲';
+      return game.i18n.format('GOODSOCIETY.sessionEvent.fmt.tagAdded', {
+        actor: actor || '—',
+        arrow,
+        tag: d.tagName ?? '?',
+      });
+    }
+    case 'tagRemoved': {
+      const arrow = d.polarity === 'negative' ? '▼' : '▲';
+      return game.i18n.format('GOODSOCIETY.sessionEvent.fmt.tagRemoved', {
+        actor: actor || '—',
+        arrow,
+        tag: d.tagName ?? '?',
+      });
+    }
+    case 'conditionAdded': {
+      const arrow = d.polarity === 'negative' ? '▼' : '▲';
+      return game.i18n.format('GOODSOCIETY.sessionEvent.fmt.conditionAdded', {
+        actor: actor || '—',
+        arrow,
+        condition: d.conditionName ?? '?',
+      });
+    }
+    case 'monologue':
+      return game.i18n.format('GOODSOCIETY.sessionEvent.fmt.monologue', {
+        actor: actor || '—',
+      });
+    case 'personaSwap':
+      return game.i18n.format('GOODSOCIETY.sessionEvent.fmt.personaSwap', {
+        actor: actor || '—',
+        persona: d.personaName ?? '?',
+      });
+    default:
+      return ev?.type ?? '—';
+  }
+}
+
+/** Map a cyclePhase enum value to the lang-key fragment used by the registry
+ *  (cyclePhase.preCycle / .rumourScandal etc.). */
+function _phaseKey(phase) {
+  switch (phase) {
+    case 'pre-cycle':      return 'preCycle';
+    case 'rumour-scandal': return 'rumourScandal';
+    default:               return phase ?? '';
+  }
 }

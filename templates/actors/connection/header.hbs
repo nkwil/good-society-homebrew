@@ -37,26 +37,31 @@
 
     <div class="gs-hairline gs-connection-sheet__main-rule"></div>
 
-    {{!-- Linked Major reference — the Major name uses the Major's theme via .gs-themed --}}
+    {{!-- Linked Majors — read-only chip list reflecting every Major whose
+         dossier lists this Connection. Source of truth = Major.system.
+         connections; the chip array updates whenever any Major links or
+         unlinks. --}}
     <div class="gs-connection-sheet__linked-row">
       <span class="gs-connection-sheet__linked-label">{{localize "GOODSOCIETY.connection.linkedTo"}} ·</span>
-      {{#if linkedMajor}}
-        <button class="gs-connection-sheet__linked-major gs-themed"
-                data-theme="{{linkedMajorTheme}}"
-                type="button"
-                data-action="openMajor"
-                data-actor-id="{{linkedMajor.id}}">
-          {{#if linkedMajor.system.bio.portraitUrl}}
-            <img class="gs-connection-sheet__linked-portrait"
-                 src="{{linkedMajor.system.bio.portraitUrl}}"
-                 alt="{{linkedMajor.name}}" />
-          {{else}}
-            <span class="gs-connection-sheet__linked-initial">{{linkedMajorInitial}}</span>
-          {{/if}}
-          <span class="gs-connection-sheet__linked-name">{{linkedMajor.name}}</span>
-        </button>
+      {{#if hasLinkedMajors}}
+        {{#each linkedMajors}}
+          <button class="gs-connection-sheet__linked-major gs-themed"
+                  data-theme="{{theme}}"
+                  type="button"
+                  data-action="openMajor"
+                  data-actor-id="{{id}}">
+            {{#if portraitUrl}}
+              <img class="gs-connection-sheet__linked-portrait"
+                   src="{{portraitUrl}}"
+                   alt="{{name}}" />
+            {{else}}
+              <span class="gs-connection-sheet__linked-initial">{{initial}}</span>
+            {{/if}}
+            <span class="gs-connection-sheet__linked-name">{{name}}</span>
+          </button>
+        {{/each}}
       {{else}}
-        <span class="gs-connection-sheet__linked-none">{{localize "GOODSOCIETY.connection.noMajor"}}</span>
+        <span class="gs-connection-sheet__linked-none">{{localize "GOODSOCIETY.connection.noMajorsLinkedHint"}}</span>
       {{/if}}
     </div>
 

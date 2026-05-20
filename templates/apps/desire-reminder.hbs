@@ -1,0 +1,51 @@
+{{!-- Desire Reminder — top-left peripheral panel. Lists the active desire
+     of every Major the current user owns. Transparent at rest, opaque on
+     hover; toggle visibility from the Cabinet drawer.
+
+     Collapse pattern mirrors the My Characters dock: the header carries
+     a minimize button that flips `.is-minimized` on the root, hiding the
+     body. Persisted via the `desiresMinimized` client setting. --}}
+<section class="gs-desire-reminder {{#if minimized}}is-minimized{{/if}}">
+  <header class="gs-desire-reminder__head">
+    <span class="gs-eyebrow gs-eyebrow--subdued gs-desire-reminder__title">
+      {{localize "GOODSOCIETY.desireReminder.heading"}}
+    </span>
+    <button type="button"
+            class="gs-desire-reminder__minimize"
+            data-action="toggleMinimize"
+            aria-label="{{#if minimized}}{{localize 'GOODSOCIETY.desireReminder.expand'}}{{else}}{{localize 'GOODSOCIETY.desireReminder.minimize'}}{{/if}}"
+            title="{{#if minimized}}{{localize 'GOODSOCIETY.desireReminder.expand'}}{{else}}{{localize 'GOODSOCIETY.desireReminder.minimize'}}{{/if}}">
+      {{#if minimized}}+{{else}}−{{/if}}
+    </button>
+  </header>
+
+  <div class="gs-desire-reminder__body">
+    {{#if hasAny}}
+      <ul class="gs-desire-reminder__list">
+        {{#each entries}}
+          <li class="gs-desire-reminder__entry gs-themed"
+              data-theme="{{theme}}">
+            <button type="button"
+                    class="gs-desire-reminder__entry-name"
+                    data-action="openSheet"
+                    data-actor-id="{{actorId}}"
+                    title="{{localize 'GOODSOCIETY.desireReminder.openSheetTitle'}}">
+              {{heading}}
+            </button>
+            {{#if hasDesire}}
+              <div class="gs-desire-reminder__entry-desire">{{{desireHtml}}}</div>
+            {{else}}
+              <div class="gs-desire-reminder__entry-desire gs-desire-reminder__entry-desire--empty">
+                <em>{{localize "GOODSOCIETY.desireReminder.noDesire"}}</em>
+              </div>
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p class="gs-desire-reminder__empty">
+        {{localize "GOODSOCIETY.desireReminder.noOwned"}}
+      </p>
+    {{/if}}
+  </div>
+</section>

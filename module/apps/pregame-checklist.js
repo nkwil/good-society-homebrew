@@ -14,7 +14,16 @@ const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
 
 const NS = 'good-society-homebrew';
-const FLAG_KEY = 'preGameChecklistDismissed';
+/* Flag key is versioned so a content rewrite re-pops the checklist for
+ * users who already dismissed the previous edition. Bump the version
+ * (v2 → v3 → …) whenever the copy changes substantially enough that a
+ * player should re-read it. v2 corresponds to the May-2026 rebuild
+ * (UI tour + reputation/resolve/inner-conflict/inner-monologue mechanics).
+ *
+ * Old `preGameChecklistDismissed` flags from v1 are harmless leftovers —
+ * they sit on the user document forever but never get read again. Not
+ * worth a migration. */
+const FLAG_KEY = 'preGameChecklistDismissedV2';
 
 let _instance = null;
 
@@ -45,7 +54,7 @@ export class PregameChecklist extends HandlebarsApplicationMixin(ApplicationV2) 
       positioned: true,
       title: 'GOODSOCIETY.pregame.windowTitle',
     },
-    position: { width: 640, height: 720 },
+    position: { width: 680, height: 820 },
     actions: {
       dismiss: PregameChecklist.#dismiss,
     },
@@ -59,41 +68,14 @@ export class PregameChecklist extends HandlebarsApplicationMixin(ApplicationV2) 
     const ctx = await super._prepareContext(options);
     ctx.heading = game.i18n.localize('GOODSOCIETY.pregame.heading');
     ctx.intro = game.i18n.localize('GOODSOCIETY.pregame.intro');
-    // Six sections — order matches the player's mental progression when
-    // first reading their character: desire → people → reputation flow →
-    // inner conflict → token economy → personas.
-    ctx.sections = [
-      {
-        eyebrow: game.i18n.localize('GOODSOCIETY.pregame.sections.desire.eyebrow'),
-        title:   game.i18n.localize('GOODSOCIETY.pregame.sections.desire.title'),
-        body:    game.i18n.localize('GOODSOCIETY.pregame.sections.desire.body'),
-      },
-      {
-        eyebrow: game.i18n.localize('GOODSOCIETY.pregame.sections.family.eyebrow'),
-        title:   game.i18n.localize('GOODSOCIETY.pregame.sections.family.title'),
-        body:    game.i18n.localize('GOODSOCIETY.pregame.sections.family.body'),
-      },
-      {
-        eyebrow: game.i18n.localize('GOODSOCIETY.pregame.sections.reputation.eyebrow'),
-        title:   game.i18n.localize('GOODSOCIETY.pregame.sections.reputation.title'),
-        body:    game.i18n.localize('GOODSOCIETY.pregame.sections.reputation.body'),
-      },
-      {
-        eyebrow: game.i18n.localize('GOODSOCIETY.pregame.sections.innerConflict.eyebrow'),
-        title:   game.i18n.localize('GOODSOCIETY.pregame.sections.innerConflict.title'),
-        body:    game.i18n.localize('GOODSOCIETY.pregame.sections.innerConflict.body'),
-      },
-      {
-        eyebrow: game.i18n.localize('GOODSOCIETY.pregame.sections.tokens.eyebrow'),
-        title:   game.i18n.localize('GOODSOCIETY.pregame.sections.tokens.title'),
-        body:    game.i18n.localize('GOODSOCIETY.pregame.sections.tokens.body'),
-      },
-      {
-        eyebrow: game.i18n.localize('GOODSOCIETY.pregame.sections.personas.eyebrow'),
-        title:   game.i18n.localize('GOODSOCIETY.pregame.sections.personas.title'),
-        body:    game.i18n.localize('GOODSOCIETY.pregame.sections.personas.body'),
-      },
-    ];
+    // Seven sections — order follows the new player onboarding flow: orient
+    // to the UI first, then walk through desire → connections → mechanics
+    // (reputation, resolve tokens, inner conflict, inner monologue).
+    const KEYS = ['ui', 'desire', 'connections', 'reputation', 'resolveTokens', 'innerConflict', 'innerMonologue'];
+    ctx.sections = KEYS.map(key => ({
+      title: game.i18n.localize(`GOODSOCIETY.pregame.sections.${key}.title`),
+      body:  game.i18n.localize(`GOODSOCIETY.pregame.sections.${key}.body`),
+    }));
     return ctx;
   }
 

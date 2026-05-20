@@ -20,9 +20,21 @@
           {{/if}}
         </span>
         <span class="gs-epistolary-roster__name">{{name}}</span>
-        <span class="gs-epistolary-roster__status {{#if done}}is-done{{else}}is-pending{{/if}}">
-          {{#if done}}✓{{else}}⏳{{/if}}
-        </span>
+        {{#if done}}
+          {{!-- GM-only: click the ✓ to roll back the player's mark-done.
+               Renders as a button so it gets normal hover affordance + keyboard
+               focus. The pending state stays a plain span (nothing to undo). --}}
+          <button type="button"
+                  class="gs-epistolary-roster__status gs-epistolary-roster__status--undoable is-done"
+                  data-action="unmarkDone"
+                  data-actor-id="{{id}}"
+                  title="{{localize "GOODSOCIETY.epistolary.roster.unmarkTitle"}}"
+                  aria-label="Un-mark {{name}} as done">
+            ✓
+          </button>
+        {{else}}
+          <span class="gs-epistolary-roster__status is-pending">⏳</span>
+        {{/if}}
       </li>
     {{/each}}
   </ul>

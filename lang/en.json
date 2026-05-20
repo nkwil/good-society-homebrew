@@ -128,8 +128,13 @@
         "referenceUrlHint": "Optional URL to source material — rulebook page, fan wiki, house-rules doc.",
         "vfxKey": "VFX key",
         "vfxKeyPlaceholder": "jb2a.misty_step.01.blue",
+        "vfxKeyHint": "Browse opens Sequencer's library — find an effect, click its copy icon, paste here.",
+        "browseVfxTitle": "Browse JB2A effect library",
+        "previewVfxTitle": "Preview on selected token (or canvas centre)",
         "soundUrl": "Sound URL",
         "soundUrlPlaceholder": "sounds/magic/sparkle.ogg",
+        "browseSoundTitle": "Browse for a sound file",
+        "previewSoundTitle": "Preview sound locally (only you hear it)",
         "cast": "cast",
         "castNote": "Triggers VFX and sound on all clients.",
         "castNoteNoSequencer": "Sequencer not installed — chat-only cast."
@@ -225,6 +230,8 @@
       "namePlaceholder": "Connection name",
       "linkedTo": "linked to",
       "noMajor": "no Major assigned",
+      "noMajorsLinkedHint": "no Major listed — add this connection from a Major's dossier",
+      "openMajorTitle": "Open this Major's dossier",
       "description": "Description",
       "descriptionPlaceholder": "Sketch this connection in two or three sentences. (Click ✎ to edit.)",
       "editDescription": "Edit description",
@@ -282,6 +289,7 @@
       "notesObjectives": "Notes & Objectives",
       "connections": "Connections",
       "noConnections": "Drag a Connection here, or click + to create one.",
+      "removeConnection": "Unlink from this character",
       "add": "add",
       "backstory": "Backstory",
       "magicSkills": "Magic & Skills",
@@ -326,6 +334,13 @@
       "removeTag": "Remove tag",
       "activeReputation": "Active Reputation",
       "earnedCycle": "Earned cycle",
+      "pendingChanges": "Pending Changes",
+      "pendingHint": "Tentative — confirmed at the Reputation Phase. You can undo any of these.",
+      "pendingGained": "gained",
+      "pendingRemoved": "removed",
+      "undo": "Undo",
+      "undoPending": "Undo this change",
+      "undoFailed": "Undo failed — see the console for details.",
       "addCondition": "add condition",
       "addConditionTitle": "Add a reputation condition (GM)",
       "addConditionHelp": "Author a custom reputation condition and grant it to this character. Conditions are visible to all players when active.",
@@ -627,6 +642,15 @@
       "minimize": "Minimize dock",
       "expand": "Expand dock",
       "conditionsRailLabel": "Active conditions"
+    },
+    "desireReminder": {
+      "heading": "Desires",
+      "entryHeading": "{name}'s Desire",
+      "noDesire": "(no desire recorded)",
+      "noOwned": "No owned Majors.",
+      "openSheetTitle": "Open dossier",
+      "minimize": "Collapse desires",
+      "expand": "Expand desires"
     },
     "major": {
       "peerage": {
@@ -1081,6 +1105,49 @@
       "created": "Created a \"Reputation Conditions\" compendium. Add reputation-condition items to it.",
       "createFailed": "Could not create the reputation conditions compendium — see the console for details."
     },
+    "storyBeats": {
+      "commandCenterTitle": "Story Beats",
+      "commandCenterSubtitle": "Trigger a dramatic moment for the whole table. Pick a beat, fill in the details, play — or save it for later.",
+      "configTitle": "{label}",
+      "play": "Play",
+      "saveForLater": "Save for later",
+      "savedToast": "Saved. Deploy from the Story Beats panel when ready.",
+      "savedHeading": "Saved drafts",
+      "newHeading": "Compose new",
+      "playSaved": "Deploy this saved beat",
+      "deleteSaved": "Delete saved beat",
+      "deleteSavedConfirm": "Delete the saved beat \"{label}\"?",
+      "dismiss": "Dismiss",
+      "gmOnly": "Only the Gamemaster can trigger story beats.",
+      "alreadyRunning": "A story beat is already on the table — dismiss it first.",
+      "fillRequired": "Fill in the required fields before playing.",
+      "timelineFmt": {
+        "invitedBy": "Invited by {sender}.",
+        "atVenue":   "At {where}."
+      },
+      "invitation": {
+        "eyebrow": "An Invitation",
+        "toPrefix": "To",
+        "when": "When",
+        "where": "Where",
+        "noSeal": "— No seal (open immediately) —",
+        "breakSeal": "Break the seal",
+        "breakSealHint": "Click to break the seal"
+      },
+      "reveal": {
+        "eyebrow": "It is whispered, in confidence…"
+      },
+      "news": {
+        "defaultMasthead": "The Morning Chronicle"
+      },
+      "accusation": {
+        "eyebrow": "And so it is said —"
+      },
+      "death": {
+        "eyebrow": "In memoriam",
+        "epitaph": "Requiescat in pace."
+      }
+    },
     "resetCampaign": {
       "gmOnly": "Only the Gamemaster can reset the campaign.",
       "title": "Reset Campaign to Cycle 1?",
@@ -1095,6 +1162,10 @@
       "cancelled": "Campaign reset cancelled.",
       "error": "Reset failed — see the console for details.",
       "success": "Reset complete: Cycle 1, {majors} Major(s) and {connections} Connection(s) refreshed."
+    },
+    "windowControls": {
+      "minimize": "Collapse window",
+      "maximize": "Expand window"
     },
     "cabinet": {
       "title": "The Cabinet",
@@ -1115,6 +1186,7 @@
         "dashboard": "Public Info Dashboard",
         "dock": "My Characters Dock",
         "cycleHud": "Cycle Phase HUD",
+        "desireReminder": "Desire Reminder",
         "sessionLog": "Session Log",
         "novelReader": "The Novel Reader",
         "npcOrganizer": "NPC Organizer",
@@ -1122,6 +1194,7 @@
         "sessionLogOpen": "Session Log preview",
         "conditions": "Manage Reputation Conditions",
         "resetCampaign": "Reset Campaign…",
+        "storyBeats": "Story Beats…",
         "eventCommandCenter": "Random Event Command Center",
         "calendar": "Event Timeline",
         "letterComposer": "Letter Composer",
@@ -1178,6 +1251,33 @@
       "heading": "Cycle {cycle}",
       "noEvents": "No events recorded yet — write what passed."
     },
+    "sessionEvent": {
+      "heading": {
+        "phaseChange": "Phase changes",
+        "tagAdded": "Reputation tags gained",
+        "tagRemoved": "Reputation tags removed",
+        "conditionAdded": "Reputation conditions triggered",
+        "monologue": "Monologues",
+        "personaSwap": "Persona switches",
+        "randomEventResolved": "Random events"
+      },
+      "fmt": {
+        "phaseChange": "Advanced to <em>{phase}</em>.",
+        "tagAdded": "{actor} gained {arrow} <em>{tag}</em>.",
+        "tagRemoved": "{actor} lost {arrow} <em>{tag}</em>.",
+        "conditionAdded": "{actor} entered the condition {arrow} <em>{condition}</em>.",
+        "monologue": "{actor} delivered an inner monologue.",
+        "personaSwap": "{actor} stepped into the persona <em>{persona}</em>."
+      }
+    },
+    "cycleSummary": {
+      "title": "Summarize Cycle {cycle} for the Novel",
+      "intro": "Write a short summary of what happened this cycle. It will be appended to this cycle's journal entry under \"Cycle Summary.\" Leave blank and dismiss to skip.",
+      "placeholder": "What did this cycle mean for the story?",
+      "save": "Save to the novel",
+      "saved": "Cycle summary added to the novel.",
+      "sectionHeading": "Cycle Summary"
+    },
     "phaseSummary": {
       "modalTitle": "Phase summary preview",
       "eyebrow": "GM only · review before posting",
@@ -1193,55 +1293,53 @@
       "popupTitle": "Novel Chapter",
       "headingFirst": "The cycle's first chapter begins.",
       "headingSecond": "The cycle's second chapter begins.",
-      "subhead": "Scenes happen during the Novel chapter. Aim for moments that change something.",
+      "subhead": "The Novel chapter is when your scenes happen. Focus on moments where something changes.",
       "secondMarker": "second chapter",
       "bullet": {
-        "desire": "<strong>Bring a desire to every scene.</strong> Your character wants something. Let it surface, or let it collide with the world.",
-        "reputation": "<strong>Lean into your reputation.</strong> Spend Resolve to land a tag on someone. Acknowledge the tags people already wear.",
-        "rumours": "<strong>Pay attention to rumours.</strong> Spread what is already circulating, and let what is whispered shape what a scene means.",
-        "monologue": "<strong>One inner monologue per cycle.</strong> When a beat hits, take the moment. Once spent, it is gone until Upkeep.",
-        "connections": "<strong>Talk to Connections.</strong> They notice things Majors miss, and they remember.",
-        "choices": "<strong>Make choices that matter.</strong> When you could end a scene early on a real beat, do."
+        "desire": "<strong>Bring a desire to every scene.</strong> Your desire is what drives your character. Give them something to want, and let them either pursue it or be denied it.",
+        "reputation": "<strong>Lean into your reputation.</strong> Your reputation tags are tools you use in scenes. Spend Resolve to give another character a tag, or reference the tags they already have.",
+        "rumours": "<strong>Pay attention to rumours.</strong> Rumours shape what scenes mean. Spread the ones already circulating, and let them influence what your scenes are about.",
+        "monologue": "<strong>One inner monologue per cycle.</strong> You have one monologue token to spend each cycle. Use it when a moment calls for it. Once spent, it's gone until Upkeep.",
+        "connections": "<strong>Talk to Connections.</strong> Your Connections notice things Major Characters miss, and they remember.",
+        "choices": "<strong>Make choices that matter.</strong> End your scenes once something meaningful has happened. Don't keep playing past the moment."
       },
       "begin": "Begin"
     },
     "pregame": {
-      "windowTitle": "Welcome to the cycle",
-      "eyebrow": "Pre-game · how this works",
-      "heading": "A quick reference for how the system works.",
-      "intro": "Six things to know as you settle into your character. You can reopen this anytime from the Cabinet.",
+      "windowTitle": "Good Society Pre-Game Checklist",
+      "eyebrow": "Pre-game checklist",
+      "heading": "Good Society Pre-Game Checklist",
+      "intro": "Welcome to our game! Before we get started, please take a second to run through this checklist. You can pull this list back up at any time to reference via The Cabinet.",
       "reopenHint": "Open this again from the Cabinet whenever you need it.",
       "dismissBtn": "Got it, let's play",
       "sections": {
-        "desire": {
-          "eyebrow": "1 · Desire",
-          "title": "What your character wants",
-          "body": "<p>Your <strong>Desire</strong> is the main thing driving your character through the story. It appears in italics on the right page of your dossier.</p><p>Every scene should test, advance, complicate, or threaten it. If a scene does not engage your desire, ask whether your character should be in it.</p><p>You can revise your desire during <strong>Upkeep</strong> between cycles. For now, commit to it.</p>"
+        "ui": {
+          "title": "1. Review the UI",
+          "body": "<h4>Cycles</h4><p>The Cycle HUD at the top of the canvas shows the eight phases of the current cycle and highlights where you are.</p><h4>My Characters Dock</h4><p>Shows the characters you own, and lets you open your character sheets (called The Dossier) as well as the sheets of your connections.</p><h4>The Cabinet</h4><p>The bottom row of icons, containing:</p><ul><li>Character dock shortcut</li><li>Public Information Dashboard shortcut</li><li>The Novel shortcut</li><li>Rumour Board shortcut</li><li>Inbox &amp; Letter Composer shortcut</li><li>Play Your Monologue Token shortcut</li><li>Event Timeline shortcut</li></ul><h4>Public Information Dashboard</h4><p>Shows the public information about other characters for player reference.</p><h4>The Novel</h4><p>A collection of the correspondence and events that have happened in our story.</p><h4>Rumour Board</h4><p>Where you can review active rumors.</p><h4>Event Timeline</h4><p>See upcoming scheduled events you've been invited to.</p>"
         },
-        "family": {
-          "eyebrow": "2 · Family and Connections",
-          "title": "The people in your character's orbit",
-          "body": "<p>Your <strong>Family</strong> appears read-only on your dossier. Its Reputation Criteria is the standard society uses to judge every family member. You do not author it; your character lives under it.</p><p>Your <strong>Connections</strong> are non-Major characters with a real relationship to your character: a parent, a confidant, a rival servant, anyone whose opinion matters. You will roleplay them when no other Major is in the scene.</p><p>Click any Connection chip on the right page to see what they think of you and the other Majors.</p>"
+        "desire": {
+          "title": "2. Review Your Desire",
+          "body": "<p>Your desire is your character's motivation, and what will drive their actions throughout the story. As your character grows and changes, so too will their desires change. Before we begin, review your desire now. Ensure it aligns with how you want your character's story to start.</p>"
+        },
+        "connections": {
+          "title": "3. Review Connections",
+          "body": "<h4>Your Major Character's Connections</h4><p>Your character has people in their orbit. These are the characters your character can potentially rely on, confide in, manipulate, use, or ally with towards a common goal. Consider your connections and read over their sheets, and think about how you can leverage your relationships to achieve your goals.</p><h4>The Connection You Play</h4><p>Your Connection character isn't constrained by the same reputation system as your major character. They are attached to their connected Major Character, and their opinions of that Major Character is what will drive their actions (and their cooperation). Review your opinions and ensure they are aligned with how you want your character's story to start.</p>"
         },
         "reputation": {
-          "eyebrow": "3 · Reputation",
-          "title": "Tags become conditions",
-          "body": "<p>You start with no <strong>Reputation Tags</strong>. Characters earn tags as scenes play out: ▲ for positive (\"capable,\" \"charming\") or ▼ for negative (\"reckless,\" \"uncouth\"). Tags are traded in scenes, awarded at the end, and reviewed during the Reputation Phase.</p><p>When you reach <strong>three tags of one polarity</strong>, a <strong>Reputation Condition</strong> triggers. Conditions are more permanent labels that affect how the world treats you, such as \"Beloved\" or \"Disgraced.\" The condition clears if you drop below three tags.</p><p>The GM can also grant or revoke conditions directly on your dossier.</p>"
+          "title": "4. Review Reputation Mechanics",
+          "body": "<p>You start with one positive and one negative reputation tag.</p><p><strong>Creating tags:</strong> You co-create tags with the GM during the reputation phase when your character meets reputation criteria or takes actions deserving of a tag.</p><p><strong>Reputation conditions:</strong> When you hit 3+ tags of the same type, you gain a reputation condition of that polarity (positive or negative). These conditions dramatically affect how your character is treated by the world. Conditions last until you drop below 3 tags. Once below 3, the condition clears next reputation phase.</p><p><strong>Using tags:</strong></p><ul><li>Invoke the tag in a scene (explain how it affects the narrative)</li><li>Trade it for a resolve token</li><li>Spend the token using normal resolve token rules</li><li>Erase the tag when successfully used</li></ul><p><strong>When surrendering a positive tag:</strong> It can be in your character's best interest.</p><p><em>Example 1:</em> Austin's character has the positive reputation tag \"silly.\" Austin wants Zach's character to invite him to his weekly cigar club, even though it's only a club for cool guys who aren't silly. Austin gives up his \"silly\" tag to give a Resolve Token to Zach, who then plays that token to invite Austin to the cigar club despite his known silliness.</p><p><strong>When surrendering a negative tag:</strong> You must use it against your character's interests.</p><p><em>Example 2:</em> Michael's character has the negative reputation tag \"stupid.\" Because of this reputation, his father wants to send him away to a special school, but Michael doesn't want that to happen. However, Michael also wants to get rid of his negative reputation tag. He chooses to use his \"stupid\" tag to convert it to a Resolve Token, which he can then offer to Zach who will use it to force Michael's character to get sent away to school. Michael's character doesn't get what he wants, but he does get rid of the tag. This is an example of you the player strategically acting against the interests of your character.</p>"
+        },
+        "resolveTokens": {
+          "title": "5. Review Resolve Tokens Mechanics",
+          "body": "<p>Resolve tokens are your power to shape the story. They represent your character's determination to get what they want. You start with a few resolve tokens each cycle, and gain more by burning reputation tags, receiving them from other players, or receiving them from the GM for worthy contributions (like inspiration in D&amp;D). Think about how you want to leverage these. What story beats do you need to force into existence?</p><p><strong>You can use Resolve Tokens to:</strong></p><ul><li>Compel another major character or connection to do/feel something</li><li>Make a connection do something harmful to another character's interests</li><li>Create/change narrative details that are story-significant and beyond your character's actions</li><li>Find out difficult information or accomplish unlikely feats with your character</li><li>Use magic (either your own or that of the world) to dramatically influence events</li></ul><p>When spending a token for compelling or working against another player's character, you must negotiate with that player:</p><ul><li>Offer the token and state exactly what you want</li><li>Other player can: Accept | Accept with conditions | Reject</li><li>If accepted, they add the token to their pool for later use</li></ul>"
         },
         "innerConflict": {
-          "eyebrow": "4 · Inner Conflict",
-          "title": "Two values held in tension",
-          "body": "<p>Your <strong>Inner Conflict</strong> names two values your character holds in tension, such as Duty vs Freedom, Family vs Love, or Honor vs Survival. Each side has five boxes.</p><p>Fill a box when an action you take leans that way. The conflict resolves when you reach <strong>six boxes total or five boxes on one side</strong>. At that point your character has chosen, and the unfilled side closes off.</p><p>Conflicts are public on your dossier. They are meant to be felt by the table, not hidden.</p>"
+          "title": "6. Review Inner Conflict Mechanics",
+          "body": "<p>Your character is torn between two competing desires or values. This is your inner conflict. At the end of each cycle, you'll reflect on your character's actions and mark which side of the conflict you've acted on.</p><p>This isn't about external drama, it's about your character's internal struggle. Consider what your character wants versus what they feel obligated to do, and be honest about how you think they'll navigate that tension as the story unfolds.</p>"
         },
-        "tokens": {
-          "eyebrow": "5 · Tokens",
-          "title": "Resolve, Major Token, and Monologue",
-          "body": "<p><strong>Resolve Tokens</strong> (the row of pips on your strip) are the fuel for offering tags and pushing back in scenes. Default is 3 of 5. They refresh at Upkeep.</p><p><strong>MT (Major Token)</strong>: one per cycle. Spend it to anchor a major moment, such as a binding negotiation or a decisive scene.</p><p><strong>Monologue Token</strong> (the dot next to MT): one per cycle. Spend it for a private inner-voice scene that the table watches but does not interrupt.</p><p>All three refresh during Upkeep at the close of each cycle.</p>"
-        },
-        "personas": {
-          "eyebrow": "6 · Personas (optional)",
-          "title": "Secondary identities",
-          "body": "<p>Your character may have <strong>Personas</strong>: secondary identities such as a secret alter-ego, a formal court face, or a disguised traveler. When a persona is active, your portrait, name, chat theme, and token image all swap to that persona's settings system-wide.</p><p>If you have no personas, you are always your <em>true identity</em>. Most characters never need more than one.</p><p>Add or edit personas from the picker pill in your dossier's cameo.</p>"
+        "innerMonologue": {
+          "title": "7. Review Inner Monologue Mechanics",
+          "body": "<p>You'll receive a monologue token at the start of each cycle. You can use this token on another player at any time during the game to force their character to reveal their inner thoughts, feelings, and plans.</p><p>You can do this at any time with no warning. When you play it, the character has to come clean about what's really going on in their head. Think about when you might want to use this. Is there a moment where you need to know what another character is actually thinking? Or should you hold it in reserve as leverage?</p>"
         }
       }
     },
@@ -1276,7 +1374,11 @@
       "roster": {
         "title": "Epistolary Roster",
         "heading": "Epistolary roster",
-        "summary": "{done} of {total} marked done"
+        "summary": "{done} of {total} marked done",
+        "unmarkTitle": "Click to un-mark this player as done (GM only)",
+        "unmarkConfirmTitle": "Un-mark as done?",
+        "unmarkConfirmBody": "Roll back {name}'s epistolary status for cycle {cycle}? They will see ⏳ pending again and can mark themselves done a second time when they're ready.",
+        "unmarkedToast": "{name} is no longer marked done."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -1301,6 +1403,14 @@
         "breakSeal": "Break the wax seal and open the letter",
         "breakSealHint": "Click to break the seal"
       }
+    },
+    "stationery": {
+      "plain":          "plain card",
+      "goldFlourish":   "gold flourish",
+      "goldBorder":     "gold border",
+      "darkScroll":     "dark scroll",
+      "doilyBurgundy":  "burgundy lace",
+      "doilyScallop":   "scalloped lace"
     },
     "seal": {
       "yellow":           "yellow wax",
@@ -1694,7 +1804,7 @@
         "public": "Public",
         "gmOnly": "GM only"
       },
-      "subtitle": "Move events from Coming Soon to Today, link them to a scene, then conclude when the scene ends.",
+      "subtitle": "Build a queue of upcoming events. Link each to a scene, then click Start Event to send the table there.",
       "bucket": {
         "today": "Today",
         "comingSoon": "Coming Soon",
@@ -1702,7 +1812,7 @@
       },
       "dateLabelLabel": "When (free text — optional)",
       "dateLabelPlaceholder": "next month, after the harvest, etc.",
-      "promoteBtn": "Move to Today",
+      "promoteBtn": "Start Event",
       "concludeBtn": "Conclude",
       "revertBtn": "back to Coming Soon",
       "revertHint": "Move this event back to Coming Soon.",
@@ -1710,12 +1820,15 @@
       "promotedCard": "{title} is happening now.",
       "autoRevealedNotice": "This event was hidden; players can now see it.",
       "sceneLabel": "Scene",
-      "sceneMissing": "(scene removed)",
+      "sceneMissing": "Linked scene was removed.",
       "openSceneHint": "Open this scene.",
+      "sceneFieldLabel": "Linked scene (optional)",
+      "sceneFieldNone": "— No scene —",
+      "sceneFieldActive": "active",
       "scenePicker": {
         "title": "Link to a scene",
         "prompt": "Which scene depicts this event?",
-        "confirm": "Move to Today",
+        "confirm": "Start Event",
         "none": "(none — link later)"
       }
     },
@@ -1726,7 +1839,20 @@
       "castSecret": "Cast secretly (whisper to GM)",
       "cancel": "Cancel",
       "castCard": "{actor} casts {skill}.",
-      "cardContext": "magic"
+      "cardContext": "magic",
+      "vfxSequencerMissing": "Cast posted, but no animation: the Sequencer module isn't installed or enabled.",
+      "vfxKeyMissing": "Cast posted, but no animation: {skill} has no VFX key set on its item sheet.",
+      "vfxNoToken": "Cast posted, but no animation: {actor} has no token on the active scene.",
+      "vfxPlayFailed": "Cast posted, but the animation failed to play: {error}"
+    },
+    "letterQueue": {
+      "promptTitle": "Send Your Queued Letter?",
+      "promptBody": "You drafted a letter from <strong>{from}</strong> to <strong>{to}</strong> during an earlier phase. The Epistolary phase has begun — send it now, edit first, or discard?",
+      "noSubject": "(no subject)",
+      "sendNow": "Send now",
+      "edit": "Edit first",
+      "discard": "Discard",
+      "deliveryFailed": "Failed to deliver a queued letter — see the console for details."
     },
     "letterComposer": {
       "windowTitle": "Compose a Letter",
@@ -1740,12 +1866,17 @@
       "subject": "Subject",
       "subjectPlaceholder": "On a matter of…",
       "body": "Body",
+      "bodyPlaceholder": "Begin your letter — the recipient will see your words on this page.",
       "seal": "Seal",
       "greetingLabel": "Greeting",
       "closingLabel": "Closing",
       "scriptFontLabel": "Calligraphy hand",
       "previewLabel": "PREVIEW · how the letter will appear in chat",
       "send": "Send ↗",
+      "queueForEpistolary": "Queue for Epistolary ↗",
+      "queueTooltip": "It's not the Epistolary phase. The letter will be parked in your outbox and you'll be asked to confirm delivery when the Epistolary phase begins.",
+      "queuedForEpistolary": "Letter queued. You'll be asked to confirm delivery when the Epistolary phase begins.",
+      "draftStatusOffPhase": "drafts save automatically · sending will queue until Epistolary",
       "saveDraft": "Save Draft",
       "cancel": "Cancel",
       "draftStatus": "drafts save automatically",
@@ -1831,6 +1962,10 @@
       "spreadCostBlocked": "{name} has no resolve to spend. You must create a rumour instead.",
       "errorNoMajor": "You don't own a Major Character to spend resolve from.",
       "errorNoResolve": "{name} has no resolve to spend."
+    },
+    "rumour": {
+      "spreadCardPaid": "<strong>{actor}</strong> spent 1 resolve to spread the rumour <em>\"{rumour}\"</em>. (Resolve {before} → {after}.)",
+      "spreadCardGm": "The GM spread the rumour <em>\"{rumour}\"</em> from the general supply (no resolve cost)."
     },
     "rumourBoard": {
       "windowTitle": "Rumours",

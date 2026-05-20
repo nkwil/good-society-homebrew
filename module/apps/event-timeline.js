@@ -97,6 +97,16 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
     const grouped = getGroupedEvents(isGM);
     const decorate = (e) => _decorateEvent(e, isGM);
 
+    // Scene list for the per-row Scene <select> (GM only — used by the
+    // add + edit forms). Sorted alphabetically by name; an empty option
+    // ("none") is added in the template.
+    const scenes = isGM
+      ? (game.scenes?.contents ?? [])
+        .slice()
+        .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+        .map(s => ({ id: s.id, name: s.name, active: !!s.active }))
+      : [];
+
     return {
       ...ctx,
       isGM,
@@ -108,6 +118,7 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
       addingEvent: this._addingEvent,
       editingId:   this._editingId,
       showPast:    this._showPast,
+      scenes,
       visibilityChoices: VISIBILITY_OPTIONS.map(v => ({
         value: v,
         label: game.i18n.localize(`GOODSOCIETY.eventTimeline.visibility.${_visKey(v)}`),
@@ -146,6 +157,7 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
       dateLabel:   get('dateLabel'),
       description: get('description'),
       visibility:  visEl?.value ?? 'public',
+      sceneId:     get('sceneId'),
     });
     if (!created) {
       ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventTimeline.errorAdd'));
@@ -194,6 +206,7 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
       dateLabel:   get('dateLabel'),
       description: get('description'),
       visibility:  visEl?.value ?? 'public',
+      sceneId:     get('sceneId'),
     });
 
     this._editingId = null;
@@ -215,19 +228,39 @@ export class EventTimeline extends HandlebarsApplicationMixin(ApplicationV2) {
 
   // ── Promote (Coming Soon → Today) ───────────────────────────────────────
 
+  /**
+   * "Start Event" — promote a Coming Soon event into Today and, if a scene
+   * was linked at create/edit time, activate that scene automatically.
+   *
+   * Scene linking now happens via the per-event Scene <select> on the
+   * add/edit forms (so the GM commits the connection once, ahead of time).
+   * Promote no longer opens a picker — the event either has a scene or
+   * doesn't. Pass-through to `promoteEvent(id)` (no sceneId arg) preserves
+   * whatever was already on the event.
+   */
   static async #promoteEventBtn(ev, target) {
     if (!game.user?.isGM) return;
     const id = target.dataset.eventId;
     if (!id) return;
 
-    // Scene picker — pulled from game.scenes. Optional (GM may pick "no scene").
-    const sceneId = await _pickSceneDialog();
-    if (sceneId === undefined) return; // cancelled
-
     const event = getEvents().find(e => e.id === id);
-    const wasGmOnly = event?.visibility === 'gm-only';
+    if (!event) return;
+    const wasGmOnly = event.visibility === 'gm-only';
+    const linkedSceneId = event.sceneId || '';
 
-    await promoteEvent(id, sceneId);
+    await promoteEvent(id); // preserve existing sceneId
+
+    // Activate the linked scene. This is the headline behavior of
+    // "Start Event" — click once, the scene goes live for everyone.
+    if (linkedSceneId) {
+      const scene = game.scenes?.get(linkedSceneId);
+      if (scene) {
+        try { await scene.activate(); }
+        catch (err) { console.warn('GS | promote: scene.activate failed:', err); }
+      } else {
+        ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventTimeline.sceneMissing'));
+      }
+    }
 
     if (wasGmOnly) {
       ui.notifications?.info(game.i18n.localize('GOODSOCIETY.eventTimeline.autoRevealedNotice'));
@@ -322,43 +355,4 @@ function _decorateEvent(e, isGM) {
 
 function _visKey(v) {
   return ({ 'public': 'public', 'gm-only': 'gmOnly' })[v] ?? 'public';
-}
-
-/**
- * Show a small scene picker dialog (DialogV2). Returns the chosen sceneId
- * (string, possibly empty if user picked "(none)") or undefined if cancelled.
- */
-async function _pickSceneDialog() {
-  const scenes = (game.scenes?.contents ?? []).slice().sort((a, b) =>
-    (a.name || '').localeCompare(b.name || ''),
-  );
-
-  const optionsHtml = [
-    `<option value="">${game.i18n.localize('GOODSOCIETY.eventTimeline.scenePicker.none')}</option>`,
-    ...scenes.map(s =>
-      `<option value="${s.id}"${s.active ? ' selected' : ''}>${foundry.utils.escapeHTML?.(s.name) ?? s.name}</option>`),
-  ].join('');
-
-  const content = `
-    <div class="gs-event-timeline__scene-picker">
-      <p>${game.i18n.localize('GOODSOCIETY.eventTimeline.scenePicker.prompt')}</p>
-      <select name="sceneId" autofocus style="width:100%; margin-top:8px;">
-        ${optionsHtml}
-      </select>
-    </div>`;
-
-  try {
-    const choice = await foundry.applications.api.DialogV2.prompt({
-      window: { title: game.i18n.localize('GOODSOCIETY.eventTimeline.scenePicker.title') },
-      content,
-      ok: {
-        label: game.i18n.localize('GOODSOCIETY.eventTimeline.scenePicker.confirm'),
-        callback: (event, button) => button.form.elements.sceneId.value,
-      },
-      rejectClose: false,
-    });
-    return choice ?? '';  // null/undefined treated as cancel? we return as ''
-  } catch {
-    return undefined; // explicit cancel
-  }
 }

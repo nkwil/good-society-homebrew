@@ -146,7 +146,7 @@
 .gs-session-log-preview__monologue-time {
   font-family: var(--gs-italic);
   font-size: 10px;
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
 }
 
 .gs-session-log-preview__monologue-body {
@@ -185,7 +185,7 @@
 .gs-session-log-preview__time {
   font-family: var(--gs-italic);
   font-size: 10px;
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
   margin-left: 4px;
 }
 

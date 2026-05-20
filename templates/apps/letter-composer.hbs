@@ -108,7 +108,7 @@
                   class="gs-letter-composer__seal-circle{{#if selected}} gs-letter-composer__seal-circle--selected{{/if}}"
                   data-action="selectSeal"
                   data-seal-id="{{id}}"
-                  title="{{label}}"
+                  data-tooltip="{{label}}"
                   style="background-image: url('{{iconAsset}}'); --gs-seal-accent: {{color}};"
                   aria-label="{{label}}"></button>
         {{/each}}
@@ -137,10 +137,11 @@
         {{localize "GOODSOCIETY.letterComposer.saveDraft"}}
       </button>
       <button type="button"
-              class="gs-btn gs-btn--primary"
+              class="gs-btn gs-btn--primary{{#unless isEpistolaryPhase}} gs-btn--queueing{{/unless}}"
               data-action="send"
+              title="{{#unless isEpistolaryPhase}}{{localize 'GOODSOCIETY.letterComposer.queueTooltip'}}{{/unless}}"
               {{#unless canSend}}disabled{{/unless}}>
-        {{localize "GOODSOCIETY.letterComposer.send"}}
+        {{sendLabel}}
       </button>
     </div>
   </div>

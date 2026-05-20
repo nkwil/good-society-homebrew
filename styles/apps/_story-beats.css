@@ -1,0 +1,832 @@
+/* Story Beats — Command Center grid + full-viewport overlay shell +
+ * per-beat visuals. The overlay is part of the world-identity surface
+ * family (Arrival, pause, monologue), so it shares that visual register
+ * and is gated on `body.gs-world-identity`. */
+
+/* ── Command Center ───────────────────────────────────────────────────────── */
+
+.gs-story-beats-cc__wrapper {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.gs-story-beats-cc__head { display: flex; flex-direction: column; gap: 2px; }
+.gs-story-beats-cc__title {
+  font-family: var(--gs-display);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  margin: 0;
+}
+.gs-story-beats-cc__subtitle {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  margin: 0;
+}
+.gs-story-beats-cc__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* ── Saved drafts list ──
+ * GM-only drafts created via the dialog's "Save for later" button. Sits
+ * above the new-beat grid; each row reuses the beat's icon + paletteClass
+ * for a quiet visual link between draft and source. Per-row buttons:
+ * Play (deploy) and × (delete). */
+.gs-story-beats-cc__saved {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0 2px;
+}
+.gs-story-beats-cc__saved-eyebrow,
+.gs-story-beats-cc__grid-eyebrow {
+  margin: 4px 0 0;
+  font-family: var(--gs-display);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+.gs-story-beats-cc__saved-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gs-story-beats-cc__saved-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 12px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-left: 3px solid var(--gs-brand);
+  border-radius: 4px;
+  color: var(--gs-ink);
+}
+.gs-story-beats-cc__saved-icon {
+  flex: 0 0 auto;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--gs-brand);
+  width: 20px;
+  text-align: center;
+}
+.gs-story-beats-cc__saved-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.gs-story-beats-cc__saved-label {
+  font-family: var(--gs-display);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gs-story-beats-cc__saved-kind {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+/* Per-row buttons — small, restrained. Beat Foundry's default chrome down
+ * with explicit min/max-height + height. */
+button.gs-story-beats-cc__saved-btn {
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 0;
+  height: 28px;
+  padding: 0 12px;
+  margin: 0;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 3px;
+  color: var(--gs-ink);
+  font-family: var(--gs-display);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+}
+button.gs-story-beats-cc__saved-btn:hover {
+  background: var(--gs-brand);
+  border-color: var(--gs-brand);
+  color: var(--gs-paper);
+}
+button.gs-story-beats-cc__saved-btn--delete {
+  width: 28px;
+  padding: 0;
+  font-size: 16px;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+button.gs-story-beats-cc__saved-btn--delete:hover {
+  background: var(--gs-danger);
+  border-color: var(--gs-danger);
+  color: var(--gs-paper);
+}
+
+/* The `button.` prefix beats Foundry's default button chrome without
+ * `!important`; we also nuke its min-height / line-height / font defaults
+ * directly so the card sizes to its actual content. Layout is simple
+ * flex (icon left, label right) — no more two-row grid that bled outside
+ * the box when Foundry's button defaults intruded. The card description
+ * now lives on the `title` attribute and shows as the browser tooltip. */
+button.gs-story-beats-cc__card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 6px;
+  box-shadow: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--gs-ink);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1;
+  transition: background 120ms, border-color 120ms, transform 120ms;
+}
+button.gs-story-beats-cc__card:hover {
+  background: var(--gs-paper-warm);
+  border-color: var(--gs-brand);
+  transform: translateY(-1px);
+}
+.gs-story-beats-cc__icon {
+  flex: 0 0 auto;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--gs-brand);
+  width: 28px;
+  text-align: center;
+}
+.gs-story-beats-cc__label {
+  font-family: var(--gs-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  line-height: 1.1;
+}
+
+/* Config dialog form rows. Cap height + internal scroll so a long form
+ * (sender + occasion + when + where + note + stationery row + seal) can't
+ * grow the DialogV2 taller than the viewport and push the top fields out
+ * of reach. 60vh leaves room for the dialog's title + footer buttons. */
+.gs-story-beat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 4px 0 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.gs-story-beat-form__row { display: flex; flex-direction: column; gap: 4px; }
+.gs-story-beat-form__label {
+  font-family: var(--gs-display);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+}
+.gs-story-beat-form__required { color: var(--gs-danger); }
+.gs-story-beat-form__input {
+  width: 100%;
+  font-family: var(--gs-body);
+  font-size: 14px;
+  padding: 7px 10px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  color: var(--gs-ink);
+}
+.gs-story-beat-form__input:focus { outline: 1px solid var(--gs-brand); outline-offset: 1px; }
+
+/* Stationery thumbnail picker — six tiny cards (1 "Plain" + 5 illustrated
+ * frames) in a horizontal-scroll row. The earlier wrap-grid took ~480px of
+ * vertical space (3 rows of 140px-tall portraits) and shoved the dialog's
+ * top fields out of view; flex-row with `overflow-x: auto` keeps the picker
+ * to one row regardless of dialog width.
+ *
+ * The hidden radio drives the form value; the thumbnail is a clickable
+ * label wrapper. Selected state gets a brand-color ring + bold caption. */
+.gs-story-beat-form__stationery-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin-top: 4px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  /* Subtle scrollbar so the GM knows it scrolls horizontally. */
+  scrollbar-width: thin;
+}
+.gs-story-beat-form__stationery-card {
+  flex: 0 0 auto;
+  width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  border: 0.5px solid transparent;
+  transition: border-color 120ms, background 120ms;
+}
+.gs-story-beat-form__stationery-card:hover { background: var(--gs-paper-warm); }
+.gs-story-beat-form__stationery-card input { position: absolute; opacity: 0; pointer-events: none; }
+.gs-story-beat-form__stationery-card:has(input:checked) {
+  border-color: var(--gs-brand);
+  background: var(--gs-paper-warm);
+}
+.gs-story-beat-form__stationery-thumb {
+  width: 100%;
+  aspect-ratio: 1414/2000;
+  background-color: var(--gs-paper);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 2px;
+}
+.gs-story-beat-form__stationery-thumb--plain {
+  background:
+    radial-gradient(ellipse 80% 65% at 50% 32%, #faf1d4 0%, var(--gs-paper-warm) 78%);
+  position: relative;
+}
+/* Inner double-rule on the plain thumbnail so it matches the real "plain"
+ * card's engraved frame at small scale. */
+.gs-story-beat-form__stationery-thumb--plain::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 55%, transparent);
+}
+.gs-story-beat-form__stationery-label {
+  font-family: var(--gs-display);
+  font-size: 8.5px;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  text-align: center;
+  line-height: 1.15;
+  /* Cap to one line — names fit; longer ones get ellipsis (full label is
+   * still readable via the card's `title` attribute hover tooltip). */
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gs-story-beat-form__stationery-card:has(input:checked) .gs-story-beat-form__stationery-label {
+  color: var(--gs-brand);
+  font-weight: 600;
+}
+
+/* ── Overlay shell ────────────────────────────────────────────────────────── */
+
+#gs-story-beat-overlay,
+.application.gs-story-beat-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  z-index: 35 !important;          /* below tooltips, above sheets */
+  pointer-events: auto !important;
+}
+#gs-story-beat-overlay .window-content,
+.application.gs-story-beat-overlay .window-content {
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.gs-story-beat {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: gs-story-beat-in 360ms ease both;
+}
+.gs-story-beat__veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(20, 12, 8, 0.78), rgba(8, 5, 3, 0.94));
+  z-index: 0;
+}
+.gs-story-beat__content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  width: 80%;
+  padding: 48px 56px;
+  text-align: center;
+  color: var(--gs-paper);
+  font-family: var(--gs-body);
+}
+/* Dismiss button — labelled pill in the top-right. Much more visible than
+ * the old subtle ×; the label spells out what the button does. Themes that
+ * use a light veil (Newspaper) override the colours below. */
+.gs-story-beat__dismiss {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  min-height: 44px;
+  font-family: var(--gs-display);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gs-paper);
+  background: rgba(20, 12, 8, 0.55);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  border-radius: 100px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: background 140ms, color 140ms, transform 140ms;
+}
+.gs-story-beat__dismiss:hover {
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  transform: translateY(-1px);
+}
+.gs-story-beat__dismiss-x {
+  font-size: 18px;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+/* Light-veil themes (newspaper) — dismiss button needs dark ink against
+ * the cream backdrop. */
+.gs-story-beat--newspaper .gs-story-beat__dismiss {
+  color: #1d1408;
+  background: rgba(245, 235, 215, 0.95);
+  border-color: rgba(29, 20, 8, 0.55);
+  box-shadow: 0 4px 14px rgba(20, 12, 8, 0.18);
+}
+.gs-story-beat--newspaper .gs-story-beat__dismiss:hover {
+  background: #1d1408;
+  color: #f5ebd7;
+}
+
+@keyframes gs-story-beat-in {
+  from { opacity: 0; transform: scale(0.985); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Per-beat visuals ─────────────────────────────────────────────────────── */
+
+/* INVITATION — engraved heraldic card. Constrained width + cream radial
+ * gradient + double-rule frame (outer border on .gs-beat-invitation, inner
+ * hairline drawn by ::before) for the classic stationery look. The
+ * `text-align: center` is explicit so descendants don't depend on the
+ * overlay's outer text-align cascade. */
+.gs-beat-invitation {
+  position: relative;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 56px 60px 56px;
+  color: var(--gs-ink);
+  text-align: center;
+  background:
+    radial-gradient(ellipse 80% 65% at 50% 32%, #faf1d4 0%, var(--gs-paper-warm) 78%);
+  border: 1px solid color-mix(in srgb, var(--gs-accent-2) 70%, transparent);
+  border-radius: 2px;
+  box-shadow: 0 14px 56px rgba(0, 0, 0, 0.55);
+}
+.gs-beat-invitation::before {
+  /* Inner double-rule — small inset hairline that traces the outer border.
+   * Pointer-events off so it doesn't intercept clicks (the dismiss button
+   * is the only clickable thing on a sealed-card layout). */
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 55%, transparent);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+/* Sealed-envelope wrapper. The global `.gs-letter-envelope` rules from
+ * `_epistolary-wizard.css` give us the envelope-photo fade, the wax-seal
+ * lift, and the "break the seal" hint for free — we only need to size the
+ * container, hide the heraldic card until break, and crossfade it in on
+ * `.is-open`. Each player breaks their own seal (per-player local DOM
+ * mutation; not socket-synced). */
+.gs-beat-invitation__envelope {
+  /* The packet is absolutely positioned 600 × 438 px; the open card needs
+   * room to lay out below where the packet used to be. Center the whole
+   * stack via auto margins. */
+  position: relative;
+  width: min(640px, 92vw);
+  margin: 0 auto;
+  /* Min-height accommodates the sealed packet's 438 px + its 14 px top
+   * offset; once open, the open card grows the box past this. */
+  min-height: 460px;
+  /* Inherit the global envelope perspective so the seal lifts in 3D. */
+}
+/* The heraldic card lives inside the envelope. Closed: invisible and
+ * collapsed so the sealed packet sits alone in the box. Open: fades in
+ * after the envelope dissolves + seal lifts (~720 ms delay, matching the
+ * epistolary letter-sheet timing). */
+.gs-beat-invitation--in-envelope {
+  position: relative;
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 420ms ease;
+}
+.gs-letter-envelope.is-open .gs-beat-invitation--in-envelope {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+  transition: opacity 760ms ease 680ms;
+}
+.gs-beat-invitation__eyebrow {
+  font-family: var(--gs-display);
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gs-accent-1);
+  margin: 0 0 10px;
+  /* Compensate for letter-spacing tracking off-center (the last char's
+   * trailing space pulls uppercase tracked-out text visually left). */
+  padding-left: 0.4em;
+}
+.gs-beat-invitation__occasion {
+  font-family: var(--gs-display);
+  font-size: 40px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  margin: 4px 0 2px;
+  line-height: 1.05;
+}
+/* Addressee line — slots in the viewer's owned Major character name(s) so
+ * each player reads "To: My Character" on their own copy of the overlay.
+ * Rendered conditional on payload.viewerRecipient — the GM (with no owned
+ * Major) sees no addressee block. Visual: small uppercase "TO" label +
+ * italic display name, hairline-separated below the eyebrow. */
+.gs-beat-invitation__addressee {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 6px auto 14px;
+  padding: 0 0 6px;
+  border-bottom: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 35%, transparent);
+}
+.gs-beat-invitation__addressee-label {
+  font-family: var(--gs-display);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+.gs-beat-invitation__addressee-name {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 16px;
+  color: color-mix(in srgb, var(--gs-ink) 85%, transparent);
+  line-height: 1.2;
+}
+/* Double thin rule — two stacked hairlines, the classic engraved-stationery
+ * mark. Background-image trick: two separately-sized 1px line backgrounds
+ * pinned to the top and bottom of a 4px-tall hr. */
+.gs-beat-invitation__rule {
+  width: 56%;
+  height: 4px;
+  margin: 20px auto 22px;
+  border: 0;
+  background:
+    linear-gradient(var(--gs-accent-2), var(--gs-accent-2)) top    /100% 1px no-repeat,
+    linear-gradient(var(--gs-accent-2), var(--gs-accent-2)) bottom /100% 1px no-repeat;
+  opacity: 0.65;
+}
+.gs-beat-invitation__body {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.55;
+  margin: 0 auto 22px;
+  max-width: 88%;
+  color: color-mix(in srgb, var(--gs-ink) 88%, transparent);
+}
+/* WHEN/WHERE — 2-column grid, labels right-aligned, values left-aligned,
+ * both anchored around a common center seam. Per-row flex centering (the
+ * previous approach) made WHEN/WHERE drift to different x-positions because
+ * each row centered its own width independently. `display: contents` on the
+ * wrapper <div> dissolves it so dt/dd become direct grid children. */
+.gs-beat-invitation__meta {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: center;
+  align-items: baseline;
+  column-gap: 14px;
+  row-gap: 8px;
+  margin: 6px auto 22px;
+  padding: 0;
+}
+.gs-beat-invitation__meta > div { display: contents; }
+.gs-beat-invitation__meta dt {
+  font-family: var(--gs-display);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  text-align: right;
+  margin: 0;
+}
+.gs-beat-invitation__meta dd {
+  font-family: var(--gs-body);
+  font-size: 14.5px;
+  color: var(--gs-ink);
+  text-align: left;
+  margin: 0;
+}
+/* (.gs-beat-invitation__sender removed 2026-05-20 — the invitation card no
+ *  longer renders a signature line. The `sender` form field is still
+ *  collected because the story-beat-events hook reads it for the timeline
+ *  event description ("Invited by {sender}.").) */
+
+/* Plain-variant inner wrapper is layout-transparent — it exists only so
+ * the stationery variant can re-pad content inside the PNG safe area
+ * without disturbing the default's outer padding. In the plain mode the
+ * outer .gs-beat-invitation already handles padding; this just passes
+ * through. */
+.gs-beat-invitation:not(.gs-beat-invitation--stationery) .gs-beat-invitation__inner {
+  display: contents;
+}
+
+/* ── Stationery variant ──
+ * When the GM picks an illustrated stationery, the card switches mode:
+ *   - Suppress the engraved-default frame (gradient bg, outer border,
+ *     ::before double-rule)
+ *   - Background-image becomes the stationery PNG (aspect-ratio locked)
+ *   - Content sits inside the per-stationery inset, driven by four CSS
+ *     custom properties set inline on the card (--gs-stationery-pad-*)
+ *   - The inner content area uses the same typography, just downsized to
+ *     fit the typically-tight stationery frames
+ *
+ * The `style="..."` attribute on the card carries the registry's asset
+ * URL and inset values (see story-beat-overlay.js `_prepareContext`).
+ * `background-image: var(--gs-stationery-asset)` reads the inline custom
+ * property so the PNG is the card's background; `aspect-ratio: <ratio>`
+ * locks the height to the stationery's native proportions. */
+.gs-beat-invitation--stationery {
+  /* IMPORTANT: declare each background sub-property individually rather than
+   * using the `background` shorthand. The default-variant uses
+   * `background: radial-gradient(...)` which sets background-image; using
+   * `background: transparent !important` here would expand to
+   * `background-image: none !important` and that !important would block
+   * the `background-image: var(--gs-stationery-asset)` declaration below
+   * even within the same rule (the cascade winner is the !important one,
+   * regardless of source order). Setting properties individually avoids
+   * the shorthand override entirely. */
+  background-color: transparent;
+  background-image: var(--gs-stationery-asset);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  width: clamp(360px, 36vw, 520px);
+  max-width: 100%;
+  box-shadow: 0 14px 56px rgba(0, 0, 0, 0.55);
+  /* aspect-ratio comes from the inline style attribute. */
+}
+.gs-beat-invitation--stationery::before { display: none !important; }
+.gs-beat-invitation--stationery .gs-beat-invitation__inner {
+  /* The inner content area sits inside the stationery's safe rectangle.
+   * The four custom properties come from the inline style attribute. */
+  width: 100%;
+  height: 100%;
+  padding:
+    var(--gs-stationery-pad-t)
+    var(--gs-stationery-pad-r)
+    var(--gs-stationery-pad-b)
+    var(--gs-stationery-pad-l);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+/* Slightly tighter typography inside the stationery (the artwork already
+ * carries the visual weight; the text should sit calmly within the frame). */
+.gs-beat-invitation--stationery .gs-beat-invitation__occasion {
+  font-size: clamp(22px, 3.2vw, 30px);
+  margin: 2px 0 0;
+}
+.gs-beat-invitation--stationery .gs-beat-invitation__eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.36em;
+  margin: 0 0 6px;
+}
+.gs-beat-invitation--stationery .gs-beat-invitation__rule {
+  width: 50%;
+  margin: 12px auto 14px;
+}
+.gs-beat-invitation--stationery .gs-beat-invitation__body {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 14px;
+  max-width: 95%;
+}
+.gs-beat-invitation--stationery .gs-beat-invitation__meta {
+  margin: 4px auto 12px;
+  row-gap: 4px;
+  column-gap: 10px;
+}
+.gs-beat-invitation--stationery .gs-beat-invitation__meta dt { font-size: 9.5px; letter-spacing: 0.18em; }
+.gs-beat-invitation--stationery .gs-beat-invitation__meta dd { font-size: 13px; }
+/* (.gs-beat-invitation--stationery .gs-beat-invitation__sender removed
+ *  2026-05-20 alongside the signature line itself.) */
+.gs-beat-invitation--stationery .gs-beat-invitation__addressee {
+  margin: 4px auto 8px;
+  padding-bottom: 4px;
+  gap: 6px;
+}
+.gs-beat-invitation--stationery .gs-beat-invitation__addressee-label { font-size: 9px; letter-spacing: 0.18em; }
+.gs-beat-invitation--stationery .gs-beat-invitation__addressee-name  { font-size: 13.5px; }
+
+/* The doily stationeries (4 + 5) have CREAM paper inside a colored lace
+ * border. The text needs to be dark INK on cream — same as default. The
+ * default ink color works here. No theme override needed. */
+.gs-beat-invitation--stationery-doily-burgundy .gs-beat-invitation__occasion,
+.gs-beat-invitation--stationery-doily-scallop  .gs-beat-invitation__occasion {
+  /* Slightly deeper brand color reads better against the doily's red
+   * surround that bleeds visual weight into the cream area. */
+  color: var(--gs-brand);
+}
+
+/* REVEAL A SECRET — hushed slow fade */
+.gs-story-beat--reveal .gs-story-beat__content { animation: gs-reveal-fade 1400ms ease both; }
+@keyframes gs-reveal-fade {
+  from { opacity: 0; filter: blur(6px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+.gs-beat-reveal__eyebrow {
+  font-family: var(--gs-display);
+  font-size: 11px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-paper) 60%, transparent);
+  margin-bottom: 24px;
+}
+.gs-beat-reveal__subject { font-size: 17px; margin: 0 0 10px; color: color-mix(in srgb, var(--gs-paper) 80%, transparent); }
+.gs-beat-reveal__secret {
+  font-family: var(--gs-display);
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--gs-paper);
+  margin: 0;
+}
+
+/* TIME SKIP — quiet italic, soft fade */
+.gs-story-beat--time-skip .gs-story-beat__veil {
+  background: radial-gradient(ellipse at center, rgba(20, 12, 8, 0.62), rgba(10, 6, 4, 0.85));
+}
+.gs-beat-time-skip__when {
+  font-family: var(--gs-display);
+  font-style: italic;
+  font-size: 38px;
+  margin: 0 0 12px;
+  color: var(--gs-paper);
+}
+.gs-beat-time-skip__note {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 16px;
+  color: color-mix(in srgb, var(--gs-paper) 75%, transparent);
+  margin: 0;
+}
+
+/* NEWS — newspaper register */
+.gs-story-beat--newspaper .gs-story-beat__veil { background: rgba(245, 235, 215, 0.96); }
+.gs-story-beat--newspaper .gs-story-beat__content { color: #1d1408; }
+.gs-story-beat--newspaper .gs-story-beat__dismiss { color: #1d1408; background: rgba(20, 12, 8, 0.08); border-color: rgba(20, 12, 8, 0.30); }
+.gs-beat-news__masthead {
+  font-family: 'Lora', 'Palatino', Georgia, serif;
+  font-style: italic;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 8px;
+  color: #1d1408;
+}
+.gs-beat-news__headline {
+  font-family: var(--gs-display);
+  font-weight: 800;
+  font-size: 56px;
+  letter-spacing: 0.02em;
+  line-height: 1.04;
+  margin: 6px 0 8px;
+  text-transform: uppercase;
+  border-top: 2px solid #1d1408;
+  border-bottom: 1px solid #1d1408;
+  padding: 12px 0 14px;
+}
+.gs-beat-news__subhead { font-family: var(--gs-display); font-size: 22px; font-style: italic; margin: 6px 0 14px; }
+.gs-beat-news__body { font-size: 15px; line-height: 1.6; text-align: left; column-count: 2; column-gap: 28px; }
+.gs-beat-news__body p { margin: 0; text-indent: 1em; }
+
+/* ACCUSATION — stamped, severe */
+.gs-story-beat--accusation .gs-story-beat__veil {
+  background: radial-gradient(ellipse at center, rgba(36, 8, 8, 0.86), rgba(12, 4, 4, 0.96));
+}
+.gs-beat-accusation__eyebrow {
+  font-family: var(--gs-display);
+  font-size: 11.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-paper) 65%, transparent);
+  margin: 0 0 14px;
+}
+.gs-beat-accusation__target {
+  font-family: var(--gs-display);
+  font-size: 64px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #f5c5b8;
+  text-transform: none;
+}
+.gs-beat-accusation__charge { font-style: italic; opacity: 0.75; margin: 0 0 12px; }
+.gs-beat-accusation__what { font-family: var(--gs-display); font-size: 28px; margin: 0 0 16px; color: var(--gs-paper); }
+.gs-beat-accusation__detail { font-size: 15px; line-height: 1.5; max-width: 540px; margin: 0 auto 12px; }
+.gs-beat-accusation__by { font-style: italic; font-size: 13px; opacity: 0.7; margin: 0; }
+
+/* DEATH — somber, wreath */
+.gs-story-beat--somber .gs-story-beat__veil {
+  background: radial-gradient(ellipse at center, rgba(10, 8, 8, 0.92), rgba(0, 0, 0, 0.98));
+}
+.gs-beat-death {
+  position: relative;
+  padding: 60px 48px 40px;
+}
+.gs-beat-death__wreath {
+  position: absolute;
+  inset: 0;
+  border: 6px solid #111;
+  outline: 1px solid #4a3a2a;
+  border-radius: 2px;
+  pointer-events: none;
+}
+.gs-beat-death__eyebrow {
+  font-family: var(--gs-display);
+  font-size: 11px;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-paper) 50%, transparent);
+  margin: 0 0 12px;
+}
+.gs-beat-death__name {
+  font-family: var(--gs-display);
+  font-size: 48px;
+  font-weight: 600;
+  margin: 6px 0 10px;
+  color: var(--gs-paper);
+}
+.gs-beat-death__when { font-size: 16px; color: color-mix(in srgb, var(--gs-paper) 75%, transparent); margin: 0 0 12px; }
+.gs-beat-death__cause { font-size: 14px; line-height: 1.55; max-width: 520px; margin: 0 auto 16px; color: color-mix(in srgb, var(--gs-paper) 80%, transparent); }
+.gs-beat-death__epitaph {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--gs-paper) 55%, transparent);
+  margin: 18px 0 0;
+}

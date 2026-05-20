@@ -1,0 +1,15 @@
+{{!-- Accusation — public, stamped. The targetName + accuserName are
+     resolved in the template by looking up the selected actors via the
+     payload's id fields. --}}
+<article class="gs-beat-accusation">
+  <p class="gs-beat-accusation__eyebrow">{{localize "GOODSOCIETY.storyBeats.accusation.eyebrow"}}</p>
+  <h2 class="gs-beat-accusation__target">{{payload.targetActorIdName}}</h2>
+  <p class="gs-beat-accusation__charge">— stands accused —</p>
+  <p class="gs-beat-accusation__what"><em>{{payload.charge}}</em></p>
+  {{#if payload.detail}}
+    <p class="gs-beat-accusation__detail">{{payload.detail}}</p>
+  {{/if}}
+  {{#if payload.accuser}}
+    <p class="gs-beat-accusation__by">— {{payload.accuser}}</p>
+  {{/if}}
+</article>

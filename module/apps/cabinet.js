@@ -25,6 +25,7 @@ import { openNovelPhasePopup } from './novel-phase-popup.js';
 import { openConditionsCompendium, findConditionsCompendiumPack } from '../helpers/conditions-compendium.js';
 import { openMonologueFromCabinet, monologueFlowApp } from './monologue-overlay.js';
 import { openResetCampaign } from '../helpers/reset-campaign.js';
+import { openStoryBeatsCommandCenter } from './story-beats-command-center.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -64,6 +65,7 @@ const LAUNCHERS = {
   monologue:    () => openMonologueFromCabinet(),
   conditions:   () => openConditionsCompendium(),
   resetCampaign: () => openResetCampaign(),
+  storyBeats:    () => openStoryBeatsCommandCenter(),
 };
 
 /**
@@ -91,6 +93,7 @@ const LAUNCHER_APP_IDS = {
   // confirm dialog. Tracking it lets a second toggle-click close the confirm
   // and abort the reset.
   resetCampaign: 'gs-reset-campaign-confirm',
+  storyBeats:    'gs-story-beats-command-center',
 };
 
 export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {

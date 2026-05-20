@@ -79,22 +79,34 @@ export async function castMagicSkill(item, actor = null) {
   }
 
   // 3. Sequencer VFX — public casts only.
-  //    Secret-cast GM-view-only effect is deferred to v1.1.
+  //    Each failure mode now emits a visible warning so the GM can see WHY
+  //    a cast didn't animate. Previously every gate silently no-op'd, which
+  //    made a missing vfxKey / Sequencer / on-canvas token feel like "the
+  //    system is broken."
   const vfxKey  = item.system?.vfxKey ?? '';
   const soundUrl = item.system?.soundUrl ?? '';
   const sequencerActive = !!game.modules.get('sequencer')?.active;
 
-  if (!isSecret && sequencerActive && vfxKey) {
-    try {
+  if (!isSecret) {
+    if (!sequencerActive) {
+      ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.castSkill.vfxSequencerMissing'));
+    } else if (!vfxKey) {
+      ui.notifications?.warn(game.i18n.format('GOODSOCIETY.castSkill.vfxKeyMissing', { skill: item.name }));
+    } else {
       const token = canvas.tokens?.placeables?.find(t => t.actor?.id === actor.id);
-      if (token) {
-        const s = new Sequence();
-        s.effect().atLocation(token).file(vfxKey).scaleToObject(1.5);
-        if (soundUrl) s.sound().file(soundUrl);
-        await s.play();
+      if (!token) {
+        ui.notifications?.warn(game.i18n.format('GOODSOCIETY.castSkill.vfxNoToken', { actor: profileName(actor) }));
+      } else {
+        try {
+          const s = new Sequence();
+          s.effect().atLocation(token).file(vfxKey).scaleToObject(1.5);
+          if (soundUrl) s.sound().file(soundUrl);
+          await s.play();
+        } catch (err) {
+          console.warn('[GS] castMagicSkill: Sequencer effect failed:', err);
+          ui.notifications?.warn(game.i18n.format('GOODSOCIETY.castSkill.vfxPlayFailed', { error: err?.message ?? 'unknown error' }));
+        }
       }
-    } catch (err) {
-      console.warn('[GS] castMagicSkill: Sequencer effect failed (non-fatal):', err);
     }
   }
 

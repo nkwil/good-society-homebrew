@@ -200,10 +200,22 @@ export class NovelReaderApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this._activeCycle = cycle;
     this._mode = 'reader';
     await this._persistState();
-    this.render({ parts: ['main'] });
-    // After render, scroll to the cycle's heading.
-    const node = this.element?.querySelector(`[data-cycle-anchor="${cycle}"]`);
-    if (node) node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // AWAIT the re-render — without this, the DOM-replacement happens after
+    // the scrollIntoView call below, so the query hits the about-to-be-
+    // discarded element and the new mount lands with the scroll-position
+    // back at the top. Visible symptom: clicking a rail cycle "does
+    // nothing" (active class flips but the pane doesn't move).
+    await this.render({ parts: ['main'] });
+    // Walk the pane manually rather than using element.scrollIntoView so
+    // we scroll the .gs-novel-reader__pane container (the actual scroll
+    // ancestor) and ignore the OUTER window's scroll position — this
+    // keeps the reader app's frame anchored while only the inner reader
+    // pane moves to the picked cycle.
+    const pane = this.element?.querySelector('.gs-novel-reader__pane');
+    const node = pane?.querySelector(`[data-cycle-anchor="${cycle}"]`);
+    if (!pane || !node) return;
+    const top = node.offsetTop - pane.offsetTop;
+    pane.scrollTo({ top, behavior: 'smooth' });
   }
 
   static async #titleNovel() {

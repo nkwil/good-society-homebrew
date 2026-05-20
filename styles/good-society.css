@@ -68,7 +68,6 @@
 @import './components/_chat-card-in-character.css';
 @import './components/_chat-card-monologue.css';
 @import './components/_chat-card-completion.css';
-@import './components/_chat-card-persona-switch.css';
 @import './components/_chat-card-random-event.css';
 @import './components/_letter-card.css';
 
@@ -116,6 +115,7 @@
 @import './apps/_session-log-preview.css';
 @import './apps/_persona-editor.css';
 @import './apps/_dock.css';
+@import './apps/_desire-reminder.css';
 @import './apps/_dashboard.css';
 @import './apps/_public-info-card.css';
 
@@ -150,6 +150,7 @@
 @import './apps/_arrival.css';
 @import './apps/_pause-overlay.css';
 @import './apps/_monologue-overlay.css';
+@import './apps/_story-beats.css';
 
 /* The Cabinet — post-MVP §9 player module menu. */
 @import './apps/_cabinet.css';

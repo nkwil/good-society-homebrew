@@ -16,6 +16,7 @@
  */
 
 import { cycleReflectionFolder, entryFlags } from './journal-folders.js';
+import { eventTypeHeading, formatSessionEventSummary } from '../hooks/session-events.js';
 
 const FLAG_SCOPE = 'good-society-homebrew';
 
@@ -44,14 +45,16 @@ function _composeBody(cycleNumber) {
 
   const cycleEvents = events.filter(e => (e?.cycleNumber ?? null) === cycleNumber);
 
-  const heading = `<h2>${game.i18n.format('GOODSOCIETY.cycleDivider.heading', { cycle: cycleNumber })}</h2>`;
-
+  // No top-level <h2> — the Novel Reader / journal entry sheet already shows
+  // the entry name ("Cycle N — Reflections") in its own header.
   if (!cycleEvents.length) {
-    return `${heading}<p><em>${game.i18n.localize('GOODSOCIETY.cycleDivider.noEvents')}</em></p>`;
+    return `<p><em>${game.i18n.localize('GOODSOCIETY.cycleDivider.noEvents')}</em></p>`;
   }
 
-  // Group by event type for a glanceable structure. The session-events
-  // generator already handles richer formatting; this is a starting frame.
+  // Group by event type for a glanceable structure. Each group gets a
+  // human-readable heading + items rendered via the session-events
+  // formatter so we never leak raw enum values like "phaseChange" into the
+  // novel.
   const groups = {};
   for (const ev of cycleEvents) {
     const type = ev.type ?? 'other';
@@ -60,11 +63,11 @@ function _composeBody(cycleNumber) {
   }
 
   const sections = Object.entries(groups).map(([type, list]) => {
-    const items = list.map(ev => `<li>${ev.summary ?? ev.title ?? ev.type}</li>`).join('');
-    return `<h3>${type}</h3><ul>${items}</ul>`;
+    const items = list.map(ev => `<li>${formatSessionEventSummary(ev)}</li>`).join('');
+    return `<h3>${eventTypeHeading(type)}</h3><ul>${items}</ul>`;
   }).join('');
 
-  return `${heading}${sections}`;
+  return sections;
 }
 
 /**
@@ -108,5 +111,63 @@ export async function createCycleDivider(cycleNumber) {
   } catch (err) {
     console.warn(`GS | cycle divider create failed for cycle ${cycleNumber} (non-fatal):`, err);
     return null;
+  }
+}
+
+/**
+ * Prompt the GM for a free-form cycle summary and append it to the cycle
+ * divider entry. Called from upkeep phase start. GM-only; if the GM
+ * cancels the dialog, no-op. If they've already written one this cycle
+ * (the entry carries the `cycleSummaryWritten` flag), skip.
+ *
+ * @param {number} cycleNumber
+ */
+export async function promptCycleSummary(cycleNumber) {
+  if (!game.user?.isGM) return;
+  if (cycleNumber == null) return;
+
+  // Get-or-create the entry. We need it to exist to know whether we've
+  // prompted before.
+  const entry = (await createCycleDivider(cycleNumber)) ?? _findExisting(cycleNumber);
+  if (!entry) return;
+  if (entry.getFlag(FLAG_SCOPE, 'cycleSummaryWritten')) return; // already done
+
+  const { DialogV2 } = foundry.applications.api;
+
+  let value;
+  try {
+    value = await DialogV2.prompt({
+      window: {
+        title: game.i18n.format('GOODSOCIETY.cycleSummary.title', { cycle: cycleNumber }),
+      },
+      content: `
+        <p>${game.i18n.localize('GOODSOCIETY.cycleSummary.intro')}</p>
+        <textarea name="summary" rows="8"
+                  style="width:100%; box-sizing:border-box; padding:8px;"
+                  placeholder="${game.i18n.localize('GOODSOCIETY.cycleSummary.placeholder')}"></textarea>
+      `,
+      ok: {
+        label: game.i18n.localize('GOODSOCIETY.cycleSummary.save'),
+        callback: (_ev, button) => button.form.elements.summary?.value ?? '',
+      },
+      rejectClose: false,
+    });
+  } catch { /* cancelled */ return; }
+  const text = (value || '').trim();
+  if (!text) return;
+
+  const page = entry.pages?.contents?.[0];
+  if (!page) return;
+  const heading = game.i18n.localize('GOODSOCIETY.cycleSummary.sectionHeading');
+  const html =
+    `<h3>${heading}</h3>` +
+    `<p>${foundry.utils.escapeHTML(text).replace(/\n+/g, '</p><p>')}</p>`;
+  const next = (page.text?.content ?? '') + html;
+  try {
+    await page.update({ 'text.content': next });
+    await entry.setFlag(FLAG_SCOPE, 'cycleSummaryWritten', true);
+    ui.notifications?.info(game.i18n.localize('GOODSOCIETY.cycleSummary.saved'));
+  } catch (err) {
+    console.warn('GS | cycle summary append failed:', err);
   }
 }

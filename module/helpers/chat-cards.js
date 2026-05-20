@@ -243,43 +243,6 @@ export async function postCompletionCard({ actor, conflict, resolvedSide }) {
 
 // ── 5. Persona switch announcement card ─────────────────────────────────────
 
-/**
- * Post a persona switch announcement card themed to the post-switch persona.
- * MUST be called after actor.update() has set activePersonaId to toPersona.id,
- * so themedWrap picks up toPersona's chatColor correctly.
- * @param {object} opts
- * @param {Actor} opts.actor - Already updated with new activePersonaId.
- * @param {object|null} opts.fromPersona - The persona being left (may be null on first switch).
- * @param {object} opts.toPersona - The persona being entered.
- */
-export async function postPersonaSwitchCard({ actor, fromPersona, toPersona }) {
-  const secret = toPersona?.visibility?.magic === 'secret';
-  const inner = await foundry.applications.handlebars.renderTemplate(`${T}/persona-switch.hbs`, {
-    actor,
-    fromPersona,
-    toPersona,
-    secret,
-    portraitInitial: (toPersona?.name || actor.name)?.[0]?.toUpperCase() ?? '?',
-  });
-  const html = themedWrap(actor, inner, ['gs-chat-card', 'gs-chat-card--persona-switch']);
-  const whisperTargets = secret
-    ? [...new Set([...(ChatMessage.getWhisperRecipients('GM') ?? []).map(u => u.id), game.user.id])]
-    : [];
-  await ChatMessage.create({
-    content: html,
-    speaker: ChatMessage.getSpeaker({ actor }),
-    whisper: whisperTargets,
-    flags: {
-      'good-society-homebrew': {
-        cardType: 'persona-switch',
-        speakerActorId: actor.id,
-        speakerTheme: actor.system.theme ?? 'npc',
-        speakerPersonaId: toPersona?.id ?? null,
-      },
-    },
-  });
-}
-
 // ── 6. Letter card ──────────────────────────────────────────────────────────
 
 /**

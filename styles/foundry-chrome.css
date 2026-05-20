@@ -161,10 +161,50 @@ body.gs-chrome-themed :is(.window-app, .application) > header.window-header [dat
   font-size: 12px !important;
 }
 
+/* gs-window-minimize — the collapse/expand button injected by
+ * `module/hooks/window-controls.js` on every framed gs-* window. The base
+ * glyph is `−` (collapse). When the window is currently minimized, the
+ * JS adds `.is-minimized` to the button and the glyph swaps to `+`
+ * (expand). Same font-size + weight on both states so the glyph doesn't
+ * visually jump when toggled.
+ *
+ * `!important` on `content` is REQUIRED — the default ⋯ fallback rule
+ * earlier in this file uses `:is(.header-button, .header-control,
+ * button[data-action])` whose specificity (0,4,3) outranks the simpler
+ * `[data-action="gsMinimize"]` here (0,4,2). Without `!important`, the
+ * default rule wins the cascade and paints `⋯` over our intended glyph
+ * (this matches the close-button rule's approach above). */
+body.gs-chrome-themed :is(.window-app, .application) > .window-header [data-action="gsMinimize"]::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header [data-action="gsMinimize"]::before {
+  content: '−' !important;
+  font-size: 20px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+body.gs-chrome-themed :is(.window-app, .application) > .window-header [data-action="gsMinimize"].is-minimized::before,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header [data-action="gsMinimize"].is-minimized::before {
+  content: '+' !important;
+}
+
 body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action]):hover,
 body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action]):hover {
   color: #EFE6D2 !important;          /* --gs-paper, hardcoded */
   background: #2A3A2D !important;     /* --gs-brand, hardcoded */
+}
+
+/* Suppress the browser's `:focus` outline (the red ring) that sticks
+ * around after a mouse click — `:focus-visible` paints a focus ring
+ * ONLY when focus arrived via keyboard (Tab), so keyboard users still
+ * get a visible affordance. Mouse-click focus is silently dismissed. */
+body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action]):focus:not(:focus-visible),
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action]):focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action]):focus-visible,
+body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action]):focus-visible {
+  outline: 1.5px solid #2A3A2D !important;  /* --gs-brand */
+  outline-offset: 1px;
 }
 
 /* === 1b. Header controls (⋯) dropdown menu ===
@@ -186,7 +226,20 @@ body.gs-chrome-themed .controls-dropdown,
 body.gs-chrome-themed menu.controls-dropdown,
 body.gs-chrome-themed nav.controls-dropdown,
 body.gs-chrome-themed .application-list,
-body.gs-chrome-themed [role="menu"].controls-dropdown {
+body.gs-chrome-themed [role="menu"].controls-dropdown,
+/* Directory context-menus (right-click on a playlist row, journal entry,
+ * actor row, etc.) — Foundry v13 renders these with the bare class
+ * `.context-menu` (no `.controls-dropdown`), so they were slipping past
+ * the selector chain above. Without this, the menu DID open on right-
+ * click but its <li> items inherited the `color: var(--gs-ink) !important`
+ * from the `.application li` rule near the bottom of this file while
+ * keeping Foundry's default dark menu background — dark ink on dark
+ * background = invisible menu. Symptoms: "right-click does nothing"
+ * (the menu was there, just unreadable). */
+body.gs-chrome-themed .context-menu,
+body.gs-chrome-themed nav.context-menu,
+body.gs-chrome-themed menu.context-menu,
+body.gs-chrome-themed #context-menu {
   background: #F4ECD8 !important;          /* --gs-paper-warm, hardcoded */
   border: 0.5px solid #708060 !important;  /* --gs-accent-2, hardcoded */
   border-radius: 4px !important;
@@ -196,11 +249,18 @@ body.gs-chrome-themed [role="menu"].controls-dropdown {
   list-style: none;
   margin: 0;
   min-width: 180px;
+  z-index: 200 !important;                 /* above sidebar's stacking context */
 }
 
 body.gs-chrome-themed .controls-dropdown li,
 body.gs-chrome-themed menu.controls-dropdown li,
-body.gs-chrome-themed .application-list li {
+body.gs-chrome-themed .application-list li,
+body.gs-chrome-themed .context-menu li,
+body.gs-chrome-themed nav.context-menu li,
+body.gs-chrome-themed menu.context-menu li,
+body.gs-chrome-themed #context-menu li,
+body.gs-chrome-themed .context-menu .context-item,
+body.gs-chrome-themed nav.context-menu .context-item {
   background: transparent !important;
   list-style: none;
   margin: 0;
@@ -217,7 +277,19 @@ body.gs-chrome-themed nav.controls-dropdown a,
 body.gs-chrome-themed .application-list button,
 body.gs-chrome-themed .application-list a,
 body.gs-chrome-themed [role="menu"].controls-dropdown button,
-body.gs-chrome-themed [role="menu"].controls-dropdown a {
+body.gs-chrome-themed [role="menu"].controls-dropdown a,
+/* Same item-button treatment for directory context menus
+ * (right-click playlist row, actor row, etc). Each item in Foundry v13's
+ * context-menu is typically rendered as an <li> containing an <i>
+ * (icon) + a label — sometimes inside an <a> or a <button>, sometimes
+ * just bare. Cover all the shapes so the cream-on-ink hierarchy holds. */
+body.gs-chrome-themed .context-menu li,
+body.gs-chrome-themed nav.context-menu li,
+body.gs-chrome-themed menu.context-menu li,
+body.gs-chrome-themed #context-menu li,
+body.gs-chrome-themed .context-menu .context-item,
+body.gs-chrome-themed .context-menu li button,
+body.gs-chrome-themed .context-menu li a {
   display: flex !important;
   align-items: center;
   gap: 8px;
@@ -238,6 +310,17 @@ body.gs-chrome-themed [role="menu"].controls-dropdown a {
   text-shadow: none !important;
   cursor: pointer;
   box-shadow: none !important;
+}
+
+/* Hover state for context-menu items — cream → brand-tint, matches the
+ * controls-dropdown hover treatment further down. */
+body.gs-chrome-themed .context-menu li:hover,
+body.gs-chrome-themed nav.context-menu li:hover,
+body.gs-chrome-themed menu.context-menu li:hover,
+body.gs-chrome-themed #context-menu li:hover,
+body.gs-chrome-themed .context-menu .context-item:hover {
+  background: color-mix(in srgb, #2A3A2D 12%, transparent) !important;
+  color: #2A3A2D !important;          /* brand on hover */
 }
 
 body.gs-chrome-themed .controls-dropdown button > i,
@@ -805,4 +888,290 @@ body.gs-chrome-themed.gs-chrome-icons-on [data-entry-type]::before {
   background-size: contain;
   opacity: 0.7;
   flex-shrink: 0;
+}
+
+/* ── Third-party module readability overrides ─────────────────────────────
+ *
+ * The chrome theme paints all Foundry application chrome with parchment
+ * cream + warm-brown ink. Most third-party module UIs were authored for
+ * Foundry's default dark chrome and use light text colors that vanish on
+ * cream. We pin their text colors to readable values here.
+ *
+ * Scope: ONLY under `body.gs-chrome-themed` so disabling the chrome theme
+ * leaves the modules at their own defaults. */
+
+/* Sequencer Manager (Sequencer module — VFX/sound orchestration tool).
+ * Tab labels and body text were rendering in pale yellow-tan against the
+ * cream window, almost invisible. Pin them to the system's warm-brown ink
+ * with the accent reserved for the active tab. Multiple selector flavors
+ * because Sequencer's app id / class naming varies across versions. */
+body.gs-chrome-themed .application.sequencer-manager,
+body.gs-chrome-themed [id^="sequencer-manager"],
+body.gs-chrome-themed [class*="sequencer-manager"],
+body.gs-chrome-themed .application.sequencer-manager .window-content,
+body.gs-chrome-themed [id^="sequencer-manager"] .window-content,
+body.gs-chrome-themed [class*="sequencer-manager"] .window-content {
+  color: var(--gs-ink, #3D2F26);
+}
+
+/* Tab strip — Player / Manager / Sequences / How-to */
+body.gs-chrome-themed .application.sequencer-manager nav.tabs a,
+body.gs-chrome-themed .application.sequencer-manager nav.tabs [data-tab],
+body.gs-chrome-themed [id^="sequencer-manager"] nav.tabs a,
+body.gs-chrome-themed [id^="sequencer-manager"] nav.tabs [data-tab],
+body.gs-chrome-themed [class*="sequencer-manager"] .tabs a,
+body.gs-chrome-themed [class*="sequencer-manager"] .tabs [data-tab] {
+  color: color-mix(in srgb, var(--gs-ink, #3D2F26) 70%, transparent);
+  text-shadow: none;
+  font-weight: 500;
+}
+
+body.gs-chrome-themed .application.sequencer-manager nav.tabs a:hover,
+body.gs-chrome-themed [id^="sequencer-manager"] nav.tabs a:hover,
+body.gs-chrome-themed [class*="sequencer-manager"] .tabs a:hover {
+  color: var(--gs-ink, #3D2F26);
+  text-shadow: none;
+}
+
+body.gs-chrome-themed .application.sequencer-manager nav.tabs a.active,
+body.gs-chrome-themed .application.sequencer-manager nav.tabs [data-tab].active,
+body.gs-chrome-themed [id^="sequencer-manager"] nav.tabs a.active,
+body.gs-chrome-themed [class*="sequencer-manager"] .tabs a.active {
+  color: var(--gs-accent-1, #B85C3F);
+  text-shadow: none;
+  font-weight: 600;
+}
+
+/* Body copy inside any of Sequencer's tab panels — "No sequences currently
+ * running", database entries, manager rows, how-to instructions. */
+body.gs-chrome-themed .application.sequencer-manager .tab,
+body.gs-chrome-themed .application.sequencer-manager section,
+body.gs-chrome-themed .application.sequencer-manager p,
+body.gs-chrome-themed .application.sequencer-manager span,
+body.gs-chrome-themed .application.sequencer-manager li,
+body.gs-chrome-themed [id^="sequencer-manager"] .tab,
+body.gs-chrome-themed [id^="sequencer-manager"] p,
+body.gs-chrome-themed [id^="sequencer-manager"] span,
+body.gs-chrome-themed [class*="sequencer-manager"] .tab,
+body.gs-chrome-themed [class*="sequencer-manager"] p,
+body.gs-chrome-themed [class*="sequencer-manager"] span,
+body.gs-chrome-themed [class*="sequencer-manager"] li {
+  color: var(--gs-ink, #3D2F26);
+  text-shadow: none;
+}
+
+/* Empty-state and section headers ("No sequences currently running") often
+ * use h1/h2/h3 with module-defined glow effects that read as fog on cream.
+ * Strip the glow and pin the color. */
+body.gs-chrome-themed .application.sequencer-manager h1,
+body.gs-chrome-themed .application.sequencer-manager h2,
+body.gs-chrome-themed .application.sequencer-manager h3,
+body.gs-chrome-themed .application.sequencer-manager h4,
+body.gs-chrome-themed [id^="sequencer-manager"] h1,
+body.gs-chrome-themed [id^="sequencer-manager"] h2,
+body.gs-chrome-themed [id^="sequencer-manager"] h3,
+body.gs-chrome-themed [class*="sequencer-manager"] h1,
+body.gs-chrome-themed [class*="sequencer-manager"] h2,
+body.gs-chrome-themed [class*="sequencer-manager"] h3 {
+  color: color-mix(in srgb, var(--gs-ink, #3D2F26) 80%, transparent);
+  text-shadow: none;
+  font-family: var(--gs-display, 'Lora', serif);
+  font-weight: 600;
+}
+
+/* Inputs / search boxes inside Sequencer — match the system's cream-paper
+ * sunken input style instead of Sequencer's dark transparent default. */
+body.gs-chrome-themed .application.sequencer-manager input[type="text"],
+body.gs-chrome-themed .application.sequencer-manager input[type="search"],
+body.gs-chrome-themed .application.sequencer-manager select,
+body.gs-chrome-themed .application.sequencer-manager textarea,
+body.gs-chrome-themed [id^="sequencer-manager"] input[type="text"],
+body.gs-chrome-themed [id^="sequencer-manager"] input[type="search"],
+body.gs-chrome-themed [id^="sequencer-manager"] select,
+body.gs-chrome-themed [class*="sequencer-manager"] input[type="text"],
+body.gs-chrome-themed [class*="sequencer-manager"] input[type="search"],
+body.gs-chrome-themed [class*="sequencer-manager"] select {
+  color: var(--gs-ink, #3D2F26);
+  background: color-mix(in srgb, var(--gs-paper, #EFE6D2) 92%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink, #3D2F26) 22%, transparent);
+}
+
+/* Buttons inside Sequencer — readable on cream. */
+body.gs-chrome-themed .application.sequencer-manager button,
+body.gs-chrome-themed [id^="sequencer-manager"] button,
+body.gs-chrome-themed [class*="sequencer-manager"] button {
+  color: var(--gs-ink, #3D2F26);
+}
+
+/* ── FilePicker / Audio Browser readability ───────────────────────────────
+ *
+ * Foundry's FilePicker renders file rows with white/very-light text designed
+ * for the default dark chrome. On our cream parchment chrome they become
+ * near-invisible — the user reported "I can't read the white text" looking
+ * at a list of .ogg files. Pin file/directory row text to warm brown so the
+ * rows are legible, and lift the selected row to a brand-accent highlight. */
+
+body.gs-chrome-themed .application.filepicker,
+body.gs-chrome-themed [id^="filepicker"],
+body.gs-chrome-themed [class*="filepicker"] {
+  color: var(--gs-ink, #3D2F26);
+}
+
+/* Row containers — the file/directory list. Foundry uses several flavours
+ * of class name across versions: `.directory-list`, `.files-list`,
+ * `.file`, `.directory`, plus generic `.file-name` for the label. Cover
+ * them all. */
+body.gs-chrome-themed .application.filepicker .files-list,
+body.gs-chrome-themed .application.filepicker .directory-list,
+body.gs-chrome-themed [class*="filepicker"] .files-list,
+body.gs-chrome-themed [class*="filepicker"] .directory-list {
+  color: var(--gs-ink, #3D2F26);
+}
+
+body.gs-chrome-themed .application.filepicker .file,
+body.gs-chrome-themed .application.filepicker .directory,
+body.gs-chrome-themed .application.filepicker li,
+body.gs-chrome-themed [class*="filepicker"] .file,
+body.gs-chrome-themed [class*="filepicker"] .directory,
+body.gs-chrome-themed [class*="filepicker"] li {
+  color: var(--gs-ink, #3D2F26);
+  text-shadow: none;
+}
+
+body.gs-chrome-themed .application.filepicker .file:hover,
+body.gs-chrome-themed .application.filepicker .directory:hover,
+body.gs-chrome-themed .application.filepicker li:hover,
+body.gs-chrome-themed [class*="filepicker"] .file:hover,
+body.gs-chrome-themed [class*="filepicker"] .directory:hover,
+body.gs-chrome-themed [class*="filepicker"] li:hover {
+  background: color-mix(in srgb, var(--gs-accent-3, #C9A55C) 14%, transparent);
+  color: var(--gs-ink, #3D2F26);
+}
+
+/* Selected/picked row — the highlighted row at "selection time" before the
+ * user clicks Select File. */
+body.gs-chrome-themed .application.filepicker .file.picked,
+body.gs-chrome-themed .application.filepicker .file.selected,
+body.gs-chrome-themed .application.filepicker .directory.picked,
+body.gs-chrome-themed [class*="filepicker"] .file.picked,
+body.gs-chrome-themed [class*="filepicker"] .file.selected,
+body.gs-chrome-themed [class*="filepicker"] .directory.picked {
+  background: color-mix(in srgb, var(--gs-accent-1, #B85C3F) 22%, transparent);
+  color: var(--gs-ink, #3D2F26);
+  font-weight: 500;
+}
+
+/* Filename label inside each row — sometimes wrapped in its own .file-name
+ * span with a separate color rule that overrides the parent. */
+body.gs-chrome-themed .application.filepicker .file-name,
+body.gs-chrome-themed .application.filepicker .file > span,
+body.gs-chrome-themed [class*="filepicker"] .file-name,
+body.gs-chrome-themed [class*="filepicker"] .file > span {
+  color: inherit;
+  text-shadow: none;
+}
+
+/* Inputs (path field, filter/search box) — match the system's cream sunken
+ * input style instead of the dark transparent default. */
+body.gs-chrome-themed .application.filepicker input[type="text"],
+body.gs-chrome-themed .application.filepicker input[type="search"],
+body.gs-chrome-themed .application.filepicker select,
+body.gs-chrome-themed [class*="filepicker"] input[type="text"],
+body.gs-chrome-themed [class*="filepicker"] input[type="search"],
+body.gs-chrome-themed [class*="filepicker"] select {
+  color: var(--gs-ink, #3D2F26);
+  background: color-mix(in srgb, var(--gs-paper, #EFE6D2) 92%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink, #3D2F26) 22%, transparent);
+}
+
+/* Section labels (Favorites / Filter Results / Display Mode / Selected /
+ * Upload) — pin to the warm-brown ink. */
+body.gs-chrome-themed .application.filepicker label,
+body.gs-chrome-themed .application.filepicker .form-group > label,
+body.gs-chrome-themed [class*="filepicker"] label {
+  color: color-mix(in srgb, var(--gs-ink, #3D2F26) 80%, transparent);
+  text-shadow: none;
+}
+
+/* Tab strip — User Data / Core Data buttons at the top */
+body.gs-chrome-themed .application.filepicker nav a,
+body.gs-chrome-themed .application.filepicker .tabs a,
+body.gs-chrome-themed [class*="filepicker"] nav a,
+body.gs-chrome-themed [class*="filepicker"] .tabs a {
+  color: color-mix(in srgb, var(--gs-ink, #3D2F26) 70%, transparent);
+  text-shadow: none;
+}
+
+body.gs-chrome-themed .application.filepicker nav a.active,
+body.gs-chrome-themed .application.filepicker .tabs a.active,
+body.gs-chrome-themed [class*="filepicker"] nav a.active,
+body.gs-chrome-themed [class*="filepicker"] .tabs a.active {
+  color: var(--gs-accent-1, #B85C3F);
+  font-weight: 600;
+}
+
+/* Buttons in the FilePicker (Choose File, Select File, favourite stars,
+ * display-mode toggles) — readable on cream. */
+body.gs-chrome-themed .application.filepicker button,
+body.gs-chrome-themed [class*="filepicker"] button {
+  color: var(--gs-ink, #3D2F26);
+}
+
+/* ── Aggressive fallback — broad-scope contrast pin ───────────────────────
+ *
+ * The targeted FilePicker / Sequencer selectors above can miss when Foundry
+ * v13 renames classes between versions (e.g. `file-picker` vs `filepicker`,
+ * `sequencer-manager` vs `sequencerManager`). This block applies a coarse
+ * "any third-party app rendered under chrome theme gets readable ink"
+ * rule, using high-specificity `!important` to win over module defaults.
+ *
+ * The trade-off: third-party modules lose any custom text colors they
+ * defined. But the alternative — invisible white-on-cream text — is worse.
+ * If a specific module's color scheme matters, add a more-specific opt-out
+ * in its own override block above. */
+
+body.gs-chrome-themed .application li,
+body.gs-chrome-themed .application .file,
+body.gs-chrome-themed .application .file-name,
+body.gs-chrome-themed .application .directory,
+body.gs-chrome-themed .application .directory-name,
+body.gs-chrome-themed .application ol li,
+body.gs-chrome-themed .application ul li {
+  color: var(--gs-ink, #3D2F26) !important;
+  text-shadow: none !important;
+}
+
+body.gs-chrome-themed .application li:hover,
+body.gs-chrome-themed .application .file:hover,
+body.gs-chrome-themed .application .directory:hover {
+  background: color-mix(in srgb, var(--gs-accent-3, #C9A55C) 18%, transparent) !important;
+}
+
+body.gs-chrome-themed .application li.picked,
+body.gs-chrome-themed .application li.selected,
+body.gs-chrome-themed .application .file.picked,
+body.gs-chrome-themed .application .file.selected {
+  background: color-mix(in srgb, var(--gs-accent-1, #B85C3F) 26%, transparent) !important;
+  font-weight: 500;
+}
+
+/* Also catch hyphenated versions of the targeted classes (Foundry v13
+ * renamed several ApplicationV2 ids/classes mid-release-cycle). */
+body.gs-chrome-themed .application.file-picker,
+body.gs-chrome-themed .application.filePicker,
+body.gs-chrome-themed [id*="file-picker"],
+body.gs-chrome-themed [id*="filePicker"],
+body.gs-chrome-themed [class*="file-picker"],
+body.gs-chrome-themed [class*="filePicker"] {
+  color: var(--gs-ink, #3D2F26);
+}
+
+body.gs-chrome-themed .application.file-picker *,
+body.gs-chrome-themed .application.filePicker *,
+body.gs-chrome-themed [id*="file-picker"] *,
+body.gs-chrome-themed [id*="filePicker"] *,
+body.gs-chrome-themed [class*="file-picker"] *,
+body.gs-chrome-themed [class*="filePicker"] * {
+  color: inherit;
+  text-shadow: none;
 }

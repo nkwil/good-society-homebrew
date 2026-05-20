@@ -253,6 +253,6 @@
   padding-top: 4px;
   border-top: 0.5px dashed var(--gs-accent-2);
   font-size: 10px;
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
   text-align: right;
 }

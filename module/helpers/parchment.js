@@ -1,19 +1,16 @@
 /**
  * parchment.js — shared parchment-variant picker.
  *
- * Letters in the Epistolary Wizard pick one of three torn-edge parchment
- * textures (`assets/parchment/parchment-{1,2,3}.png`) so an inbox doesn't
- * read as one uniform slab of paper. The letter composer's preview uses
- * the same helper, keyed on the sender's actor id, so each character has a
- * consistent "their stationery" feel across drafts.
+ * Currently single-variant: always returns 1. parchment-1.png is the only
+ * texture with dramatic torn-edge curls on all four sides; parchment-2 and
+ * parchment-3 ship with flatter / less varied edges, so hashing actors onto
+ * them produced letters that looked clipped or "wrong" depending on which
+ * sender you opened. Until v2/v3 are regenerated with comparable curl
+ * detail, every letter ships on parchment-1.
  *
- * Same id → same variant (1, 2, or 3). Simple multiplicative string hash.
+ * Kept as a function (not a constant) so callers don't need to change when
+ * we restore variation later.
  */
-export function parchmentVariantFor(id) {
-  let h = 0;
-  const str = String(id ?? '');
-  for (let i = 0; i < str.length; i++) {
-    h = (h * 31 + str.charCodeAt(i)) | 0;
-  }
-  return (Math.abs(h) % 3) + 1;
+export function parchmentVariantFor(_id) {
+  return 1;
 }

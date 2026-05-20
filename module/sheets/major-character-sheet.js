@@ -13,6 +13,7 @@ import { postCompletionCard } from '../helpers/chat-cards.js';
 import { castMagicSkill } from '../helpers/cast-magic.js';
 import { THEME_REGISTRY } from '../constants.js';
 import { profilePic } from '../helpers/profile-pic.js';
+import { bindAutogrowTextareas } from '../helpers/textarea-autogrow.js';
 import { fitDossierNames } from '../helpers/responsive-name.js';
 import { pronounsFor } from '../helpers/pronouns.js';
 import { openMonologueTrigger } from '../apps/monologue-overlay.js';
@@ -74,6 +75,7 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       toggleVisibility: MajorCharacterSheet.#toggleVisibility,
       openActor: MajorCharacterSheet.#openActor,
       addConnection: MajorCharacterSheet.#addConnection,
+      removeConnection: MajorCharacterSheet.#removeConnection,
       createItem: MajorCharacterSheet.#createItem,
       deleteItem: MajorCharacterSheet.#deleteItem,
       castSkill: MajorCharacterSheet.#castSkill,
@@ -104,6 +106,7 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       // system.reputation.activeConditions.
       addCondition:     MajorCharacterSheet.#addCondition,
       removeCondition:  MajorCharacterSheet.#removeCondition,
+      undoPendingChange: MajorCharacterSheet.#undoPendingChange,
     },
   };
 
@@ -501,6 +504,24 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       // see the section when conditions actually exist.
       isGM: !!game.user?.isGM,
       showActiveRepSection: activeConditions.length > 0 || !!game.user?.isGM,
+      // Pending reputation changes — tag adds/removes made in any phase,
+      // surfaced as a tentative-state log on the dossier (owner + GM only).
+      // Each entry has its own Undo. Cleared by the Rep Phase / Upkeep
+      // wizards on completion. Most recent first.
+      pendingChanges: ((system.reputation?.pendingChanges ?? [])
+        .slice()
+        .sort((a, b) => (b.ts ?? 0) - (a.ts ?? 0))
+        .map(e => ({
+          ts:        e.ts,
+          value:     e.value,
+          scene:     e.scene,
+          polarity:  e.polarity || (e.kind === 'gained-positive' ? 'positive' : e.kind === 'gained-negative' ? 'negative' : ''),
+          kind:      e.kind,
+          isAdd:     e.kind === 'gained-positive' || e.kind === 'gained-negative',
+          isRemove:  e.kind === 'removed',
+          tagId:     e.tagId,
+        }))),
+      canSeePending: !!(this.actor.isOwner || game.user?.isGM),
       // Private tab
       visibility: system.visibility ?? {},
       connectionActors,
@@ -531,6 +552,11 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
 
   _onRender(context, options) {
     super._onRender(context, options);
+
+    // Auto-grow any wrapping textareas (subhead, etc.). Belt-and-suspenders
+    // alongside CSS `field-sizing: content` for Electron builds older than
+    // Chromium 123.
+    bindAutogrowTextareas(this.element);
 
     // Set theme scope on the outer window so CSS variables cascade to all children.
     // Active persona's theme (when set) overrides the actor's theme — the
@@ -1156,6 +1182,72 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
   }
 
   /**
+   * Reverse one entry in the pending reputation log, then drop the entry
+   * itself. `gained-*` → delete the tag (by tagId); `removed` → re-create a
+   * tag with the saved name + polarity. Guard the create/delete with the
+   * `_undoingActors` flag so the createItem/deleteItem hooks know not to
+   * log a brand-new pending entry in response to our undo.
+   */
+  static async #undoPendingChange(event, target) {
+    const ts = Number(target.dataset.ts);
+    if (!Number.isFinite(ts)) return;
+    const entry = (this.actor.system?.reputation?.pendingChanges ?? [])
+      .find(e => e.ts === ts);
+    if (!entry) return;
+
+    const { beginUndoPending, endUndoPending, removePendingChangeByTs } =
+      await import('../helpers/pending-changes.js');
+
+    beginUndoPending(this.actor.id);
+    try {
+      if (entry.kind === 'gained-positive' || entry.kind === 'gained-negative') {
+        // Undo of a tag-gain → remove the tag from the polarity array AND
+        // delete the embedded item.
+        const polarity = entry.polarity
+          || (entry.kind === 'gained-positive' ? 'positive' : 'negative');
+        const field = polarity === 'negative'
+          ? 'system.reputation.negativeTags'
+          : 'system.reputation.positiveTags';
+        const current = (polarity === 'negative'
+          ? this.actor.system.reputation?.negativeTags
+          : this.actor.system.reputation?.positiveTags) ?? [];
+        if (entry.tagId) {
+          await this.actor.update({ [field]: current.filter(id => id !== entry.tagId) });
+          if (this.actor.items.get(entry.tagId)) {
+            await this.actor.deleteEmbeddedDocuments('Item', [entry.tagId]);
+          }
+        }
+      } else if (entry.kind === 'removed') {
+        // Undo of a tag-removal → re-create a tag with the saved name +
+        // polarity. The original tag's description / source aren't preserved.
+        const polarity = entry.polarity || 'positive';
+        const [created] = await this.actor.createEmbeddedDocuments('Item', [{
+          type: 'reputation-tag',
+          name: entry.value || 'Restored tag',
+          system: { polarity },
+        }]);
+        if (created) {
+          const field = polarity === 'negative'
+            ? 'system.reputation.negativeTags'
+            : 'system.reputation.positiveTags';
+          const current = (polarity === 'negative'
+            ? this.actor.system.reputation?.negativeTags
+            : this.actor.system.reputation?.positiveTags) ?? [];
+          await this.actor.update({ [field]: [...current, created.id] });
+        }
+      }
+    } catch (err) {
+      console.error('GS | undoPendingChange failed:', err);
+      ui.notifications?.error(game.i18n.localize('GOODSOCIETY.dossier.undoFailed'));
+    } finally {
+      endUndoPending(this.actor.id);
+    }
+
+    // Drop the entry from the log now that the world matches it again.
+    await removePendingChangeByTs(this.actor, ts);
+  }
+
+  /**
    * Click the cameo → Foundry FilePicker → write the picked image to the
    * RIGHT place based on what's currently active:
    *
@@ -1233,6 +1325,23 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
   // Stub — link picker (drag-onto-section) is the primary UX; this is a fallback.
   static async #addConnection(event, target) {
     ui.notifications?.info('Drag a Connection actor onto this section to link it.');
+  }
+
+  /**
+   * Unlink a Connection (or NPC) actor from this Major's dossier. Splices the
+   * actor id out of `system.connections`; doesn't touch the connection's own
+   * `system.linkedMajorId` (that link is authored independently from the
+   * connection's sheet). Reversible — drag the actor back onto the section
+   * to re-link.
+   */
+  static async #removeConnection(event, target) {
+    const id = target.dataset.actorId;
+    if (!id) return;
+    const current = this.actor.system.connections ?? [];
+    if (!current.includes(id)) return;
+    await this.actor.update({
+      'system.connections': current.filter(cid => cid !== id),
+    });
   }
 
   static async #createItem(event, target) {

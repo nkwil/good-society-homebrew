@@ -1,0 +1,15 @@
+{{!-- News from Afar — newspaper headline. --}}
+<article class="gs-beat-news">
+  <header class="gs-beat-news__masthead">
+    {{#if payload.masthead}}{{payload.masthead}}{{else}}{{localize "GOODSOCIETY.storyBeats.news.defaultMasthead"}}{{/if}}
+  </header>
+  <h1 class="gs-beat-news__headline">{{payload.headline}}</h1>
+  {{#if payload.subhead}}
+    <p class="gs-beat-news__subhead">{{payload.subhead}}</p>
+  {{/if}}
+  {{#if payload.body}}
+    <div class="gs-beat-news__body">
+      <p>{{payload.body}}</p>
+    </div>
+  {{/if}}
+</article>

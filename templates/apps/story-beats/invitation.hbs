@@ -1,0 +1,82 @@
+{{!-- Invitation — sealed envelope that each player breaks to reveal the
+     heraldic card. The envelope packet is the click target; pressing it
+     adds .is-open locally (per-player; not synced) and the CSS transitions
+     the wax seal off and the card in. If the GM didn't pick a seal, we skip
+     the envelope entirely and render the card open from the start.
+
+     The card itself uses one of two visual modes:
+       - Default ("plain"): the engraved cream-gradient + double-rule frame
+         styled in _story-beats.css.
+       - Stationery: an illustrated PNG frame (gold flourishes, doily lace,
+         etc.). The overlay's _prepareContext resolves the payload's
+         stationery id to {Id, Asset, AspectRatio, Style} keys; Style is
+         a CSS string carrying the background-image + aspect-ratio + the
+         four CSS custom properties that drive the content-area padding. --}}
+{{#if payload.sealAsset}}
+  <div class="gs-letter-envelope gs-beat-invitation__envelope"
+       data-letter-id="story-beat-invitation">
+
+    <button type="button" class="gs-letter-envelope__packet" data-action="breakSeal"
+            aria-label="{{localize 'GOODSOCIETY.storyBeats.invitation.breakSeal'}}">
+      <img class="gs-letter-envelope__envelope-img" aria-hidden="true"
+           src="/systems/good-society-homebrew/assets/parchment/envelope.png" alt="" />
+      <span class="gs-letter-envelope__seal" aria-hidden="true">
+        <img class="gs-letter-envelope__seal-img" src="{{payload.sealAsset}}" alt="" />
+      </span>
+      <span class="gs-letter-envelope__open-hint">{{localize "GOODSOCIETY.storyBeats.invitation.breakSealHint"}}</span>
+    </button>
+
+    <article class="gs-beat-invitation gs-beat-invitation--in-envelope {{#if payload.stationeryAsset}}gs-beat-invitation--stationery gs-beat-invitation--stationery-{{payload.stationeryId}}{{/if}}"
+             {{#if payload.stationeryStyle}}style="{{payload.stationeryStyle}}"{{/if}}>
+      <div class="gs-beat-invitation__inner">
+        <header class="gs-beat-invitation__eyebrow">{{localize "GOODSOCIETY.storyBeats.invitation.eyebrow"}}</header>
+        {{#if payload.viewerRecipient}}
+          <p class="gs-beat-invitation__addressee">
+            <span class="gs-beat-invitation__addressee-label">{{localize "GOODSOCIETY.storyBeats.invitation.toPrefix"}}</span>
+            <span class="gs-beat-invitation__addressee-name">{{payload.viewerRecipient}}</span>
+          </p>
+        {{/if}}
+        <h2 class="gs-beat-invitation__occasion">{{payload.occasion}}</h2>
+        <hr class="gs-beat-invitation__rule" />
+        {{#if payload.body}}
+          {{!-- Triple-stache to honor line breaks. payload.bodyHtml is
+               built from HTML-escaped user text with \n → <br>; the only
+               HTML it contains is the <br> we inserted in _prepareContext,
+               so this is XSS-safe. --}}
+          <p class="gs-beat-invitation__body">{{{payload.bodyHtml}}}</p>
+        {{/if}}
+        <dl class="gs-beat-invitation__meta">
+          {{#if payload.when}}
+            <div><dt>{{localize "GOODSOCIETY.storyBeats.invitation.when"}}</dt><dd>{{payload.when}}</dd></div>
+          {{/if}}
+          {{#if payload.where}}
+            <div><dt>{{localize "GOODSOCIETY.storyBeats.invitation.where"}}</dt><dd>{{payload.where}}</dd></div>
+          {{/if}}
+        </dl>
+      </div>
+    </article>
+  </div>
+{{else}}
+  <article class="gs-beat-invitation {{#if payload.stationeryAsset}}gs-beat-invitation--stationery gs-beat-invitation--stationery-{{payload.stationeryId}}{{/if}}"
+           {{#if payload.stationeryStyle}}style="{{payload.stationeryStyle}}"{{/if}}>
+    <div class="gs-beat-invitation__inner">
+      <header class="gs-beat-invitation__eyebrow">{{localize "GOODSOCIETY.storyBeats.invitation.eyebrow"}}</header>
+      <h2 class="gs-beat-invitation__occasion">{{payload.occasion}}</h2>
+      <hr class="gs-beat-invitation__rule" />
+      {{#if payload.body}}
+        {{!-- Triple-stache so the bodyHtml's <br> tags render (built from
+             HTML-escaped user text with \n → <br> in _prepareContext —
+             XSS-safe). --}}
+        <p class="gs-beat-invitation__body">{{{payload.bodyHtml}}}</p>
+      {{/if}}
+      <dl class="gs-beat-invitation__meta">
+        {{#if payload.when}}
+          <div><dt>{{localize "GOODSOCIETY.storyBeats.invitation.when"}}</dt><dd>{{payload.when}}</dd></div>
+        {{/if}}
+        {{#if payload.where}}
+          <div><dt>{{localize "GOODSOCIETY.storyBeats.invitation.where"}}</dt><dd>{{payload.where}}</dd></div>
+        {{/if}}
+      </dl>
+    </div>
+  </article>
+{{/if}}

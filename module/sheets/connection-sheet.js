@@ -8,6 +8,7 @@ import { openPersonaSwitcherPopover } from '../apps/persona-switcher-popover.js'
 import { profilePic, profileName } from '../helpers/profile-pic.js';
 import { CONNECTION_FULL_THEME_REGISTRY } from '../constants.js';
 import { fitDossierNames } from '../helpers/responsive-name.js';
+import { bindAutogrowTextareas } from '../helpers/textarea-autogrow.js';
 import { pronounsFor } from '../helpers/pronouns.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -32,13 +33,13 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     },
     actions: {
       openMajor: ConnectionSheet.#openMajor,
-      // Opens a DialogV2 picker to assign / change / clear the linkedMajorId.
-      // The pencil button next to the linked-major pill triggers this.
-      editLinkedMajor: ConnectionSheet.#editLinkedMajor,
+      // editLinkedMajor removed 2026-05-20 — see comment on the deleted
+      // handler body further down. Connection ↔ Major linking lives on the
+      // Major dossier now; the Connection sheet is read-only for that
+      // relationship.
       addImpression: ConnectionSheet.#addImpression,
       editImpression: ConnectionSheet.#editImpression,
       removeImpression: ConnectionSheet.#removeImpression,
-      addPublicTag: ConnectionSheet.#addPublicTag,
       toggleResolvePip: ConnectionSheet.#toggleResolvePip,
       pickToken: ConnectionSheet.#pickToken,
       addPersona: ConnectionSheet.#addPersona,
@@ -76,8 +77,32 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const displayName = profileName(this.actor);
     const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
 
-    // Linked Major
-    const linkedMajor = system.linkedMajorId ? game.actors?.get(system.linkedMajorId) : null;
+    // Linked Majors — source of truth is now `Major.system.connections`
+    // (an array of Connection ids on each Major's dossier). Connections
+    // surface every Major that currently lists them, so one Connection
+    // can serve multiple Majors (Clayton's tutor who's also Roger's
+    // dance partner). The Major's dossier is the single place to add /
+    // remove the link; the Connection sheet just reflects it read-only.
+    //
+    // Legacy `system.linkedMajorId` (single id, written from the
+    // Connection's own pencil-edit dialog) is preserved in the data
+    // model for back-compat and as a tiebreaker when the dock sorts
+    // Connections, but the chip list below uses the scan-based source
+    // exclusively. If a Connection's legacy linkedMajorId points at a
+    // Major that DOESN'T list it back, that link is ignored here —
+    // forces the GM to make the link bidirectional via the Major's
+    // dossier going forward.
+    const linkedMajors = (game.actors?.contents ?? [])
+      .filter(a => a.type === 'major-character'
+        && Array.isArray(a.system?.connections)
+        && a.system.connections.includes(this.actor.id))
+      .map(major => ({
+        id:          major.id,
+        name:        major.name,
+        theme:       major.system?.theme ?? 'clayton',
+        initial:     (major.name?.[0] ?? '?').toUpperCase(),
+        portraitUrl: profilePic(major),
+      }));
 
     // Resolve pips
     const resolveMax = system.resolve?.max ?? 5;
@@ -98,7 +123,12 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         majorActor,
         majorName: majorActor?.name ?? '(unknown)',
         majorTheme: majorActor?.system?.theme ?? 'clayton',
-        majorPortraitUrl: majorActor?.system?.bio?.portraitUrl || majorActor?.img || '',
+        // profilePic() respects the active persona's tokenImageUrl and
+        // falls back to prototypeToken.texture.src — the modern resolution
+        // chain. Reading `system.bio.portraitUrl || actor.img` directly
+        // (the old pattern here) misses persona overrides AND the
+        // prototypeToken portrait that modern actors actually populate.
+        majorPortraitUrl: majorActor ? profilePic(majorActor) : '',
         majorInitial: (majorActor?.name?.[0] ?? '?').toUpperCase(),
       };
     });
@@ -153,22 +183,29 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       // gendered copy. Always populated; falls back to they/them when empty.
       pronouns: pronounsFor(this.actor),
       enrichedDescription,
-      linkedMajor,
-      linkedMajorTheme: linkedMajor?.system?.theme ?? 'clayton',
-      linkedMajorInitial: (linkedMajor?.name?.[0] ?? '?').toUpperCase(),
+      // Linked Majors — list of `{id, name, theme, initial, portraitUrl}`,
+      // one per Major that lists this Connection in its `system.connections`.
+      // Templates iterate this with `{{#each linkedMajors}}` and render
+      // one themed chip per Major. Empty when no Major has linked.
+      linkedMajors,
+      hasLinkedMajors: linkedMajors.length > 0,
       resolvePips,
       resolveMax,
       resolveCurrent,
       impressions,
       personas: system.personas ?? [],
       activePersonaId: system.activePersonaId ?? '',
-      publicTags: system.sceneInfo?.publicTags ?? [],
       hoverSummary: system.sceneInfo?.hoverSummary ?? '',
     };
   }
 
   _onRender(context, options) {
     super._onRender(context, options);
+
+    // Auto-grow wrapping textareas (bio-line role, etc.) — belt-and-
+    // suspenders alongside CSS `field-sizing: content` for older Chromium.
+    bindAutogrowTextareas(this.element);
+
     // Set theme scope on outer element so all CSS variables cascade to
     // descendants. We add BOTH `gs-connection` AND `gs-actor` so the
     // theme cascade works whether the user picks a connection-* variant
@@ -282,42 +319,15 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   /**
-   * Linked Major picker — opens a DialogV2 with a select of all Majors plus
-   * a "(no Major)" option for clearing the link. The pencil button next to
-   * the linked-major pill on the dossier opens this. Same pattern as the
-   * existing #addImpression but writes to system.linkedMajorId instead of
-   * appending to system.impressions.
+   * `#editLinkedMajor` removed 2026-05-20 — Connection ↔ Major linking is
+   * now managed exclusively from the Major's dossier (`Major.system.
+   * connections`), so a Connection can be referenced by multiple Majors at
+   * once. The pencil-edit button + DialogV2 picker that lived here used to
+   * write `system.linkedMajorId`, but that single-link field is now legacy
+   * (back-compat read only). To link a Connection to a Major, drag the
+   * Connection actor onto the Major dossier's connections section; to
+   * unlink, use the Major dossier's remove control.
    */
-  static async #editLinkedMajor() {
-    const majors  = game.actors?.filter(a => a.type === 'major-character') ?? [];
-    const current = this.actor.system.linkedMajorId ?? '';
-    const noneLabel = game.i18n.localize('GOODSOCIETY.connection.noMajor');
-
-    // Build options: "(no Major)" first, then alpha-sorted Majors. The
-    // currently-linked Major is preselected.
-    const options = [
-      `<option value=""${current ? '' : ' selected'}>— ${foundry.utils.escapeHTML(noneLabel)} —</option>`,
-      ...majors
-        .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
-        .map(a => {
-          const sel = a.id === current ? ' selected' : '';
-          return `<option value="${a.id}"${sel}>${foundry.utils.escapeHTML(a.name)}</option>`;
-        }),
-    ].join('');
-
-    const result = await foundry.applications.api.DialogV2.prompt({
-      window: { title: game.i18n.localize('GOODSOCIETY.connection.editLinkedMajorTitle') },
-      content: `<label style="display:block;margin-bottom:6px">${game.i18n.localize('GOODSOCIETY.connection.editLinkedMajorPrompt')}<select name="majorId" style="width:100%;margin-top:4px">${options}</select></label>`,
-      ok: {
-        label: game.i18n.localize('GOODSOCIETY.connection.editLinkedMajorConfirm'),
-        callback: (_ev, button) => button.form.elements.majorId.value,
-      },
-      rejectClose: false,
-    });
-    // result === undefined when user closes via X; '' is a deliberate "clear".
-    if (result === undefined || result === null) return;
-    await this.actor.update({ 'system.linkedMajorId': result });
-  }
 
   static async #addImpression() {
     const majors = game.actors?.filter(a => a.type === 'major-character') ?? [];
@@ -360,20 +370,6 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (result === null || result === undefined) return;
     impressions[index] = { ...imp, text: result };
     await this.actor.update({ 'system.impressions': impressions });
-  }
-
-  static async #addPublicTag() {
-    const tag = await foundry.applications.api.DialogV2.prompt({
-      window: { title: game.i18n.localize('GOODSOCIETY.sceneTag.addTitle') },
-      content: `<label style="display:block;margin-bottom:6px">${game.i18n.localize('GOODSOCIETY.sceneTag.label')}<input type="text" name="tag" style="width:100%;margin-top:4px" /></label>`,
-      ok: {
-        label: game.i18n.localize('GOODSOCIETY.sceneTag.confirm'),
-        callback: (_ev, button) => button.form.elements.tag.value.trim(),
-      },
-    });
-    if (!tag) return;
-    const current = this.actor.system.sceneInfo?.publicTags ?? [];
-    await this.actor.update({ 'system.sceneInfo.publicTags': [...current, tag] });
   }
 
   static async #addPersona() {

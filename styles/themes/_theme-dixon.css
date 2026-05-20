@@ -36,4 +36,17 @@
   --gs-display:      'Lora', 'Palatino', Georgia, serif;
   --gs-body:         'Crimson Text', Georgia, serif;
   --gs-italic:       'Crimson Text Italic', Georgia, serif;
+
+  /* Functional reputation colors — Dixon's warmer/more-saturated paper
+   * (#f7d3c5) drops the default `--gs-positive: #4A7A4A` sage to ~3.3:1
+   * contrast (fails AA on normal text). The deeper forest below tests
+   * at ~5:1 on the same surface and reads as the same green family.
+   * `--gs-danger: #8B2A2A` already passes (~5.5:1) — kept default. */
+  --gs-positive:     #2e5a2e;
+
+  /* Reputation-tag fills — slightly punchier on this warm paper since the
+   * defaults' soft tints (8% alpha) read murky against the saturated
+   * surface. Same hue, doubled alpha. */
+  --rep-positive-bg: rgba( 46,  90,  46, 0.14);
+  --rep-negative-bg: rgba(139,  42,  42, 0.14);
 }

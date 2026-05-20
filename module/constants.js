@@ -81,6 +81,61 @@ export const SEAL_TYPES = [
 ];
 
 /**
+ * STATIONERY_TYPES — illustrated stationery overlays for the Invitation
+ * story beat (and any future "letterpiece" overlays we add). Each entry
+ * declares the background asset (a 1414×2000 portrait PNG with a decorative
+ * frame), the aspect ratio (all current entries are A4-portrait — 1414/2000
+ * ≈ 0.707), and the text-safe content insets (where the invitation copy
+ * should sit so it doesn't overlap the frame artwork).
+ *
+ * Each entry:
+ *   - id          — string key, used as `invitation.stationery` payload value
+ *   - label       — localization-key fragment (GOODSOCIETY.stationery.{label})
+ *   - asset       — path to the PNG, or null for the unillustrated default
+ *   - aspectRatio — `<w>/<h>` for the card box; null = unconstrained
+ *   - content     — { top, right, bottom, left } as PERCENT of the card's
+ *                   own width/height (CSS padding values). null = no
+ *                   per-stationery override (use the default card padding).
+ *
+ * `plain` is the no-overlay default — the card renders with the engraved
+ * cream-gradient + double-rule frame we already built.
+ */
+export const STATIONERY_TYPES = [
+  { id: 'plain',          label: 'plain',
+    asset: null, aspectRatio: null, content: null },
+
+  // Gold-flourish corners + horizontal ornaments top & bottom on cream.
+  { id: 'gold-flourish',  label: 'goldFlourish',
+    asset: `${ASSETS_BASE}/stationery/stationery-1.png`,
+    aspectRatio: '1414/2000',
+    content: { top: 24, right: 16, bottom: 24, left: 16 } },
+
+  // Gold ornate corners + thin gold border on cream.
+  { id: 'gold-border',    label: 'goldBorder',
+    asset: `${ASSETS_BASE}/stationery/stationery-2.png`,
+    aspectRatio: '1414/2000',
+    content: { top: 26, right: 14, bottom: 26, left: 14 } },
+
+  // Dark scrollwork corners + side ornaments on aged parchment.
+  { id: 'dark-scroll',    label: 'darkScroll',
+    asset: `${ASSETS_BASE}/stationery/stationery-3.png`,
+    aspectRatio: '1414/2000',
+    content: { top: 28, right: 17, bottom: 28, left: 17 } },
+
+  // Cream paper inside a deep-red lace doily.
+  { id: 'doily-burgundy', label: 'doilyBurgundy',
+    asset: `${ASSETS_BASE}/stationery/stationery-4.png`,
+    aspectRatio: '1414/2000',
+    content: { top: 18, right: 18, bottom: 18, left: 18 } },
+
+  // Cream paper inside a scalloped burgundy lace frame.
+  { id: 'doily-scallop',  label: 'doilyScallop',
+    asset: `${ASSETS_BASE}/stationery/stationery-5.png`,
+    aspectRatio: '1414/2000',
+    content: { top: 16, right: 16, bottom: 16, left: 16 } },
+];
+
+/**
  * SCRIPT_FONTS — optional calligraphy faces for a letter's greeting +
  * signature lines, chosen per-letter in the letter composer's font picker.
  *
@@ -185,6 +240,9 @@ export const COWORK_SURFACES = [
   // Cycle HUD: persistent UI but the toggle is drawer-only so the rail stays
   // focused on the six core "boards/tools."
   { id: 'cycle-hud',             group: 'system',  label: 'GOODSOCIETY.cabinet.surface.cycleHud',                       hideBodyClass: 'gs-hide-cycle-hud',   defaultVisible: true  },
+  // Desire Reminder: small top-right peripheral panel, transparent until
+  // hover. Persistent UI; toggle from the drawer.
+  { id: 'desire-reminder',       group: 'system',  label: 'GOODSOCIETY.cabinet.surface.desireReminder',                 hideBodyClass: 'gs-hide-desires',     defaultVisible: true  },
 
   // GM Tools (launchers, GM-only)
   { id: 'gm-tool-events',        group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.eventCommandCenter', kind: 'launcher', gmOnly: true, launcherKey: 'events'      },
@@ -193,6 +251,7 @@ export const COWORK_SURFACES = [
   { id: 'gm-tool-session-log',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.sessionLogOpen',   kind: 'launcher', gmOnly: true, launcherKey: 'sessionLog'  },
   { id: 'gm-tool-conditions',    group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.conditions',       kind: 'launcher', gmOnly: true, launcherKey: 'conditions' },
   // Destructive one-shot — sits at the end of the GM Tools list intentionally.
+  { id: 'gm-tool-story-beats',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.storyBeats',       kind: 'launcher', gmOnly: true, launcherKey: 'storyBeats' },
   { id: 'gm-tool-reset-campaign',group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.resetCampaign',    kind: 'launcher', gmOnly: true, launcherKey: 'resetCampaign' },
 
   // Third-party modules (gated on activation)

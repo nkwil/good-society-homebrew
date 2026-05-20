@@ -66,8 +66,17 @@ export function getGroupedEvents(isGM = game.user?.isGM ?? false) {
  * @param {string} [fields.dateLabel]   Free-form text; e.g. "next month"
  * @param {string} [fields.description]
  * @param {'public'|'gm-only'} [fields.visibility]
+ * @param {string} [fields.sceneId]     Optional linked Foundry scene id —
+ *                                       activated automatically when the GM
+ *                                       clicks "Start Event".
  */
-export async function addEvent({ title, dateLabel = '', description = '', visibility = 'public' }) {
+export async function addEvent({
+  title,
+  dateLabel   = '',
+  description = '',
+  visibility  = 'public',
+  sceneId     = '',
+}) {
   if (!game.user?.isGM) return null;
   if (!title || !String(title).trim()) return null;
   const v = VALID_VISIBILITY.includes(visibility) ? visibility : 'public';
@@ -79,7 +88,7 @@ export async function addEvent({ title, dateLabel = '', description = '', visibi
     description: String(description ?? ''),
     visibility:  v,
     stage:       'coming-soon',
-    sceneId:     '',
+    sceneId:     String(sceneId ?? ''),
     createdAt:   Date.now(),
     promotedAt:  0,
     concludedAt: 0,
@@ -107,6 +116,9 @@ export async function updateEvent(id, patch) {
   if (patch.visibility  != null && VALID_VISIBILITY.includes(patch.visibility)) {
     next.visibility = patch.visibility;
   }
+  // sceneId: empty string is a valid value (unlinking). Only skip when the
+  // patch omits the key entirely.
+  if (patch.sceneId !== undefined) next.sceneId = String(patch.sceneId ?? '');
 
   const arr = [...events];
   arr[idx] = next;
@@ -126,12 +138,17 @@ export async function removeEvent(id) {
 }
 
 /**
- * Promote a 'coming-soon' event to 'today' with an optional scene link.
- * Auto-flips 'gm-only' visibility to 'public' (the GM is announcing it).
+ * Promote a 'coming-soon' event to 'today'. Auto-flips 'gm-only' visibility
+ * to 'public' (the GM is announcing it). If `sceneId` is omitted (or
+ * undefined) the event's existing sceneId is preserved — scene linking now
+ * happens at create/edit time, so promote shouldn't blow away a previously
+ * set link. Pass an explicit `''` to clear.
  */
-export async function promoteEvent(id, sceneId = '') {
+export async function promoteEvent(id, sceneId) {
   if (!game.user?.isGM) return null;
-  return _setStage(id, 'today', { sceneId, autoReveal: true });
+  const opts = { autoReveal: true };
+  if (sceneId !== undefined) opts.sceneId = sceneId;
+  return _setStage(id, 'today', opts);
 }
 
 /** Conclude a 'today' event, moving it to 'past'. Records concludedAt. */

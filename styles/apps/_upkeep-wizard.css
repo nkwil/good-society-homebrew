@@ -57,7 +57,11 @@
 .gs-upkeep-wizard__step-of {
   font-family: var(--gs-italic);
   font-size: 11px;
-  color: var(--gs-accent-3);
+  /* Was --gs-accent-3 (gilt metallic) — fine for borders/markers but
+   * fails AA contrast as TEXT on warm-paper themes (Dixon, Rose). The
+   * metallic is documented in _variables.css as accent-only. Switched
+   * to a 75% ink-mix which passes AA on every theme paper. */
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   flex-shrink: 0;
   margin-top: 4px;
 }
@@ -121,14 +125,19 @@
   white-space: nowrap;
 }
 
-.gs-upkeep-wizard__marker--done    .gs-upkeep-wizard__marker-label { color: var(--gs-accent-3); }
+/* Done/future marker labels used --gs-accent-3 (gilt metallic), which is
+ * for non-text accents per _variables.css. Replaced with ink-mixes —
+ * `done` at 75% (still readable, passes AA on every theme), `future` at
+ * 50% to keep the visual hierarchy of "passive future state" without
+ * the contrast failure. */
+.gs-upkeep-wizard__marker--done    .gs-upkeep-wizard__marker-label { color: color-mix(in srgb, var(--gs-ink) 75%, transparent); }
 .gs-upkeep-wizard__marker--current .gs-upkeep-wizard__marker-label {
   color: var(--gs-brand);
   font-family: var(--gs-display);
   font-size: 10px;
   font-weight: 600;
 }
-.gs-upkeep-wizard__marker--future  .gs-upkeep-wizard__marker-label { color: var(--gs-accent-3); opacity: 0.6; }
+.gs-upkeep-wizard__marker--future  .gs-upkeep-wizard__marker-label { color: color-mix(in srgb, var(--gs-ink) 50%, transparent); }
 
 /* ── Body ────────────────────────────────────────────────────────────────── */
 
@@ -150,7 +159,7 @@
 .gs-upkeep-wizard__step-prompt {
   font-family: var(--gs-italic);
   font-size: 13px;
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
   margin: 0 0 20px;
   line-height: 1.5;
 }
@@ -438,7 +447,9 @@
 }
 
 .gs-upkeep-wizard__summary-skip {
-  color: var(--gs-accent-3);
+  /* Summary line for skipped/passive items — was gilt metallic, swapped
+   * to ink-mix for AA legibility (see _step-of comment above). */
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
 }
 
 .gs-upkeep-wizard__conflict-note {

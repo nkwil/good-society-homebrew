@@ -33,6 +33,18 @@
   --gs-metallic:       #C9A55C;          /* gilt — action pill borders, "earned" markers */
   --gs-muted-accent:   #D4D9CF;          /* mist — muted UI surfaces / subtle greys */
 
+  /* --gs-text-muted — semantic slot for "secondary / muted body text"
+   * (subtitle lines, step labels, "future state" indicators, captions).
+   * Many surfaces historically used `color: var(--gs-accent-3)` for this
+   * purpose, but accent-3 is the metallic/gilt slot — intended for
+   * borders + markers, not text — and at #C9A55C it fails AA contrast
+   * on every theme's paper (~1.6:1 on warm papers, ~2.1:1 on cream).
+   * The 70% ink-mix below passes AA (~5:1+) on every theme paper because
+   * each theme's --gs-ink is tuned for the surrounding surface. Use this
+   * for any TEXT that wants to read as quieter than primary ink; keep
+   * `--gs-accent-3` for borders, dots, ornaments, etc. */
+  --gs-text-muted:     color-mix(in srgb, var(--gs-ink) 70%, transparent);
+
   /* Legacy aliases — keep until every consumer migrates to semantic names. */
   --gs-accent-1:       var(--gs-headers);
   --gs-accent-2:       var(--gs-hairlines);

@@ -85,7 +85,17 @@ async function _runReset() {
     if (repIds.length) await actor.deleteEmbeddedDocuments('Item', repIds);
 
     // Reset inner-conflict boxes (keep the conflict items themselves).
-    const conflicts = actor.items.filter(i => i.type === 'inner-conflict');
+    // Drop blank inner-conflict items (no labels on either side) — they
+    // accumulate from accidental "+ Add conflict" clicks where the user
+    // never typed a label, and would otherwise be surfaced into the active
+    // list by the reset below as a row of empty "Left side vs. Right side"
+    // boxes. Real, named conflicts stay and have their progress reset.
+    const allConflicts = actor.items.filter(i => i.type === 'inner-conflict');
+    const blankIds = allConflicts
+      .filter(c => !c.system?.leftLabel?.trim() && !c.system?.rightLabel?.trim())
+      .map(c => c.id);
+    if (blankIds.length) await actor.deleteEmbeddedDocuments('Item', blankIds);
+    const conflicts = allConflicts.filter(c => !blankIds.includes(c.id));
     if (conflicts.length) {
       await actor.updateEmbeddedDocuments('Item', conflicts.map(c => ({
         _id: c.id,
@@ -128,11 +138,15 @@ async function _runReset() {
     }
   }
 
-  // ── Connections — refresh resolve ─────────────────────────────────────────
+  // ── Connections — refresh resolve to STARTING value (1), not max ───────
+  // Per CLAUDE.md §6.2: Connections default to `{ current: 1, max: 5 }` —
+  // they start with one resolve and can refresh during play. Resetting to
+  // max would give every Connection a full bar of resolve from day one,
+  // which isn't how the game is supposed to start. Hard-coded 1 here
+  // matches the DataModel's `initial: 1` on system.resolve.current.
   const connections = game.actors.filter(a => a.type === 'connection');
   for (const c of connections) {
-    const max = c.system?.resolve?.max ?? 5;
-    await c.update({ 'system.resolve.current': max });
+    await c.update({ 'system.resolve.current': 1 });
   }
 
   ui.notifications?.info(

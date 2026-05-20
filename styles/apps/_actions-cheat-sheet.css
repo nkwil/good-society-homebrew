@@ -114,7 +114,7 @@
   font-weight: 400;
   letter-spacing: 0.05em;
   font-variant: small-caps;
-  color: var(--gs-accent-3);
+  color: var(--gs-text-muted);
   opacity: 0.85;
 }
 

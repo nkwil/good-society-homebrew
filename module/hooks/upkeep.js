@@ -13,22 +13,34 @@
 
 import { openUpkeepWizard } from '../apps/upkeep-wizard.js';
 import { openUpkeepRoster } from '../apps/upkeep-roster.js';
-import { createCycleDivider } from '../helpers/cycle-divider.js';
+import { createCycleDivider, promptCycleSummary } from '../helpers/cycle-divider.js';
 
 /**
  * Called by good-society.js when cyclePhase changes to 'upkeep'.
  * Safe to call multiple times — guards against re-entry if already handled.
  */
 export function onUpkeepPhaseStart() {
-  // Auto-create the cycle divider on transition into upkeep (post-MVP §13.4).
-  // GM-client-only, idempotent — safe to call from every client's handler.
+  // Auto-create the cycle divider on transition into upkeep (post-MVP §13.4),
+  // then prompt the GM to write a free-form cycle summary for the novel.
+  // Both GM-client-only and idempotent — the prompt skips itself if the GM
+  // has already written one this cycle.
   if (game.user?.isGM) {
     let cycleNumber = null;
     try { cycleNumber = game.settings.get('good-society-homebrew', 'cycleNumber'); } catch {}
     if (cycleNumber != null) {
-      createCycleDivider(cycleNumber).catch(err =>
-        console.warn('GS | cycle divider auto-create failed (non-fatal):', err),
-      );
+      createCycleDivider(cycleNumber)
+        .then(() => {
+          // Defer the prompt so the Roster has time to mount first; the GM
+          // sees their wrap-up state, then the summary modal lands on top.
+          setTimeout(() => {
+            promptCycleSummary(cycleNumber).catch(err =>
+              console.warn('GS | cycle summary prompt failed:', err),
+            );
+          }, 600);
+        })
+        .catch(err =>
+          console.warn('GS | cycle divider auto-create failed (non-fatal):', err),
+        );
     }
   }
 

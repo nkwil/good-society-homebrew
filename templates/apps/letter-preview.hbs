@@ -1,0 +1,56 @@
+{{!-- Letter Composer — live preview pane.
+
+     This template renders the composer's "what the recipient will see"
+     preview. It is INTENTIONALLY a separate primitive from the chat-card
+     letter (`templates/chat-cards/letter.hbs` + `.gs-letter-card`) because:
+
+       1. The chat card was designed for the chat-log sidebar — narrow,
+          dense, cream-on-house. Stretching it into a portrait full-page
+          parchment frame fought the primitive at every layer (border,
+          ::before fold-line, layered cream gradients, shadow — all
+          painted rectangular frames over the torn-edge PNG).
+       2. The preview pane needs to ALWAYS look like a piece of paper, even
+          with an empty body — ghost placeholders fill the empty fields so
+          the page never looks half-baked.
+       3. The seal sits at a natural bottom-right INSIDE the parchment
+          (anchored to the page itself, not to the chat card's bounding box).
+
+     Wrapped via themedWrap() so `--gs-brand` is the sender's theme color;
+     all other paper / ink colors are hardcoded on `.gs-letter-composer__sheet`. --}}
+
+<article class="gs-letter-composer__sheet gs-parchment-v{{parchmentVariant}}">
+
+  {{#if letter.subject}}
+    <p class="gs-letter-composer__sheet-subject">{{letter.subject}}</p>
+  {{else}}
+    <p class="gs-letter-composer__sheet-subject gs-is-ghost">{{localize "GOODSOCIETY.letterComposer.subjectPlaceholder"}}</p>
+  {{/if}}
+
+  {{#if letter.greetingLine}}
+    <p class="gs-letter-composer__sheet-greeting">{{letter.greetingLine}}</p>
+  {{else}}
+    <p class="gs-letter-composer__sheet-greeting gs-is-ghost">Dear —,</p>
+  {{/if}}
+
+  {{#if letter.body}}
+    <div class="gs-letter-composer__sheet-body">{{letter.body}}</div>
+  {{else}}
+    <div class="gs-letter-composer__sheet-body gs-is-ghost">{{localize "GOODSOCIETY.letterComposer.bodyPlaceholder"}}</div>
+  {{/if}}
+
+  {{#if letter.closingLine}}
+    <p class="gs-letter-composer__sheet-closing">{{letter.closingLine}}</p>
+  {{else}}
+    <p class="gs-letter-composer__sheet-closing gs-is-ghost">Yours, &c.</p>
+  {{/if}}
+
+  <p class="gs-letter-composer__sheet-signature"
+     {{#if letter.scriptFontFamily}}style="font-family: {{letter.scriptFontFamily}}; font-size: 2.2em; line-height: 1.2;"{{/if}}>{{speakerName}}</p>
+
+  {{#if letter.seal}}
+    <div class="gs-letter-composer__sheet-seal"
+         style="{{#if letter.sealIconAsset}}background-image: url('{{letter.sealIconAsset}}');{{/if}}{{#if letter.sealAccent}} --gs-seal-accent: {{letter.sealAccent}};{{/if}}"
+         aria-label="{{letter.sealLabel}}"></div>
+  {{/if}}
+
+</article>

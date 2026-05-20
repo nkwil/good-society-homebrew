@@ -1,0 +1,209 @@
+/* Desire Reminder — small peripheral panel pinned to the top-right of the
+ * viewport. Frameless ApplicationV2; same anti-pattern handling as the dock:
+ *   - position: fixed (frameless windows lose their positioning helpers)
+ *   - z-index above canvas overlays, below the Cabinet tray
+ *   - pointer-events: auto so hover detection works
+ *
+ * Transparent at rest so it doesn't compete with the canvas; full opacity on
+ * hover so players can read it when they look over.
+ *
+ * Cabinet toggle: body class `gs-hide-desires` hides the whole surface.
+ */
+
+#gs-desire-reminder,
+.application.gs-desire-reminder {
+  position: fixed !important;
+  /* Anchored to the top-left corner of the viewport. Offset enough to clear
+   * Foundry's scene-controls icon column (~60 px wide) and the top chrome
+   * row, but otherwise as corner-tight as possible. */
+  top: 60px !important;
+  left: 100px !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 40 !important;
+  width: 260px;
+  max-height: 60vh;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  pointer-events: auto;
+  /* Mostly opaque at rest so the panel is readable at a glance — just a
+   * touch of softening so it doesn't compete with the canvas. */
+  opacity: 0.85;
+  transition: opacity 220ms ease;
+}
+
+#gs-desire-reminder:hover,
+.application.gs-desire-reminder:hover {
+  opacity: 1;
+}
+
+#gs-desire-reminder .window-content,
+.application.gs-desire-reminder .window-content {
+  padding: 0;
+  background: transparent;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+/* Card */
+.gs-desire-reminder {
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 8px;
+  box-shadow: 0 3px 12px rgba(20, 12, 14, 0.18);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 60vh;
+}
+
+.gs-desire-reminder__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 0.5px solid var(--gs-accent-2);
+}
+
+.gs-desire-reminder__head .gs-eyebrow {
+  margin: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.gs-desire-reminder__head .gs-eyebrow::after { display: none; }
+
+.gs-desire-reminder__title {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Minimize button — sits at the right edge of the head row. Matches the
+ * dock's `.gs-dock__minimize` styling (18×18 rounded outlined button)
+ * for visual consistency. */
+.gs-desire-reminder__minimize {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  font-family: var(--gs-display);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+.gs-desire-reminder__minimize:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: var(--gs-paper-warm);
+}
+.gs-desire-reminder__minimize:focus:not(:focus-visible) {
+  outline: none;
+}
+.gs-desire-reminder__minimize:focus-visible {
+  outline: 1.5px solid var(--gs-brand);
+  outline-offset: 1px;
+}
+
+/* Collapsed state — only the header row remains, body hidden. The
+ * head loses its bottom border so the collapsed panel reads as one
+ * tight pill (mirrors the dock's collapsed look). */
+.gs-desire-reminder.is-minimized .gs-desire-reminder__body {
+  display: none;
+}
+.gs-desire-reminder.is-minimized .gs-desire-reminder__head {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Body wrapper — the scroll container. The card sets a max-height; this
+ * inner box flexes to fill the remaining space below the head row and
+ * scrolls when the desire list exceeds it. `min-height: 0` is essential
+ * — without it a flex child refuses to shrink below its content's
+ * intrinsic height, which is what was letting long desires overflow the
+ * card visibly onto the canvas. */
+.gs-desire-reminder__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.gs-desire-reminder__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gs-desire-reminder__entry {
+  border-left: 2px solid var(--gs-brand);
+  padding: 2px 0 2px 10px;
+}
+
+/* Name renders as a button (click-to-open-sheet) but reads like a label. */
+button.gs-desire-reminder__entry-name {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin: 0 0 3px 0;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  font-family: var(--gs-display);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gs-brand);
+  cursor: pointer;
+  min-height: 0;
+  line-height: 1.2;
+}
+
+button.gs-desire-reminder__entry-name:hover {
+  text-decoration: underline;
+}
+
+.gs-desire-reminder__entry-desire {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--gs-ink);
+}
+
+.gs-desire-reminder__entry-desire p {
+  margin: 0 0 6px;
+}
+.gs-desire-reminder__entry-desire p:last-child {
+  margin-bottom: 0;
+}
+
+.gs-desire-reminder__entry-desire--empty {
+  opacity: 0.55;
+}
+
+.gs-desire-reminder__empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  margin: 0;
+  text-align: center;
+}
+
+/* Cabinet visibility toggle. */
+body.gs-hide-desires #gs-desire-reminder,
+body.gs-hide-desires .application.gs-desire-reminder {
+  display: none !important;
+}

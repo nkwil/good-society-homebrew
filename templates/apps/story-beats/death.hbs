@@ -1,0 +1,13 @@
+{{!-- Death Announcement — wreath border, somber. --}}
+<article class="gs-beat-death">
+  <div class="gs-beat-death__wreath" aria-hidden="true"></div>
+  <p class="gs-beat-death__eyebrow">{{localize "GOODSOCIETY.storyBeats.death.eyebrow"}}</p>
+  <h2 class="gs-beat-death__name">{{payload.deceased}}</h2>
+  {{#if payload.when}}
+    <p class="gs-beat-death__when"><em>{{payload.when}}</em></p>
+  {{/if}}
+  {{#if payload.cause}}
+    <p class="gs-beat-death__cause">{{payload.cause}}</p>
+  {{/if}}
+  <p class="gs-beat-death__epitaph">{{localize "GOODSOCIETY.storyBeats.death.epitaph"}}</p>
+</article>

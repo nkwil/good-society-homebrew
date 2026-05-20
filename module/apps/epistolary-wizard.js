@@ -117,8 +117,12 @@ export class EpistolaryWizard extends HandlebarsApplicationMixin(ApplicationV2) 
         const recipientName = (f.recipientName || '').toString();
         // sealId carries the typed registry key (post-MVP §11.2). Older
         // letters lacked this flag; default to '' so the filter still works.
-        const sealId = f.letterSealId || f.sealId || '';
-        const sealDef = sealId ? SEAL_TYPES.find((s) => s.id === sealId) : null;
+        // sealId carries the typed registry key. Letters predating either
+        // the registry OR the new default-seal in the composer arrive with
+        // an empty value here — fall back to the first registry entry so
+        // the wax-seal is always present in the reader.
+        const sealId = f.letterSealId || f.sealId || SEAL_TYPES[0]?.id || '';
+        const sealDef = SEAL_TYPES.find((s) => s.id === sealId) ?? SEAL_TYPES[0];
         return {
           id: m.id,
           senderId,
@@ -191,7 +195,10 @@ export class EpistolaryWizard extends HandlebarsApplicationMixin(ApplicationV2) 
     ctx.tabs = [
       { id: 'inbox',   label: game.i18n.localize('GOODSOCIETY.epistolary.tabs.inbox'),   badge: unreadCount },
       { id: 'compose', label: game.i18n.localize('GOODSOCIETY.epistolary.tabs.compose'), badge: 0 },
-      { id: 'outbox',  label: game.i18n.localize('GOODSOCIETY.epistolary.tabs.outbox'),  badge: outbox.length },
+      // Outbox badge was a sent-letter count — informational only, no
+      // unread/action semantics. Suppressed (badge: 0) so the tab reads
+      // as a plain label; the letters themselves render inside the tab.
+      { id: 'outbox',  label: game.i18n.localize('GOODSOCIETY.epistolary.tabs.outbox'),  badge: 0 },
     ];
     // `opened` gates the row preview — a still-sealed letter must not leak
     // its subject/snippet. Outbox letters are always "open" (the user wrote
@@ -450,7 +457,53 @@ export class EpistolaryRoster extends HandlebarsApplicationMixin(ApplicationV2) 
       resizable: true,
     },
     position: { width: 420, height: 'auto' },
+    actions: {
+      unmarkDone: EpistolaryRoster.#unmarkDone,
+    },
   };
+
+  /**
+   * GM-only undo for the per-Major epistolaryDone flag. A player who hit the
+   * Mark Done button on their wizard can't undo it themselves — the wizard
+   * intentionally only sets the flag, never clears it (so they can't "fake"
+   * being undone in a way that bypasses the GM). The GM clicks the ✓ here
+   * on a marked-done row to roll it back. Confirms first so a stray click
+   * doesn't silently reverse a player's intentional commit.
+   */
+  static async #unmarkDone(event, target) {
+    if (!game.user?.isGM) return;
+    const actorId = target?.dataset?.actorId;
+    if (!actorId) return;
+    const actor = game.actors.get(actorId);
+    if (!actor) return;
+
+    let cycleNumber = 1;
+    try { cycleNumber = game.settings.get(FLAG_SCOPE, 'cycleNumber'); } catch {}
+
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: { title: game.i18n.localize('GOODSOCIETY.epistolary.roster.unmarkConfirmTitle') },
+      content: `<p>${game.i18n.format('GOODSOCIETY.epistolary.roster.unmarkConfirmBody', {
+        name: profileName(actor),
+        cycle: cycleNumber,
+      })}</p>`,
+      rejectClose: false,
+    });
+    if (!confirmed) return;
+
+    // Clear ONLY this cycle's entry from the flag map, leaving prior cycles
+    // intact. We rebuild the map without the cycle key rather than calling
+    // unsetFlag on the whole epistolaryDone tree.
+    const current = actor.flags?.[FLAG_SCOPE]?.epistolaryDone ?? {};
+    const next    = { ...current };
+    delete next[cycleNumber];
+
+    await actor.update({ [`flags.${FLAG_SCOPE}.epistolaryDone`]: next });
+
+    ui.notifications?.info(game.i18n.format('GOODSOCIETY.epistolary.roster.unmarkedToast', {
+      name: profileName(actor),
+    }));
+    // The updateActor hook re-renders the roster; no manual render call needed.
+  }
 
   static PARTS = {
     main: { template: 'systems/good-society-homebrew/templates/apps/epistolary-roster.hbs' },

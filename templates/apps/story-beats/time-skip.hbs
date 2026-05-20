@@ -1,0 +1,7 @@
+{{!-- Time Skip — quiet italic line. --}}
+<article class="gs-beat-time-skip">
+  <p class="gs-beat-time-skip__when"><em>{{payload.when}}</em></p>
+  {{#if payload.note}}
+    <p class="gs-beat-time-skip__note">{{payload.note}}</p>
+  {{/if}}
+</article>

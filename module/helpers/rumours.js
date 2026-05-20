@@ -304,6 +304,7 @@ async function _handleSpread({ rumourId, advanceTurn, requestedBy }) {
   // p.127, so GM-driven spreads don't deduct. Players without an owned
   // Major or with 0 resolve can't spread (the wizard validates client-
   // side too, so this is defense-in-depth for socket-emitted requests).
+  let spentBy = null;  // { actorId, actorName, before, after } when a Major paid
   const requestingUser = requestedBy ? game.users?.get(requestedBy) : null;
   if (requestingUser && !requestingUser.isGM) {
     const ownerLevel = CONST.DOCUMENT_OWNERSHIP_LEVELS?.OWNER ?? 3;
@@ -316,15 +317,45 @@ async function _handleSpread({ rumourId, advanceTurn, requestedBy }) {
     if (current < 1) return null;
     try {
       await myMajor.update({ 'system.tokens.resolve.current': current - 1 });
+      spentBy = {
+        actorId: myMajor.id,
+        actorName: myMajor.name,
+        before: current,
+        after: current - 1,
+      };
     } catch (err) {
       console.warn('GS | rumour spread resolve deduction failed:', err);
       return null;
     }
+  } else if (requestingUser?.isGM) {
+    spentBy = { gm: true, actorName: 'GM (general supply)' };
   }
 
   const next = [...all];
-  next[idx] = { ...r, state: 'spread', spreadAt: Date.now() };
+  // Persist who paid + state transition timestamp on the rumour itself, so
+  // the audit trail survives across reloads and the GM can always see who
+  // shouldered the resolve cost.
+  next[idx] = { ...r, state: 'spread', spreadAt: Date.now(), spentBy };
   await game.settings.set(NS, 'rumours', next);
+
+  // Public system card — makes the cost visible at the table.
+  try {
+    const { postSystemCard } = await import('./chat-cards.js');
+    const text = (r.text ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const snippet = text.length > 80 ? text.slice(0, 80) + '…' : text;
+    const content = spentBy?.gm
+      ? game.i18n.format('GOODSOCIETY.rumour.spreadCardGm', { rumour: snippet })
+      : game.i18n.format('GOODSOCIETY.rumour.spreadCardPaid', {
+          actor: spentBy?.actorName ?? '—',
+          before: spentBy?.before ?? '?',
+          after: spentBy?.after ?? '?',
+          rumour: snippet,
+        });
+    await postSystemCard({ content, context: 'rumour' });
+  } catch (err) {
+    console.warn('GS | rumour spread card failed:', err);
+  }
+
   if (advanceTurn) await _advanceTurn();
   return next[idx];
 }
