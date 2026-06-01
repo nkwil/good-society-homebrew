@@ -83,7 +83,6 @@
   border-radius: 3px 0 0 3px;
 }
 
-.gs-persona-switcher-popover__stripe--primary { background: var(--gs-brand); }
 .gs-persona-switcher-popover__stripe--secret  { background: var(--gs-danger); }
 .gs-persona-switcher-popover__stripe--other   { background: var(--gs-accent-3); }
 .gs-persona-switcher-popover__stripe--none    { background: var(--gs-accent-2); opacity: 0.4; }

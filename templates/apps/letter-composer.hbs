@@ -82,6 +82,21 @@
       </div>
     </div>
 
+    {{!-- SIGN AS — whose name signs the letter. Only shown when the sender
+         has a persona active; defaults to the character's true name so a
+         persona mask never silently signs personal correspondence. --}}
+    {{#if canSignAsPersona}}
+    <div class="gs-letter-composer__row">
+      <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.signAsLabel"}}</label>
+      <div class="gs-letter-composer__control">
+        <select class="gs-letter-composer__actor-select" name="signAs">
+          <option value="self" {{#if (eq state.signAs "self")}}selected{{/if}}>{{signAsSelfName}}</option>
+          <option value="persona" {{#if (eq state.signAs "persona")}}selected{{/if}}>{{signAsPersonaName}}</option>
+        </select>
+      </div>
+    </div>
+    {{/if}}
+
     {{!-- SCRIPT FONT — optional calligraphy face for the greeting + signature.
          Each <option> previews its own face via inline font-family. --}}
     <div class="gs-letter-composer__row">

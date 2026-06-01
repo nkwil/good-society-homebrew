@@ -11,28 +11,10 @@ import { profilePic } from './profile-pic.js';
 import { effectiveThemeOf } from './themed-wrap.js';
 
 /**
- * Resolve an actor's active persona (or fall back to primary / first).
- * Used for IMAGE resolution where we always want some portrait to show.
- * @param {Actor} actor
- */
-function _activePersona(actor) {
-  const personas = actor?.system?.personas ?? [];
-  if (!personas.length) return null;
-  const activeId = actor.system?.activePersonaId;
-  return (
-    personas.find((p) => p.id === activeId) ??
-    personas.find((p) => p.isPrimary) ??
-    personas[0] ??
-    null
-  );
-}
-
-/**
  * Resolve an actor's EXPLICITLY-selected persona — null when the user has
- * picked "true identity" (i.e. activePersonaId is empty). Use for display
- * text decisions: name shown, "as <persona>" subtitle visibility, etc.
- * The fallback chain in `_activePersona()` is wrong for those cases —
- * "true identity" should mean exactly that, not "show me the primary".
+ * picked "true identity" (i.e. activePersonaId is empty). A persona is always
+ * a secondary mask; "true identity" resolves to the actor's own name/image,
+ * never a fallback persona.
  * @param {Actor} actor
  */
 function _explicitPersona(actor) {

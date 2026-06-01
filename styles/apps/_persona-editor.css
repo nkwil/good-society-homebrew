@@ -52,26 +52,6 @@
   padding-top: 4px;
 }
 
-/* Primary toggle pill */
-
-.gs-persona-editor__primary-toggle {
-  font-variant: small-caps;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  padding: 4px 10px;
-  border: 0.5px solid var(--gs-brand);
-  border-radius: 100px;
-  background: transparent;
-  color: var(--gs-brand);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.gs-persona-editor__primary-toggle--on {
-  background: var(--gs-brand);
-  color: var(--gs-paper);
-}
-
 /* Body */
 
 .gs-persona-editor__body {

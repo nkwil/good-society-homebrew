@@ -170,11 +170,17 @@ export class MajorCharacterDataModel extends foundry.abstract.TypeDataModel {
     };
   }
 
-  /** Returns the active persona, falling back to primary, then first. */
+  /**
+   * The explicitly-active persona, or null when the character is appearing as
+   * their true self. There is no "primary persona" fallback: a persona is
+   * always a secondary mask layered over the actor, never the actor's identity.
+   * True identity is `actor.name` / `actor.img`. When `activePersonaId` is
+   * empty, the answer is "no persona" — full stop. (Previously this fell back
+   * to the primary/first persona, which silently signed letters and labelled
+   * tokens with a mask name even when nothing was selected.)
+   */
   get activePersona() {
-    return this.personas.find(p => p.id === this.activePersonaId)
-      ?? this.personas.find(p => p.isPrimary)
-      ?? this.personas[0]
-      ?? null;
+    if (!this.activePersonaId) return null;
+    return this.personas.find(p => p.id === this.activePersonaId) ?? null;
   }
 }

@@ -148,10 +148,6 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     const explicitPersona = system.activePersonaId
       ? (system.personas ?? []).find(p => p.id === system.activePersonaId)
       : null;
-    // Active persona for token / portrait fallback purposes — uses the
-    // data-model getter (with its primary-persona fallback). Only used for
-    // image resolution, NOT for the displayed name.
-    const activePersona = system.activePersona;
     const displayName = explicitPersona?.name || this.actor.name;
     const portraitUrl = profilePic(this.actor);  // §8.5 token-based
     const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();

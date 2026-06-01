@@ -127,6 +127,12 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       greeting:    DEFAULT_GREETING,
       closing:     DEFAULT_CLOSING,
       scriptFont:  'none',
+      // Whose name signs the letter: 'self' (the character's true name) or
+      // 'persona' (the active persona's name). Defaults to 'self' — a letter
+      // is personal correspondence signed by the real character, even when a
+      // persona mask is active on tokens/sheets/chat. Players opt into a
+      // persona signature for anonymous / pseudonymous letters.
+      signAs:      'self',
     };
     this._lastSaved       = null;
     this._draftInterval   = null;
@@ -193,6 +199,17 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       this._state.fromActorId = ownedActors[0].id;
     }
     ctx.ownedActors = ownedActors.map(a => ({ ...a, selected: a.id === this._state.fromActorId }));
+
+    // SIGN AS — only meaningful when the sender has an EXPLICIT persona active.
+    // With no persona there's nothing to choose, so collapse any stale choice
+    // back to 'self' (prevents a 'persona' pick from a previous FROM actor
+    // leaking onto a persona-less one).
+    const fromActor   = game.actors.get(this._state.fromActorId) ?? null;
+    const fromPersona = explicitPersona(fromActor);
+    if (!fromPersona) this._state.signAs = 'self';
+    ctx.canSignAsPersona  = !!fromPersona;
+    ctx.signAsSelfName    = fromActor?.name ?? '';
+    ctx.signAsPersonaName = fromPersona?.name ?? '';
 
     // TO — all visible MCs, Connections, NPCs except the FROM actor
     // Sorted: Majors first, then Connections, then NPCs; alpha within each group.
@@ -352,6 +369,26 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     if (closing)  this._state.closing  = closing;
     const scriptFont = get('scriptFont');
     if (scriptFont) this._state.scriptFont = scriptFont;
+    const signAs = get('signAs');
+    if (signAs) this._state.signAs = signAs;
+  }
+
+  /**
+   * Resolve the name that SIGNS the letter. Defaults to the character's true
+   * name (`actor.name`); returns the active persona's name only when the
+   * player explicitly opted to sign as their persona. This is a deliberate
+   * exception to the persona-name-override rule (tokens/sheets/chat still use
+   * the persona via profileName) — a letter is signed by the real character.
+   *
+   * @param {Actor|null|undefined} actor
+   * @returns {string}
+   */
+  _signatureName(actor) {
+    if (!actor) return '';
+    if (this._state.signAs === 'persona') {
+      return explicitPersona(actor)?.name || actor.name || '';
+    }
+    return actor.name || '';
   }
 
   /**
@@ -363,7 +400,8 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
   _buildLetterPayload() {
     const recipientName = this._resolveToName();
     const actor         = game.actors.get(this._state.fromActorId);
-    const senderName    = actor ? profileName(actor) : '';
+    // The signing name — true character name by default, persona only on opt-in.
+    const senderName    = this._signatureName(actor);
     // Resolve the localized seal label + the asset path so the preview +
     // archive render both the human-readable string and the actual wax-seal
     // image in the chat-card footer.
@@ -394,6 +432,13 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       closingLine:  _formatSalutation('closings',  this._state.closing,  { sender: senderName }),
       scriptFont:       this._state.scriptFont || 'none',
       scriptFontFamily: scriptFontFamily(this._state.scriptFont),
+      // Baked into the payload so the signature survives the off-phase queue:
+      // a queued letter is delivered later (epistolary-phase.js) and must sign
+      // with the name chosen at compose time, not re-resolve from live persona
+      // state. `signAs` is kept too so re-editing a queued draft restores the
+      // player's choice.
+      signatureName: senderName,
+      signAs:        this._state.signAs,
     };
   }
 
@@ -430,7 +475,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
   async _buildPreviewHtml(cycleNumber = null) {
     const actor       = game.actors.get(this._state.fromActorId) ?? null;
     const persona     = explicitPersona(actor);
-    const speakerName = actor ? profileName(actor) : '—';
+    const speakerName = actor ? this._signatureName(actor) : '—';
     const letter      = this._buildLetterPayload();
     // A parchment variant keyed to the sender — each character writes on
     // their own stable stationery in the preview (same logic the Epistolary
@@ -451,7 +496,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _archiveToJournal(actor, persona, letter, cycleNumber, recipientActor) {
     try {
-      const speakerName    = profileName(actor);
+      const speakerName    = letter.signatureName || actor.name;
       const recipientLabel = letter.to || game.i18n.localize('GOODSOCIETY.letterComposer.unknownRecipient');
       const cycleLabel     = game.i18n.localize('GOODSOCIETY.letterComposer.cycle');
       const entryName      = cycleNumber
@@ -602,7 +647,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       Hooks.callAll('goodSociety.epistolarySent', {
         actorId:          actor.id,
         actorName:        actor.name,
-        speakerName:      profileName(actor),
+        speakerName:      letter.signatureName || actor.name,
         recipientActorId: recipientActor.id,
         letter,
         cycleNumber,

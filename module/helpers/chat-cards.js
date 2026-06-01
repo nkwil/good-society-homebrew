@@ -181,7 +181,7 @@ export async function postMonologueCard({
 }) {
   const resolvedPersona = _persona(actor, persona);
   const speakerName = resolvedPersona?.name || actor.name;
-  const personaRole = (resolvedPersona && !resolvedPersona.isPrimary) ? resolvedPersona.name : null;
+  const personaRole = resolvedPersona ? resolvedPersona.name : null;
   const cycleNum = cycleNumber ?? _cycle();
   const inner = await foundry.applications.handlebars.renderTemplate(`${T}/monologue.hbs`, {
     actor,
@@ -262,7 +262,10 @@ export async function postLetterCard({
 }) {
   const resolvedPersona = _persona(actor, persona);
   const cycleNum = cycleNumber ?? _cycle();
-  const speakerName = resolvedPersona?.name || actor.name;
+  // The letter's SIGNATURE is the composer-chosen name (true name by default,
+  // persona only on opt-in), baked onto the payload as `signatureName`. Fall
+  // back to the persona/actor name for external callers that don't set it.
+  const speakerName = letter?.signatureName || resolvedPersona?.name || actor.name;
 
   // Fill in any salutation/seal-label fields the caller didn't pre-resolve.
   // The composer pre-resolves these via _buildLetterPayload; external callers

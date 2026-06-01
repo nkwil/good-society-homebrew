@@ -106,6 +106,7 @@ async function _promptOneQueuedLetter(entry) {
         closing:     entry.letter?.closing ?? '',
         scriptFont:  entry.letter?.scriptFont ?? '',
         seal:        entry.letter?.seal ?? '',
+        signAs:      entry.letter?.signAs ?? 'self',
       },
     });
   } else if (result === 'discard') {
@@ -135,7 +136,7 @@ async function _sendQueuedLetter(entry) {
     Hooks.callAll('goodSociety.epistolarySent', {
       actorId:          actor.id,
       actorName:        actor.name,
-      speakerName:      profileName(actor),
+      speakerName:      letter?.signatureName || profileName(actor),
       recipientActorId: recipientActor?.id ?? null,
       letter,
       cycleNumber,

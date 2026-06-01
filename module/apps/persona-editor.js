@@ -27,7 +27,6 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     window: { frame: true, positioned: true, title: 'GOODSOCIETY.personaEditor.windowTitle' },
     position: { width: 480, height: 'auto' },
     actions: {
-      togglePrimary:    PersonaEditor.#togglePrimary,
       browseImage:      PersonaEditor.#browseImage,
       cycleVisibility:  PersonaEditor.#cycleVisibility,
       savePersona:      PersonaEditor.#savePersona,
@@ -51,7 +50,7 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     this._actor    = actor;
     this._isCreate = !persona;
     // _draft is a plain-object working copy. It is updated in-place by action
-    // handlers (togglePrimary, cycleVisibility) and collected from the DOM on save.
+    // handlers (cycleVisibility) and collected from the DOM on save.
     // Use .toObject() (when persona is a DataModel instance) rather than
     // deepClone — deepClone of a DataModel can miss fields that live on the
     // schema proxy rather than as own enumerable properties.
@@ -60,7 +59,6 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
       : {
           id:           foundry.utils.randomID(),
           name:         '',
-          isPrimary:    false,
           portraitUrl:  '',
           tokenImageUrl: '',
           tokenName:    '',
@@ -107,12 +105,6 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
 
   // ── Action handlers ──────────────────────────────────────────────────────────
 
-  static #togglePrimary(ev, target) {
-    this._draft.isPrimary = !this._draft.isPrimary;
-    target.dataset.value  = String(this._draft.isPrimary);
-    target.classList.toggle('gs-persona-editor__primary-toggle--on', this._draft.isPrimary);
-  }
-
   static #browseImage(ev, target) {
     const fieldName  = target.dataset.target;
     const input      = this.element.querySelector(`[data-persona-field="${fieldName}"]`);
@@ -154,8 +146,8 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #savePersona(ev, target) {
     // Collect text-input values from the DOM into the draft.
-    // The draft's isPrimary and visibility are already up-to-date via the
-    // in-place action handlers above; only text fields need a DOM read here.
+    // The draft's visibility is already up-to-date via the in-place action
+    // handlers above; only text fields need a DOM read here.
     const fields = ['name', 'portraitUrl', 'tokenImageUrl', 'tokenName', 'hoverSummary', 'chatColor', 'theme'];
     for (const f of fields) {
       const el = this.element.querySelector(`[data-persona-field="${f}"]`);
@@ -178,20 +170,9 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
     // entry, then swap in our modified draft.
     const toPlain = (p) => (p && typeof p.toObject === 'function') ? p.toObject() : { ...p };
 
-    let updated;
-    if (this._isCreate) {
-      // First persona on an actor becomes primary automatically.
-      if (existing.length === 0) this._draft.isPrimary = true;
-      updated = [...existing.map(toPlain), this._draft];
-    } else {
-      updated = existing.map(p => p.id === this._draft.id ? this._draft : toPlain(p));
-    }
-
-    // Enforce single primary: if this persona is being set as primary,
-    // clear isPrimary on all others.
-    if (this._draft.isPrimary) {
-      updated = updated.map(p => p.id === this._draft.id ? p : { ...p, isPrimary: false });
-    }
+    const updated = this._isCreate
+      ? [...existing.map(toPlain), this._draft]
+      : existing.map(p => p.id === this._draft.id ? this._draft : toPlain(p));
 
     await actor.update({ 'system.personas': updated });
     // Force re-render the actor's sheet so dataset.theme picks up the new
@@ -203,8 +184,6 @@ export class PersonaEditor extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static async #deletePersona(ev, target) {
-    if (this._draft.isPrimary) return; // disabled in UI; guard anyway
-
     const confirmed = window.confirm(
       game.i18n.format('GOODSOCIETY.personaEditor.deleteConfirm', {
         name: this._draft.name || '?',

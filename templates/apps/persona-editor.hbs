@@ -14,15 +14,6 @@
              value="{{persona.name}}"
              placeholder="{{localize 'GOODSOCIETY.personaEditor.namePlaceholder'}}" />
     </div>
-    <div class="gs-persona-editor__header-right">
-      <button type="button"
-              class="gs-persona-editor__primary-toggle {{#if persona.isPrimary}}gs-persona-editor__primary-toggle--on{{/if}}"
-              data-action="togglePrimary"
-              data-value="{{persona.isPrimary}}"
-              title="{{localize 'GOODSOCIETY.personaEditor.primaryHint'}}">
-        {{localize "GOODSOCIETY.personaEditor.primaryLabel"}}
-      </button>
-    </div>
   </header>
 
   {{!-- ── Body ─────────────────────────────────────────────────────────────── --}}
@@ -131,8 +122,7 @@
   <footer class="gs-persona-editor__footer">
     <div class="gs-persona-editor__footer-left">
       {{#unless isCreate}}
-        <button type="button" class="gs-btn gs-btn--danger-outline" data-action="deletePersona"
-                {{#if persona.isPrimary}}disabled title="{{localize 'GOODSOCIETY.personaEditor.deletePrimaryHint'}}"{{/if}}>
+        <button type="button" class="gs-btn gs-btn--danger-outline" data-action="deletePersona">
           {{localize "GOODSOCIETY.personaEditor.delete"}}
         </button>
       {{/unless}}

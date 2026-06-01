@@ -19,7 +19,6 @@ const POPOVER_ID = 'gs-persona-switcher-popover';
 // ── Stripe class helpers ──────────────────────────────────────────────────────
 
 function _stripeClass(persona) {
-  if (persona.isPrimary) return 'gs-persona-switcher-popover__stripe--primary';
   const vis = persona.visibility ?? {};
   const hasSecret = Object.values(vis).some(v => v === 'secret');
   if (hasSecret) return 'gs-persona-switcher-popover__stripe--secret';
@@ -98,15 +97,12 @@ function _buildHtml(actor, currentPersonaId) {
   // Persona rows
   const personaRows = personas.map(p => {
     const isActive = p.id === currentPersonaId;
-    const subParts = [];
-    if (p.isPrimary) subParts.push(game.i18n.localize('GOODSOCIETY.personaSwitcher.primary'));
-    const sub = subParts.join(' · ');
     return _buildRowHtml(
       p.id,
       _stripeClass(p),
       _portraitSlotHtml(p.portraitUrl ?? '', (p.name?.[0] ?? '?').toUpperCase()),
       p.name ?? '?',
-      sub,
+      '',
       isActive,
       p.id,  // edit glyph on every persona row
     );
