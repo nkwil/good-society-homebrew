@@ -54,6 +54,10 @@ export class StoryBeatOverlayApp extends HandlebarsApplicationMixin(ApplicationV
       icon:         beat.icon,
       paletteClass: beat.paletteClass,
     } : null;
+    // Preview mode (GM dry-run) renders the overlay locally without
+    // broadcasting. The template paints a "PREVIEW" badge when this is on
+    // so the GM never confuses a dry run with a live deployment.
+    ctx.isPreview = !!state.preview;
     // Enrich the payload — for any field of type `actor`/`majorActor`,
     // resolve the id to a display name and inject it as `<field>Name` so
     // the beat templates can just say `{{payload.targetActorName}}`. For
@@ -177,10 +181,15 @@ export class StoryBeatOverlayApp extends HandlebarsApplicationMixin(ApplicationV
       && findStoryBeat(_activeState?.beatId)?.dismissibleByAll !== true) {
       return;
     }
-    game.socket?.emit(SOCKET_NAME, {
-      action: 'storyBeatEnd',
-      payload: { beatId: _activeState?.beatId },
-    });
+    // Preview mode (GM-only local render) never broadcast a start, so it
+    // must not broadcast an end either — otherwise a stale storyBeatEnd
+    // would arrive at clients that never saw this overlay.
+    if (!_activeState?.preview) {
+      game.socket?.emit(SOCKET_NAME, {
+        action: 'storyBeatEnd',
+        payload: { beatId: _activeState?.beatId },
+      });
+    }
     await _hideOverlay();
   }
 }
@@ -211,9 +220,11 @@ async function _showOverlay(state) {
   // preserved (minimized, not closed) — player restores each manually.
   minimizeOtherWindowsForFocus({ exceptIds: ['gs-story-beat-overlay'] });
 
-  // Schedule auto-dismiss if the beat declares one.
+  // Schedule auto-dismiss if the beat declares one. Preview mode doesn't
+  // auto-dismiss — the GM stays in control of when their dry run ends so
+  // they can read every line before closing.
   const beat = findStoryBeat(state.beatId);
-  if (beat?.autoDismissMs) {
+  if (beat?.autoDismissMs && !state.preview) {
     clearTimeout(_autoDismissTimer);
     _autoDismissTimer = setTimeout(() => {
       // Only the original triggering user (or GM) re-emits the end socket —
@@ -270,6 +281,38 @@ export async function playStoryBeat(beatId, payload) {
 /** Whether any story beat is currently on screen. */
 export function isStoryBeatActive() {
   return !!_activeState;
+}
+
+/**
+ * GM-only local dry-run of a story beat. Renders the overlay on the GM's
+ * screen exactly as the players would see it, but does NOT broadcast the
+ * `storyBeatStart` socket — no player sees the preview. Dismiss is also
+ * local-only (the `#dismiss` handler checks `_activeState.preview` and
+ * skips the corresponding `storyBeatEnd` emit). Used by the Story Beats
+ * Command Center's saved-beat list so the GM can audit a draft before
+ * deploying it for real.
+ *
+ * Returns silently if a beat (preview or live) is already on screen — the
+ * underlying `_showOverlay` is a singleton and would drop the second call
+ * anyway.
+ */
+export async function previewStoryBeat(beatId, payload) {
+  if (!game.user?.isGM) return;
+  const beat = findStoryBeat(beatId);
+  if (!beat) {
+    console.warn('GS | unknown story beat (preview):', beatId);
+    return;
+  }
+  if (_activeState) {
+    ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.storyBeats.alreadyRunning'));
+    return;
+  }
+  await _showOverlay({
+    beatId,
+    payload,
+    byUserId: game.user?.id,
+    preview: true,
+  });
 }
 
 /** Register socket listeners — called from good-society.js ready hook. */

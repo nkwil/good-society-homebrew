@@ -299,58 +299,39 @@ async function _handleSpread({ rumourId, advanceTurn, requestedBy }) {
   const r = all[idx];
   if (r.state !== 'unspread' && r.state !== 'fading') return null; // can't spread a spread/used/faded
 
-  // Homebrew rule: spreading costs the requesting player 1 resolve from
-  // their owned Major Character. GM uses the general supply per rulebook
-  // p.127, so GM-driven spreads don't deduct. Players without an owned
-  // Major or with 0 resolve can't spread (the wizard validates client-
-  // side too, so this is defense-in-depth for socket-emitted requests).
-  let spentBy = null;  // { actorId, actorName, before, after } when a Major paid
+  // Audit trail only — record WHO spread the rumour so the GM can trace
+  // the social pressure later, but no resolve token is deducted. (The
+  // previous homebrew rule that spreading cost 1 resolve was cut on
+  // 2026-05-20 — playtest found it discouraged spreading enough that the
+  // R&S phase became a dead-air round. Spreading is free now; the only
+  // currency stays on USING a spread rumour to twist the story.)
   const requestingUser = requestedBy ? game.users?.get(requestedBy) : null;
-  if (requestingUser && !requestingUser.isGM) {
+  let spentBy = null;
+  if (requestingUser?.isGM) {
+    spentBy = { gm: true, actorName: 'GM' };
+  } else if (requestingUser) {
     const ownerLevel = CONST.DOCUMENT_OWNERSHIP_LEVELS?.OWNER ?? 3;
     const myMajor = game.actors?.find(a =>
       a.type === 'major-character' &&
       a.getUserLevel(requestingUser) >= ownerLevel,
     );
-    if (!myMajor) return null;
-    const current = myMajor.system?.tokens?.resolve?.current ?? 0;
-    if (current < 1) return null;
-    try {
-      await myMajor.update({ 'system.tokens.resolve.current': current - 1 });
-      spentBy = {
-        actorId: myMajor.id,
-        actorName: myMajor.name,
-        before: current,
-        after: current - 1,
-      };
-    } catch (err) {
-      console.warn('GS | rumour spread resolve deduction failed:', err);
-      return null;
-    }
-  } else if (requestingUser?.isGM) {
-    spentBy = { gm: true, actorName: 'GM (general supply)' };
+    if (myMajor) spentBy = { actorId: myMajor.id, actorName: myMajor.name };
   }
 
   const next = [...all];
-  // Persist who paid + state transition timestamp on the rumour itself, so
-  // the audit trail survives across reloads and the GM can always see who
-  // shouldered the resolve cost.
   next[idx] = { ...r, state: 'spread', spreadAt: Date.now(), spentBy };
   await game.settings.set(NS, 'rumours', next);
 
-  // Public system card — makes the cost visible at the table.
+  // Public system card — announces who spread the rumour. No cost reported
+  // (free spread per the 2026-05-20 rule cut above).
   try {
     const { postSystemCard } = await import('./chat-cards.js');
     const text = (r.text ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     const snippet = text.length > 80 ? text.slice(0, 80) + '…' : text;
-    const content = spentBy?.gm
-      ? game.i18n.format('GOODSOCIETY.rumour.spreadCardGm', { rumour: snippet })
-      : game.i18n.format('GOODSOCIETY.rumour.spreadCardPaid', {
-          actor: spentBy?.actorName ?? '—',
-          before: spentBy?.before ?? '?',
-          after: spentBy?.after ?? '?',
-          rumour: snippet,
-        });
+    const content = game.i18n.format('GOODSOCIETY.rumour.spreadCard', {
+      actor: spentBy?.gm ? 'GM' : (spentBy?.actorName ?? '—'),
+      rumour: snippet,
+    });
     await postSystemCard({ content, context: 'rumour' });
   } catch (err) {
     console.warn('GS | rumour spread card failed:', err);

@@ -140,6 +140,56 @@ button.gs-story-beats-cc__saved-btn--delete:hover {
   color: var(--gs-paper);
 }
 
+/* 👁 preview button — same compact square as the delete X, but accents
+ * brand-green on hover (not danger-red), because the action is
+ * informational rather than destructive. */
+button.gs-story-beats-cc__saved-btn--preview {
+  width: 28px;
+  padding: 0;
+  font-size: 14px;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+button.gs-story-beats-cc__saved-btn--preview:hover {
+  background: var(--gs-brand);
+  border-color: var(--gs-brand);
+  color: var(--gs-paper);
+}
+
+/* PREVIEW badge — pinned to the top-center of the overlay during a GM
+ * dry-run so the dismiss button (top-right) stays untouched and the
+ * badge reads as a top-of-screen status line. Gilt-accent border + dim
+ * paper background so it sits against any palette without competing with
+ * the beat's main artwork. */
+.gs-story-beat__preview-badge {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 5px;
+  border-radius: 100px;
+  border: 0.5px solid var(--gs-accent-3, #C9A55C);
+  background: color-mix(in srgb, var(--gs-paper, #efe6d2) 90%, transparent);
+  color: var(--gs-ink, #2a1f17);
+  font-family: var(--gs-display);
+  font-size: 11px;
+  font-variant: small-caps;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+  box-shadow: 0 1px 3px rgba(20, 12, 8, 0.20);
+}
+.gs-story-beat__preview-dot {
+  font-size: 8px;
+  line-height: 1;
+  color: var(--gs-accent-3, #C9A55C);
+}
+
 /* The `button.` prefix beats Foundry's default button chrome without
  * `!important`; we also nuke its min-height / line-height / font defaults
  * directly so the card sizes to its actual content. Layout is simple

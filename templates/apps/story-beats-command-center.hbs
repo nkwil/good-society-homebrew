@@ -16,6 +16,18 @@
               <span class="gs-story-beats-cc__saved-label">{{label}}</span>
               <span class="gs-story-beats-cc__saved-kind">{{beatLabel}}</span>
             </span>
+            {{!-- 👁 preview: local-only dry-run for the GM. Renders the
+                 overlay on the GM's screen with a PREVIEW badge; no
+                 socket emit, players see nothing. Use to audit a draft
+                 before clicking Play. --}}
+            <button type="button"
+                    class="gs-story-beats-cc__saved-btn gs-story-beats-cc__saved-btn--preview"
+                    data-action="previewSaved"
+                    data-saved-id="{{id}}"
+                    title="{{localize 'GOODSOCIETY.storyBeats.previewSaved'}}"
+                    aria-label="{{localize 'GOODSOCIETY.storyBeats.previewSaved'}}">
+              👁
+            </button>
             <button type="button"
                     class="gs-story-beats-cc__saved-btn gs-story-beats-cc__saved-btn--play"
                     data-action="deploySaved"

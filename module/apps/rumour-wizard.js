@@ -124,17 +124,13 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     // spread again to save them).
     const spreadable = active.filter(r => r.state === 'unspread' || r.state === 'fading');
 
-    // Homebrew rule: spreading deducts 1 resolve from the player's own MC.
-    // GM uses the general supply (no cost). Compute the user's MC + current
-    // resolve so the template can warn / disable Spread buttons.
-    let myMajor = null;
-    let myResolve = null;          // null when not applicable (GM, no MC)
-    let canSpend = isGM;           // GM can always spread; players need ≥1 resolve
-    if (!isGM) {
-      myMajor = game.actors?.find(a => a.type === 'major-character' && a.isOwner) ?? null;
-      myResolve = myMajor?.system?.tokens?.resolve?.current ?? 0;
-      canSpend = myResolve >= 1;
-    }
+    // Spreading is free as of 2026-05-20 — no resolve deduction. The
+    // owned-MC lookup is kept only to populate `myMajorName` for the
+    // wizard's "you're spreading as <name>" hint; the gate is removed.
+    const myMajor = isGM
+      ? null
+      : (game.actors?.find(a => a.type === 'major-character' && a.isOwner) ?? null);
+    const canSpend = true;
 
     return {
       ...ctx,
@@ -163,7 +159,6 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       spreadable:    spreadable.map(_decorate),
       hasSpreadable: spreadable.length > 0,
       myMajorName:   myMajor?.name ?? '',
-      myResolve,
       canSpend,
       hasMyMajor:    !!myMajor || isGM,
     };
@@ -261,26 +256,7 @@ export class RumourWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!isCurrentTurnUser()) return;
     const rumourId = target.dataset.rumourId;
     if (!rumourId) return;
-
-    // Homebrew rule: spread costs the player 1 resolve from their MC.
-    // Validate locally so the player gets immediate feedback rather than
-    // a silent failure on the GM side. GM bypasses (general supply).
-    if (!game.user?.isGM) {
-      const myMajor = game.actors?.find(a => a.type === 'major-character' && a.isOwner);
-      if (!myMajor) {
-        ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.rumourWizard.errorNoMajor'));
-        return;
-      }
-      const current = myMajor.system?.tokens?.resolve?.current ?? 0;
-      if (current < 1) {
-        ui.notifications?.warn(game.i18n.format(
-          'GOODSOCIETY.rumourWizard.errorNoResolve',
-          { name: myMajor.name },
-        ));
-        return;
-      }
-    }
-
+    // Spreading is free (rule cut 2026-05-20) — no resolve precheck.
     await requestSpreadRumour({ rumourId, advanceTurn: true });
   }
 

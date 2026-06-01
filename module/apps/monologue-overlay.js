@@ -236,10 +236,18 @@ async function _hideOverlay() {
 async function _persistMonologueComplete({ spenderActorId, targetActorId, question, body, cancelled }) {
   const target = game.actors?.get(targetActorId);
   const spender = game.actors?.get(spenderActorId);
-  const isTarget = target?.testUserPermission?.(game.user, 'OWNER') ?? false;
   const isGM = !!game.user?.isGM;
-  if (!isTarget && !isGM) {
-    // Not authorized — request the GM client to commit.
+  // ONLY the GM client does the actual writes. The previous version let
+  // the target's owner take the local-write path because they "own the
+  // target," but the commit also writes `spender.update({...major: false})`
+  // — and the target's owner doesn't have OWNER on the spender's actor, so
+  // that update was silently failing (or erroring to console) every time a
+  // player tried to submit a monologue targeted at their own character.
+  // Routing every non-GM submit through the socket means a single privileged
+  // writer handles both updates atomically; the GM-side handler in
+  // registerMonologueSocket() picks up the request and re-enters this
+  // function with isGM === true.
+  if (!isGM) {
     game.socket?.emit(SOCKET_NAME, {
       action: 'monologueCommitRequest',
       payload: { spenderActorId, targetActorId, question, body, cancelled, requestedBy: game.user.id },

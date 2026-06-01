@@ -1118,6 +1118,8 @@
       "savedHeading": "Saved drafts",
       "newHeading": "Compose new",
       "playSaved": "Deploy this saved beat",
+      "previewSaved": "Preview (GM only) — players won't see this",
+      "previewBadge": "GM preview",
       "deleteSaved": "Delete saved beat",
       "deleteSavedConfirm": "Delete the saved beat \"{label}\"?",
       "dismiss": "Dismiss",
@@ -1967,6 +1969,7 @@
       "errorNoResolve": "{name} has no resolve to spend."
     },
     "rumour": {
+      "spreadCard": "<strong>{actor}</strong> spread the rumour <em>\"{rumour}\"</em>.",
       "spreadCardPaid": "<strong>{actor}</strong> spent 1 resolve to spread the rumour <em>\"{rumour}\"</em>. (Resolve {before} → {after}.)",
       "spreadCardGm": "The GM spread the rumour <em>\"{rumour}\"</em> from the general supply (no resolve cost)."
     },

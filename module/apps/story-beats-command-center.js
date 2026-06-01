@@ -13,7 +13,7 @@
  */
 
 import { STORY_BEATS, findStoryBeat } from '../data/story-beats.js';
-import { playStoryBeat } from './story-beat-overlay.js';
+import { playStoryBeat, previewStoryBeat } from './story-beat-overlay.js';
 import { SEAL_TYPES, STATIONERY_TYPES } from '../constants.js';
 import {
   getSavedStoryBeats,
@@ -32,9 +32,10 @@ export class StoryBeatsCommandCenter extends HandlebarsApplicationMixin(Applicat
     window: { frame: true, positioned: true, title: 'GOODSOCIETY.storyBeats.commandCenterTitle' },
     position: { width: 560, height: 'auto' },
     actions: {
-      pickBeat:    StoryBeatsCommandCenter.#pickBeat,
-      deploySaved: StoryBeatsCommandCenter.#deploySaved,
-      deleteSaved: StoryBeatsCommandCenter.#deleteSaved,
+      pickBeat:     StoryBeatsCommandCenter.#pickBeat,
+      previewSaved: StoryBeatsCommandCenter.#previewSaved,
+      deploySaved:  StoryBeatsCommandCenter.#deploySaved,
+      deleteSaved:  StoryBeatsCommandCenter.#deleteSaved,
     },
   };
 
@@ -98,6 +99,21 @@ export class StoryBeatsCommandCenter extends HandlebarsApplicationMixin(Applicat
     const saved = getSavedStoryBeats().find(s => s.id === id);
     if (!saved) return;
     await playStoryBeat(saved.beatId, saved.payload);
+  }
+
+  /**
+   * Local GM preview of a saved beat — renders the overlay on the GM's
+   * screen ONLY (no socket broadcast). Lets the GM audit a draft for
+   * typos / wrong actor / wrong stationery before deploying it live.
+   * The PREVIEW badge in the overlay template makes the dry-run state
+   * unmistakable. Closes locally on dismiss without telling other
+   * clients to do anything.
+   */
+  static async #previewSaved(event, target) {
+    const id = target.dataset.savedId;
+    const saved = getSavedStoryBeats().find(s => s.id === id);
+    if (!saved) return;
+    await previewStoryBeat(saved.beatId, saved.payload);
   }
 
   /** Delete a saved beat with a confirm. */
