@@ -16,6 +16,7 @@ import { openEpistolaryWizard, openEpistolaryRoster, closeEpistolaryWizard, clos
 import { queuedLettersForUser, dequeueLetter } from '../helpers/letter-queue.js';
 import { openLetterComposer } from '../apps/letter-composer.js';
 import { postLetterCard } from '../helpers/chat-cards.js';
+import { archiveLetterToJournal } from '../helpers/letter-archive.js';
 import { profileName, explicitPersona } from '../helpers/profile-pic.js';
 
 const FLAG_SCOPE = 'good-society-homebrew';
@@ -133,6 +134,7 @@ async function _sendQueuedLetter(entry) {
 
   try {
     await postLetterCard({ actor, persona, letter, cycleNumber, whisper: true, whisperIds });
+    await archiveLetterToJournal({ actor, persona, letter, cycleNumber, recipientActor });
     Hooks.callAll('goodSociety.epistolarySent', {
       actorId:          actor.id,
       actorName:        actor.name,

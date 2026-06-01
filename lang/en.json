@@ -557,7 +557,14 @@
         "to": "to",
         "sealed": "sealed",
         "themeLabel": "theme",
-        "sealedIn": "sealed in"
+        "sealedIn": "sealed in",
+        "reveal": "Reveal to all",
+        "revealHint": "Make this letter public — visible to every player in chat and in the novel.",
+        "revealConfirmTitle": "Reveal letter?",
+        "revealConfirmBody": "This letter will become public — every player will see it in the chat log and in the novel. This cannot be undone.",
+        "revealed": "Letter revealed to all.",
+        "revealedNote": "Public",
+        "anonGmNote": "Sent anonymously — actually: {name}"
       }
     },
     "speakingAs": {
@@ -1880,6 +1887,7 @@
       "greetingLabel": "Greeting",
       "closingLabel": "Closing",
       "signAsLabel": "Sign as",
+      "anonymousName": "Anonymous",
       "scriptFontLabel": "Calligraphy hand",
       "previewLabel": "PREVIEW · how the letter will appear in chat",
       "send": "Send ↗",

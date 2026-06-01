@@ -17,6 +17,7 @@ import { effectiveThemeOf } from '../helpers/themed-wrap.js';
 
 const NS = 'good-society-homebrew';
 const PORTRAIT_CLASS = 'gs-chat-portrait';
+const ANON_NOTE_CLASS = 'gs-letter-anon-gmnote';
 
 function _resolveSpeakerActor(message) {
   const flagActorId = message?.flags?.[NS]?.speakerActorId;
@@ -39,6 +40,16 @@ function _applyPortrait(message, root) {
   if (!root) return;
   const actor = _resolveSpeakerActor(message);
   if (!actor) return;
+
+  // ── Anonymous letters — never leak the sender's identity ────────────────
+  // The card was wrapped house-neutral and the chat speaker is a bare alias,
+  // so we skip BOTH the row-theme cascade and the portrait inject (either
+  // would re-attach the real sender's theme / token image). The GM alone gets
+  // a quiet truth note revealing who actually wrote it.
+  if (message?.flags?.[NS]?.letterAnonymous) {
+    _applyAnonymousGmNote(root, actor);
+    return;
+  }
 
   // ── Theme the whole message row to the speaker's effective theme ────────
   // `gs-themed` + data-theme cascades the theme's CSS variables to every
@@ -83,6 +94,23 @@ function _applyPortrait(message, root) {
   if (img.src !== url) img.src = url;
   if (img.alt !== name) img.alt = name;
   if (img.title !== name) img.title = name;
+}
+
+/** GM-only: append a quiet "(actually: RealName)" note to an anonymous letter
+ *  card so the facilitator always knows who sent it. Idempotent — drops any
+ *  prior note first (the refresh pass re-runs on persona swaps). Non-GM clients
+ *  no-op, so the truth never reaches a player's DOM. */
+function _applyAnonymousGmNote(root, actor) {
+  root.querySelector(`.${ANON_NOTE_CLASS}`)?.remove();
+  if (!game.user?.isGM || !actor) return;
+  const card = root.querySelector('.gs-letter-card');
+  if (!card) return;
+  const note = document.createElement('div');
+  note.classList.add(ANON_NOTE_CLASS);
+  note.textContent = game.i18n.format('GOODSOCIETY.chatCard.letter.anonGmNote', {
+    name: profileName(actor),
+  });
+  card.append(note);
 }
 
 /** Refresh every currently-rendered chat message — used when a persona swap

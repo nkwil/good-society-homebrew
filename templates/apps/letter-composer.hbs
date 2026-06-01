@@ -82,20 +82,24 @@
       </div>
     </div>
 
-    {{!-- SIGN AS — whose name signs the letter. Only shown when the sender
-         has a persona active; defaults to the character's true name so a
-         persona mask never silently signs personal correspondence. --}}
-    {{#if canSignAsPersona}}
+    {{!-- SIGN AS — whose name signs the letter. Always shown: the persona
+         option appears only when the sender has a persona active, but the
+         self + anonymous options are always available. Defaults to the
+         character's true name so a persona mask never silently signs personal
+         correspondence; anonymous hides the sender from the recipient (the GM
+         still sees the truth on their copy of the card). --}}
     <div class="gs-letter-composer__row">
       <label class="gs-letter-composer__label">{{localize "GOODSOCIETY.letterComposer.signAsLabel"}}</label>
       <div class="gs-letter-composer__control">
         <select class="gs-letter-composer__actor-select" name="signAs">
           <option value="self" {{#if (eq state.signAs "self")}}selected{{/if}}>{{signAsSelfName}}</option>
+          {{#if canSignAsPersona}}
           <option value="persona" {{#if (eq state.signAs "persona")}}selected{{/if}}>{{signAsPersonaName}}</option>
+          {{/if}}
+          <option value="anonymous" {{#if (eq state.signAs "anonymous")}}selected{{/if}}>{{signAsAnonymousName}}</option>
         </select>
       </div>
     </div>
-    {{/if}}
 
     {{!-- SCRIPT FONT — optional calligraphy face for the greeting + signature.
          Each <option> previews its own face via inline font-family. --}}

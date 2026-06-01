@@ -19,6 +19,7 @@
  */
 
 import { themedWrap } from '../helpers/themed-wrap.js';
+import { profilePic } from '../helpers/profile-pic.js';
 
 const DISMISS_GRACE_MS = 200;
 const FADE_MS = 100;
@@ -69,9 +70,9 @@ function _onHoverToken(placeable, hovered) {
 // ── Data preparation (visibility filtering happens here) ───────────────────────
 
 function _buildCardData(placeable) {
-  const actor = placeable.actor;
+  const placeableActor = placeable.actor;
 
-  if (!actor) {
+  if (!placeableActor) {
     return {
       actor: null,
       displayName: placeable.document?.name || game.i18n.localize('GOODSOCIETY.hoverCard.unknownToken'),
@@ -85,6 +86,25 @@ function _buildCardData(placeable) {
       reputationTags: [],
     };
   }
+
+  // For UNLINKED tokens (default for most NPCs and many Connections),
+  // `placeable.actor` returns a synthetic actor — a delta-merged view of
+  // the world actor plus the token document's delta. The synthetic instance
+  // doesn't reliably reflect persona changes made on the world actor:
+  // embedded array fields like `system.personas` can be cached on the
+  // delta, and `system.activePersonaId` set via the world actor's update
+  // may not propagate until the token's delta is invalidated. Symptom:
+  // switching persona on an NPC, then hovering its token, still shows the
+  // true identity.
+  //
+  // Fix: read persona state directly from the WORLD actor (the canonical
+  // source of truth for personas + activePersonaId). Falls back to the
+  // placeable's actor when there's no separate world actor (e.g. token
+  // with deleted parent — rare but possible).
+  const worldActor = (placeable.document?.actorId
+    ? game.actors?.get(placeable.document.actorId)
+    : null) ?? placeableActor;
+  const actor = worldActor;
 
   const isGM = game.user?.isGM;
 
@@ -111,17 +131,32 @@ function _buildCardData(placeable) {
   // protection safeguard.
   const displayName = personaName || actor.name;
 
-  // Portrait: persona overrides actor-level.
-  const portraitUrl = activePersona?.portraitUrl
-    || actor.system?.bio?.portraitUrl
-    || actor.img
-    || '';
+  // Portrait: route through the canonical profilePic() resolver per
+  // CLAUDE.md §16 anti-pattern. profilePic respects the persona's
+  // tokenImageUrl + prototypeToken.texture.src chain; inlining
+  // `activePersona?.portraitUrl || actor.system?.bio?.portraitUrl ||
+  // actor.img` (the old pattern here) misses persona token overrides AND
+  // breaks on actors without `actor.img` set, both of which are common
+  // on NPCs.
+  const portraitUrl = profilePic(actor) || activePersona?.portraitUrl || actor.img || '';
   const portraitInitial = (displayName?.[0] ?? '?').toUpperCase();
 
-  // Role label: type-specific format. Majors intentionally omit the archetype
-  // line on the hover card — the focus there is the reputation snapshot.
+  // Persona-protection gate. When an explicit persona is active, the hover
+  // card must render ONLY persona-derived fields (name, portrait,
+  // hoverSummary, publicTags). Actor-level descriptor lines —
+  // bio.title / bio.role / bio.relationshipLabel / sceneInfo.subtitle —
+  // describe the TRUE identity and would leak it under cover. Same rule
+  // applies to Major-only reputation auto-summary further down: reputation
+  // is tied to the true identity, not the persona, so it's suppressed
+  // while a persona is up.
+  const isUnderCover = !!activePersona;
+
+  // Role label: type-specific format. Suppressed entirely under cover so
+  // the persona doesn't leak its true role ("Marquess of Willowood",
+  // "Just a Maid", etc.). Majors intentionally omit the archetype line
+  // even without a persona — the focus there is the reputation snapshot.
   let roleLabel, roleLabelStyle;
-  if (actor.type === 'major-character') {
+  if (isUnderCover || actor.type === 'major-character') {
     roleLabel = '';
     roleLabelStyle = 'branded';
   } else if (actor.type === 'connection') {
@@ -141,31 +176,33 @@ function _buildCardData(placeable) {
     roleLabelStyle = 'muted';
   }
 
-  // Hover summary: persona overrides actor-level. Post-MVP §10.2 upgraded
-  // sceneInfo.hoverSummary on Connection + NPC to HTMLField — render it raw
-  // (assumed safe; the Foundry editor sanitizes) rather than via _esc.
-  const hoverSummary = (
-    activePersona?.hoverSummary
-    || actor.system?.sceneInfo?.hoverSummary
-    || ''
-  );
+  // Hover summary — under cover, ONLY the persona's hoverSummary renders.
+  // The actor-level sceneInfo.hoverSummary is the cover-blowing one
+  // (describes the true identity), so we don't fall through to it. Result:
+  // a persona with no hoverSummary set renders no summary block at all,
+  // which is the correct privacy-preserving default.
+  const hoverSummary = isUnderCover
+    ? (activePersona?.hoverSummary || '')
+    : (actor.system?.sceneInfo?.hoverSummary || '');
   const hoverSummaryIsHtml =
     actor.type === 'connection' || actor.type === 'npc';
 
-  // Subtitle line (post-MVP §10.2; Connection + NPC only).
-  const subtitle = (actor.system?.sceneInfo?.subtitle || '').trim();
+  // Subtitle line — suppressed under cover (it's the true identity's
+  // subhead, e.g. "Lady Hetherington's lady's maid").
+  const subtitle = isUnderCover
+    ? ''
+    : (actor.system?.sceneInfo?.subtitle || '').trim();
 
-  // Editable subhead (system.bio.title) — free-form title or quick
-  // description set on the sheet's cameo. Renders directly under the
-  // name on the hover card, above the roleLabel/subtitle line. Available
-  // on Major / Connection / NPC.
-  const title = (actor.system?.bio?.title || '').trim();
+  // Editable subhead (system.bio.title) — also suppressed under cover.
+  const title = isUnderCover
+    ? ''
+    : (actor.system?.bio?.title || '').trim();
 
-  // Public tags: persona overrides actor-level.
-  const publicTags = (
-    activePersona?.publicTags?.length
-      ? activePersona.publicTags
-      : (actor.system?.sceneInfo?.publicTags ?? [])
+  // Public tags — under cover, ONLY the persona's publicTags render.
+  // Actor-level publicTags are the true-identity ones.
+  const publicTags = (isUnderCover
+    ? (activePersona?.publicTags ?? [])
+    : (actor.system?.sceneInfo?.publicTags ?? [])
   ).filter(Boolean);
 
   // ── Major-only auto-summary (post-MVP §10.2) ────────────────────────────
@@ -177,7 +214,9 @@ function _buildCardData(placeable) {
   let activeConditions = [];
   let familyCriteria = '';
 
-  if (actor.type === 'major-character') {
+  if (actor.type === 'major-character' && !isUnderCover) {
+    // Reputation snapshot is the true identity's reputation — would leak
+    // the cover. Suppressed entirely when a persona is active.
     let majorAuto = true;
     try { majorAuto = game.settings.get('good-society-homebrew', 'hoverCardMajorAutoSummary'); } catch {}
 

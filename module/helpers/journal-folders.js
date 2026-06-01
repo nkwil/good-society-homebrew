@@ -122,14 +122,17 @@ export async function cycleReflectionFolder() {
  * @param {'letter'|'monologue'|'sessionLog'|'cycleDivider'} opts.entryType
  * @param {number|null} [opts.cycleNumber]
  * @param {string|null} [opts.speakerActorId]
+ * @param {string|null} [opts.letterId] Correlation id shared with the letter
+ *   chat card, so the "reveal to all" flow can find this entry. Letters only.
  * @returns {Object} suitable for `flags` on a JournalEntry create
  */
-export function entryFlags({ entryType, cycleNumber = null, speakerActorId = null }) {
+export function entryFlags({ entryType, cycleNumber = null, speakerActorId = null, letterId = null }) {
   return {
     'good-society-homebrew': {
       entryType,
       ...(cycleNumber != null ? { cycleNumber } : {}),
       ...(speakerActorId ? { speakerActorId } : {}),
+      ...(letterId ? { letterId } : {}),
     },
   };
 }

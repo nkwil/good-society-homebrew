@@ -8,18 +8,20 @@
  * archive only on a GM client (first GM if multiple are connected).
  *
  * Shares the `system.good-society-homebrew` channel with rumour-socket and
- * random-event-socket. Payloads are dispatched via `payload.type`, so this
- * listener is no-op for everything except `letter.archiveRequest`.
+ * random-event-socket. Payloads are dispatched via `payload.type`; this
+ * listener handles `letter.archiveRequest` (player → GM journal archive) and
+ * `letter.revealRequest` (player → GM "reveal to all"), no-op otherwise.
  */
 
 import { letterFolder, entryFlags } from '../helpers/journal-folders.js';
+import { revealLetterDocuments } from './letter-reveal.js';
 
 const NS = 'good-society-homebrew';
 const SOCKET_NAME = `system.${NS}`;
 
 async function _processArchive(payload) {
   if (!game.user?.isGM) return;
-  const { entryName, html, ownership, recipientFolderKey, cycleNumber, speakerActorId } = payload;
+  const { entryName, html, ownership, recipientFolderKey, cycleNumber, speakerActorId, letterId } = payload;
   if (!entryName || !html) return;
 
   try {
@@ -32,6 +34,7 @@ async function _processArchive(payload) {
         entryType: 'letter',
         cycleNumber,
         speakerActorId,
+        letterId,
       }),
       pages: [{
         name: entryName,
@@ -49,8 +52,13 @@ export function register() {
     if (!game.socket) return;
     game.socket.on(SOCKET_NAME, async (payload) => {
       if (!payload || typeof payload !== 'object') return;
-      if (payload.type !== 'letter.archiveRequest') return;
-      await _processArchive(payload);
+      if (payload.type === 'letter.archiveRequest') {
+        await _processArchive(payload);
+      } else if (payload.type === 'letter.revealRequest') {
+        // GM-only relay target — players can't un-whisper a message or raise
+        // journal ownership, so the reveal control emits here for the GM to run.
+        await revealLetterDocuments(payload.messageId, payload.letterId);
+      }
     });
   });
 }

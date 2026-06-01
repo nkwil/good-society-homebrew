@@ -298,13 +298,18 @@ export async function postLetterCard({
     cycleNumber: cycleNum,
     speakerName,
   });
-  const html = themedWrap(actor, inner, ['gs-chat-card', 'gs-letter-card']);
+  // Anonymous letters wrap house-neutral (theme=null → 'npc') so the sender's
+  // theme never leaks, and the chat speaker is a bare alias with no actor link
+  // (the portrait hook also early-returns on the letterAnonymous flag). The
+  // real actor.id still lives in the flags below for GM-side truth resolution.
+  const isAnonymous = !!letter?.anonymous;
+  const html = themedWrap(isAnonymous ? null : actor, inner, ['gs-chat-card', 'gs-letter-card']);
   const whisperTargets = whisper
     ? [...new Set([...(ChatMessage.getWhisperRecipients('GM') ?? []).map(u => u.id), game.user.id, ...whisperIds])]
     : [];
   await ChatMessage.create({
     content: html,
-    speaker: ChatMessage.getSpeaker({ actor }),
+    speaker: isAnonymous ? { alias: speakerName } : ChatMessage.getSpeaker({ actor }),
     whisper: whisperTargets,
     flags: {
       'good-society-homebrew': {
@@ -315,12 +320,19 @@ export async function postLetterCard({
         speakerPersonaId: resolvedPersona?.id ?? null,
         senderActorId: actor.id,
         senderTheme: actor.system.theme ?? 'npc',
+        // Recipients see "Anonymous"; the portrait/theme hooks key off this to
+        // suppress the sender's identity, and the GM-only truth note keys off
+        // it to reveal who actually wrote the letter (chat-portraits.js).
+        letterAnonymous: isAnonymous,
         // Post-MVP §11.2 — seal type carries meaning. The letter-seals hook
         // dispatches behavior (invitation hook / burn-after-reading) based
         // on this flag.
         letterSealId: letter?.seal ?? '',
         letterScriptFont: letter?.scriptFont ?? 'none',
         recipientName: letter?.to ?? '',
+        // Correlates this card with its journal-archive entry for the
+        // "reveal to all" flow (letter-reveal.js). Empty for legacy cards.
+        letterId: letter?.letterId ?? '',
       },
     },
   });

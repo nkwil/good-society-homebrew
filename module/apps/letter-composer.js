@@ -9,7 +9,7 @@
 
 import { postLetterCard } from '../helpers/chat-cards.js';
 import { themedWrap } from '../helpers/themed-wrap.js';
-import { letterFolder, entryFlags } from '../helpers/journal-folders.js';
+import { archiveLetterToJournal } from '../helpers/letter-archive.js';
 import { profileName, explicitPersona } from '../helpers/profile-pic.js';
 import { SEAL_TYPES, SCRIPT_FONTS, scriptFontFamily } from '../constants.js';
 import { parchmentVariantFor } from '../helpers/parchment.js';
@@ -18,9 +18,7 @@ import { queueLetter } from '../helpers/letter-queue.js';
 const { HandlebarsApplicationMixin, ApplicationV2, DialogV2 } = foundry.applications.api;
 
 const TEMPLATE    = 'systems/good-society-homebrew/templates/apps/letter-composer.hbs';
-const LETTER_TPL  = 'systems/good-society-homebrew/templates/chat-cards/letter.hbs';
 const PREVIEW_TPL = 'systems/good-society-homebrew/templates/apps/letter-preview.hbs';
-const NS         = 'good-society-homebrew';
 
 /**
  * Seal vocabulary — sourced from the typed registry in `module/constants.js`.
@@ -130,11 +128,12 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       greeting:    DEFAULT_GREETING,
       closing:     DEFAULT_CLOSING,
       scriptFont:  'none',
-      // Whose name signs the letter: 'self' (the character's true name) or
-      // 'persona' (the active persona's name). Defaults to 'self' — a letter
-      // is personal correspondence signed by the real character, even when a
-      // persona mask is active on tokens/sheets/chat. Players opt into a
-      // persona signature for anonymous / pseudonymous letters.
+      // Whose name signs the letter: 'self' (the character's true name),
+      // 'persona' (the active persona's name), or 'anonymous' (a generic
+      // "Anonymous" label, with the real sender hidden from recipients but
+      // visible to the GM). Defaults to 'self' — a letter is personal
+      // correspondence signed by the real character, even when a persona mask
+      // is active on tokens/sheets/chat.
       signAs:      'self',
     };
     this._lastSaved       = null;
@@ -207,16 +206,18 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     ctx.ownedActors = ownedActors.map(a => ({ ...a, selected: a.id === this._state.fromActorId }));
 
-    // SIGN AS — only meaningful when the sender has an EXPLICIT persona active.
-    // With no persona there's nothing to choose, so collapse any stale choice
-    // back to 'self' (prevents a 'persona' pick from a previous FROM actor
-    // leaking onto a persona-less one).
+    // SIGN AS — three options: self (real name), persona (active persona's
+    // name), anonymous (a generic "Anonymous" label). The persona option only
+    // exists when the sender has an EXPLICIT persona active; if a 'persona'
+    // choice is stranded on a persona-less FROM actor, collapse it back to
+    // 'self'. 'anonymous' is always available, so it's never collapsed.
     const fromActor   = game.actors.get(this._state.fromActorId) ?? null;
     const fromPersona = explicitPersona(fromActor);
-    if (!fromPersona) this._state.signAs = 'self';
-    ctx.canSignAsPersona  = !!fromPersona;
-    ctx.signAsSelfName    = fromActor?.name ?? '';
-    ctx.signAsPersonaName = fromPersona?.name ?? '';
+    if (!fromPersona && this._state.signAs === 'persona') this._state.signAs = 'self';
+    ctx.canSignAsPersona    = !!fromPersona;
+    ctx.signAsSelfName      = fromActor?.name ?? '';
+    ctx.signAsPersonaName   = fromPersona?.name ?? '';
+    ctx.signAsAnonymousName = game.i18n.localize('GOODSOCIETY.letterComposer.anonymousName');
 
     // TO — all visible MCs, Connections, NPCs except the FROM actor
     // Sorted: Majors first, then Connections, then NPCs; alpha within each group.
@@ -392,6 +393,11 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
    */
   _signatureName(actor) {
     if (!actor) return '';
+    // Anonymous wins over everything — the recipient sees a generic name, no
+    // matter which real character (or persona) is sending under the hood.
+    if (this._state.signAs === 'anonymous') {
+      return game.i18n.localize('GOODSOCIETY.letterComposer.anonymousName');
+    }
     if (this._state.signAs === 'persona') {
       return explicitPersona(actor)?.name || actor.name || '';
     }
@@ -446,6 +452,12 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       // player's choice.
       signatureName: senderName,
       signAs:        this._state.signAs,
+      // True when the player chose to send anonymously. The real FROM actor is
+      // still resolved (for whisper delivery + GM tracking), but the chat card,
+      // portrait, theme, and journal entry are all neutralized for recipients —
+      // only the GM's copy reveals who actually wrote it. Carried on the payload
+      // (like signatureName) so a queued letter stays anonymous through delivery.
+      anonymous:     this._state.signAs === 'anonymous',
     };
   }
 
@@ -502,77 +514,7 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
   // ── Journal archive / inbox ───────────────────────────────────────────────
 
   async _archiveToJournal(actor, persona, letter, cycleNumber, recipientActor) {
-    try {
-      const speakerName    = letter.signatureName || actor.name;
-      const recipientLabel = letter.to || game.i18n.localize('GOODSOCIETY.letterComposer.unknownRecipient');
-      const cycleLabel     = game.i18n.localize('GOODSOCIETY.letterComposer.cycle');
-      const entryName      = cycleNumber
-        ? `${speakerName} → ${recipientLabel} (${cycleLabel} ${cycleNumber})`
-        : `${speakerName} → ${recipientLabel}`;
-
-      const inner = await foundry.applications.handlebars.renderTemplate(LETTER_TPL, {
-        actor, persona, letter, cycleNumber, speakerName,
-      });
-      const html = themedWrap(actor, inner, ['gs-letter-card']);
-
-      // Build ownership — sender is OWNER, recipient's owners get OBSERVER.
-      // Use the sending user's id, but if archive is GM-delegated we keep the
-      // sender in the ownership map so they retain OWNER on the entry.
-      const ownership = { default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE };
-      ownership[game.user.id] = CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
-      if (recipientActor) {
-        Object.entries(recipientActor.ownership ?? {})
-          .filter(([uid, lvl]) => uid !== 'default' && lvl >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)
-          .forEach(([uid]) => {
-            if (!(uid in ownership)) ownership[uid] = CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER;
-          });
-      }
-
-      const recipientFolderKey = recipientActor
-        ? profileName(recipientActor)
-        : recipientLabel;
-
-      // GM-only privileges: creating folders and JournalEntries both require
-      // permissions players don't have by default. If a non-GM user calls
-      // this, delegate the whole archive step to the first GM client via the
-      // system socket. The send-to-chat step itself already succeeded by the
-      // time we get here; the archive is the only privileged write.
-      if (!game.user?.isGM) {
-        if (game.socket) {
-          game.socket.emit(`system.${NS}`, {
-            type: 'letter.archiveRequest',
-            entryName,
-            html,
-            ownership,
-            recipientFolderKey,
-            cycleNumber,
-            speakerActorId: actor.id,
-            requestedBy: game.user.id,
-          });
-        }
-        return;
-      }
-
-      // GM-side direct write.
-      const folder = await letterFolder(recipientFolderKey);
-      await JournalEntry.create({
-        name: entryName,
-        ...(folder ? { folder: folder.id } : {}),
-        ownership,
-        flags: entryFlags({
-          entryType: 'letter',
-          cycleNumber,
-          speakerActorId: actor.id,
-        }),
-        pages: [{
-          name: entryName,
-          type: 'text',
-          text: { content: html, format: CONST.JOURNAL_ENTRY_PAGE_FORMATS?.HTML ?? 1 },
-        }],
-      });
-    } catch (err) {
-      console.warn('[GS] Letter journal archive failed (non-fatal):', err);
-    }
+    await archiveLetterToJournal({ actor, persona, letter, cycleNumber, recipientActor });
   }
 
   // ── Actions ───────────────────────────────────────────────────────────────
@@ -616,6 +558,12 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     // that snuck in via the textarea.
     const letter = this._buildLetterPayload();
     letter.body  = letter.body.trim();
+    // Shared correlation id — stamped on BOTH the chat card flags and the
+    // journal-archive entry flags so the "reveal to all" flow can find the
+    // novel entry that pairs with a given letter card. Generated here (before
+    // phase-gating) so it carries through the outbox queue too: queued letters
+    // store the whole `letter` payload and deliver later with the same id.
+    if (!letter.letterId) letter.letterId = foundry.utils.randomID();
     let cycleNumber = null;
     try { cycleNumber = game.settings.get('good-society-homebrew', 'cycleNumber'); } catch {}
 
