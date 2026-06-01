@@ -87,13 +87,16 @@ let _composer = null;
  * Open the letter composer. Pass `fromActorId` to pre-select the sender — used
  * when launching from the Epistolary Wizard so the inbox's active character is
  * already chosen in the FROM dropdown. Ignored if the actor isn't a sendable
- * (owned Major/Connection).
+ * (owned Major/Connection, or any NPC the GM owns).
  */
 export function openLetterComposer(fromActorId = null, options = {}) {
   if (!_composer) _composer = new LetterComposer();
   if (fromActorId) {
     const actor = game.actors?.get(fromActorId);
-    if (actor?.isOwner && (actor.type === 'major-character' || actor.type === 'connection')) {
+    const sendable = actor?.type === 'major-character'
+      || actor?.type === 'connection'
+      || actor?.type === 'npc';
+    if (actor?.isOwner && sendable) {
       _composer._state.fromActorId = fromActorId;
     }
   }
@@ -180,9 +183,13 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
       ? `${game.i18n.localize('GOODSOCIETY.letterComposer.epistolary')} · ${game.i18n.localize('GOODSOCIETY.letterComposer.cycle')} ${cycleNumber}`
       : game.i18n.localize('GOODSOCIETY.letterComposer.epistolary');
 
-    // FROM — owned Majors + owned Connections
+    // FROM — owned Majors + Connections, plus any NPC the user owns. NPCs are
+    // GM-only by default (default ownership NONE), so the `isOwner` gate
+    // naturally scopes NPC senders to the GM — letting the DM send narrative
+    // correspondence from any NPC. A player only sees an NPC here if a GM
+    // explicitly granted them ownership of it.
     const ownedActors = game.actors
-      .filter(a => a.isOwner && (a.type === 'major-character' || a.type === 'connection'))
+      .filter(a => a.isOwner && (a.type === 'major-character' || a.type === 'connection' || a.type === 'npc'))
       .map(a => {
         // Resolve persona/name via the explicit-only helpers — the data-model
         // `activePersona` getter falls back to the primary/first persona when
@@ -619,7 +626,13 @@ export class LetterComposer extends HandlebarsApplicationMixin(ApplicationV2) {
     try { currentPhase = game.settings.get('good-society-homebrew', 'cyclePhase'); } catch {}
     const isEpistolaryPhase = currentPhase === 'epistolary';
 
-    if (!isEpistolaryPhase) {
+    // NPC senders are a GM narrative tool, not part of the player Epistolary
+    // round-robin — deliver them immediately regardless of the current phase
+    // so a plot letter doesn't sit in the outbox queue until the next
+    // Epistolary phase opens. Player-character letters still queue off-phase.
+    const senderIsNpc = actor.type === 'npc';
+
+    if (!isEpistolaryPhase && !senderIsNpc) {
       await queueLetter({
         fromActorId: actor.id,
         toActorId:   recipientActor.id,

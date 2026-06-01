@@ -60,8 +60,17 @@
               <div class="gs-npc-organizer__row-text">
                 <div class="gs-npc-organizer__row-name">{{actorName}}</div>
                 {{#if title}}<div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>{{/if}}
+                {{#if hasNote}}<div class="gs-npc-organizer__row-note" title="{{gmNote}}">✎ {{notePreview}}</div>{{/if}}
               </div>
-              {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+              <div class="gs-npc-organizer__row-actions">
+                <button type="button"
+                        class="gs-npc-organizer__note-btn{{#if hasNote}} has-note{{/if}}"
+                        data-action="edit-note"
+                        draggable="false"
+                        aria-label="{{#if hasNote}}{{localize 'GOODSOCIETY.npcOrganizer.editNote'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.addNote'}}{{/if}}"
+                        title="{{#if hasNote}}{{localize 'GOODSOCIETY.npcOrganizer.editNote'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.addNote'}}{{/if}}">✎</button>
+                {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+              </div>
             </div>
           {{/each}}
         </div>
@@ -89,8 +98,17 @@
               <div class="gs-npc-organizer__row-text">
                 <div class="gs-npc-organizer__row-name">{{actorName}}</div>
                 {{#if title}}<div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>{{/if}}
+                {{#if hasNote}}<div class="gs-npc-organizer__row-note" title="{{gmNote}}">✎ {{notePreview}}</div>{{/if}}
               </div>
-              {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+              <div class="gs-npc-organizer__row-actions">
+                <button type="button"
+                        class="gs-npc-organizer__note-btn{{#if hasNote}} has-note{{/if}}"
+                        data-action="edit-note"
+                        draggable="false"
+                        aria-label="{{#if hasNote}}{{localize 'GOODSOCIETY.npcOrganizer.editNote'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.addNote'}}{{/if}}"
+                        title="{{#if hasNote}}{{localize 'GOODSOCIETY.npcOrganizer.editNote'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.addNote'}}{{/if}}">✎</button>
+                {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+              </div>
             </div>
           {{/each}}
         </div>
@@ -118,8 +136,17 @@
               <div class="gs-npc-organizer__row-text">
                 <div class="gs-npc-organizer__row-name">{{actorName}}</div>
                 {{#if title}}<div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>{{/if}}
+                {{#if hasNote}}<div class="gs-npc-organizer__row-note" title="{{gmNote}}">✎ {{notePreview}}</div>{{/if}}
               </div>
-              {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+              <div class="gs-npc-organizer__row-actions">
+                <button type="button"
+                        class="gs-npc-organizer__note-btn{{#if hasNote}} has-note{{/if}}"
+                        data-action="edit-note"
+                        draggable="false"
+                        aria-label="{{#if hasNote}}{{localize 'GOODSOCIETY.npcOrganizer.editNote'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.addNote'}}{{/if}}"
+                        title="{{#if hasNote}}{{localize 'GOODSOCIETY.npcOrganizer.editNote'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.addNote'}}{{/if}}">✎</button>
+                {{#if onScene}}<span class="gs-npc-organizer__row-onscene" title="{{localize 'GOODSOCIETY.npcOrganizer.onSceneHint'}}">●</span>{{/if}}
+              </div>
             </div>
           {{/each}}
         </div>

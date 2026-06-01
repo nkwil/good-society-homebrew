@@ -468,6 +468,36 @@ export async function openMonologueFromCabinet() {
   if (spender) return openMonologueTrigger(spender);
 }
 
+/**
+ * GM-only: create the monologue JournalEntry from a prepared payload.
+ * `Folder.create` + `JournalEntry.create` both require GM permission, so the
+ * "Light tier" MonologueEditor modal relays here via the `monologueArchiveRequest`
+ * socket action when a player submits. Returns the created entry (GM path) or
+ * null. The caller passes pre-built themed HTML so persona/theme resolution
+ * stays on the originating client. Mirrors the letter archive proxy.
+ */
+export async function archiveMonologueEntry({ entryName, html, cycleNumber, speakerActorId }) {
+  if (!game.user?.isGM) return null;
+  if (!entryName || !html) return null;
+  try {
+    const folder = await monologueFolder(cycleNumber);
+    return await JournalEntry.create({
+      name: entryName,
+      ...(folder ? { folder: folder.id } : {}),
+      ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2 },
+      flags: entryFlags({ entryType: 'monologue', cycleNumber, speakerActorId }),
+      pages: [{
+        name: game.i18n.localize('GOODSOCIETY.monologueEditor.pageName') || 'Monologue',
+        type: 'text',
+        text: { content: html, format: CONST.JOURNAL_ENTRY_PAGE_FORMATS?.HTML ?? 1 },
+      }],
+    });
+  } catch (err) {
+    console.warn('GS | monologue archive proxy failed (non-fatal):', err);
+    return null;
+  }
+}
+
 /** Register socket listeners. Called from good-society.js ready hook. */
 export function registerMonologueSocket() {
   game.socket?.on(SOCKET_NAME, async (msg) => {
@@ -497,6 +527,13 @@ export function registerMonologueSocket() {
         // GM client picks up the canonical write when a non-target user submitted.
         if (game.user?.isGM) {
           await _persistMonologueComplete(msg.payload);
+        }
+        break;
+      case 'monologueArchiveRequest':
+        // GM client creates the journal entry for the "Light tier" modal when a
+        // player submitted (players can't create JournalEntry/Folder docs).
+        if (game.user?.isGM) {
+          await archiveMonologueEntry(msg.payload);
         }
         break;
       case 'monologueEnd':

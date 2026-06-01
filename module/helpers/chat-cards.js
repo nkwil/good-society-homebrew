@@ -262,10 +262,13 @@ export async function postLetterCard({
 }) {
   const resolvedPersona = _persona(actor, persona);
   const cycleNum = cycleNumber ?? _cycle();
-  // The letter's SIGNATURE is the composer-chosen name (true name by default,
-  // persona only on opt-in), baked onto the payload as `signatureName`. Fall
-  // back to the persona/actor name for external callers that don't set it.
-  const speakerName = letter?.signatureName || resolvedPersona?.name || actor.name;
+  // The letter's SIGNATURE is the composer-chosen name, baked onto the payload
+  // as `signatureName` (true name by default; persona name ONLY when the sender
+  // opts in via the sign-as toggle). When a caller doesn't set it, fall back to
+  // the actor's true name — never the active persona. A persona is a secondary
+  // mask, never the default signer; defaulting to it here is what signed letters
+  // with a mask name and is the bug this guard prevents from recurring.
+  const speakerName = letter?.signatureName || actor.name;
 
   // Fill in any salutation/seal-label fields the caller didn't pre-resolve.
   // The composer pre-resolves these via _buildLetterPayload; external callers

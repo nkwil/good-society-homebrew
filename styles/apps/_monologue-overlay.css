@@ -1,10 +1,13 @@
 /* Monologue overlay — post-MVP §12.2 / patch-token-events §4.
  *
- * Frameless full-viewport. Fourth member of the world-identity surface family
- * (Arrival z-index 30; this z-index 35; pause overlay z-index 40 — pause
- * dominates if both are active). Pointer-events on the overlay (target needs
- * the textarea), but the backdrop motes/corners pass clicks through.
- */
+ * Frameless full-viewport scene-freeze. It must dominate ALL chrome —
+ * including the Cabinet, which sits at z-index 1000. Earlier it lived at
+ * z-index 35 (the world-identity tier) and the Cabinet rail punched through,
+ * occluding the target's Submit / End buttons. It now sits at 1001 so the
+ * freeze genuinely covers the screen; the pause overlay is bumped to 1002 so
+ * "pause dominates if both are active" still holds. Pointer-events on the
+ * overlay (target needs the textarea); backdrop motes/corners pass clicks
+ * through. */
 
 #gs-monologue-overlay,
 .application.gs-monologue-overlay {
@@ -16,7 +19,7 @@
   border: 0;
   padding: 0;
   margin: 0;
-  z-index: 35;
+  z-index: 1001;
   pointer-events: auto;
 }
 
@@ -144,9 +147,12 @@
 .gs-monologue-overlay__audience-line {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
-  margin: 0;
+  font-size: 14px;
+  /* Light cream over the dark overlay — the ink-based default was
+   * near-invisible against the scene-freeze backdrop. */
+  color: #F1E5C8;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  margin: 8px 0 0;
 }
 
 .gs-monologue-overlay__actions,

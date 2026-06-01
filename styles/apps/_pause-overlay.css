@@ -23,7 +23,9 @@ body.gs-world-identity.paused #pause {
   width: 100vw !important;
   height: 100vh !important;
   background: rgba(20, 16, 12, 0.65);
-  z-index: 40;
+  /* Above the Cabinet (1000) and the monologue overlay (1001) so a pause
+   * dominates the screen even mid-monologue. */
+  z-index: 1002;
   display: flex !important;
   align-items: center;
   justify-content: center;

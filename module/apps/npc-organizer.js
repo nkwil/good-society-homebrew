@@ -68,6 +68,7 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
     const allActors = game.actors?.contents ?? [];
     for (const actor of allActors) {
       if (!LISTED_TYPES.includes(actor.type)) continue;
+      const gmNote = String(actor.getFlag(NS, 'gmNote') ?? '').trim();
       groups[actor.type].push({
         actorId: actor.id,
         actorUuid: actor.uuid,
@@ -78,6 +79,9 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
         theme: actor.system?.theme ?? (actor.type === 'npc' ? 'npc' : 'connection-green'),
         type: actor.type,
         onScene: onSceneActorIds.has(actor.id),
+        gmNote,
+        hasNote: !!gmNote,
+        notePreview: gmNote.length > 80 ? `${gmNote.slice(0, 80).trimEnd()}…` : gmNote,
       });
     }
     const byName = (a, b) => (a.actorName || '').localeCompare(b.actorName || '');
@@ -159,6 +163,11 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
     // token from the actor's prototypeToken at the drop coords. Setting both
     // `text/plain` and the legacy `application/json` covers every consumer.
     root.addEventListener('dragstart', (ev) => {
+      // Starting a drag on the note button must not place a token.
+      if (ev.target.closest?.('[data-action="edit-note"]')) {
+        ev.preventDefault();
+        return;
+      }
       const row = ev.target.closest?.('[data-actor-uuid]');
       if (!row) return;
       const uuid = row.dataset.actorUuid;
@@ -175,8 +184,22 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
       row?.classList?.remove('is-dragging');
     });
 
-    // Double-click — open the actor sheet.
+    // Note button — opens the per-character GM note editor. Stops propagation
+    // so the row's drag / sheet-open handlers don't also fire.
+    root.addEventListener('click', (ev) => {
+      const btn = ev.target.closest?.('[data-action="edit-note"]');
+      if (!btn) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const row = btn.closest('[data-actor-id]');
+      const actor = game.actors?.get(row?.dataset.actorId);
+      if (actor) _openNoteEditor(actor);
+    });
+
+    // Double-click — open the actor sheet (but not when double-clicking the
+    // note button).
     root.addEventListener('dblclick', (ev) => {
+      if (ev.target.closest?.('[data-action="edit-note"]')) return;
       const row = ev.target.closest?.('[data-actor-id]');
       if (!row) return;
       const actor = game.actors?.get(row.dataset.actorId);
@@ -259,6 +282,44 @@ async function _createActorOfType(type) {
   }
 }
 
+// ── GM note editor ───────────────────────────────────────────────────────────
+//
+// Per-character GM scratchpad. Stored as an actor flag
+// (`flags['good-society-homebrew'].gmNote`) rather than a schema field so it
+// works uniformly across Majors, Connections, and NPCs without touching three
+// locked data-model schemas. Empty notes unset the flag so rows stay clean.
+
+async function _openNoteEditor(actor) {
+  const current = String(actor.getFlag(NS, 'gmNote') ?? '');
+  const displayName = actor.system?.activePersona?.name || actor.name;
+  const result = await DialogV2.wait({
+    window: { title: game.i18n.format('GOODSOCIETY.npcOrganizer.noteTitle', { name: displayName }) },
+    position: { width: 420 },
+    content: `<textarea name="gmNote" class="gs-organizer-note-editor__textarea" rows="8"
+      placeholder="${game.i18n.localize('GOODSOCIETY.npcOrganizer.notePlaceholder')}">${foundry.utils.escapeHTML(current)}</textarea>`,
+    buttons: [
+      {
+        action: 'save',
+        label: game.i18n.localize('GOODSOCIETY.npcOrganizer.noteSave'),
+        default: true,
+        callback: (event, button) => button.form.elements.gmNote.value,
+      },
+      {
+        action: 'cancel',
+        label: game.i18n.localize('GOODSOCIETY.npcOrganizer.noteCancel'),
+      },
+    ],
+    rejectClose: false,
+  });
+
+  // null = closed via X; 'cancel' = cancel button. Either way, no write.
+  if (result == null || result === 'cancel') return;
+  const text = String(result).trim();
+  if (text) await actor.setFlag(NS, 'gmNote', text);
+  else await actor.unsetFlag(NS, 'gmNote');
+  // The setFlag/unsetFlag fires updateActor, which re-renders the organizer.
+}
+
 // ── Context menu ─────────────────────────────────────────────────────────────
 
 function _showContextMenu(actorId, clientX, clientY) {
@@ -275,10 +336,18 @@ function _showContextMenu(actorId, clientX, clientY) {
   menu.className = 'gs-organizer-ctx';
   menu.style.cssText = `position:fixed;left:${clientX}px;top:${clientY}px;z-index:600;pointer-events:auto;`;
 
+  const hasNote = !!String(actor.getFlag(NS, 'gmNote') ?? '').trim();
+
   const items = [
     {
       action: 'open-sheet',
       label: game.i18n.localize('GOODSOCIETY.npcOrganizer.ctx.openSheet'),
+    },
+    {
+      action: 'edit-note',
+      label: game.i18n.localize(
+        hasNote ? 'GOODSOCIETY.npcOrganizer.ctx.editNote' : 'GOODSOCIETY.npcOrganizer.ctx.addNote',
+      ),
     },
     {
       action: 'place-at-center',
@@ -316,6 +385,8 @@ function _showContextMenu(actorId, clientX, clientY) {
 
     if (action === 'open-sheet') {
       actor.sheet?.render(true);
+    } else if (action === 'edit-note') {
+      _openNoteEditor(actor);
     } else if (action === 'place-at-center' && scene) {
       // Drop a token at the current viewport center.
       const center = canvas.stage

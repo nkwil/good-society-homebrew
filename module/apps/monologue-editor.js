@@ -9,7 +9,7 @@
 
 import { postMonologueCard } from '../helpers/chat-cards.js';
 import { themedWrap } from '../helpers/themed-wrap.js';
-import { monologueFolder, entryFlags } from '../helpers/journal-folders.js';
+import { archiveMonologueEntry } from './monologue-overlay.js';
 import { profileName } from '../helpers/profile-pic.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -92,30 +92,28 @@ export class MonologueEditor extends HandlebarsApplicationMixin(ApplicationV2) {
       `.trim();
       const themedHtml = themedWrap(this.actor, cardHtml, ['gs-monologue-archive-wrap']);
 
-      // Folder hierarchy + permissions per post-MVP §13.1.
-      // Default OBSERVER (was inherited NONE pre-patch — broken because the
-      // chat card already broadcasts the body, so locking the journal entry
-      // beneath that was inconsistent).
-      const folder = await monologueFolder(cycleNumber);
-      const entry = await JournalEntry.create({
-        name: `${this.actor.name} — Cycle ${cycleNumber} Monologue`,
-        ...(folder ? { folder: folder.id } : {}),
-        ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2 },
-        flags: entryFlags({
-          entryType: 'monologue',
-          cycleNumber,
-          speakerActorId: this.actor.id,
-        }),
-        pages: [{
-          name: game.i18n.localize('GOODSOCIETY.monologueEditor.pageName') || 'Monologue',
-          type: 'text',
-          text: {
-            content: themedHtml,
-            format: CONST.JOURNAL_ENTRY_PAGE_FORMATS?.HTML ?? 1,
-          },
-        }],
-      });
-      journalEntryUuid = entry?.uuid ?? null;
+      // Folder + JournalEntry creation both require GM permission (per
+      // post-MVP §13.1, entries default to OBSERVER ownership). A GM creates
+      // directly; a player relays the prepared payload to the GM client via
+      // the system socket — same proxy pattern as the letter archive and the
+      // scene-freeze overlay. Without this, a player's submit threw on
+      // Folder.create/JournalEntry.create and the monologue never reached the
+      // novel.
+      const archivePayload = {
+        entryName: `${this.actor.name} — Cycle ${cycleNumber} Monologue`,
+        html: themedHtml,
+        cycleNumber,
+        speakerActorId: this.actor.id,
+      };
+      if (game.user?.isGM) {
+        const entry = await archiveMonologueEntry(archivePayload);
+        journalEntryUuid = entry?.uuid ?? null;
+      } else {
+        game.socket?.emit('system.good-society-homebrew', {
+          action: 'monologueArchiveRequest',
+          payload: archivePayload,
+        });
+      }
     }
 
     // Post the chat card.

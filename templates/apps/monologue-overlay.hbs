@@ -56,10 +56,12 @@
         </button>
       </div>
     {{else}}
-      <textarea class="gs-monologue-overlay__textarea gs-monologue-overlay__readonly-body"
-                name="monologueBody"
-                rows="6"
-                readonly>{{body}}</textarea>
+      {{#if body}}
+        <textarea class="gs-monologue-overlay__textarea gs-monologue-overlay__readonly-body"
+                  name="monologueBody"
+                  rows="6"
+                  readonly>{{body}}</textarea>
+      {{/if}}
       {{#if audienceLine}}
         <p class="gs-monologue-overlay__audience-line">{{audienceLine}}</p>
       {{/if}}

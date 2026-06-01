@@ -237,6 +237,79 @@
   opacity: 0.85;
 }
 
+/* Trailing controls — note button + on-scene dot stacked at the row's edge. */
+.gs-npc-organizer__row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Per-character GM note button. Hidden until row hover for rows WITHOUT a note
+ * (keeps the panel calm); always visible (gilt) for rows that have one, so the
+ * GM can see at a glance which characters are annotated. */
+.gs-npc-organizer__note-btn {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0.5px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 45%, transparent);
+  font-family: var(--gs-body);
+  font-size: 0.72rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.gs-npc-organizer__row:hover .gs-npc-organizer__note-btn {
+  opacity: 1;
+}
+
+.gs-npc-organizer__note-btn:hover {
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  background: var(--gs-paper);
+}
+
+.gs-npc-organizer__note-btn.has-note {
+  opacity: 1;
+  color: var(--gs-accent-3, #C9A55C);
+}
+
+/* Truncated note preview, sits below the title line. */
+.gs-npc-organizer__row-note {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 0.62rem;
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Note editor textarea — rendered inside a house-styled DialogV2, not themed. */
+.gs-organizer-note-editor__textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 8px 10px;
+  font-family: var(--gs-body);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--gs-ink);
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
 .gs-npc-organizer__row-portrait {
   width: 30px;
   height: 30px;
