@@ -1,0 +1,438 @@
+/* Session Greeting — player-facing modal + GM composer.
+ * House-styled (Inkwell & Wildflower). Authoritative greeting on world load. */
+
+/* ── Player surface ─────────────────────────────────────────────────────── */
+
+.gs-session-greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 28px 22px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 25%, #faf1d4 0%, var(--gs-paper-warm) 80%);
+  color: var(--gs-ink);
+  position: relative;
+}
+
+.gs-session-greeting__preview-badge {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-family: var(--gs-display);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gs-accent-1);
+  background: color-mix(in srgb, var(--gs-accent-1) 12%, transparent);
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+
+.gs-session-greeting__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.gs-session-greeting__eyebrow {
+  font-family: var(--gs-display);
+  font-size: 10.5px;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: var(--gs-accent-1);
+  margin: 0 0 4px;
+  padding-left: 0.36em;
+}
+
+.gs-session-greeting__title {
+  font-family: var(--gs-display);
+  font-size: 34px;
+  font-weight: 500;
+  color: var(--gs-brand);
+  margin: 0;
+  line-height: 1.1;
+}
+.gs-session-greeting__title--default {
+  font-style: italic;
+  font-size: 28px;
+}
+
+.gs-session-greeting__rule {
+  width: 50%;
+  height: 1px;
+  margin: 4px auto 0;
+  border: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gs-accent-3) 50%,
+    transparent 100%
+  );
+}
+
+.gs-session-greeting__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 4px 0 8px;
+}
+
+.gs-session-greeting__section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-session-greeting__section-head {
+  font-family: var(--gs-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gs-brand);
+  padding-bottom: 2px;
+  border-bottom: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
+}
+
+.gs-session-greeting__section-body {
+  font-family: var(--gs-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--gs-ink);
+}
+.gs-session-greeting__section-body p {
+  margin: 0 0 8px;
+}
+.gs-session-greeting__section-body p:last-child { margin-bottom: 0; }
+.gs-session-greeting__section-body a {
+  color: var(--gs-brand);
+  font-weight: 500;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+.gs-session-greeting__section-body a:hover {
+  text-decoration-style: solid;
+}
+
+.gs-session-greeting__empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-text-muted);
+  text-align: center;
+  margin: 0;
+  padding: 18px 0;
+}
+
+.gs-session-greeting__footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+button.gs-session-greeting__dismiss {
+  height: 36px;
+  padding: 0 22px;
+  margin: 0;
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border: 0;
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 0;
+  transition: background 120ms, transform 120ms;
+}
+button.gs-session-greeting__dismiss:hover {
+  background: color-mix(in srgb, var(--gs-brand) 85%, black);
+  transform: translateY(-1px);
+}
+button.gs-session-greeting__dismiss:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+button.gs-session-greeting__dismiss:focus-visible { outline: 1.5px solid var(--gs-accent-3); outline-offset: 2px; }
+
+/* ── GM Composer ────────────────────────────────────────────────────────── */
+
+.gs-session-greeting-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px 18px;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.gs-session-greeting-composer__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gs-session-greeting-composer__title {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  margin: 0;
+}
+
+.gs-session-greeting-composer__subtitle {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-text-muted);
+  margin: 0;
+}
+
+.gs-session-greeting-composer__label {
+  font-family: var(--gs-display);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gs-text-muted);
+}
+
+.gs-session-greeting-composer__title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-session-greeting-composer__title-input {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  font-family: var(--gs-display);
+  font-size: 17px;
+  color: var(--gs-brand);
+}
+
+.gs-session-greeting-composer__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gs-session-greeting-composer__section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gs-session-greeting-composer__section-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+button.gs-session-greeting-composer__add,
+button.gs-session-greeting-composer__add-quick {
+  height: 26px;
+  padding: 0 12px;
+  margin: 0;
+  background: transparent;
+  color: var(--gs-brand);
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 0;
+  transition: background 120ms, color 120ms;
+}
+button.gs-session-greeting-composer__add:hover,
+button.gs-session-greeting-composer__add-quick:hover {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+}
+
+button.gs-session-greeting-composer__add-quick {
+  border-color: var(--gs-accent-1);
+  color: var(--gs-accent-1);
+}
+button.gs-session-greeting-composer__add-quick:hover {
+  background: var(--gs-accent-1);
+  color: var(--gs-paper);
+}
+
+.gs-session-greeting-composer__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 5px;
+}
+
+.gs-session-greeting-composer__section-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gs-session-greeting-composer__heading-input {
+  flex: 1;
+  padding: 6px 8px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  font-family: var(--gs-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gs-brand);
+}
+
+.gs-session-greeting-composer__section-buttons {
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+}
+
+button.gs-session-greeting-composer__icon-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: var(--gs-text-muted);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  font-family: var(--gs-display);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  min-height: 0;
+  transition: background 120ms, color 120ms, border-color 120ms;
+}
+button.gs-session-greeting-composer__icon-btn:hover:not(:disabled) {
+  background: var(--gs-brand);
+  border-color: var(--gs-brand);
+  color: var(--gs-paper);
+}
+button.gs-session-greeting-composer__icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+button.gs-session-greeting-composer__icon-btn--danger:hover:not(:disabled) {
+  background: var(--gs-danger);
+  border-color: var(--gs-danger);
+}
+
+.gs-session-greeting-composer__body-input {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--gs-paper);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gs-ink);
+  resize: vertical;
+}
+
+.gs-session-greeting-composer__empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-text-muted);
+  margin: 0;
+  text-align: center;
+  padding: 18px 0;
+}
+
+.gs-session-greeting-composer__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 0.5px solid var(--gs-accent-2);
+  flex-wrap: wrap;
+}
+
+/* Left-hand "last published" status — pushed to the far left by the
+ * flex space-between; wraps below on narrow widths. */
+.gs-session-greeting-composer__last-published {
+  font-family: var(--gs-body);
+  font-size: 11px;
+  color: var(--gs-text-muted);
+}
+
+.gs-session-greeting-composer__footer-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+button.gs-session-greeting-composer__preview-btn,
+button.gs-session-greeting-composer__publish-btn,
+button.gs-session-greeting-composer__draft-btn,
+button.gs-session-greeting-composer__unpublish-btn {
+  height: 32px;
+  padding: 0 18px;
+  margin: 0;
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 0;
+  transition: background 120ms, color 120ms, transform 120ms;
+}
+button.gs-session-greeting-composer__preview-btn {
+  background: transparent;
+  color: var(--gs-brand);
+  border: 0.5px solid var(--gs-brand);
+}
+button.gs-session-greeting-composer__preview-btn:hover {
+  background: color-mix(in srgb, var(--gs-brand) 10%, transparent);
+}
+/* Save Draft — quieter than Publish (ghost / subtle) since it's the
+ * more common action but shouldn't demand attention. */
+button.gs-session-greeting-composer__draft-btn {
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+  border: 0.5px solid var(--gs-accent-2);
+}
+button.gs-session-greeting-composer__draft-btn:hover {
+  background: color-mix(in srgb, var(--gs-accent-2) 20%, var(--gs-paper-warm));
+}
+/* Publish — the loud primary action; distinct color weight so the GM
+ * knows this bumps the auto-pop for everyone. */
+button.gs-session-greeting-composer__publish-btn {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border: 0;
+}
+button.gs-session-greeting-composer__publish-btn:hover {
+  background: color-mix(in srgb, var(--gs-brand) 85%, black);
+  transform: translateY(-1px);
+}
+/* Unpublish — destructive but not shouty; underline-only until hover
+ * to keep it out of the primary action zone. */
+button.gs-session-greeting-composer__unpublish-btn {
+  background: transparent;
+  color: var(--gs-danger);
+  border: 0.5px dashed color-mix(in srgb, var(--gs-danger) 60%, transparent);
+}
+button.gs-session-greeting-composer__unpublish-btn:hover {
+  background: var(--gs-danger);
+  color: var(--gs-paper);
+  border-style: solid;
+  border-color: var(--gs-danger);
+}

@@ -1,0 +1,72 @@
+{{!-- Session Notes — GM authoring hub. Single root for ApplicationV2 PARTS. --}}
+<section class="gs-session-notes">
+
+  <header class="gs-session-notes__head">
+    <div class="gs-session-notes__head-text">
+      <h3 class="gs-session-notes__title">{{localize "GOODSOCIETY.sessionNotes.title"}}</h3>
+      <p class="gs-session-notes__subtitle">{{localize "GOODSOCIETY.sessionNotes.subtitle"}}</p>
+    </div>
+    <button type="button"
+            class="gs-session-notes__create-btn"
+            data-action="createNote"
+            title="{{localize 'GOODSOCIETY.sessionNotes.createTitle'}}">
+      + {{localize "GOODSOCIETY.sessionNotes.create"}}
+    </button>
+  </header>
+
+  {{#unless hasAny}}
+    <p class="gs-session-notes__empty">
+      <em>{{localize "GOODSOCIETY.sessionNotes.emptyAll"}}</em>
+    </p>
+  {{/unless}}
+
+  <div class="gs-session-notes__cycles">
+    {{#each cycles}}
+      <section class="gs-session-notes__cycle {{#if collapsed}}is-collapsed{{/if}} {{#if isCurrent}}is-current{{/if}}">
+        <button type="button"
+                class="gs-session-notes__cycle-head"
+                data-action="toggleCycle"
+                data-cycle-key="{{key}}"
+                aria-expanded="{{#if collapsed}}false{{else}}true{{/if}}">
+          <span class="gs-session-notes__cycle-disclosure" aria-hidden="true">
+            {{#if collapsed}}▸{{else}}▾{{/if}}
+          </span>
+          <span class="gs-session-notes__cycle-label">{{label}}</span>
+          <span class="gs-session-notes__cycle-count">{{count}}</span>
+        </button>
+
+        {{#unless collapsed}}
+          {{#if notes.length}}
+            <ul class="gs-session-notes__list">
+              {{#each notes}}
+                <li class="gs-session-notes__row">
+                  <button type="button"
+                          class="gs-session-notes__row-main"
+                          data-action="openNote"
+                          data-entry-id="{{id}}"
+                          title="{{localize 'GOODSOCIETY.sessionNotes.openNoteTitle'}}">
+                    <span class="gs-session-notes__row-name">{{name}}</span>
+                    {{#if dateLabel}}
+                      <span class="gs-session-notes__row-date">{{dateLabel}}</span>
+                    {{/if}}
+                  </button>
+                  <button type="button"
+                          class="gs-session-notes__row-delete"
+                          data-action="deleteNote"
+                          data-entry-id="{{id}}"
+                          title="{{localize 'GOODSOCIETY.sessionNotes.deleteNoteTitle'}}"
+                          aria-label="{{localize 'GOODSOCIETY.sessionNotes.deleteNoteTitle'}}">×</button>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p class="gs-session-notes__cycle-empty">
+              <em>{{localize "GOODSOCIETY.sessionNotes.emptyCycle"}}</em>
+            </p>
+          {{/if}}
+        {{/unless}}
+      </section>
+    {{/each}}
+  </div>
+
+</section>

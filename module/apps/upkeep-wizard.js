@@ -13,14 +13,20 @@
  */
 
 import { MonologueEditor } from './monologue-editor.js';
-import { postSystemCard } from '../helpers/chat-cards.js';
+import { postSystemCard, postCompletionCard } from '../helpers/chat-cards.js';
 import { clearPendingChanges } from '../helpers/pending-changes.js';
 import { profileName } from '../helpers/profile-pic.js';
+import { isConflictComplete } from '../helpers/reputation-rules.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ApplicationV2 }              = foundry.applications.api;
 
-const STEP_IDS = ['welcome', 'tokens', 'notes', 'desire', 'reputation', 'complete'];
+// Step ids drive the ribbon, the step-of label, and the numeric step
+// checks in wizNext (via their index + 1). "conflicts" inserted between
+// "desire" and "reputation" because it's the last INTERNAL reflection
+// (desire = what I want, conflicts = internal tensions) before the
+// wizard turns outward to reputation (what the world did to me).
+const STEP_IDS = ['welcome', 'tokens', 'notes', 'desire', 'conflicts', 'reputation', 'complete'];
 
 // Tracks actor IDs with currently open wizards — read by UpkeepRoster.
 export const openWizardActorIds = new Set();
@@ -39,6 +45,12 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       letExpire:     UpkeepWizard.#letExpire,
       changeDesire:  UpkeepWizard.#changeDesire,
       confirmDesire: UpkeepWizard.#confirmDesire,
+      // Step 5 (conflicts) — click-toggle a single box on an active
+      // inner-conflict. Auto-completes + posts a ceremony card when the
+      // threshold rule fires (6 total OR 5 on one side). Same behavior
+      // as the Major sheet's #toggleBox so the two surfaces stay in
+      // lockstep on what "filling that last box" does.
+      toggleConflictBox: UpkeepWizard.#toggleConflictBox,
     },
   };
 
@@ -104,9 +116,15 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       state: i + 1 < this._step ? 'done' : i + 1 === this._step ? 'current' : 'future',
     }));
 
-    // Next button label varies by step
+    // Next button label varies by step. Indices bumped when the
+    // "conflicts" step was inserted at position 5 (2026-05-20) — old 5+6
+    // are now 6+7. Keep the map keyed by numeric step so future inserts
+    // are a one-place change.
     const nextLabelKey = {
-      1: 'begin', 2: 'next', 3: 'next', 4: 'keep', 5: 'acknowledge', 6: 'completeUpkeep',
+      1: 'begin', 2: 'next', 3: 'next', 4: 'keep',
+      5: 'next',           // conflicts step: always allow forward
+      6: 'acknowledge',    // was step 5 (reputation)
+      7: 'completeUpkeep', // was step 6 (complete)
     }[this._step];
     const nextLabel = game.i18n.localize(`GOODSOCIETY.upkeepWizard.btn.${nextLabelKey}`);
 
@@ -136,17 +154,44 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
         if (item?.name) displayValue = item.name;
       }
       if (displayValue === PLACEHOLDER_TAG_NAME) {
-        displayValue = game.i18n.localize('GOODSOCIETY.upkeepWizard.step5.unnamedTag');
+        displayValue = game.i18n.localize('GOODSOCIETY.upkeepWizard.step6.unnamedTag');
       }
       return { ...entry, value: displayValue };
     });
 
-    // Active inner conflicts
-    const conflicts = actor.items?.filter(i => i.type === 'inner-conflict' && !i.system?.completed) ?? [];
-    const filledBoxes = conflicts.reduce((s, c) =>
-      s + (c.system?.leftBoxes?.filter(Boolean).length ?? 0)
-        + (c.system?.rightBoxes?.filter(Boolean).length ?? 0), 0);
-    const totalBoxes = conflicts.length * 10;
+    // Active inner conflicts — enriched for the step 5 grid.
+    // Each entry carries the labels + a per-box render list so the
+    // template can iterate without pulling boolean-array logic into
+    // Handlebars. `atThreshold` flags conflicts already at the
+    // completion rule (6 total OR 5 on one side) — the box toggle
+    // handler auto-completes on the NEXT click, but the flag lets the
+    // template highlight the conflict so the GM sees "just one more."
+    const conflictItems = actor.items?.filter(i => i.type === 'inner-conflict' && !i.system?.completed) ?? [];
+    const conflictCards = conflictItems.map(item => {
+      const leftBoxes  = item.system?.leftBoxes  ?? [false, false, false, false, false];
+      const rightBoxes = item.system?.rightBoxes ?? [false, false, false, false, false];
+      const leftCount  = leftBoxes.filter(Boolean).length;
+      const rightCount = rightBoxes.filter(Boolean).length;
+      const total      = leftCount + rightCount;
+      return {
+        id: item.id,
+        leftLabel:  (item.system?.leftLabel  ?? '').trim() || game.i18n.localize('GOODSOCIETY.upkeepWizard.step5.emptyLeftLabel'),
+        rightLabel: (item.system?.rightLabel ?? '').trim() || game.i18n.localize('GOODSOCIETY.upkeepWizard.step5.emptyRightLabel'),
+        // Each box carries its own {filled, index, side} so the
+        // template loops render one <button> per box without indexing
+        // boolean arrays in Handlebars.
+        leftPips:  leftBoxes.map((filled, index)  => ({ filled, index, side: 'left'  })),
+        rightPips: rightBoxes.map((filled, index) => ({ filled, index, side: 'right' })),
+        leftCount, rightCount, total,
+        // The completion rule (from reputation-rules.js): 6 total OR
+        // 5 on either side. `atThreshold` is used purely for visual
+        // affordance — the toggle handler still runs the authoritative
+        // check post-mutation and auto-completes when it fires.
+        atThreshold: total >= 6 || leftCount >= 5 || rightCount >= 5,
+      };
+    });
+    const filledBoxes = conflictCards.reduce((s, c) => s + c.total, 0);
+    const totalBoxes  = conflictCards.length * 10;
 
     // Summary for step 6
     const summary = {
@@ -164,7 +209,7 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
         : _stripHtml(system.desire ?? ''),
       reputationAcknowledged: this._reputationAcknowledged,
       pendingCount:     pendingChanges.length,
-      hasConflict:      conflicts.length > 0,
+      hasConflict:      conflictCards.length > 0,
       conflictBoxes:    { filled: filledBoxes, total: totalBoxes },
     };
 
@@ -177,14 +222,18 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       currentStep: this._step,
       steps,
       nextLabel,
-      showSkip:    this._step > 1 && this._step < 6,
+      showSkip:    this._step > 1 && this._step < 7,
       backDisabled: this._step === 1,
       nextDisabled: step2Blocked || step4Blocked,
       // Step 1 summary card
       resolveAtStart: { current: currentResolve, max: maxResolve },
       pendingChangesCount: pendingChanges.length,
-      hasConflict: conflicts.length > 0,
+      hasConflict: conflictCards.length > 0,
       conflictBoxes: { filled: filledBoxes, total: totalBoxes },
+      // Step 5 — inner conflict maintenance (new; per user request).
+      // Iterated in the template as click-toggle box grids.
+      conflictCards,
+      hasConflicts: conflictCards.length > 0,
       // Step 2
       defaultResolve,
       currentResolve,
@@ -210,12 +259,13 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
   // ── Step navigation ────────────────────────────────────────────────────────
 
   static async #wizNext() {
-    // Step 4 "keep" path — note desire action before advancing
+    // Step 4 "keep" path — note desire action before advancing.
     if (this._step === 4 && !this._desireAction) this._desireAction = 'keep';
-    // Step 5 acknowledge — mark rep changes acknowledged before advancing
-    if (this._step === 5) this._reputationAcknowledged = true;
-    // Step 6 — complete upkeep
-    if (this._step === 6) { await this._completeUpkeep(); return; }
+    // Step 6 acknowledge — mark rep changes acknowledged before advancing.
+    // (was step 5 before "conflicts" was inserted at position 5.)
+    if (this._step === 6) this._reputationAcknowledged = true;
+    // Step 7 — complete upkeep. (was step 6.)
+    if (this._step === 7) { await this._completeUpkeep(); return; }
     // Collect any dirty DOM values before leaving the step
     this._collectDomValues();
     this._step++;
@@ -258,6 +308,70 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     // Mark monologue token as spent without posting.
     await this._actor.update({ 'system.tokens.monologuedThisCycle': true });
     this._monologueState = 'expired';
+    this.render();
+  }
+
+  // ── Step 5 sub-actions ─────────────────────────────────────────────────────
+
+  /**
+   * Toggle a single box on an active inner conflict. Mirrors the
+   * Major sheet's #toggleBox exactly (same import chain, same
+   * completion rule) so the two surfaces can't drift apart on what
+   * "filling that box" does. When the toggle pushes the conflict past
+   * the threshold (6 total OR 5 on one side), the item is marked
+   * completed, its id moves from `innerConflictsActiveIds` →
+   * `innerConflictsCompletedIds`, and the ceremony chat card fires
+   * once. Guarded against re-entry — the item's own `completed` flag
+   * makes clicks on an already-resolved conflict a no-op.
+   */
+  static async #toggleConflictBox(_event, target) {
+    const itemId = target?.dataset?.itemId;
+    const side   = target?.dataset?.side;
+    const index  = parseInt(target?.dataset?.index, 10);
+    if (!itemId || !side || !Number.isFinite(index)) return;
+
+    const item = this._actor.items?.get(itemId);
+    if (!item || item.system?.completed) return;
+
+    const sys = item.system;
+    const leftBoxes  = [...(sys.leftBoxes  ?? [false, false, false, false, false])];
+    const rightBoxes = [...(sys.rightBoxes ?? [false, false, false, false, false])];
+
+    if (side === 'left')  leftBoxes[index]  = !leftBoxes[index];
+    else                  rightBoxes[index] = !rightBoxes[index];
+
+    const leftCount   = leftBoxes.filter(Boolean).length;
+    const rightCount  = rightBoxes.filter(Boolean).length;
+    const nowComplete = isConflictComplete(leftBoxes, rightBoxes);
+
+    const update = { 'system.leftBoxes': leftBoxes, 'system.rightBoxes': rightBoxes };
+    if (nowComplete) {
+      update['system.completed']     = true;
+      update['system.completedSide'] = leftCount >= 5 ? 'left' : rightCount >= 5 ? 'right' : null;
+    }
+    await item.update(update);
+
+    if (nowComplete) {
+      // Move id from active → completed on the actor. Same array
+      // pattern the Major sheet uses; keeps the sheet's Active
+      // / Completed sections in sync when the wizard closes.
+      const activeIds    = (this._actor.system?.innerConflictsActiveIds    ?? []).filter(id => id !== itemId);
+      const completedIds = [...(this._actor.system?.innerConflictsCompletedIds ?? []), itemId];
+      await this._actor.update({
+        'system.innerConflictsActiveIds':    activeIds,
+        'system.innerConflictsCompletedIds': completedIds,
+      });
+      await postCompletionCard({
+        actor:        this._actor,
+        conflict:     item,
+        resolvedSide: update['system.completedSide'],
+      });
+    }
+
+    // Always re-render the wizard so the box grid + threshold flag
+    // update in-place. The Foundry updateItem hook would eventually
+    // trigger a render too, but an explicit render keeps the click →
+    // visible feedback loop tight.
     this.render();
   }
 
@@ -351,7 +465,7 @@ export class UpkeepWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     // Completion system card
     try {
       await postSystemCard({
-        content: game.i18n.format('GOODSOCIETY.upkeepWizard.step6.completionCard', {
+        content: game.i18n.format('GOODSOCIETY.upkeepWizard.step7.completionCard', {
           name: profileName(actor),
         }),
         context: 'upkeep',

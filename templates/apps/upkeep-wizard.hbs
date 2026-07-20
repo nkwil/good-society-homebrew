@@ -183,13 +183,91 @@
       {{/if}}
     {{/if}}
 
-    {{!-- Step 5: Reputation Review --}}
+    {{!-- Step 5: Inner Conflict Maintenance (added 2026-05-20).
+         Renders the actor's active inner conflicts as click-toggle box
+         grids. Filling the last box that pushes a conflict past the
+         threshold auto-completes it via the same code path the Major
+         sheet uses (isConflictComplete + move id to completed +
+         postCompletionCard). Empty state points the GM back to the
+         Major sheet to author new conflicts — this step is for
+         maintenance, not authoring. --}}
     {{#if (eq currentStep 5)}}
       <h3 class="gs-upkeep-wizard__step-title">
         {{localize "GOODSOCIETY.upkeepWizard.step5.title"}}
       </h3>
       <p class="gs-upkeep-wizard__step-prompt">
         {{localize "GOODSOCIETY.upkeepWizard.step5.prompt"}}
+      </p>
+
+      {{#if hasConflicts}}
+        <div class="gs-upkeep-wizard__conflict-list">
+          {{#each conflictCards}}
+            <div class="gs-upkeep-wizard__conflict-card {{#if atThreshold}}is-at-threshold{{/if}}">
+              <div class="gs-upkeep-wizard__conflict-row">
+                {{!-- Left side: label + 5-pip track (reversed visually
+                     so the box furthest from center = box 0 = "first
+                     step down this side") --}}
+                <div class="gs-upkeep-wizard__conflict-side gs-upkeep-wizard__conflict-side--left">
+                  <span class="gs-upkeep-wizard__conflict-label">{{leftLabel}}</span>
+                  <div class="gs-upkeep-wizard__conflict-pips">
+                    {{#each leftPips}}
+                      <button type="button"
+                              class="gs-upkeep-wizard__conflict-pip {{#if filled}}is-filled{{/if}}"
+                              data-action="toggleConflictBox"
+                              data-item-id="{{../id}}"
+                              data-side="{{side}}"
+                              data-index="{{index}}"
+                              aria-label="{{../leftLabel}} — {{add index 1}}"
+                              aria-pressed="{{#if filled}}true{{else}}false{{/if}}"></button>
+                    {{/each}}
+                  </div>
+                </div>
+                <span class="gs-upkeep-wizard__conflict-vs">vs</span>
+                <div class="gs-upkeep-wizard__conflict-side gs-upkeep-wizard__conflict-side--right">
+                  <div class="gs-upkeep-wizard__conflict-pips">
+                    {{#each rightPips}}
+                      <button type="button"
+                              class="gs-upkeep-wizard__conflict-pip {{#if filled}}is-filled{{/if}}"
+                              data-action="toggleConflictBox"
+                              data-item-id="{{../id}}"
+                              data-side="{{side}}"
+                              data-index="{{index}}"
+                              aria-label="{{../rightLabel}} — {{add index 1}}"
+                              aria-pressed="{{#if filled}}true{{else}}false{{/if}}"></button>
+                    {{/each}}
+                  </div>
+                  <span class="gs-upkeep-wizard__conflict-label">{{rightLabel}}</span>
+                </div>
+              </div>
+              <div class="gs-upkeep-wizard__conflict-footer">
+                <span class="gs-upkeep-wizard__conflict-count">
+                  {{localize "GOODSOCIETY.upkeepWizard.step5.progress" filled=total total=10}}
+                </span>
+                {{#if atThreshold}}
+                  <span class="gs-upkeep-wizard__conflict-threshold">
+                    {{localize "GOODSOCIETY.upkeepWizard.step5.thresholdNudge"}}
+                  </span>
+                {{/if}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="gs-upkeep-wizard__sub-status gs-upkeep-wizard__sub-status--muted">
+          {{localize "GOODSOCIETY.upkeepWizard.step5.noConflicts"}}
+        </p>
+      {{/if}}
+    {{/if}}
+
+    {{!-- Step 6: Reputation Review (was step 5 before "conflicts" was inserted).
+         All step5.* keys used here migrated to step6.* in lang/en.json so
+         that step-key numbering matches the wizard's step number again. --}}
+    {{#if (eq currentStep 6)}}
+      <h3 class="gs-upkeep-wizard__step-title">
+        {{localize "GOODSOCIETY.upkeepWizard.step6.title"}}
+      </h3>
+      <p class="gs-upkeep-wizard__step-prompt">
+        {{localize "GOODSOCIETY.upkeepWizard.step6.prompt"}}
       </p>
 
       {{#if pendingChanges.length}}
@@ -202,7 +280,7 @@
                   <span class="gs-upkeep-wizard__rep-polarity">{{#if (eq kind "gained-positive")}}▲{{else if (eq kind "gained-negative")}}▼{{else}}―{{/if}}</span>
                   <span class="gs-upkeep-wizard__rep-value">{{value}}</span>
                   <span class="gs-upkeep-wizard__rep-kind">
-                    {{#if (eq kind "removed")}}{{localize "GOODSOCIETY.upkeepWizard.step5.removed"}}{{else}}{{localize "GOODSOCIETY.upkeepWizard.step5.gained"}}{{/if}}
+                    {{#if (eq kind "removed")}}{{localize "GOODSOCIETY.upkeepWizard.step6.removed"}}{{else}}{{localize "GOODSOCIETY.upkeepWizard.step6.gained"}}{{/if}}
                   </span>
                   {{#if scene}}<span class="gs-upkeep-wizard__rep-scene">{{scene}}</span>{{/if}}
                 </div>
@@ -211,78 +289,79 @@
           {{/each}}
         </div>
         <p class="gs-upkeep-wizard__rep-summary">
-          {{localize "GOODSOCIETY.upkeepWizard.step5.summary" n=pendingChanges.length}}
+          {{localize "GOODSOCIETY.upkeepWizard.step6.summary" n=pendingChanges.length}}
         </p>
       {{else}}
         <p class="gs-upkeep-wizard__sub-status gs-upkeep-wizard__sub-status--muted">
-          {{localize "GOODSOCIETY.upkeepWizard.step5.noChanges"}}
+          {{localize "GOODSOCIETY.upkeepWizard.step6.noChanges"}}
         </p>
       {{/if}}
     {{/if}}
 
-    {{!-- Step 6: Complete --}}
-    {{#if (eq currentStep 6)}}
+    {{!-- Step 7: Complete (was step 6 before "conflicts" was inserted).
+         All step6.* keys used here migrated to step7.* in lang/en.json. --}}
+    {{#if (eq currentStep 7)}}
       <h3 class="gs-upkeep-wizard__step-title">
-        {{localize "GOODSOCIETY.upkeepWizard.step6.title"}}
+        {{localize "GOODSOCIETY.upkeepWizard.step7.title"}}
       </h3>
       <p class="gs-upkeep-wizard__step-prompt">
-        {{localize "GOODSOCIETY.upkeepWizard.step6.prompt"}}
+        {{localize "GOODSOCIETY.upkeepWizard.step7.prompt"}}
       </p>
 
       <ul class="gs-upkeep-wizard__summary-list">
         {{!-- Resolve --}}
         <li class="{{#if summary.resolveRefreshed}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
           {{#if summary.resolveRefreshed}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.resolveRefreshed" current=summary.resolveValues.current max=summary.resolveValues.max}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.resolveRefreshed" current=summary.resolveValues.current max=summary.resolveValues.max}}
           {{else if summary.resolveAtDefault}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.resolveAlreadyDefault"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.resolveAlreadyDefault"}}
           {{else}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.resolveSkipped"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.resolveSkipped"}}
           {{/if}}
         </li>
         {{!-- Monologue --}}
         <li class="{{#if summary.monologuePosted}}gs-upkeep-wizard__summary-done{{else if summary.monologueAlready}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
           {{#if summary.monologuePosted}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.monologuePosted"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.monologuePosted"}}
           {{else if summary.monologueAlready}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.monologuePosted"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.monologuePosted"}}
           {{else if summary.monologueExpired}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.monologueExpired"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.monologueExpired"}}
           {{else}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.monologueSkipped"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.monologueSkipped"}}
           {{/if}}
         </li>
         {{!-- Notes --}}
         <li class="{{#if summary.notesUpdated}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
           {{#if summary.notesUpdated}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.notesUpdated"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.notesUpdated"}}
           {{else}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.notesSkipped"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.notesSkipped"}}
           {{/if}}
         </li>
         {{!-- Desire --}}
         <li class="{{#if summary.desireChanged}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
           {{#if summary.desireChanged}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.desireChanged"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.desireChanged"}}
           {{else}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.desireKept" desire=summary.desireText}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.desireKept" desire=summary.desireText}}
           {{/if}}
         </li>
         {{!-- Reputation --}}
         <li class="{{#if summary.reputationAcknowledged}}gs-upkeep-wizard__summary-done{{else}}gs-upkeep-wizard__summary-skip{{/if}}">
           {{#if (eq summary.pendingCount 0)}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.reputationNone"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.reputationNone"}}
           {{else if summary.reputationAcknowledged}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.reputationAcknowledged" n=summary.pendingCount}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.reputationAcknowledged" n=summary.pendingCount}}
           {{else}}
-            {{localize "GOODSOCIETY.upkeepWizard.step6.reputationSkipped"}}
+            {{localize "GOODSOCIETY.upkeepWizard.step7.reputationSkipped"}}
           {{/if}}
         </li>
       </ul>
 
       {{#if summary.hasConflict}}
         <p class="gs-upkeep-wizard__conflict-note">
-          {{localize "GOODSOCIETY.upkeepWizard.step6.conflictActive" filled=summary.conflictBoxes.filled total=summary.conflictBoxes.total}}
+          {{localize "GOODSOCIETY.upkeepWizard.step7.conflictActive" filled=summary.conflictBoxes.filled total=summary.conflictBoxes.total}}
         </p>
       {{/if}}
     {{/if}}

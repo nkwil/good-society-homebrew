@@ -1,0 +1,61 @@
+{{!-- Session Greeting — player-facing read-only modal.
+     Single root for ApplicationV2 PARTS. --}}
+<section class="gs-session-greeting">
+
+  {{#if isPreview}}
+    <div class="gs-session-greeting__preview-badge">
+      {{localize "GOODSOCIETY.sessionGreeting.previewBadge"}}
+    </div>
+  {{/if}}
+
+  <header class="gs-session-greeting__header">
+    <span class="gs-session-greeting__eyebrow">
+      {{localize "GOODSOCIETY.sessionGreeting.eyebrow"}}
+    </span>
+    {{#if hasTitle}}
+      <h2 class="gs-session-greeting__title">{{title}}</h2>
+    {{else}}
+      <h2 class="gs-session-greeting__title gs-session-greeting__title--default">
+        {{localize "GOODSOCIETY.sessionGreeting.defaultTitle"}}
+      </h2>
+    {{/if}}
+    <hr class="gs-session-greeting__rule" />
+  </header>
+
+  {{#if hasSections}}
+    <div class="gs-session-greeting__sections">
+      {{#each sections}}
+        <section class="gs-session-greeting__section">
+          {{#if hasHeading}}
+            <header class="gs-session-greeting__section-head">{{heading}}</header>
+          {{/if}}
+          {{#if hasBody}}
+            <div class="gs-session-greeting__section-body">{{{bodyHtml}}}</div>
+          {{/if}}
+        </section>
+      {{/each}}
+    </div>
+  {{else if hasAnyContent}}
+    {{!-- Title-only greeting: the header above already carries the title
+         and rule, which is a legitimate "just a warm splash" publish.
+         Suppress the empty-state text so it doesn't contradict what the
+         viewer just read. --}}
+  {{else}}
+    <p class="gs-session-greeting__empty">
+      <em>{{localize "GOODSOCIETY.sessionGreeting.emptyBody"}}</em>
+    </p>
+  {{/if}}
+
+  <footer class="gs-session-greeting__footer">
+    <button type="button"
+            class="gs-session-greeting__dismiss"
+            data-action="dismissGreeting">
+      {{#if isPreview}}
+        {{localize "GOODSOCIETY.sessionGreeting.previewClose"}}
+      {{else}}
+        {{localize "GOODSOCIETY.sessionGreeting.dismiss"}}
+      {{/if}}
+    </button>
+  </footer>
+
+</section>

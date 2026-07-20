@@ -235,6 +235,9 @@ export const COWORK_SURFACES = [
   // the rail, but always accessible from the drawer for re-reading.
   { id: 'tool-pregame',          group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.pregame',       kind: 'launcher', launcherKey: 'pregame'    },
   { id: 'tool-novel-phase',      group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.novelPhase',    kind: 'launcher', launcherKey: 'novelPhase' },
+  // Player reopen of the auto-pop greeting. Drawer-only (no railGlyph) —
+  // it's an info-recap surface, not a frequent click.
+  { id: 'tool-greeting',         group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.greetingReopen', kind: 'launcher', launcherKey: 'greetingReopen' },
 
   // ── Drawer-only entries (no railGlyph → not in rail) ─────────────────────
   // Cycle HUD: persistent UI but the toggle is drawer-only so the rail stays
@@ -249,6 +252,11 @@ export const COWORK_SURFACES = [
   { id: 'gm-tool-organizer',     group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.npcOrganizer',     kind: 'launcher', gmOnly: true, launcherKey: 'organizer'   },
   { id: 'gm-tool-permissions',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.bulkPermissions',  kind: 'launcher', gmOnly: true, launcherKey: 'permissions' },
   { id: 'gm-tool-session-log',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.sessionLogOpen',   kind: 'launcher', gmOnly: true, launcherKey: 'sessionLog'  },
+  // GM-only session notes hub (public JournalEntries grouped by cycle) +
+  // greeting composer (auto-pop welcome for players). Notes feed the
+  // greeting (composer's "Insert latest session note" picks the newest).
+  { id: 'gm-tool-session-notes',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.sessionNotes',     kind: 'launcher', gmOnly: true, launcherKey: 'sessionNotes' },
+  { id: 'gm-tool-session-greeting',group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.sessionGreeting',  kind: 'launcher', gmOnly: true, launcherKey: 'sessionGreeting' },
   { id: 'gm-tool-conditions',    group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.conditions',       kind: 'launcher', gmOnly: true, launcherKey: 'conditions' },
   // Destructive one-shot — sits at the end of the GM Tools list intentionally.
   { id: 'gm-tool-story-beats',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.storyBeats',       kind: 'launcher', gmOnly: true, launcherKey: 'storyBeats' },

@@ -1,0 +1,232 @@
+/* Session Notes — GM authoring hub. House-styled (not character-themed).
+ * Cycle-grouped list with disclosure headers; rows open the JournalEntry's
+ * native sheet for editing. */
+
+.gs-session-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px 18px;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+}
+
+.gs-session-notes__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.gs-session-notes__head-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.gs-session-notes__title {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gs-brand);
+  margin: 0;
+}
+
+.gs-session-notes__subtitle {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-text-muted);
+  margin: 0;
+}
+
+/* "+ New Note" — branded pill anchored top-right of the header. */
+button.gs-session-notes__create-btn {
+  flex-shrink: 0;
+  height: 30px;
+  padding: 0 14px;
+  margin: 0;
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border: 0;
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 0;
+  transition: background 120ms, transform 120ms;
+}
+button.gs-session-notes__create-btn:hover {
+  background: color-mix(in srgb, var(--gs-brand) 85%, black);
+  transform: translateY(-1px);
+}
+
+.gs-session-notes__empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: var(--gs-text-muted);
+  margin: 0;
+  text-align: center;
+  padding: 18px 0;
+}
+
+.gs-session-notes__cycles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gs-session-notes__cycle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-left: 3px solid var(--gs-accent-2);
+  border-radius: 5px;
+  padding: 8px 12px 10px;
+}
+.gs-session-notes__cycle.is-current {
+  border-left-color: var(--gs-brand);
+}
+
+button.gs-session-notes__cycle-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 0;
+  padding: 4px 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+button.gs-session-notes__cycle-head:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+button.gs-session-notes__cycle-head:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: 2px; border-radius: 3px; }
+
+.gs-session-notes__cycle-disclosure {
+  flex: 0 0 auto;
+  font-family: var(--gs-display);
+  font-size: 12px;
+  color: var(--gs-text-muted);
+  width: 12px;
+  text-align: center;
+}
+
+.gs-session-notes__cycle-label {
+  flex: 1;
+  font-family: var(--gs-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gs-brand);
+}
+
+.gs-session-notes__cycle-count {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-text-muted);
+}
+
+.gs-session-notes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-session-notes__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background: var(--gs-paper);
+  border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
+  border-radius: 4px;
+  transition: background 120ms, border-color 120ms;
+}
+.gs-session-notes__row:hover {
+  background: color-mix(in srgb, var(--gs-paper) 80%, var(--gs-paper-warm));
+  border-color: var(--gs-accent-2);
+}
+
+/* Row main is a button-as-label — clicking opens the journal entry. */
+button.gs-session-notes__row-main {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  padding: 4px 8px;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+button.gs-session-notes__row-main:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+button.gs-session-notes__row-main:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: 1px; border-radius: 3px; }
+
+.gs-session-notes__row-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--gs-body);
+  font-size: 13px;
+  color: var(--gs-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gs-session-notes__row-date {
+  flex-shrink: 0;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-text-muted);
+}
+
+button.gs-session-notes__row-delete {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: var(--gs-text-muted);
+  border: 0.5px solid transparent;
+  border-radius: 4px;
+  font-family: var(--gs-display);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  min-height: 0;
+  transition: background 120ms, color 120ms, border-color 120ms;
+}
+button.gs-session-notes__row-delete:hover {
+  background: var(--gs-danger);
+  color: var(--gs-paper);
+  border-color: var(--gs-danger);
+}
+button.gs-session-notes__row-delete:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+button.gs-session-notes__row-delete:focus-visible { outline: 1.5px solid var(--gs-danger); outline-offset: 1px; }
+
+.gs-session-notes__cycle-empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: var(--gs-text-muted);
+  margin: 4px 0 0;
+  padding: 4px 0 4px 22px;
+}

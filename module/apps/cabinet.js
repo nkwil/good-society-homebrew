@@ -26,6 +26,9 @@ import { openConditionsCompendium, findConditionsCompendiumPack } from '../helpe
 import { openMonologueFromCabinet, monologueFlowApp } from './monologue-overlay.js';
 import { openResetCampaign } from '../helpers/reset-campaign.js';
 import { openStoryBeatsCommandCenter } from './story-beats-command-center.js';
+import { openSessionNotes } from './session-notes.js';
+import { openSessionGreetingComposer } from './session-greeting-composer.js';
+import { openSessionGreeting } from './session-greeting.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -66,6 +69,12 @@ const LAUNCHERS = {
   conditions:   () => openConditionsCompendium(),
   resetCampaign: () => openResetCampaign(),
   storyBeats:    () => openStoryBeatsCommandCenter(),
+  // Session Notes hub (GM): cycle-grouped public JournalEntries.
+  sessionNotes:    () => openSessionNotes(),
+  // Session Greeting composer (GM): authors the auto-pop welcome modal.
+  sessionGreeting: () => openSessionGreetingComposer(),
+  // Player reopen of the auto-pop greeting — bypasses the dismiss check.
+  greetingReopen:  () => openSessionGreeting({ force: true }),
 };
 
 /**
@@ -94,6 +103,9 @@ const LAUNCHER_APP_IDS = {
   // and abort the reset.
   resetCampaign: 'gs-reset-campaign-confirm',
   storyBeats:    'gs-story-beats-command-center',
+  sessionNotes:    'gs-session-notes',
+  sessionGreeting: 'gs-session-greeting-composer',
+  greetingReopen:  'gs-session-greeting',
 };
 
 export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {

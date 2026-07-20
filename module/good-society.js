@@ -43,6 +43,10 @@ import { renderCabinet } from './apps/cabinet.js';
 import { openNovelPhasePopup } from './apps/novel-phase-popup.js';
 import { refreshEventCommandCenter } from './apps/event-command-center.js';
 import { openPregameChecklist, maybeAutoOpenPregameChecklist } from './apps/pregame-checklist.js';
+import { openSessionNotes, registerSessionNotesHooks } from './apps/session-notes.js';
+import { openSessionGreetingComposer } from './apps/session-greeting-composer.js';
+import { openSessionGreeting } from './apps/session-greeting.js';
+import { maybeAutoOpenSessionSurface } from './hooks/session-greeting-auto.js';
 import { checkThresholdAndPrompt } from './helpers/reputation-rules.js';
 import { renderDock } from './apps/my-characters-dock.js';
 import { renderDesireReminder } from './apps/desire-reminder.js';
@@ -309,6 +313,23 @@ Hooks.once('init', async function () {
     onChange: () => {
       import('./apps/story-beats-command-center.js')
         .then(m => m.refreshStoryBeatsCommandCenter?.())
+        .catch(() => {});
+    },
+  });
+
+  // Session Greeting — GM-authored "welcome back" greeting that auto-pops
+  // for every player on world load (when in-game; pre-cycle keeps the
+  // pregame checklist). Shape: { title, sections: [{id, heading, body}],
+  // updatedAt }. The `updatedAt` value is the floor each user's dismiss
+  // flag compares against; bumping it re-arms the auto-pop for everyone.
+  game.settings.register('good-society-homebrew', 'sessionGreeting', {
+    scope: 'world',
+    config: false,
+    type: Object,
+    default: { title: '', sections: [], updatedAt: 0 },
+    onChange: () => {
+      import('./apps/session-greeting-composer.js')
+        .then(m => m.refreshSessionGreetingComposer?.())
         .catch(() => {});
     },
   });
@@ -898,13 +919,16 @@ Hooks.once('ready', async () => {
   // Wire hover-tooltip system for all [data-tooltip-key] elements.
   initTooltipSystem();
 
-  // Pre-game checklist — auto-pops on first login per user. Players who
-  // dismissed it once never see it auto-open again, but can reopen from
-  // the Cabinet anytime. Deferred to next tick so other ready-time UI
-  // (dock, cabinet, sidebar) settles first; otherwise the modal can land
-  // above a still-rendering canvas and feel disjointed.
-  try { setTimeout(() => maybeAutoOpenPregameChecklist(), 500); }
-  catch (err) { console.warn('GS | pregame auto-open failed:', err); }
+  // Auto-open the right "what's happening now" surface. Routes by
+  // cyclePhase: pre-cycle → pregame checklist (campaign hasn't started),
+  // any other phase → session greeting (if the GM has authored one) or
+  // pregame checklist as a fallback. Both surfaces have their own per-
+  // user dismiss flags so the same user won't see the same content
+  // twice. Deferred to next tick so other ready-time UI (dock, cabinet,
+  // sidebar) settles first; otherwise the modal can land above a still-
+  // rendering canvas and feel disjointed.
+  try { setTimeout(() => maybeAutoOpenSessionSurface(), 500); }
+  catch (err) { console.warn('GS | session-surface auto-open failed:', err); }
 });
 
 // Reputation threshold check + dashboard refresh when a tag/condition changes on a Major.
@@ -1021,3 +1045,6 @@ Hooks.once('ready', () => safeRegister('storyBeatSocket', registerStoryBeatSocke
 Hooks.once('ready', () => safeRegister('letterQueueSocket', registerLetterQueueSocket));
 // Novel Reader auto-open on game-end hook.
 safeRegister('novelReaderHooks', registerNovelReaderHooks);
+// Session Notes: refresh the app when a sessionNote JournalEntry is edited
+// externally (rename in sidebar, delete from directory, etc).
+safeRegister('sessionNotesHooks', registerSessionNotesHooks);

@@ -21,6 +21,11 @@ const COLORS = {
   monologue:   '#B85C3F', // --gs-accent-1
   sessionLog:  '#708060', // --gs-accent-2 (sage; "subdued sage" per spec)
   cycleReflection: '#C9A55C', // --gs-accent-3 (gilt)
+  // GM-authored session notes — distinct color (oxblood) so the
+  // "Session Notes" branch reads clearly apart from the auto-generated
+  // "Session Logs" (sage). Same parent-cycle-N nesting pattern as
+  // Monologues.
+  sessionNote: '#8B2A22',
 };
 
 /** Get-or-create a top-level (no parent) JournalEntry folder. */
@@ -113,13 +118,30 @@ export async function cycleReflectionFolder() {
 }
 
 /**
+ * Session Notes / Cycle N — returns the per-cycle folder, or the root
+ * "Session Notes" folder when cycleNumber is missing. Same nesting model
+ * as Monologues; default ownership for entries created underneath is
+ * OBSERVER (set on the JournalEntry itself, not the folder).
+ *
+ * @param {number|string} cycleNumber
+ * @returns {Promise<Folder|null>}
+ */
+export async function sessionNoteFolder(cycleNumber) {
+  const root = await _getOrCreateRoot('Session Notes', COLORS.sessionNote);
+  if (!root) return null;
+  if (cycleNumber == null) return root;
+  const cycleName = `Cycle ${cycleNumber}`;
+  return (await _getOrCreateChild(root, cycleName, COLORS.sessionNote)) ?? root;
+}
+
+/**
  * Build the standard `flags['good-society-homebrew']` object for a journal
  * entry created by one of the patch's write paths. Every entry created via
  * the patch's archive flow carries this flag so the sidebar list and the
  * Novel Reader can dispatch on entry type.
  *
  * @param {Object} opts
- * @param {'letter'|'monologue'|'sessionLog'|'cycleDivider'} opts.entryType
+ * @param {'letter'|'monologue'|'sessionLog'|'cycleDivider'|'sessionNote'} opts.entryType
  * @param {number|null} [opts.cycleNumber]
  * @param {string|null} [opts.speakerActorId]
  * @param {string|null} [opts.letterId] Correlation id shared with the letter

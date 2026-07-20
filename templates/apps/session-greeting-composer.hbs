@@ -1,0 +1,141 @@
+{{!-- Session Greeting Composer — GM-only authoring UI.
+     Single root for ApplicationV2 PARTS. --}}
+<section class="gs-session-greeting-composer">
+
+  <header class="gs-session-greeting-composer__head">
+    <h3 class="gs-session-greeting-composer__title">
+      {{localize "GOODSOCIETY.sessionGreeting.composerTitle"}}
+    </h3>
+    <p class="gs-session-greeting-composer__subtitle">
+      {{localize "GOODSOCIETY.sessionGreeting.composerSubtitle"}}
+    </p>
+  </header>
+
+  {{!-- Title input — shows at the top of the player modal. --}}
+  <label class="gs-session-greeting-composer__title-row">
+    <span class="gs-session-greeting-composer__label">
+      {{localize "GOODSOCIETY.sessionGreeting.titleLabel"}}
+    </span>
+    <input type="text"
+           class="gs-session-greeting-composer__title-input"
+           data-greeting-field="title"
+           placeholder="{{localize 'GOODSOCIETY.sessionGreeting.titlePlaceholder'}}"
+           value="{{title}}" />
+  </label>
+
+  {{!-- Sections list. Each is a heading + body textarea + reorder/remove
+       controls. Heading and body can both be empty (rendered as a quiet
+       prose block) — keeps the format truly free-form. --}}
+  <div class="gs-session-greeting-composer__sections">
+    <div class="gs-session-greeting-composer__section-head">
+      <span class="gs-session-greeting-composer__label">
+        {{localize "GOODSOCIETY.sessionGreeting.sectionsLabel"}}
+      </span>
+      <div class="gs-session-greeting-composer__section-actions">
+        <button type="button"
+                class="gs-session-greeting-composer__add-quick"
+                data-action="insertLastNote"
+                title="{{localize 'GOODSOCIETY.sessionGreeting.insertLastNoteTitle'}}">
+          ⌕ {{localize "GOODSOCIETY.sessionGreeting.insertLastNote"}}
+        </button>
+        <button type="button"
+                class="gs-session-greeting-composer__add"
+                data-action="addSection">
+          + {{localize "GOODSOCIETY.sessionGreeting.addSection"}}
+        </button>
+      </div>
+    </div>
+
+    {{#if hasSections}}
+      {{#each sections}}
+        <article class="gs-session-greeting-composer__section">
+          <div class="gs-session-greeting-composer__section-row">
+            <input type="text"
+                   class="gs-session-greeting-composer__heading-input"
+                   data-greeting-field="heading"
+                   data-section-id="{{id}}"
+                   placeholder="{{localize 'GOODSOCIETY.sessionGreeting.headingPlaceholder'}}"
+                   value="{{heading}}" />
+            <div class="gs-session-greeting-composer__section-buttons">
+              <button type="button"
+                      class="gs-session-greeting-composer__icon-btn"
+                      data-action="moveSectionUp"
+                      data-section-id="{{id}}"
+                      title="{{localize 'GOODSOCIETY.sessionGreeting.moveUp'}}"
+                      aria-label="{{localize 'GOODSOCIETY.sessionGreeting.moveUp'}}"
+                      {{#if isFirst}}disabled{{/if}}>↑</button>
+              <button type="button"
+                      class="gs-session-greeting-composer__icon-btn"
+                      data-action="moveSectionDown"
+                      data-section-id="{{id}}"
+                      title="{{localize 'GOODSOCIETY.sessionGreeting.moveDown'}}"
+                      aria-label="{{localize 'GOODSOCIETY.sessionGreeting.moveDown'}}"
+                      {{#if isLast}}disabled{{/if}}>↓</button>
+              <button type="button"
+                      class="gs-session-greeting-composer__icon-btn gs-session-greeting-composer__icon-btn--danger"
+                      data-action="removeSection"
+                      data-section-id="{{id}}"
+                      title="{{localize 'GOODSOCIETY.sessionGreeting.removeSection'}}"
+                      aria-label="{{localize 'GOODSOCIETY.sessionGreeting.removeSection'}}">×</button>
+            </div>
+          </div>
+          <textarea class="gs-session-greeting-composer__body-input"
+                    data-greeting-field="body"
+                    data-section-id="{{id}}"
+                    rows="4"
+                    placeholder="{{localize 'GOODSOCIETY.sessionGreeting.bodyPlaceholder'}}">{{body}}</textarea>
+        </article>
+      {{/each}}
+    {{else}}
+      <p class="gs-session-greeting-composer__empty">
+        <em>{{localize "GOODSOCIETY.sessionGreeting.emptyHint"}}</em>
+      </p>
+    {{/if}}
+  </div>
+
+  <footer class="gs-session-greeting-composer__footer">
+    {{!-- Last-published indicator. Reads the persisted `updatedAt`
+         (bumped only by Publish, not by Save Draft), so the GM can see
+         when the current published version was last pushed to players.
+         Hover shows the exact date/time. --}}
+    <span class="gs-session-greeting-composer__last-published"
+          title="{{lastPublishedExact}}">
+      {{#if hasBeenPublished}}
+        {{localize "GOODSOCIETY.sessionGreeting.lastPublishedPrefix"}}
+        <em>{{lastPublishedLabel}}</em>
+      {{else}}
+        <em>{{localize "GOODSOCIETY.sessionGreeting.neverPublished"}}</em>
+      {{/if}}
+    </span>
+
+    <div class="gs-session-greeting-composer__footer-actions">
+      {{#if hasBeenPublished}}
+        {{!-- Unpublish is only meaningful once something's live. Kept as
+             a subdued button so it doesn't compete with Publish. --}}
+        <button type="button"
+                class="gs-session-greeting-composer__unpublish-btn"
+                data-action="unpublishGreeting"
+                title="{{localize 'GOODSOCIETY.sessionGreeting.unpublishTitle'}}">
+          {{localize "GOODSOCIETY.sessionGreeting.unpublish"}}
+        </button>
+      {{/if}}
+      <button type="button"
+              class="gs-session-greeting-composer__preview-btn"
+              data-action="previewGreeting">
+        {{localize "GOODSOCIETY.sessionGreeting.preview"}}
+      </button>
+      <button type="button"
+              class="gs-session-greeting-composer__draft-btn"
+              data-action="saveDraft"
+              title="{{localize 'GOODSOCIETY.sessionGreeting.saveDraftTitle'}}">
+        {{localize "GOODSOCIETY.sessionGreeting.saveDraft"}}
+      </button>
+      <button type="button"
+              class="gs-session-greeting-composer__publish-btn"
+              data-action="publishGreeting">
+        {{localize "GOODSOCIETY.sessionGreeting.publish"}}
+      </button>
+    </div>
+  </footer>
+
+</section>
