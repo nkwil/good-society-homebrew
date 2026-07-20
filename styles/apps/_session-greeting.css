@@ -12,6 +12,8 @@
     radial-gradient(ellipse 80% 60% at 50% 25%, #faf1d4 0%, var(--gs-paper-warm) 80%);
   color: var(--gs-ink);
   position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .gs-session-greeting__preview-badge {
