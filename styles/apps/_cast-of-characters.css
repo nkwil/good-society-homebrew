@@ -101,69 +101,87 @@
   margin: 0;
 }
 
-/* ── Portrait (shared) ─────────────────────────────────────────────────── */
+/* ── Manager portrait (small, in list rows) ───────────────────────────── */
+/* Same bulletproof pattern as the viewer's portrait-box — position:
+ * absolute inside a px-locked relative container so Foundry's global
+ * img rules can't inflate the image to its natural dimensions. */
 
 .gs-cast__portrait {
+  position: relative;
   flex: 0 0 auto;
   width: 44px;
   height: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--gs-paper-warm);
+  background: var(--gs-paper);
   border: 0.5px solid color-mix(in srgb, var(--gs-brand) 25%, transparent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-.gs-cast__portrait img {
+.gs-cast__portrait > img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  border: 0;
+  border-radius: inherit;
 }
 .gs-cast__initial {
   font-family: var(--gs-display);
   font-size: 18px;
   color: var(--gs-brand);
+  line-height: 1;
 }
 
-.gs-cast__portrait--card {
-  width: 72px;
-  height: 72px;
-}
-.gs-cast__portrait--card .gs-cast__initial { font-size: 26px; }
-
-/* ── Viewer: card grid ─────────────────────────────────────────────────── */
+/* ── Viewer: horizontal address-book cards ─────────────────────────────── */
 
 .gs-cast__grid {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 10px;
 }
 
 .gs-cast__card {
   display: flex;
+  min-width: 0;
 }
 
-button.gs-cast__card-btn {
+/* Shared card chrome — one rule set, two variants (button + static div)
+ * so a non-openable card renders identically but doesn't invite clicks. */
+.gs-cast__card-btn,
+.gs-cast__card-btn--static {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 8px;
-  padding: 12px 10px;
+  gap: 12px;
+  padding: 10px 12px;
   margin: 0;
   background: var(--gs-paper-warm);
   color: var(--gs-ink);
   border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
   border-radius: 6px;
-  cursor: pointer;
   min-height: 0;
-  text-align: center;
+  text-align: left;
+  min-width: 0;
+  box-sizing: border-box;
+}
+button.gs-cast__card-btn {
+  cursor: pointer;
   transition: background 120ms, border-color 120ms, transform 120ms;
+  font: inherit;
+  color: inherit;
 }
 button.gs-cast__card-btn:hover {
   background: color-mix(in srgb, var(--gs-brand) 6%, var(--gs-paper-warm));
@@ -172,42 +190,74 @@ button.gs-cast__card-btn:hover {
 }
 button.gs-cast__card-btn:focus:not(:focus-visible) { outline: none; box-shadow: none; }
 button.gs-cast__card-btn:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: 2px; }
+.gs-cast__card-btn--static { cursor: default; }
 
-/* Non-clickable card variant (viewer can't open this actor's sheet). */
-.gs-cast__card-btn--static {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+/* Portrait box — belt-and-suspenders sizing. The IMG is absolutely
+ * positioned inside a width/height-locked relative box, so Foundry's
+ * global `img { max-width: 100%; height: auto }` can't make it balloon
+ * out to its natural dimensions. aspect-ratio + explicit px size keeps
+ * the circle round regardless of flex context. */
+.gs-cast__portrait-box {
+  position: relative;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  min-height: 56px;
+  max-height: 56px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--gs-paper);
+  border: 0.5px solid color-mix(in srgb, var(--gs-brand) 25%, transparent);
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 10px;
-  background: var(--gs-paper-warm);
-  color: var(--gs-ink);
-  border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
-  border-radius: 6px;
-  text-align: center;
-  cursor: default;
+  justify-content: center;
+}
+.gs-cast__portrait-box > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border: 0;
+  border-radius: inherit;
+}
+.gs-cast__portrait-box > .gs-cast__initial {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  color: var(--gs-brand);
+  line-height: 1;
 }
 
 .gs-cast__card-text {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  align-items: center;
+  min-width: 0;
 }
 .gs-cast__card-name {
   font-family: var(--gs-display);
-  font-size: 14px;
+  font-size: 15px;
   color: var(--gs-brand);
   font-weight: 500;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .gs-cast__card-subtitle {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11.5px;
+  font-size: 12px;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
   line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ── Manager: list rows ────────────────────────────────────────────────── */

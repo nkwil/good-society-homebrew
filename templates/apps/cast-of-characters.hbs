@@ -90,8 +90,9 @@
               </ul>
 
             {{else}}
-              {{!-- Viewer rows: compact card grid. Clickable only when
-                    the viewer has at least LIMITED on the actor. --}}
+              {{!-- Viewer rows: horizontal address-book cards, 2 per row
+                    at the viewer width. Clickable only when the viewer has
+                    at least LIMITED on the actor. --}}
               <ul class="gs-cast__grid">
                 {{#each rows}}
                   <li class="gs-cast__card">
@@ -101,35 +102,35 @@
                               data-action="openActor"
                               data-actor-id="{{id}}"
                               title="{{localize 'GOODSOCIETY.castOfCharacters.openSheet'}}">
-                        <div class="gs-cast__portrait gs-cast__portrait--card">
+                        <span class="gs-cast__portrait-box">
                           {{#if portraitUrl}}
-                            <img src="{{portraitUrl}}" alt="{{displayName}}" />
+                            <img src="{{portraitUrl}}" alt="" />
                           {{else}}
                             <span class="gs-cast__initial">{{initial}}</span>
                           {{/if}}
-                        </div>
-                        <div class="gs-cast__card-text">
+                        </span>
+                        <span class="gs-cast__card-text">
                           <span class="gs-cast__card-name">{{displayName}}</span>
                           {{#if subtitle}}
                             <span class="gs-cast__card-subtitle">{{subtitle}}</span>
                           {{/if}}
-                        </div>
+                        </span>
                       </button>
                     {{else}}
                       <div class="gs-cast__card-btn gs-cast__card-btn--static">
-                        <div class="gs-cast__portrait gs-cast__portrait--card">
+                        <span class="gs-cast__portrait-box">
                           {{#if portraitUrl}}
-                            <img src="{{portraitUrl}}" alt="{{displayName}}" />
+                            <img src="{{portraitUrl}}" alt="" />
                           {{else}}
                             <span class="gs-cast__initial">{{initial}}</span>
                           {{/if}}
-                        </div>
-                        <div class="gs-cast__card-text">
+                        </span>
+                        <span class="gs-cast__card-text">
                           <span class="gs-cast__card-name">{{displayName}}</span>
                           {{#if subtitle}}
                             <span class="gs-cast__card-subtitle">{{subtitle}}</span>
                           {{/if}}
-                        </div>
+                        </span>
                       </div>
                     {{/if}}
                   </li>
