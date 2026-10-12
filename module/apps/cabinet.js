@@ -27,6 +27,7 @@ import { openMonologueFromCabinet, monologueFlowApp } from './monologue-overlay.
 import { openResetCampaign } from '../helpers/reset-campaign.js';
 import { openStoryBeatsCommandCenter } from './story-beats-command-center.js';
 import { openSessionNotes } from './session-notes.js';
+import { openCastOfCharacters, openCastManager } from './cast-of-characters.js';
 import { openSessionGreetingComposer } from './session-greeting-composer.js';
 import { openSessionGreeting } from './session-greeting.js';
 
@@ -71,6 +72,9 @@ const LAUNCHERS = {
   storyBeats:    () => openStoryBeatsCommandCenter(),
   // Session Notes hub (GM): cycle-grouped public JournalEntries.
   sessionNotes:    () => openSessionNotes(),
+  // Cast of Characters — viewer (all users) + manager (GM only).
+  cast:            () => openCastOfCharacters(),
+  castManage:      () => openCastManager(),
   // Session Greeting composer (GM): authors the auto-pop welcome modal.
   sessionGreeting: () => openSessionGreetingComposer(),
   // Player reopen of the auto-pop greeting — bypasses the dismiss check.
@@ -106,6 +110,8 @@ const LAUNCHER_APP_IDS = {
   sessionNotes:    'gs-session-notes',
   sessionGreeting: 'gs-session-greeting-composer',
   greetingReopen:  'gs-session-greeting',
+  cast:            'gs-cast-viewer',
+  castManage:      'gs-cast-manager',
 };
 
 export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {

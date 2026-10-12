@@ -231,6 +231,9 @@ export const COWORK_SURFACES = [
   // module/apps/monologue-overlay.js#openMonologueFromCabinet.
   { id: 'tool-monologue',        group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.monologue',     railGlyph: 'MO', kind: 'launcher', launcherKey: 'monologue' },
   { id: 'tool-calendar',         group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.calendar',      railGlyph: 'ET', kind: 'launcher', launcherKey: 'calendar' },
+  // Cast of Characters — player viewer. GM uses the "Manage Cast" entry
+  // in GM tools; everyone (GM included) can also open the viewer here.
+  { id: 'tool-cast',             group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.cast',          railGlyph: 'CA', kind: 'launcher', launcherKey: 'cast' },
   // Informational popups — drawer-only (no railGlyph) so they don't clutter
   // the rail, but always accessible from the drawer for re-reading.
   { id: 'tool-pregame',          group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.pregame',       kind: 'launcher', launcherKey: 'pregame'    },
@@ -249,6 +252,7 @@ export const COWORK_SURFACES = [
 
   // GM Tools (launchers, GM-only)
   { id: 'gm-tool-events',        group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.eventCommandCenter', kind: 'launcher', gmOnly: true, launcherKey: 'events'      },
+  { id: 'gm-tool-cast-manage',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.castManage',       kind: 'launcher', gmOnly: true, launcherKey: 'castManage'  },
   { id: 'gm-tool-organizer',     group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.npcOrganizer',     kind: 'launcher', gmOnly: true, launcherKey: 'organizer'   },
   { id: 'gm-tool-permissions',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.bulkPermissions',  kind: 'launcher', gmOnly: true, launcherKey: 'permissions' },
   { id: 'gm-tool-session-log',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.sessionLogOpen',   kind: 'launcher', gmOnly: true, launcherKey: 'sessionLog'  },

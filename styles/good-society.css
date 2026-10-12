@@ -154,6 +154,7 @@
 
 /* Session-recap surfaces — GM notes hub + player welcome modal. */
 @import './apps/_session-notes.css';
+@import './apps/_cast-of-characters.css';
 @import './apps/_session-greeting.css';
 
 /* The Cabinet — post-MVP §9 player module menu. */

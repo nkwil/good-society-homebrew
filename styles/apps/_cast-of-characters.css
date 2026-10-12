@@ -1,0 +1,344 @@
+/* Cast of Characters — one app, two modes.
+ *
+ * House-styled (Inkwell & Wildflower). Viewer renders a compact card grid;
+ * manager renders a vertical list with toggle switches. Both share the
+ * same header/eyebrow treatment. */
+
+.gs-cast {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 22px 20px;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+
+.gs-cast__header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gs-cast__eyebrow {
+  font-family: var(--gs-display);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gs-accent-1);
+}
+
+.gs-cast__title {
+  font-family: var(--gs-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--gs-brand);
+  margin: 0;
+  line-height: 1.15;
+}
+
+.gs-cast__subtitle {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  margin: 2px 0 0;
+}
+
+/* ── Group ─────────────────────────────────────────────────────────────── */
+
+.gs-cast__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
+}
+.gs-cast__group:first-of-type {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.gs-cast__group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.gs-cast__group-label {
+  font-family: var(--gs-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gs-brand);
+}
+.gs-cast__group-count {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+
+.gs-cast__empty-group {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  margin: 0;
+  padding: 4px 0 8px;
+}
+
+.gs-cast__empty {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+}
+
+/* ── Portrait (shared) ─────────────────────────────────────────────────── */
+
+.gs-cast__portrait {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid color-mix(in srgb, var(--gs-brand) 25%, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.gs-cast__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.gs-cast__initial {
+  font-family: var(--gs-display);
+  font-size: 18px;
+  color: var(--gs-brand);
+}
+
+.gs-cast__portrait--card {
+  width: 72px;
+  height: 72px;
+}
+.gs-cast__portrait--card .gs-cast__initial { font-size: 26px; }
+
+/* ── Viewer: card grid ─────────────────────────────────────────────────── */
+
+.gs-cast__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.gs-cast__card {
+  display: flex;
+}
+
+button.gs-cast__card-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 10px;
+  margin: 0;
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+  border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: 0;
+  text-align: center;
+  transition: background 120ms, border-color 120ms, transform 120ms;
+}
+button.gs-cast__card-btn:hover {
+  background: color-mix(in srgb, var(--gs-brand) 6%, var(--gs-paper-warm));
+  border-color: var(--gs-brand);
+  transform: translateY(-1px);
+}
+button.gs-cast__card-btn:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+button.gs-cast__card-btn:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: 2px; }
+
+/* Non-clickable card variant (viewer can't open this actor's sheet). */
+.gs-cast__card-btn--static {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 10px;
+  background: var(--gs-paper-warm);
+  color: var(--gs-ink);
+  border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
+  border-radius: 6px;
+  text-align: center;
+  cursor: default;
+}
+
+.gs-cast__card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+.gs-cast__card-name {
+  font-family: var(--gs-display);
+  font-size: 14px;
+  color: var(--gs-brand);
+  font-weight: 500;
+  line-height: 1.2;
+}
+.gs-cast__card-subtitle {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  line-height: 1.3;
+}
+
+/* ── Manager: list rows ────────────────────────────────────────────────── */
+
+.gs-cast__manage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gs-cast__manage-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
+  border-radius: 5px;
+  transition: opacity 120ms;
+}
+.gs-cast__manage-row.is-off { opacity: 0.68; }
+
+.gs-cast__row-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.gs-cast__row-name {
+  font-family: var(--gs-display);
+  font-size: 14px;
+  color: var(--gs-brand);
+  font-weight: 500;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gs-cast__row-persona-hint {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gs-accent-1);
+}
+.gs-cast__row-subtitle {
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  line-height: 1.3;
+}
+
+.gs-cast__row-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button.gs-cast__reset-btn {
+  padding: 4px 10px;
+  margin: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  border: 0.5px dashed color-mix(in srgb, var(--gs-accent-2) 80%, transparent);
+  border-radius: 100px;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 11px;
+  cursor: pointer;
+  min-height: 0;
+  transition: background 120ms, color 120ms, border-color 120ms;
+}
+button.gs-cast__reset-btn:hover {
+  background: var(--gs-paper);
+  color: var(--gs-brand);
+  border-color: var(--gs-brand);
+  border-style: solid;
+}
+
+/* Toggle switch — pill with sliding dot. */
+button.gs-cast__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 10px 2px 2px;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  min-height: 0;
+  font-family: var(--gs-display);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}
+.gs-cast__toggle-track {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  border-radius: 100px;
+  background: color-mix(in srgb, var(--gs-ink) 20%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink) 25%, transparent);
+  transition: background 120ms, border-color 120ms;
+}
+.gs-cast__toggle-dot {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gs-paper);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: transform 150ms ease, background 120ms;
+}
+.gs-cast__toggle.is-on {
+  color: var(--gs-brand);
+}
+.gs-cast__toggle.is-on .gs-cast__toggle-track {
+  background: var(--gs-brand);
+  border-color: var(--gs-brand);
+}
+.gs-cast__toggle.is-on .gs-cast__toggle-dot {
+  transform: translateX(14px);
+}
+button.gs-cast__toggle:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+button.gs-cast__toggle:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: 2px; border-radius: 100px; }

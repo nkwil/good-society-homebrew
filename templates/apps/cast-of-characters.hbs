@@ -1,0 +1,153 @@
+<section class="gs-cast">
+
+  <header class="gs-cast__header">
+    <span class="gs-cast__eyebrow">
+      {{localize "GOODSOCIETY.castOfCharacters.eyebrow"}}
+    </span>
+    <h2 class="gs-cast__title">
+      {{#if isManageMode}}
+        {{localize "GOODSOCIETY.castOfCharacters.manageTitle"}}
+      {{else}}
+        {{localize "GOODSOCIETY.castOfCharacters.viewTitle"}}
+      {{/if}}
+    </h2>
+    <p class="gs-cast__subtitle">
+      {{#if isManageMode}}
+        {{localize "GOODSOCIETY.castOfCharacters.manageHint"}}
+      {{else}}
+        {{localize "GOODSOCIETY.castOfCharacters.viewHint"}}
+      {{/if}}
+    </p>
+  </header>
+
+  {{#if hasAny}}
+    {{#each groups}}
+      <section class="gs-cast__group" data-type="{{type}}">
+          <header class="gs-cast__group-head">
+            <span class="gs-cast__group-label">{{label}}</span>
+            <span class="gs-cast__group-count">{{count}}</span>
+          </header>
+
+          {{#if isEmpty}}
+            <p class="gs-cast__empty-group">
+              {{localize "GOODSOCIETY.castOfCharacters.emptyGroup"}}
+            </p>
+          {{else}}
+
+            {{#if ../isManageMode}}
+              {{!-- Manager rows: full-width list with toggle + reset. --}}
+              <ul class="gs-cast__manage-list">
+                {{#each rows}}
+                  <li class="gs-cast__manage-row {{#unless effectiveOn}}is-off{{/unless}}">
+                    <div class="gs-cast__portrait">
+                      {{#if portraitUrl}}
+                        <img src="{{portraitUrl}}" alt="{{displayName}}" />
+                      {{else}}
+                        <span class="gs-cast__initial">{{initial}}</span>
+                      {{/if}}
+                    </div>
+                    <div class="gs-cast__row-text">
+                      <span class="gs-cast__row-name">{{displayName}}</span>
+                      {{#if personaHint}}
+                        <span class="gs-cast__row-persona-hint">
+                          {{localize "GOODSOCIETY.castOfCharacters.asPersona" name=personaHint}}
+                        </span>
+                      {{/if}}
+                      {{#if subtitle}}
+                        <span class="gs-cast__row-subtitle">{{subtitle}}</span>
+                      {{/if}}
+                    </div>
+                    <div class="gs-cast__row-actions">
+                      {{#unless isDefault}}
+                        <button type="button"
+                                class="gs-cast__reset-btn"
+                                data-action="resetDefault"
+                                data-actor-id="{{id}}"
+                                title="{{localize 'GOODSOCIETY.castOfCharacters.resetDefaultTitle'}}">
+                          {{localize "GOODSOCIETY.castOfCharacters.resetDefault"}}
+                        </button>
+                      {{/unless}}
+                      <button type="button"
+                              class="gs-cast__toggle {{#if effectiveOn}}is-on{{/if}}"
+                              data-action="toggleActor"
+                              data-actor-id="{{id}}"
+                              aria-pressed="{{effectiveOn}}"
+                              title="{{#if effectiveOn}}{{localize 'GOODSOCIETY.castOfCharacters.toggleOff'}}{{else}}{{localize 'GOODSOCIETY.castOfCharacters.toggleOn'}}{{/if}}">
+                        <span class="gs-cast__toggle-track" aria-hidden="true">
+                          <span class="gs-cast__toggle-dot"></span>
+                        </span>
+                        <span class="gs-cast__toggle-label">
+                          {{#if effectiveOn}}
+                            {{localize "GOODSOCIETY.castOfCharacters.on"}}
+                          {{else}}
+                            {{localize "GOODSOCIETY.castOfCharacters.off"}}
+                          {{/if}}
+                        </span>
+                      </button>
+                    </div>
+                  </li>
+                {{/each}}
+              </ul>
+
+            {{else}}
+              {{!-- Viewer rows: compact card grid. Clickable only when
+                    the viewer has at least LIMITED on the actor. --}}
+              <ul class="gs-cast__grid">
+                {{#each rows}}
+                  <li class="gs-cast__card">
+                    {{#if canOpen}}
+                      <button type="button"
+                              class="gs-cast__card-btn"
+                              data-action="openActor"
+                              data-actor-id="{{id}}"
+                              title="{{localize 'GOODSOCIETY.castOfCharacters.openSheet'}}">
+                        <div class="gs-cast__portrait gs-cast__portrait--card">
+                          {{#if portraitUrl}}
+                            <img src="{{portraitUrl}}" alt="{{displayName}}" />
+                          {{else}}
+                            <span class="gs-cast__initial">{{initial}}</span>
+                          {{/if}}
+                        </div>
+                        <div class="gs-cast__card-text">
+                          <span class="gs-cast__card-name">{{displayName}}</span>
+                          {{#if subtitle}}
+                            <span class="gs-cast__card-subtitle">{{subtitle}}</span>
+                          {{/if}}
+                        </div>
+                      </button>
+                    {{else}}
+                      <div class="gs-cast__card-btn gs-cast__card-btn--static">
+                        <div class="gs-cast__portrait gs-cast__portrait--card">
+                          {{#if portraitUrl}}
+                            <img src="{{portraitUrl}}" alt="{{displayName}}" />
+                          {{else}}
+                            <span class="gs-cast__initial">{{initial}}</span>
+                          {{/if}}
+                        </div>
+                        <div class="gs-cast__card-text">
+                          <span class="gs-cast__card-name">{{displayName}}</span>
+                          {{#if subtitle}}
+                            <span class="gs-cast__card-subtitle">{{subtitle}}</span>
+                          {{/if}}
+                        </div>
+                      </div>
+                    {{/if}}
+                  </li>
+                {{/each}}
+              </ul>
+            {{/if}}
+
+          {{/if}}
+        </section>
+    {{/each}}
+  {{else}}
+    <p class="gs-cast__empty">
+      {{#if isManageMode}}
+        {{localize "GOODSOCIETY.castOfCharacters.emptyManage"}}
+      {{else}}
+        {{localize "GOODSOCIETY.castOfCharacters.emptyView"}}
+      {{/if}}
+    </p>
+  {{/if}}
+
+</section>

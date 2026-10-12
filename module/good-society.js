@@ -44,6 +44,7 @@ import { openNovelPhasePopup } from './apps/novel-phase-popup.js';
 import { refreshEventCommandCenter } from './apps/event-command-center.js';
 import { openPregameChecklist, maybeAutoOpenPregameChecklist } from './apps/pregame-checklist.js';
 import { openSessionNotes, registerSessionNotesHooks } from './apps/session-notes.js';
+import { openCastOfCharacters, openCastManager, registerCastHooks } from './apps/cast-of-characters.js';
 import { openSessionGreetingComposer } from './apps/session-greeting-composer.js';
 import { openSessionGreeting } from './apps/session-greeting.js';
 import { maybeAutoOpenSessionSurface } from './hooks/session-greeting-auto.js';
@@ -1048,3 +1049,4 @@ safeRegister('novelReaderHooks', registerNovelReaderHooks);
 // Session Notes: refresh the app when a sessionNote JournalEntry is edited
 // externally (rename in sidebar, delete from directory, etc).
 safeRegister('sessionNotesHooks', registerSessionNotesHooks);
+safeRegister('castHooks',         registerCastHooks);

@@ -21,6 +21,7 @@ import { openLetterComposer } from '../apps/letter-composer.js';
 import { openRumourBoard } from '../apps/rumour-board.js';
 import { openNovelReader } from '../apps/novel-reader.js';
 import { openEventCommandCenter } from '../apps/event-command-center.js';
+import { openCastOfCharacters, openCastManager } from '../apps/cast-of-characters.js';
 
 /**
  * Drop the local canvas to the Arrival splash — without needing another
@@ -170,6 +171,17 @@ export function register() {
       visible: true,
     };
 
+    // Cast of Characters — one button, two behaviors. GM click opens the
+    // Manage grid; player click opens the read-only viewer. Visible to all.
+    const castTool = {
+      name: 'gs-cast',
+      title: 'GOODSOCIETY.castOfCharacters.sceneControlTitle',
+      icon: 'fa-solid fa-masks-theater',
+      button: true,
+      onChange: () => (game.user?.isGM ? openCastManager() : openCastOfCharacters()),
+      visible: true,
+    };
+
     // Random-event GM command center — GM-only.
     const eventsTool = {
       name: 'gs-events',
@@ -192,7 +204,7 @@ export function register() {
 
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool, rumourTool, novelReaderTool, eventsTool, splashTool);
+      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool, rumourTool, novelReaderTool, castTool, eventsTool, splashTool);
     } else {
       target.tools['gs-dashboard']        = dashboardTool;
       target.tools['gs-organizer']        = organizerTool;
@@ -202,6 +214,7 @@ export function register() {
       target.tools['gs-letter']           = letterTool;
       target.tools['gs-rumours']          = rumourTool;
       target.tools['gs-novel-reader']     = novelReaderTool;
+      target.tools['gs-cast']             = castTool;
       target.tools['gs-events']           = eventsTool;
       target.tools['gs-return-to-splash'] = splashTool;
     }

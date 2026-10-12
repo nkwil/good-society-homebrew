@@ -1288,6 +1288,8 @@
         "pregame": "Pre-game checklist",
         "novelPhase": "Novel phase reminder",
         "rumourBoard": "Rumour Board",
+        "cast": "Cast of Characters",
+        "castManage": "Manage Cast of Characters…",
         "sequencer": "Sequencer",
         "tokenMold": "Token Mold",
         "diceTray": "Dice Tray",
@@ -2119,6 +2121,33 @@
       "announceEyebrow": "An event for {name}",
       "announceLead": "A moment lands at {name}'s feet.",
       "announceWaiting": "They're writing their response. The rest of us are the room."
+    },
+    "castOfCharacters": {
+      "windowTitle": "Cast of Characters",
+      "viewTitle": "Cast of Characters",
+      "manageTitle": "Manage the Cast",
+      "eyebrow": "Who's on the stage",
+      "viewHint": "The characters you've met so far. Click a face to open their page.",
+      "manageHint": "Toggle who the players can see here. Majors default to shown; Connections and NPCs default to hidden until you add them.",
+      "sceneControlTitle": "Open the Cast of Characters",
+      "group": {
+        "majors": "Major characters",
+        "connections": "Connections",
+        "npcs": "The ambient cast"
+      },
+      "emptyView": "The cast is empty for now. Your GM will add people as you meet them.",
+      "emptyManage": "There are no actors yet. Create some Majors, Connections, or NPCs to populate the cast.",
+      "emptyGroup": "No one here yet.",
+      "openSheet": "Open page",
+      "cannotOpen": "You don't have permission to open this character's page.",
+      "gmOnly": "Only the GM can manage the cast.",
+      "asPersona": "(as {name})",
+      "on": "On",
+      "off": "Off",
+      "toggleOn": "Add to the players' cast",
+      "toggleOff": "Hide from the players' cast",
+      "resetDefault": "default",
+      "resetDefaultTitle": "Clear the override — fall back to this type's default (Majors on, others off)."
     },
     "eventCommandCenter": {
       "windowTitle": "Random Event Command Center",
