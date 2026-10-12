@@ -8,6 +8,10 @@
     </p>
   </header>
 
+  {{#if imageUrl}}
+    <img class="gs-event-popover__image" src="{{imageUrl}}" alt="" />
+  {{/if}}
+
   {{#if description}}
     <div class="gs-event-popover__desc">{{{description}}}</div>
   {{/if}}
@@ -69,9 +73,11 @@
           ▼ {{localize "GOODSOCIETY.eventPopover.pickNegative"}}
         {{/if}}
       </h3>
-      {{#if tagOptions.length}}
+
+      {{#if hasSuggestions}}
+        <p class="gs-event-popover__tag-hint">{{localize "GOODSOCIETY.eventPopover.tagSuggestionsHint"}}</p>
         <div class="gs-event-popover__tag-list">
-          {{#each tagOptions}}
+          {{#each tagSuggestions}}
             <button type="button"
                     class="gs-event-popover__tag{{#if selected}} gs-event-popover__tag--selected{{/if}}"
                     data-action="pickTag"
@@ -81,8 +87,15 @@
           {{/each}}
         </div>
       {{else}}
-        <p class="gs-empty-state">{{localize "GOODSOCIETY.eventPopover.noTagOptions"}}</p>
+        <p class="gs-event-popover__tag-hint">{{localize "GOODSOCIETY.eventPopover.tagWriteOwnHint"}}</p>
       {{/if}}
+
+      <input type="text"
+             class="gs-event-popover__tag-input"
+             data-gs-tag-input="true"
+             value="{{tagText}}"
+             placeholder="{{localize 'GOODSOCIETY.eventPopover.tagInputPlaceholder'}}"
+             autocomplete="off" />
     </section>
   {{/if}}
 

@@ -75,3 +75,55 @@
   margin: 4px 0 0;
   color: var(--gs-ink);
 }
+
+/* Flavor image inside the resolution card (optional). */
+.gs-random-event-card__image {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  margin: 6px 0 8px;
+  border-radius: 4px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-brand) 30%, transparent);
+}
+
+/* ── Announce card ("An event for {Name}") ──────────────────────────────── */
+/* Themed with the target actor's theme (same as resolution card) so the
+ * table reads the color-coded signal before anything happens. */
+
+.gs-random-event-announce { }
+
+.gs-random-event-announce__image {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  margin: 6px 0 8px;
+  border-radius: 4px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-brand) 30%, transparent);
+}
+
+.gs-random-event-announce__title {
+  margin: 6px 0 4px;
+  font-family: var(--gs-display);
+  font-size: 17px;
+  color: var(--gs-brand);
+}
+
+.gs-random-event-announce__desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--gs-ink) 85%, transparent);
+  margin-bottom: 8px;
+}
+
+.gs-random-event-announce__lead {
+  font-size: 13px;
+  margin: 8px 0 2px;
+  color: var(--gs-ink);
+}
+.gs-random-event-announce__waiting {
+  font-size: 12px;
+  margin: 2px 0 0;
+  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+}

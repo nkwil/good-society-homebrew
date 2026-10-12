@@ -158,12 +158,17 @@
         "archetypeLabel": "Archetype",
         "archetypeHint": "Only Major characters with this archetype can be targeted by this event.",
         "descriptionLabel": "Description",
-        "positiveLabel": "Positive tag options",
-        "positiveHint": "On a successful roll, the player picks one of these as a positive reputation tag.",
-        "negativeLabel": "Negative tag options",
-        "negativeHint": "On a failed roll, the player picks one of these as a negative reputation tag.",
-        "addOption": "add option",
-        "removeOption": "Remove option",
+        "imageLabel": "Flavor image",
+        "imageHint": "A small picture shown to the whole table when the event launches, and inside the resolution popover. Optional.",
+        "imagePick": "Pick image",
+        "imageChange": "Change image",
+        "imageClear": "Clear",
+        "positiveLabel": "Positive tag suggestions",
+        "positiveHint": "On a successful roll, the player sees these as click-to-prefill chips — they can accept one, edit it, or write their own tag.",
+        "negativeLabel": "Negative tag suggestions",
+        "negativeHint": "On a failed roll, the player sees these as click-to-prefill chips — they can accept one, edit it, or write their own tag.",
+        "addOption": "add suggestion",
+        "removeOption": "Remove suggestion",
         "optionPlaceholderPositive": "e.g. Quick-witted",
         "optionPlaceholderNegative": "e.g. Reckless"
       }
@@ -2090,14 +2095,16 @@
       "averageLabel": "Average",
       "successVerdict": "You rise to the moment.",
       "failureVerdict": "The moment slips away.",
-      "pickPositive": "Choose a positive reputation tag",
-      "pickNegative": "Choose a negative reputation tag",
-      "noTagOptions": "No tag options were authored for this outcome. Submit to close — no tag will be created.",
+      "pickPositive": "Your positive reputation tag",
+      "pickNegative": "Your negative reputation tag",
+      "tagSuggestionsHint": "Click a suggestion to prefill, or write your own below.",
+      "tagWriteOwnHint": "Write the reputation tag you'd like to carry away from this.",
+      "tagInputPlaceholder": "Your reputation tag…",
       "submit": "Resolve event",
       "cancel": "Cancel",
       "strategyRequired": "Write the strategy before rolling.",
       "rollAllFirst": "Roll all three strategies before resolving.",
-      "pickTagFirst": "Pick a reputation tag before resolving."
+      "pickTagFirst": "Write a reputation tag before resolving."
     },
     "randomEvent": {
       "cardEyebrow": "RANDOM EVENT",
@@ -2107,7 +2114,11 @@
       "gainsPositive": "▲ gains",
       "gainsNegative": "▼ gains",
       "tagSource": "Random event · {event}",
-      "noTag": "No reputation change — this event carried no tag options."
+      "noTag": "No reputation change — the event resolved without a tag.",
+      "announceSpeaker": "An event",
+      "announceEyebrow": "An event for {name}",
+      "announceLead": "A moment lands at {name}'s feet.",
+      "announceWaiting": "They're writing their response. The rest of us are the room."
     },
     "eventCommandCenter": {
       "windowTitle": "Random Event Command Center",

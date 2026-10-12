@@ -30,12 +30,25 @@ const SOCKET_NAME = `system.${NS}`;
  * Emits the launch payload over the system socket. Every connected client
  * receives it; the handler in `_processIncoming` filters to the target's owner.
  *
+ * Also posts a PUBLIC announce chat card ("An event for {Name}") visible to
+ * every player, so the whole table is on board for the vignette even though
+ * only one person is rolling.
+ *
  * @param {Item}  eventItem   the random-event Item
  * @param {Actor} targetActor the target Major character
  */
 export async function launchRandomEvent(eventItem, targetActor) {
   if (!game.user?.isGM) return;
   if (!eventItem || !targetActor) return;
+
+  // 1. Public "an event for X" card to the whole table.
+  try {
+    await _postLaunchAnnounceCard({ eventItem, targetActor });
+  } catch (err) {
+    console.warn('GS | random-event announce card failed:', err);
+  }
+
+  // 2. Private handoff to the target's player via socket.
   const payload = {
     type: 'randomEvent.launch',
     // Carry a SNAPSHOT of the event, not just its id. This makes the
@@ -64,6 +77,7 @@ function _snapshotEvent(item) {
     system: {
       archetype: sys.archetype ?? '',
       description: sys.description ?? '',
+      imageUrl: sys.imageUrl ?? '',
       positiveTagOptions: [...(sys.positiveTagOptions ?? [])].filter(Boolean),
       negativeTagOptions: [...(sys.negativeTagOptions ?? [])].filter(Boolean),
     },
@@ -229,6 +243,7 @@ async function _postRandomEventCard({ actor, event, strategies, rolls, chosenTag
     initial: (speakerName?.[0] ?? '?').toUpperCase(),
     eventName: event.name,
     eventDescription: event.system?.description ?? '',
+    eventImageUrl: event.system?.imageUrl ?? '',
     strategies: strategies.map((text, i) => ({
       index: i + 1,
       text,
@@ -255,6 +270,50 @@ async function _postRandomEventCard({ actor, event, strategies, rolls, chosenTag
         eventId: event.id,
         outcome,
         average,
+      },
+    },
+  });
+}
+
+/**
+ * Public "An event for {Target}" launch card. Posted to the whole table so
+ * every player sees the setup even though only one of them is rolling.
+ *
+ * Themed with the target actor's theme so the card visually ties to who
+ * the event is happening TO — matches the vibe of the resolution card
+ * that'll follow in a few minutes.
+ */
+async function _postLaunchAnnounceCard({ eventItem, targetActor }) {
+  const sys = targetActor.system ?? {};
+  const persona = sys.activePersonaId
+    ? (sys.personas ?? []).find(p => p.id === sys.activePersonaId)
+    : null;
+  const targetName = persona?.name || targetActor.name;
+  const themeId = sys.theme || 'clayton';
+
+  const path = 'systems/good-society-homebrew/templates/chat-cards/random-event-announce.hbs';
+  const inner = await foundry.applications.handlebars.renderTemplate(path, {
+    targetName,
+    targetPortraitUrl: profilePic(targetActor),
+    targetInitial: (targetName?.[0] ?? '?').toUpperCase(),
+    eventName: eventItem.name,
+    eventDescription: eventItem.system?.description ?? '',
+    eventImageUrl: eventItem.system?.imageUrl ?? '',
+    eyebrow: game.i18n.format('GOODSOCIETY.randomEvent.announceEyebrow', { name: targetName }),
+    bodyLead: game.i18n.format('GOODSOCIETY.randomEvent.announceLead', { name: targetName }),
+    waiting: game.i18n.localize('GOODSOCIETY.randomEvent.announceWaiting'),
+  });
+  const content = themedWrap(targetActor, inner);
+
+  return ChatMessage.create({
+    speaker: { alias: game.i18n.localize('GOODSOCIETY.randomEvent.announceSpeaker') },
+    content,
+    flags: {
+      [NS]: {
+        cardType: 'random-event-announce',
+        targetActorId: targetActor.id,
+        targetTheme: themeId,
+        eventId: eventItem.id,
       },
     },
   });

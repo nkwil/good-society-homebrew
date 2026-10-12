@@ -583,6 +583,46 @@ body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) butto
   color: var(--gs-brand);
 }
 
+/* Icon-only buttons — restore the glyph font.
+ *
+ * Foundry puts Font Awesome classes directly ON the button element for
+ * icon-only controls (the journal sidebar's view / search / collapse /
+ * prev / next buttons are `<button class="inline-control view-mode icon
+ * fas fa-...">`). FA styles those with the `font:` shorthand, so the
+ * generic button rule above — which sets `font-family: var(--gs-display)`
+ * — replaced the glyph with a missing-character box. That's why icon
+ * buttons in framed windows rendered as empty squares.
+ *
+ * Re-apply Font Awesome's OWN shorthand variables rather than hardcoding a
+ * family name, so Free, Pro, and Sharp installs all resolve correctly. The
+ * shell styling from the rule above (border, padding, radius, colour) still
+ * applies — only the font is handed back to FA. `letter-spacing` is reset
+ * because the tracking added for text buttons offsets a centred glyph. */
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:is(.fa, .fas, .fa-solid):not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]) {
+  font: var(--fa-font-solid);
+  letter-spacing: normal;
+}
+
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:is(.far, .fa-regular):not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]) {
+  font: var(--fa-font-regular);
+  letter-spacing: normal;
+}
+
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:is(.fal, .fa-light):not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]) {
+  font: var(--fa-font-light);
+  letter-spacing: normal;
+}
+
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:is(.fab, .fa-brands):not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]) {
+  font: var(--fa-font-brands);
+  letter-spacing: normal;
+}
+
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:is(.fad, .fa-duotone):not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]) {
+  font: var(--fa-font-duotone);
+  letter-spacing: normal;
+}
+
 body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button.primary:not([class*="gs-"]):not([class*="dossier-"]),
 body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button[type='submit']:not([class*="gs-"]):not([class*="dossier-"]) {
   background: var(--gs-brand);
@@ -1174,4 +1214,132 @@ body.gs-chrome-themed [class*="file-picker"] *,
 body.gs-chrome-themed [class*="filePicker"] * {
   color: inherit;
   text-shadow: none;
+}
+
+/* === 10. Journal entry sheet ===
+ *
+ * Foundry paints `.journal-entry-content` with `var(--background)`, which
+ * resolves to `--color-cool-5-90` (near-black) on every client that isn't
+ * running Foundry's light colour scheme — `--background` only becomes
+ * parchment under `.mixin-theme-light-application`. The §1 window-body rule
+ * sets `color: var(--gs-ink)` on `.window-content` but can't reach that
+ * background, because Foundry re-paints it on a descendant. Net result:
+ * dark-brown ink (#3D2F26) on a near-black panel — journal entries were
+ * effectively invisible.
+ *
+ * The same mismatch hit the journal sidebar, which Foundry colours for its
+ * own dark chrome (`color: var(--color-light-1)`, near-white button icons,
+ * pale placeholder text). On our cream paper those read as blank squares.
+ *
+ * Fix: paint the whole journal sheet in house paper explicitly, independent
+ * of the client's Foundry colour scheme, the same way every other chrome
+ * surface is handled.
+ *
+ * IMPORTANT — themed content archived INTO journals (letters via
+ * letter-archive.js, monologues, session logs) is wrapped in `.gs-themed` by
+ * themedWrap() and carries its own palette cascade. Every prose rule below
+ * excludes `.gs-themed` descendants so a Clayton-sealed letter still reads in
+ * Clayton's colours instead of being repainted house cream.
+ *
+ * Hardcoded hex per §16 — the chrome theme is always house, never themed.
+ */
+
+/* Sheet shell + reading surface */
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) {
+  background: #EFE6D2;                     /* --gs-paper */
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-content {
+  background: #EFE6D2 !important;          /* beats Foundry's var(--background) */
+  color: #3D2F26;                          /* --gs-ink */
+}
+
+/* Page prose. Headings are set explicitly rather than left to inherit so the
+ * result is deterministic regardless of which colour scheme the client is on.
+ *
+ * `span` and `div` are deliberately NOT in this list: everything already
+ * inherits ink from `.journal-entry-content` above, and including `div` would
+ * pin a colour on the `.gs-themed` wrapper element itself (which is a div
+ * inside the page, so `:not(.gs-themed *)` does not exclude it) and leak house
+ * ink into archived themed content. */
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page :is(p, li, td, th, dd, dt):not(.gs-themed *) {
+  color: #3D2F26;
+  font-family: var(--gs-body);
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page :is(h1, h2, h3, h4, h5, h6):not(.gs-themed *) {
+  color: #2A3A2D;                          /* --gs-brand (forest) */
+  font-family: var(--gs-display);
+  border-bottom-color: #708060;            /* --gs-hairlines (sage) */
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page blockquote:not(.gs-themed *) {
+  color: #5C4A3E;
+  border-left: 2px solid #708060;
+  font-style: italic;
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page hr:not(.gs-themed *) {
+  border: 0;
+  border-top: 0.5px solid #708060;
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page :is(a, a.content-link, a.entity-link):not(.gs-themed *) {
+  color: #8a3e26;                          /* --gs-headers (deep terracotta) */
+  background: color-mix(in srgb, #C9A55C 16%, transparent);
+  border: 0.5px solid color-mix(in srgb, #8a3e26 35%, transparent);
+}
+
+/* Journal + page title inputs along the top of the content pane */
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-header input,
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-header .title {
+  color: #2A3A2D;
+  font-family: var(--gs-display);
+  font-style: italic;
+}
+
+/* --- Sidebar (table of contents) --- */
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar {
+  color: #3D2F26;
+}
+
+/* Foundry hands these buttons near-white icons for its dark chrome, which
+ * vanish on cream — that's why the sidebar controls rendered as empty boxes. */
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar button {
+  --button-text-color: #3D2F26;
+  --button-border-color: #708060;
+  --button-hover-border-color: #8a3e26;
+  --button-hover-text-color: #8a3e26;
+  font-family: var(--gs-ui);
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar input {
+  --input-background-color: #F4ECD8;       /* --gs-paper-warm */
+  --input-text-color: #3D2F26;
+  --input-border-color: #708060;
+  --input-placeholder-color: color-mix(in srgb, #3D2F26 55%, transparent);
+  --input-focus-outline-color: #8a3e26;
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc li.page,
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc li.category {
+  border-top-color: color-mix(in srgb, #708060 45%, transparent);
+  border-bottom-color: color-mix(in srgb, #708060 45%, transparent);
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc .page-heading .page-title {
+  color: #3D2F26;
+  font-family: var(--gs-body);
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc .page-heading :is(.page-number, .page-index) {
+  color: color-mix(in srgb, #3D2F26 55%, transparent);
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc li.page.active {
+  background: color-mix(in srgb, #C9A55C 18%, transparent);
+}
+
+body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc li.page.active :is(.page-title, strong) {
+  color: #8a3e26;
 }

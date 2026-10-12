@@ -5,9 +5,12 @@
     <div class="gs-item-sheet__header-row">
       <span class="gs-item-sheet__eyebrow">{{localize "GOODSOCIETY.item.randomEvent.eyebrow"}}</span>
     </div>
+    {{!-- name= stripped on purpose: the sheet autosaves via a change listener
+          wired in _onRender (see random-event-sheet.js) so form-serializer
+          races can't stomp a mid-edit title. --}}
     <input class="gs-item-sheet__name"
            type="text"
-           name="name"
+           data-gs-field="name"
            value="{{document.name}}"
            placeholder="{{localize "GOODSOCIETY.item.randomEvent.namePlaceholder"}}" />
   </header>
@@ -21,12 +24,46 @@
       </label>
       <select id="gs-rev-archetype"
               class="gs-item-sheet__input"
-              name="system.archetype">
+              data-gs-field="archetype">
         {{#each archetypeChoices}}
           <option value="{{id}}" {{#if selected}}selected{{/if}}>{{label}}</option>
         {{/each}}
       </select>
       <p class="gs-item-sheet__hint">{{localize "GOODSOCIETY.item.randomEvent.archetypeHint"}}</p>
+    </div>
+
+    {{!-- Flavor image (optional). Shown to all players when the event
+          launches, and in the resolution popover. --}}
+    <div class="gs-item-sheet__field">
+      <span class="gs-item-sheet__label">{{localize "GOODSOCIETY.item.randomEvent.imageLabel"}}</span>
+      <p class="gs-item-sheet__hint">{{localize "GOODSOCIETY.item.randomEvent.imageHint"}}</p>
+      <div class="gs-random-event-image__row">
+        <button type="button"
+                class="gs-random-event-image__thumb {{#unless hasImage}}gs-random-event-image__thumb--empty{{/unless}}"
+                data-action="pickImage"
+                title="{{localize 'GOODSOCIETY.item.randomEvent.imagePick'}}"
+                aria-label="{{localize 'GOODSOCIETY.item.randomEvent.imagePick'}}">
+          {{#if hasImage}}
+            <img src="{{imageUrl}}" alt="" />
+          {{else}}
+            <span aria-hidden="true">+</span>
+          {{/if}}
+        </button>
+        <div class="gs-random-event-image__actions">
+          <button type="button" class="gs-btn gs-btn--ghost gs-btn--sm" data-action="pickImage">
+            {{#if hasImage}}
+              {{localize "GOODSOCIETY.item.randomEvent.imageChange"}}
+            {{else}}
+              {{localize "GOODSOCIETY.item.randomEvent.imagePick"}}
+            {{/if}}
+          </button>
+          {{#if hasImage}}
+            <button type="button" class="gs-btn gs-btn--ghost gs-btn--sm" data-action="clearImage">
+              {{localize "GOODSOCIETY.item.randomEvent.imageClear"}}
+            </button>
+          {{/if}}
+        </div>
+      </div>
     </div>
 
     {{!-- Description — read-only enriched render + ✎ edit button. --}}
@@ -49,7 +86,8 @@
       </div>
     </div>
 
-    {{!-- Positive tag shortlist --}}
+    {{!-- Positive tag SUGGESTIONS. Click-to-prefill chips the player sees
+          when they succeed; they can also type their own. --}}
     <div class="gs-item-sheet__field">
       <div class="gs-rev-shortlist__header">
         <span class="gs-item-sheet__label gs-item-sheet__label--positive">
@@ -66,7 +104,8 @@
         <div class="gs-rev-shortlist__row">
           <input class="gs-item-sheet__input"
                  type="text"
-                 name="system.positiveTagOptions.{{@index}}"
+                 data-gs-side="positive"
+                 data-index="{{@index}}"
                  value="{{this}}"
                  placeholder="{{localize "GOODSOCIETY.item.randomEvent.optionPlaceholderPositive"}}" />
           <button type="button"
@@ -78,7 +117,7 @@
       {{/each}}
     </div>
 
-    {{!-- Negative tag shortlist --}}
+    {{!-- Negative tag SUGGESTIONS. Same deal on a failure. --}}
     <div class="gs-item-sheet__field">
       <div class="gs-rev-shortlist__header">
         <span class="gs-item-sheet__label gs-item-sheet__label--negative">
@@ -95,7 +134,8 @@
         <div class="gs-rev-shortlist__row">
           <input class="gs-item-sheet__input"
                  type="text"
-                 name="system.negativeTagOptions.{{@index}}"
+                 data-gs-side="negative"
+                 data-index="{{@index}}"
                  value="{{this}}"
                  placeholder="{{localize "GOODSOCIETY.item.randomEvent.optionPlaceholderNegative"}}" />
           <button type="button"

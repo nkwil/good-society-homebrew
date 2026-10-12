@@ -22,6 +22,13 @@ export class RandomEventDataModel extends foundry.abstract.TypeDataModel {
         initial: 'new-arrival',
       }),
       description: new HTMLField({ initial: '' }),
+      // Optional flavor image shown to the whole table in the launch
+      // announce card and the resolution popover. Empty is fine.
+      imageUrl: new StringField({ initial: '' }),
+      // Positive/negative TAG SUGGESTIONS. These are optional GM-authored
+      // prompts that pre-fill the player's tag input at resolution time; the
+      // player can always type their own. Kept as `*TagOptions` for
+      // back-compat with seeded data; relabeled in the UI as "suggestions".
       positiveTagOptions: new ArrayField(new StringField()),
       negativeTagOptions: new ArrayField(new StringField()),
     };

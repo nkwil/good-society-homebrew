@@ -58,7 +58,7 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
     { text: '', roll: null },
     { text: '', roll: null },
   ];
-  /** @type {string} */ #chosenTag = '';
+  /** @type {string} */ #tagText = '';
   /** @type {boolean} */ #submitted = false;
 
   constructor(options = {}) {
@@ -93,24 +93,27 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
       : null;
     const success = average != null ? isSuccess(average) : null;
 
-    const tagOptions = success === true
+    // Suggestions from the GM-authored shortlist for the rolled polarity.
+    // These are PROMPTS, not the final choice — the player types their own
+    // tag below (click a chip to prefill the input, or ignore and write
+    // their own). This matches the "player chooses what sticks" direction.
+    const tagSuggestions = success === true
       ? (sys.positiveTagOptions ?? []).filter(Boolean)
       : success === false
         ? (sys.negativeTagOptions ?? []).filter(Boolean)
         : [];
 
-    // The event may have no tag options authored for the rolled polarity.
-    // In that case the player has nothing to pick — so Submit must be
-    // enabled anyway (resolves with no tag) instead of soft-locking the
-    // popover with a permanently-disabled button.
-    const noTagOptions = allRolled && tagOptions.length === 0;
-    const canSubmit = allRolled && (!!this.#chosenTag || noTagOptions);
+    const trimmedTag = (this.#tagText ?? '').trim();
+    // Resolution requires a tag now — the player's writing it themselves,
+    // so an empty submit is a mis-click to catch, not a feature.
+    const canSubmit = allRolled && !!trimmedTag;
 
     return {
       themeId,
       actorName: speakerName,
       eventName: ev.name,
       description: enriched,
+      imageUrl: sys.imageUrl ?? '',
       strategies: this.#strategies.map((s, i) => ({
         index: i + 1,
         text: s.text,
@@ -122,18 +125,19 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
       average: average != null ? average.toFixed(1) : '',
       isSuccess: success === true,
       isFailure: success === false,
-      tagOptions: tagOptions.map(t => ({
+      tagSuggestions: tagSuggestions.map(t => ({
         text: t,
-        selected: t === this.#chosenTag,
+        selected: t.toLowerCase() === trimmedTag.toLowerCase(),
       })),
-      hasChosenTag: !!this.#chosenTag,
-      noTagOptions,
+      hasSuggestions: tagSuggestions.length > 0,
+      tagText: this.#tagText,
       canSubmit,
       submitted: this.#submitted,
     };
   }
 
-  /** Capture textarea edits before each render so user input survives. */
+  /** Capture textarea and tag-input edits before each render so user input
+   *  survives action-triggered re-renders. */
   async _onRender(context, options) {
     super._onRender(context, options);
     const textareas = this.element?.querySelectorAll('textarea[data-strategy-index]') ?? [];
@@ -143,6 +147,16 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
         if (Number.isInteger(idx) && this.#strategies[idx]) {
           this.#strategies[idx].text = ev.target.value;
         }
+      }, { passive: true });
+    }
+    const tagInput = this.element?.querySelector('input[data-gs-tag-input]');
+    if (tagInput) {
+      tagInput.addEventListener('input', (ev) => {
+        this.#tagText = ev.target.value ?? '';
+        // Toggle the submit button's disabled state live without a full
+        // re-render — a re-render would blow away the input cursor.
+        const submitBtn = this.element?.querySelector('button[data-action="submit"]');
+        if (submitBtn) submitBtn.disabled = !this.#tagText.trim() || this.#strategies.some(s => s.roll == null);
       }, { passive: true });
     }
   }
@@ -176,10 +190,14 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
     this.render();
   }
 
+  /** Click a GM-authored suggestion chip → prefill the tag input with that
+   *  text. The player can accept it, edit it, or clear and write their own.
+   *  Chip click re-renders so the input shows the new value and the chip's
+   *  "selected" state updates. */
   static async #pickTag(_ev, target) {
     const tag = target.dataset.tag;
     if (!tag) return;
-    this.#chosenTag = tag;
+    this.#tagText = tag;
     this.render();
   }
 
@@ -189,26 +207,25 @@ export class EventPopover extends HandlebarsApplicationMixin(ApplicationV2) {
       ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventPopover.rollAllFirst'));
       return;
     }
-    const average = this.#strategies.reduce((a, s) => a + s.roll, 0) / 3;
-    const outcome = isSuccess(average) ? 'success' : 'failure';
-    // Tag options for the rolled outcome. If the event authored none, the
-    // player legitimately submits with no tag — only require a pick when
-    // options actually exist.
-    const sys = this.#event.system ?? {};
-    const opts = (outcome === 'success'
-      ? (sys.positiveTagOptions ?? [])
-      : (sys.negativeTagOptions ?? [])).filter(Boolean);
-    if (opts.length && !this.#chosenTag) {
+    // Final tag read — pull from the live input if it exists so any
+    // last-second edit lands (the input listener catches most cases, but
+    // a submit-without-blur after focus-restore can slip past).
+    const liveInput = this.element?.querySelector('input[data-gs-tag-input]');
+    if (liveInput) this.#tagText = liveInput.value ?? this.#tagText;
+    const chosenTag = (this.#tagText ?? '').trim();
+    if (!chosenTag) {
       ui.notifications?.warn(game.i18n.localize('GOODSOCIETY.eventPopover.pickTagFirst'));
       return;
     }
+    const average = this.#strategies.reduce((a, s) => a + s.roll, 0) / 3;
+    const outcome = isSuccess(average) ? 'success' : 'failure';
     this.#submitted = true;
     await resolveRandomEvent({
       actor: this.#actor,
       event: this.#event,
       strategies: this.#strategies.map(s => s.text),
       rolls: this.#strategies.map(s => s.roll),
-      chosenTag: this.#chosenTag,
+      chosenTag,
       outcome,
     });
     this.close();

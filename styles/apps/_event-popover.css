@@ -215,6 +215,45 @@
   border-color: var(--gs-brand);
 }
 
+/* Hint line + typed-tag input beneath the suggestion chips. */
+.gs-event-popover__tag-hint {
+  margin: 2px 0 6px;
+  font-family: var(--gs-italic, var(--gs-body));
+  font-style: italic;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+}
+
+.gs-event-popover__tag-input {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 10px;
+  font-family: var(--gs-body);
+  font-size: 14px;
+  color: var(--gs-ink);
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.gs-event-popover__tag-input:focus {
+  outline: none;
+  border-color: var(--gs-brand);
+  background: var(--gs-paper);
+}
+
+/* Flavor image above the description. */
+.gs-event-popover__image {
+  display: block;
+  width: calc(100% - 44px);
+  max-height: 220px;
+  object-fit: cover;
+  margin: 0 22px 10px;
+  border-radius: 4px;
+  border: 0.5px solid color-mix(in srgb, var(--gs-brand) 30%, transparent);
+}
+
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 .gs-event-popover__footer {
   display: flex;

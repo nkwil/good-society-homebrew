@@ -35,3 +35,51 @@
   font-size: 14px;
   line-height: 1;
 }
+
+/* ── Flavor image row ────────────────────────────────────────────────────── */
+
+.gs-random-event-image__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.gs-random-event-image__thumb {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  margin: 0;
+  background: var(--gs-paper-warm);
+  border: 0.5px solid var(--gs-accent-2);
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.gs-random-event-image__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.gs-random-event-image__thumb--empty {
+  color: color-mix(in srgb, var(--gs-ink) 40%, transparent);
+  font-family: var(--gs-display);
+  font-size: 28px;
+  line-height: 1;
+}
+.gs-random-event-image__thumb:hover {
+  border-color: var(--gs-brand);
+  background: color-mix(in srgb, var(--gs-brand) 6%, var(--gs-paper-warm));
+}
+
+.gs-random-event-image__actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
