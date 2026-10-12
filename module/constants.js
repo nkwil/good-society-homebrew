@@ -345,6 +345,7 @@ export const CHROME_ICONS = {
     'tool-inbox':             { asset: `${ASSETS_BASE}/cabinet/letter-composer.svg`,        label: 'GOODSOCIETY.cabinet.surface.inbox'          },
     'tool-monologue':         { asset: `${ASSETS_BASE}/cabinet/monologue.svg`,              label: 'GOODSOCIETY.cabinet.surface.monologue'      },
     'tool-calendar':          { asset: `${ASSETS_BASE}/cabinet/event-timeline.svg`,         label: 'GOODSOCIETY.cabinet.surface.calendar'       },
+    'tool-cast':              { asset: `${ASSETS_BASE}/cabinet/cast.svg`,                   label: 'GOODSOCIETY.cabinet.surface.cast'           },
   },
 
   // Journal-entry-type glyphs (patch-journal-elevation §13.2). Rendered at the

@@ -1,6 +1,17 @@
 /* Random Event item sheet — house-styled foundation comes from _item-base.css.
    This file adds the shortlist-editor primitives unique to this sheet. */
 
+/* The sheet now carries image + archetype + description + positive AND
+ * negative tag shortlists, which routinely overflows viewport. Cap the
+ * form container and let it scroll internally so the GM can reach the
+ * negative tags. Scoped to this sheet's wrapper only — other item sheets
+ * are compact enough that forcing a scroll would just add a scrollbar
+ * to a short form. */
+.gs-item-sheet--random-event .gs-item-sheet__wrapper {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
 .gs-item-sheet--random-event .gs-item-sheet__hint {
   font-family: var(--gs-body);
   font-style: italic;
