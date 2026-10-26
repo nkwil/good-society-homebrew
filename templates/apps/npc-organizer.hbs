@@ -152,6 +152,45 @@
         </div>
       {{/if}}
 
+      {{!-- Families — structural actors, not canvas-droppable. Row stays
+            clickable (double-click opens the sheet) and GM note still
+            works, but the drag affordance is suppressed. --}}
+      {{#if families.length}}
+        <div class="gs-npc-organizer__section">
+          <div class="gs-npc-organizer__section-eyebrow">
+            {{localize "GOODSOCIETY.npcOrganizer.familiesLabel"}} · {{families.length}}
+          </div>
+          {{#each families}}
+            <div class="gs-npc-organizer__row gs-npc-organizer__row--family"
+                 data-actor-id="{{actorId}}"
+                 data-actor-uuid="{{actorUuid}}"
+                 data-no-drag="true"
+                 title="{{actorName}}">
+              <div class="gs-npc-organizer__row-portrait">
+                {{#if portraitUrl}}
+                  <img class="gs-npc-organizer__row-img" src="{{portraitUrl}}" alt="" draggable="false" />
+                {{else}}
+                  <span class="gs-npc-organizer__row-initial">{{portraitInitial}}</span>
+                {{/if}}
+              </div>
+              <div class="gs-npc-organizer__row-text">
+                <div class="gs-npc-organizer__row-name">{{actorName}}</div>
+                {{#if title}}<div class="gs-npc-organizer__row-title"><em>{{title}}</em></div>{{/if}}
+                {{#if hasNote}}<div class="gs-npc-organizer__row-note" title="{{gmNote}}">✎ {{notePreview}}</div>{{/if}}
+              </div>
+              <div class="gs-npc-organizer__row-actions">
+                <button type="button"
+                        class="gs-npc-organizer__note-btn{{#if hasNote}} has-note{{/if}}"
+                        data-action="edit-note"
+                        draggable="false"
+                        aria-label="{{#if hasNote}}{{localize 'GOODSOCIETY.npcOrganizer.editNote'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.addNote'}}{{/if}}"
+                        title="{{#if hasNote}}{{localize 'GOODSOCIETY.npcOrganizer.editNote'}}{{else}}{{localize 'GOODSOCIETY.npcOrganizer.addNote'}}{{/if}}">✎</button>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+
     {{/unless}}
   </div>
 

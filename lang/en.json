@@ -774,6 +774,7 @@
       "majorsLabel": "Majors",
       "connectionsLabel": "Connections",
       "npcsLabel": "NPCs",
+      "familiesLabel": "Families",
       "empty": "No character actors yet. Create one with the buttons above.",
       "footerHint": "drag a row onto the canvas to place a token · double-click to open · right-click for more",
       "onSceneHint": "A token for this character is on the active scene.",

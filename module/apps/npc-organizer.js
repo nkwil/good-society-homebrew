@@ -22,7 +22,7 @@ import { profilePic } from '../helpers/profile-pic.js';
 
 const { HandlebarsApplicationMixin, ApplicationV2, DialogV2 } = foundry.applications.api;
 const NS = 'good-society-homebrew';
-const LISTED_TYPES = ['major-character', 'connection', 'npc'];
+const LISTED_TYPES = ['major-character', 'connection', 'npc', 'family'];
 
 export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
@@ -64,21 +64,32 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
       (scene?.tokens?.contents ?? []).map((t) => t.actorId).filter(Boolean),
     );
 
-    const groups = { 'major-character': [], 'connection': [], 'npc': [] };
+    const groups = { 'major-character': [], 'connection': [], 'npc': [], 'family': [] };
     const allActors = game.actors?.contents ?? [];
     for (const actor of allActors) {
       if (!LISTED_TYPES.includes(actor.type)) continue;
       const gmNote = String(actor.getFlag(NS, 'gmNote') ?? '').trim();
+      const isFamily = actor.type === 'family';
+      // Family actors use `system.familyName` / `system.crest.motto`
+      // for their display identity; everyone else lives under
+      // `system.bio.title`. Normalize into one `title` subhead.
+      const title = isFamily
+        ? (actor.system?.crest?.motto ?? '').trim()
+        : (actor.system?.bio?.title ?? '').trim();
       groups[actor.type].push({
         actorId: actor.id,
         actorUuid: actor.uuid,
         actorName: actor.name,
-        title: (actor.system?.bio?.title ?? '').trim(),
+        title,
         portraitUrl: profilePic(actor),
         portraitInitial: (actor.name?.[0] ?? '?').toUpperCase(),
         theme: actor.system?.theme ?? (actor.type === 'npc' ? 'npc' : 'connection-green'),
         type: actor.type,
-        onScene: onSceneActorIds.has(actor.id),
+        // Families don't belong on the canvas as tokens — skip the
+        // on-scene marker so the UI doesn't invite a drag that would
+        // produce a confusing placeholder token.
+        onScene: !isFamily && onSceneActorIds.has(actor.id),
+        isFamily,
         gmNote,
         hasNote: !!gmNote,
         notePreview: gmNote.length > 80 ? `${gmNote.slice(0, 80).trimEnd()}…` : gmNote,
@@ -88,11 +99,13 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
     groups['major-character'].sort(byName);
     groups['connection'].sort(byName);
     groups['npc'].sort(byName);
+    groups['family'].sort(byName);
 
     ctx.majors      = groups['major-character'];
     ctx.connections = groups['connection'];
     ctx.npcs        = groups['npc'];
-    ctx.total       = ctx.majors.length + ctx.connections.length + ctx.npcs.length;
+    ctx.families    = groups['family'];
+    ctx.total       = ctx.majors.length + ctx.connections.length + ctx.npcs.length + ctx.families.length;
 
     ctx.minimized = (() => {
       try { return game.settings.get(NS, 'organizerMinimized'); }
@@ -170,6 +183,12 @@ export class NpcOrganizer extends HandlebarsApplicationMixin(ApplicationV2) {
       }
       const row = ev.target.closest?.('[data-actor-uuid]');
       if (!row) return;
+      // Family rows are structural actors — not canvas-droppable. Suppress
+      // the drag so Foundry doesn't drop a confusing token placeholder.
+      if (row.dataset.noDrag === 'true') {
+        ev.preventDefault();
+        return;
+      }
       const uuid = row.dataset.actorUuid;
       if (!uuid) return;
       const payload = JSON.stringify({ type: 'Actor', uuid });
