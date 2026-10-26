@@ -245,6 +245,10 @@ export const COWORK_SURFACES = [
   // Player reopen of the auto-pop greeting. Drawer-only (no railGlyph) —
   // it's an info-recap surface, not a frequent click.
   { id: 'tool-greeting',         group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.greetingReopen', kind: 'launcher', launcherKey: 'greetingReopen' },
+  // Session Recaps — unified viewer for everyone. GM gets edit
+  // affordances; players read. Supersedes the standalone Session Notes
+  // hub + Debrief Viewer (both removed from the Cabinet below).
+  { id: 'tool-session-recaps',   group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.sessionRecaps',  railGlyph: 'SR', kind: 'launcher', launcherKey: 'sessionRecaps' },
 
   // ── Drawer-only entries (no railGlyph → not in rail) ─────────────────────
   // Cycle HUD: persistent UI but the toggle is drawer-only so the rail stays
@@ -263,8 +267,10 @@ export const COWORK_SURFACES = [
   // GM-only session notes hub (public JournalEntries grouped by cycle) +
   // greeting composer (auto-pop welcome for players). Notes feed the
   // greeting (composer's "Insert latest session note" picks the newest).
-  { id: 'gm-tool-session-notes',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.sessionNotes',     kind: 'launcher', gmOnly: true, launcherKey: 'sessionNotes' },
-  { id: 'gm-tool-session-greeting',group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.sessionGreeting',  kind: 'launcher', gmOnly: true, launcherKey: 'sessionGreeting' },
+  // Session Notes hub + Session Greeting composer entries removed
+  // 2026-10-26 — both subsumed by the unified Session Recaps surface
+  // above. Launcher functions in cabinet.js remain for the (now
+  // orphaned) openers; drop them in a follow-up cleanup.
   { id: 'gm-tool-conditions',    group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.conditions',       kind: 'launcher', gmOnly: true, launcherKey: 'conditions' },
   // Destructive one-shot — sits at the end of the GM Tools list intentionally.
   { id: 'gm-tool-story-beats',   group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.storyBeats',       kind: 'launcher', gmOnly: true, launcherKey: 'storyBeats' },

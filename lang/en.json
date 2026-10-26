@@ -1286,6 +1286,7 @@
         "sessionNotes": "Session Notes…",
         "sessionGreeting": "Session Greeting (compose)…",
         "greetingReopen": "Reopen welcome greeting",
+        "sessionRecaps": "Session Recaps",
         "eventCommandCenter": "Random Event Command Center",
         "calendar": "Event Timeline",
         "letterComposer": "Letter Composer",
@@ -2140,7 +2141,8 @@
       "splash": "Return to the splash",
       "startSession": "Start Session {n}",
       "endSession": "End Session {n}",
-      "sessionDebriefs": "Session Debriefs…"
+      "sessionDebriefs": "Session Debriefs…",
+      "sessionRecaps": "Session Recaps…"
     },
     "session": {
       "gmOnly": "Only the GM can start or end a session.",
@@ -2162,6 +2164,34 @@
       "saved": "Note saved. Thanks for sharing.",
       "emptyWarn": "Write something before saving, or Skip for now.",
       "alreadySaved": "Overwriting your previous note for this session."
+    },
+    "sessionRecaps": {
+      "windowTitle": "Session Recaps",
+      "eyebrow": "What has come before",
+      "title": "Session Recaps",
+      "subtitle": "Keep the thread of your story. One line per session: what happened, what the players said.",
+      "sessionLabel": "Session {n}",
+      "current": "current",
+      "untitled": "(no title yet)",
+      "summaryHead": "The GM's recap",
+      "summaryEmpty": "No recap written yet.",
+      "summaryLabel": "Recap",
+      "summaryPlaceholder": "What stood out from this session? Set the scene for next time.",
+      "titleLabel": "Session title",
+      "notesHead": "What the players said",
+      "notesEmpty": "No player notes recorded for this session.",
+      "noteCount": "{n} note(s)",
+      "editTitle": "Edit title",
+      "editSummary": "Edit the recap",
+      "editTitleWindow": "Edit title for Session {n}",
+      "editSummaryWindow": "Edit recap for Session {n}",
+      "save": "Save",
+      "delete": "Delete this recap",
+      "deleteWindow": "Delete Session {n} recap?",
+      "deleteConfirm": "This clears the GM's title + summary for Session {n}. Player debrief notes are kept.",
+      "createCurrent": "Start the recap for Session {n}",
+      "noCurrentSession": "No active session — start one before creating a recap.",
+      "empty": "No sessions yet. Start one from the GM Tools popover and the recaps will build up here."
     },
     "sessionDebriefViewer": {
       "windowTitle": "Session Debriefs",

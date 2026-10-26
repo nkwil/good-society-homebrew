@@ -91,12 +91,27 @@ export async function endSession() {
   await game.settings.set(NS, 'sessionState', SESSION_STATES.BETWEEN);
   await game.settings.set(NS, 'sessionLastEndedAt', Date.now());
 
+  // Prime a recap entry (title + summary blank) so the Recaps viewer
+  // has something to scroll to when it auto-opens below. GM-only call —
+  // non-GM endSession paths are short-circuited above.
+  try { await ensureRecapStub(sessionNumber); }
+  catch (err) { console.warn('GS | ensureRecapStub failed:', err); }
+
   const payload = { type: 'sessionEnded', sessionNumber };
   if (game.socket) game.socket.emit(SOCKET, payload);
   await _handleSessionEnded(payload);
 
   try { await _postSessionCard('end', sessionNumber); } catch (err) {
     console.warn('GS | session-end card failed:', err);
+  }
+
+  // Open the Recaps viewer for the GM focused on the just-ended session
+  // so they can write the summary while it's fresh.
+  try {
+    const { openSessionRecaps } = await import('../apps/session-recaps.js');
+    openSessionRecaps({ focusSessionNumber: sessionNumber });
+  } catch (err) {
+    console.warn('GS | auto-open recaps failed:', err);
   }
 
   ui.notifications?.info(

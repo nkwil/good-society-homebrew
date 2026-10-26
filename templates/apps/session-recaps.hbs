@@ -1,0 +1,130 @@
+<section class="gs-session-recaps">
+
+  <header class="gs-session-recaps__header">
+    <span class="gs-session-recaps__eyebrow">
+      {{localize "GOODSOCIETY.sessionRecaps.eyebrow"}}
+    </span>
+    <h2 class="gs-session-recaps__title">
+      {{localize "GOODSOCIETY.sessionRecaps.title"}}
+    </h2>
+    <p class="gs-session-recaps__subtitle">
+      {{localize "GOODSOCIETY.sessionRecaps.subtitle"}}
+    </p>
+  </header>
+
+  {{#if isGM}}
+    {{#if currentSession}}
+      <div class="gs-session-recaps__toolbar">
+        <button type="button" class="gs-btn gs-btn--secondary gs-btn--sm" data-action="createRecap">
+          + {{localize "GOODSOCIETY.sessionRecaps.createCurrent" n=currentSession}}
+        </button>
+      </div>
+    {{/if}}
+  {{/if}}
+
+  {{#if hasAny}}
+    {{#each sessions}}
+      <article class="gs-session-recaps__session {{#if isCurrent}}is-current{{/if}}"
+               data-session-number="{{number}}">
+        <header class="gs-session-recaps__session-head">
+          <span class="gs-session-recaps__session-label">
+            {{localize "GOODSOCIETY.sessionRecaps.sessionLabel" n=number}}
+            {{#if isCurrent}}
+              <span class="gs-session-recaps__current-tag">
+                {{localize "GOODSOCIETY.sessionRecaps.current"}}
+              </span>
+            {{/if}}
+          </span>
+          {{#if updatedLabel}}
+            <span class="gs-session-recaps__updated">{{updatedLabel}}</span>
+          {{/if}}
+        </header>
+
+        <div class="gs-session-recaps__title-row">
+          {{#if hasTitle}}
+            <h3 class="gs-session-recaps__session-title">{{title}}</h3>
+          {{else}}
+            <h3 class="gs-session-recaps__session-title gs-session-recaps__session-title--empty">
+              <em>{{localize "GOODSOCIETY.sessionRecaps.untitled"}}</em>
+            </h3>
+          {{/if}}
+          {{#if ../isGM}}
+            <button type="button" class="gs-session-recaps__edit-btn"
+                    data-action="editTitle"
+                    data-session-number="{{number}}"
+                    title="{{localize 'GOODSOCIETY.sessionRecaps.editTitle'}}">
+              <span aria-hidden="true">✎</span>
+            </button>
+          {{/if}}
+        </div>
+
+        <section class="gs-session-recaps__summary-section">
+          <header class="gs-session-recaps__summary-head">
+            <span class="gs-session-recaps__summary-label">
+              {{localize "GOODSOCIETY.sessionRecaps.summaryHead"}}
+            </span>
+            {{#if ../isGM}}
+              <button type="button" class="gs-session-recaps__edit-btn"
+                      data-action="editSummary"
+                      data-session-number="{{number}}"
+                      title="{{localize 'GOODSOCIETY.sessionRecaps.editSummary'}}">
+                <span aria-hidden="true">✎</span>
+              </button>
+            {{/if}}
+          </header>
+          {{#if hasSummary}}
+            <div class="gs-session-recaps__summary-body">{{{summaryHtml}}}</div>
+          {{else}}
+            <p class="gs-session-recaps__summary-empty">
+              <em>{{localize "GOODSOCIETY.sessionRecaps.summaryEmpty"}}</em>
+            </p>
+          {{/if}}
+        </section>
+
+        <section class="gs-session-recaps__notes-section">
+          <header class="gs-session-recaps__notes-head">
+            <span class="gs-session-recaps__notes-label">
+              {{localize "GOODSOCIETY.sessionRecaps.notesHead"}}
+            </span>
+            <span class="gs-session-recaps__notes-count">
+              {{localize "GOODSOCIETY.sessionRecaps.noteCount" n=noteCount}}
+            </span>
+          </header>
+          {{#if noteCount}}
+            <ul class="gs-session-recaps__notes-list">
+              {{#each notes}}
+                <li class="gs-session-recaps__note">
+                  <header class="gs-session-recaps__note-head">
+                    <span class="gs-session-recaps__note-author">{{userName}}</span>
+                    <span class="gs-session-recaps__note-date">{{dateLabel}}</span>
+                  </header>
+                  <p class="gs-session-recaps__note-text">{{text}}</p>
+                </li>
+              {{/each}}
+            </ul>
+          {{else}}
+            <p class="gs-session-recaps__notes-empty">
+              <em>{{localize "GOODSOCIETY.sessionRecaps.notesEmpty"}}</em>
+            </p>
+          {{/if}}
+        </section>
+
+        {{#if ../isGM}}
+          <footer class="gs-session-recaps__session-footer">
+            <button type="button"
+                    class="gs-btn gs-btn--ghost gs-btn--sm gs-btn--danger-outline"
+                    data-action="deleteRecap"
+                    data-session-number="{{number}}">
+              {{localize "GOODSOCIETY.sessionRecaps.delete"}}
+            </button>
+          </footer>
+        {{/if}}
+      </article>
+    {{/each}}
+  {{else}}
+    <p class="gs-session-recaps__empty">
+      <em>{{localize "GOODSOCIETY.sessionRecaps.empty"}}</em>
+    </p>
+  {{/if}}
+
+</section>

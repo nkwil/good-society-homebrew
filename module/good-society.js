@@ -49,6 +49,7 @@ import {
   startSession, endSession, isSessionActive, registerSessionMechanismSocket,
 } from './helpers/session-mechanism.js';
 import { openSessionDebriefViewer, registerSessionDebriefHooks } from './apps/session-debrief-viewer.js';
+import { openSessionRecaps, registerSessionRecapsHooks } from './apps/session-recaps.js';
 import { openSessionGreetingComposer } from './apps/session-greeting-composer.js';
 import { openSessionGreeting } from './apps/session-greeting.js';
 import { maybeAutoOpenSessionSurface } from './hooks/session-greeting-auto.js';
@@ -1079,3 +1080,4 @@ safeRegister('sessionNotesHooks', registerSessionNotesHooks);
 safeRegister('castHooks',         registerCastHooks);
 safeRegister('sessionSocket',     registerSessionMechanismSocket);
 safeRegister('sessionDebriefHooks', registerSessionDebriefHooks);
+safeRegister('sessionRecapsHooks',  registerSessionRecapsHooks);

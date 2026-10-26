@@ -20,7 +20,7 @@ import { openEventCommandCenter } from './event-command-center.js';
 import { openCastManager } from './cast-of-characters.js';
 import { returnToSplash } from '../hooks/scene-controls.js';
 import { startSession, endSession, isSessionActive, currentSessionNumber } from '../helpers/session-mechanism.js';
-import { openSessionDebriefViewer } from './session-debrief-viewer.js';
+import { openSessionRecaps } from './session-recaps.js';
 
 const NS = 'good-society-homebrew';
 
@@ -46,10 +46,10 @@ function _tools() {
       action: () => sessionActive ? endSession() : startSession(),
     },
     {
-      key: 'session-debriefs',
-      label: game.i18n.localize('GOODSOCIETY.gmToolsPopover.sessionDebriefs'),
-      icon: 'fa-solid fa-pen-to-square',
-      action: () => openSessionDebriefViewer(),
+      key: 'session-recaps',
+      label: game.i18n.localize('GOODSOCIETY.gmToolsPopover.sessionRecaps'),
+      icon: 'fa-solid fa-book-bookmark',
+      action: () => openSessionRecaps(),
     },
     {
       key: 'events',

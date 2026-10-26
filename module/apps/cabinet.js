@@ -29,6 +29,7 @@ import { openStoryBeatsCommandCenter } from './story-beats-command-center.js';
 import { openSessionNotes } from './session-notes.js';
 import { openCastOfCharacters, openCastManager } from './cast-of-characters.js';
 import { openGmToolsPopover } from './gm-tools-popover.js';
+import { openSessionRecaps } from './session-recaps.js';
 import { openSessionGreetingComposer } from './session-greeting-composer.js';
 import { openSessionGreeting } from './session-greeting.js';
 
@@ -90,6 +91,8 @@ const LAUNCHERS = {
   sessionGreeting: () => openSessionGreetingComposer(),
   // Player reopen of the auto-pop greeting — bypasses the dismiss check.
   greetingReopen:  () => openSessionGreeting({ force: true }),
+  // Session Recaps — unified viewer (all users).
+  sessionRecaps:   () => openSessionRecaps(),
 };
 
 /**
@@ -121,6 +124,7 @@ const LAUNCHER_APP_IDS = {
   sessionNotes:    'gs-session-notes',
   sessionGreeting: 'gs-session-greeting-composer',
   greetingReopen:  'gs-session-greeting',
+  sessionRecaps:   'gs-session-recaps',
   cast:            'gs-cast-viewer',
   castManage:      'gs-cast-manager',
   // GM Tools has no ApplicationV2 window — it's a vanilla DOM popover.
