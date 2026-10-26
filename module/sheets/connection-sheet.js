@@ -10,6 +10,7 @@ import { CONNECTION_FULL_THEME_REGISTRY } from '../constants.js';
 import { fitDossierNames } from '../helpers/responsive-name.js';
 import { bindAutogrowTextareas } from '../helpers/textarea-autogrow.js';
 import { pronounsFor } from '../helpers/pronouns.js';
+import { toggleCastInclusion, castPinContext } from '../apps/cast-of-characters.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -57,6 +58,7 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       // variants + 7 Major themes including secret). Only shown when no
       // persona is active; persona themes are edited via the persona editor.
       editTrueIdentityTheme: ConnectionSheet.#editTrueIdentityTheme,
+      toggleCastInclusion:   ConnectionSheet.#toggleCastInclusion,
     },
   };
 
@@ -173,6 +175,7 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       ...ctx,
       actor: this.actor,
       system,
+      castPin: castPinContext(this.actor),
       portraitUrl,
       portraitInitial,
       displayName,
@@ -438,5 +441,11 @@ export class ConnectionSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
     if (result === null || result === undefined) return;
     await this.actor.update({ 'system.bio.description': result });
+  }
+
+  /** GM pin: toggle cast inclusion for this Connection. */
+  static async #toggleCastInclusion() {
+    await toggleCastInclusion(this.actor);
+    this.render();
   }
 }

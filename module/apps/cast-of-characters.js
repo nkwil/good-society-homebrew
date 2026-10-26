@@ -43,6 +43,27 @@ const GROUP_ORDER = ['major-character', 'connection', 'npc'];
 let _viewerInstance  = null;
 let _managerInstance = null;
 
+/** Toggle the cast-inclusion flag on an actor. Writes the OPPOSITE of
+ *  the current effective state so the first click always does what the
+ *  user visibly expects, whether the row was explicit or defaulted.
+ *  GM-only — a non-GM call is a silent noop. Shared across the Cast
+ *  Manager and the per-sheet pin button so both routes stay consistent. */
+export async function toggleCastInclusion(actor) {
+  if (!game.user?.isGM) return;
+  if (!actor) return;
+  const nextOn = !isInCast(actor);
+  await actor.setFlag(NS, FLAG, nextOn);
+}
+
+/** Context dict for the shared cast-pin partial. GM-only; renders
+ *  nothing for players. */
+export function castPinContext(actor) {
+  return {
+    show: !!game.user?.isGM && !!actor,
+    on: isInCast(actor),
+  };
+}
+
 /** Resolve the effective inclusion for an actor — explicit flag, or
  *  the type default. */
 export function isInCast(actor) {

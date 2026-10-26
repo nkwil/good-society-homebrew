@@ -2122,6 +2122,16 @@
       "announceLead": "A moment lands at {name}'s feet.",
       "announceWaiting": "They're writing their response. The rest of us are the room."
     },
+    "gmToolsPopover": {
+      "title": "GM Tools",
+      "sceneControlTitle": "GM Tools (events, cast, organizer, permissions, logs)",
+      "events": "Random Event Command Center",
+      "castManage": "Manage the Cast of Characters",
+      "organizer": "NPC Organizer",
+      "permissions": "Bulk Permissions",
+      "sessionLog": "Session Log",
+      "splash": "Return to the splash"
+    },
     "castOfCharacters": {
       "windowTitle": "Cast of Characters",
       "viewTitle": "Cast of Characters",
@@ -2147,7 +2157,13 @@
       "toggleOn": "Add to the players' cast",
       "toggleOff": "Hide from the players' cast",
       "resetDefault": "default",
-      "resetDefaultTitle": "Clear the override — fall back to this type's default (Majors on, others off)."
+      "resetDefaultTitle": "Clear the override — fall back to this type's default (Majors on, others off).",
+      "pin": {
+        "onLabel": "In cast",
+        "offLabel": "Add to cast",
+        "onTitle": "Already in the players' Cast of Characters — click to remove.",
+        "offTitle": "Add to the players' Cast of Characters."
+      }
     },
     "eventCommandCenter": {
       "windowTitle": "Random Event Command Center",

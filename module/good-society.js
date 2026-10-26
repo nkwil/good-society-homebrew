@@ -94,6 +94,9 @@ const GS_COMPONENT_PARTIALS = {
   // wired via the existing persona-switcher-popover.js delegated handler).
   'persona-switcher':
     'systems/good-society-homebrew/templates/partials/persona-switcher.hbs',
+  // GM-only cast-inclusion pin shown in actor-sheet headers.
+  'cast-pin':
+    'systems/good-society-homebrew/templates/partials/cast-pin.hbs',
 };
 
 Hooks.once('init', async function () {

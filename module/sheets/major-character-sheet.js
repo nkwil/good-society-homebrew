@@ -18,6 +18,7 @@ import { fitDossierNames } from '../helpers/responsive-name.js';
 import { pronounsFor } from '../helpers/pronouns.js';
 import { openMonologueTrigger } from '../apps/monologue-overlay.js';
 import { ARCHETYPE_CHOICES } from '../data-models/major-character.js';
+import { toggleCastInclusion, castPinContext } from '../apps/cast-of-characters.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -108,6 +109,10 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       removeCondition:  MajorCharacterSheet.#removeCondition,
       undoPendingChange: MajorCharacterSheet.#undoPendingChange,
       deletePendingChange: MajorCharacterSheet.#deletePendingChange,
+      // GM-only pin in the eyebrow row that adds / removes this actor from
+      // the player-facing Cast of Characters viewer. Mirrors the Cast
+      // Manager's row toggle (shared helper so both paths stay consistent).
+      toggleCastInclusion: MajorCharacterSheet.#toggleCastInclusion,
     },
   };
 
@@ -460,6 +465,8 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
       actor: this.actor,
       system,
       tabGroups: this.tabGroups,
+      // GM-only "add to cast" pin for the sheet header (shared partial).
+      castPin: castPinContext(this.actor),
       // Identity
       portraitUrl,
       portraitInitial,
@@ -1478,5 +1485,11 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     const pin = this.element?.querySelector('input[data-theme-pin]');
     if (pin) pin.value = themeId;
     await this.actor.update({ 'system.theme': themeId });
+  }
+
+  /** Flip the inCast flag via the shared helper (GM-only). */
+  static async #toggleCastInclusion() {
+    await toggleCastInclusion(this.actor);
+    this.render();
   }
 }

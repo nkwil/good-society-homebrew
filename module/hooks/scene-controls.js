@@ -13,15 +13,12 @@
  */
 
 import { openDashboard } from '../apps/public-info-dashboard.js';
-import { toggleOrganizer } from '../apps/npc-organizer.js';
-import { openBulkPermissionsPanel } from '../apps/bulk-permissions-panel.js';
-import { openSessionLogPreview } from '../apps/session-log-preview.js';
 import { openEventTimeline } from '../apps/event-timeline.js';
 import { openLetterComposer } from '../apps/letter-composer.js';
 import { openRumourBoard } from '../apps/rumour-board.js';
 import { openNovelReader } from '../apps/novel-reader.js';
-import { openEventCommandCenter } from '../apps/event-command-center.js';
-import { openCastOfCharacters, openCastManager } from '../apps/cast-of-characters.js';
+import { openCastOfCharacters } from '../apps/cast-of-characters.js';
+import { openGmToolsPopover, findGmToolsAnchor } from '../apps/gm-tools-popover.js';
 
 /**
  * Drop the local canvas to the Arrival splash — without needing another
@@ -34,7 +31,7 @@ import { openCastOfCharacters, openCastManager } from '../apps/cast-of-character
  *
  * Either path ends with arrival-sync deciding to show the Arrival.
  */
-async function _returnToSplash() {
+export async function returnToSplash() {
   const active = game.scenes?.active;
   const viewed = canvas?.scene ?? game.scenes?.viewed;
 
@@ -104,30 +101,17 @@ export function register() {
       visible: true,
     };
 
-    const organizerTool = {
-      name: 'gs-organizer',
-      title: 'GOODSOCIETY.npcOrganizer.sceneControlTitle',
-      icon: 'fa-solid fa-list',
+    // GM Tools — one scene button that opens a popover listing the five
+    // GM-only tools (events, cast manager, organizer, permissions, session
+    // log, splash return). Replaces the five separate scene buttons we
+    // used to render, cutting canvas-chrome clutter for GMs who also have
+    // the Cabinet open. Players never see this button.
+    const gmToolsTool = {
+      name: 'gs-gm-tools',
+      title: 'GOODSOCIETY.gmToolsPopover.sceneControlTitle',
+      icon: 'fa-solid fa-gears',
       button: true,
-      onChange: () => toggleOrganizer(),
-      visible: game.user?.isGM,
-    };
-
-    const permissionsTool = {
-      name: 'gs-permissions',
-      title: 'GOODSOCIETY.bulkPermissions.sceneControlTitle',
-      icon: 'fa-solid fa-key',
-      button: true,
-      onChange: () => openBulkPermissionsPanel(),
-      visible: game.user?.isGM,
-    };
-
-    const endSessionTool = {
-      name: 'gs-end-session',
-      title: 'GOODSOCIETY.sessionLog.sceneControlTitle',
-      icon: 'fa-solid fa-book-bookmark',
-      button: true,
-      onChange: () => openSessionLogPreview(),
+      onChange: () => openGmToolsPopover({ anchor: findGmToolsAnchor() }),
       visible: game.user?.isGM,
     };
 
@@ -171,52 +155,29 @@ export function register() {
       visible: true,
     };
 
-    // Cast of Characters — one button, two behaviors. GM click opens the
-    // Manage grid; player click opens the read-only viewer. Visible to all.
+    // Cast of Characters — viewer for everyone. GMs reach the "Manage"
+    // path via the GM Tools popover (above), which keeps this scene
+    // button in a single read-only mode for all users.
     const castTool = {
       name: 'gs-cast',
       title: 'GOODSOCIETY.castOfCharacters.sceneControlTitle',
       icon: 'fa-solid fa-masks-theater',
       button: true,
-      onChange: () => (game.user?.isGM ? openCastManager() : openCastOfCharacters()),
+      onChange: () => openCastOfCharacters(),
       visible: true,
-    };
-
-    // Random-event GM command center — GM-only.
-    const eventsTool = {
-      name: 'gs-events',
-      title: 'GOODSOCIETY.eventCommandCenter.sceneControlTitle',
-      icon: 'fa-solid fa-bolt',
-      button: true,
-      onChange: () => openEventCommandCenter(),
-      visible: game.user?.isGM,
-    };
-
-    // Deactivate the active scene → drop to the Arrival splash. GM-only.
-    const splashTool = {
-      name: 'gs-return-to-splash',
-      title: 'GOODSOCIETY.phaseSplash.sceneControlTitle',
-      icon: 'fa-solid fa-door-open',
-      button: true,
-      onChange: () => _returnToSplash(),
-      visible: game.user?.isGM,
     };
 
     // tools may be an array (older v13) or an object (v13.346+).
     if (Array.isArray(target.tools)) {
-      target.tools.push(dashboardTool, organizerTool, permissionsTool, endSessionTool, calendarTool, letterTool, rumourTool, novelReaderTool, castTool, eventsTool, splashTool);
+      target.tools.push(dashboardTool, calendarTool, letterTool, rumourTool, novelReaderTool, castTool, gmToolsTool);
     } else {
-      target.tools['gs-dashboard']        = dashboardTool;
-      target.tools['gs-organizer']        = organizerTool;
-      target.tools['gs-permissions']      = permissionsTool;
-      target.tools['gs-end-session']      = endSessionTool;
-      target.tools['gs-calendar']         = calendarTool;
-      target.tools['gs-letter']           = letterTool;
-      target.tools['gs-rumours']          = rumourTool;
-      target.tools['gs-novel-reader']     = novelReaderTool;
-      target.tools['gs-cast']             = castTool;
-      target.tools['gs-events']           = eventsTool;
-      target.tools['gs-return-to-splash'] = splashTool;
+      target.tools['gs-dashboard']    = dashboardTool;
+      target.tools['gs-calendar']     = calendarTool;
+      target.tools['gs-letter']       = letterTool;
+      target.tools['gs-rumours']      = rumourTool;
+      target.tools['gs-novel-reader'] = novelReaderTool;
+      target.tools['gs-cast']         = castTool;
+      target.tools['gs-gm-tools']     = gmToolsTool;
     }
   });
 }

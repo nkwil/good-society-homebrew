@@ -1,0 +1,80 @@
+/* GM Tools popover — vanilla-DOM dropdown anchored to the GM Tools
+ * scene-control button. House-styled: parchment surface, sage hairline,
+ * display-font labels. Fixed position; dismiss on outside click / Esc.
+ *
+ * Replaces the five separate GM-only scene buttons (NPC Organizer, Bulk
+ * Permissions, Session Log, Random Events, Return to Splash). Cast
+ * Manager is also here as the paired "manage" counterpart to the
+ * player-facing Cast viewer scene button. */
+
+.gs-gm-tools-popover {
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  border: 0.5px solid var(--gs-brand);
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  min-width: 220px;
+  max-width: 280px;
+  padding: 6px;
+  font-family: var(--gs-body);
+  /* Position + z-index are set inline by _positionPopover(); this is the
+   * stylistic layer only. pointer-events must be explicit — the Foundry
+   * chrome chain sets it to none above us. */
+  pointer-events: auto;
+}
+
+.gs-gm-tools-popover__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gs-gm-tools-popover__item { display: flex; }
+
+button.gs-gm-tools-popover__btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 10px;
+  margin: 0;
+  background: transparent;
+  color: var(--gs-ink);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  min-height: 0;
+  font-family: var(--gs-display);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  text-align: left;
+  transition: background 120ms, color 120ms;
+}
+button.gs-gm-tools-popover__btn:hover {
+  background: color-mix(in srgb, var(--gs-brand) 10%, transparent);
+  color: var(--gs-brand);
+}
+button.gs-gm-tools-popover__btn:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+button.gs-gm-tools-popover__btn:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: -1px; }
+
+.gs-gm-tools-popover__icon {
+  flex: 0 0 auto;
+  width: 18px;
+  text-align: center;
+  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  font-size: 13px;
+}
+button.gs-gm-tools-popover__btn:hover .gs-gm-tools-popover__icon {
+  color: var(--gs-brand);
+}
+
+.gs-gm-tools-popover__label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

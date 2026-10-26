@@ -1,0 +1,26 @@
+{{!--
+  cast-pin — small GM-only button in actor-sheet headers that toggles
+  the actor's inclusion in the player-facing Cast of Characters.
+
+  Expects `castPin` on context:
+    { show: boolean,  // GM only
+      on:   boolean,  // reflects current inCast state }
+
+  Noop when `show` is false — nothing renders, no gap.
+--}}
+{{#if castPin.show}}
+  <button type="button"
+          class="gs-cast-pin {{#if castPin.on}}is-on{{/if}}"
+          data-action="toggleCastInclusion"
+          aria-pressed="{{castPin.on}}"
+          title="{{#if castPin.on}}{{localize 'GOODSOCIETY.castOfCharacters.pin.onTitle'}}{{else}}{{localize 'GOODSOCIETY.castOfCharacters.pin.offTitle'}}{{/if}}">
+    <span class="gs-cast-pin__glyph" aria-hidden="true">{{#if castPin.on}}★{{else}}☆{{/if}}</span>
+    <span class="gs-cast-pin__label">
+      {{#if castPin.on}}
+        {{localize "GOODSOCIETY.castOfCharacters.pin.onLabel"}}
+      {{else}}
+        {{localize "GOODSOCIETY.castOfCharacters.pin.offLabel"}}
+      {{/if}}
+    </span>
+  </button>
+{{/if}}

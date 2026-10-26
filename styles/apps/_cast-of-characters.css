@@ -392,3 +392,53 @@ button.gs-cast__toggle {
 }
 button.gs-cast__toggle:focus:not(:focus-visible) { outline: none; box-shadow: none; }
 button.gs-cast__toggle:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: 2px; border-radius: 100px; }
+
+/* ── Per-sheet cast pin ─────────────────────────────────────────────────── */
+/* Small GM-only pill rendered in actor-sheet headers (Major, Connection,
+ * NPC). Click toggles the inCast flag; filled brand color when the actor
+ * is already in the player viewer. Keeps the sheet-sidebar workflow in
+ * flow: see the state, flip it, keep going. */
+
+button.gs-cast-pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px;
+  margin: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  border: 0.5px dashed color-mix(in srgb, var(--gs-accent-2) 70%, transparent);
+  border-radius: 100px;
+  font-family: var(--gs-display);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 0;
+  transition: background 120ms, color 120ms, border-color 120ms, border-style 120ms;
+  white-space: nowrap;
+}
+button.gs-cast-pin:hover {
+  color: var(--gs-brand);
+  border-color: var(--gs-brand);
+  border-style: solid;
+}
+button.gs-cast-pin.is-on {
+  background: var(--gs-brand);
+  color: var(--gs-paper);
+  border-color: var(--gs-brand);
+  border-style: solid;
+}
+button.gs-cast-pin.is-on:hover {
+  background: color-mix(in srgb, var(--gs-brand) 88%, black);
+}
+.gs-cast-pin__glyph {
+  font-size: 13px;
+  line-height: 1;
+}
+.gs-cast-pin__label {
+  font-size: 10px;
+}
+button.gs-cast-pin:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+button.gs-cast-pin:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: 2px; }

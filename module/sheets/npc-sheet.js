@@ -9,6 +9,7 @@ import { profilePic, profileName } from '../helpers/profile-pic.js';
 import { fitDossierNames } from '../helpers/responsive-name.js';
 import { pronounsFor } from '../helpers/pronouns.js';
 import { bindAutogrowTextareas } from '../helpers/textarea-autogrow.js';
+import { toggleCastInclusion, castPinContext } from '../apps/cast-of-characters.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -43,6 +44,7 @@ export class NpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       editDescription:     NpcSheet.#editDescription,
       // Persona switcher popover — same plumbing as Major + Connection.
       openPersonaSwitcher: NpcSheet.#openPersonaSwitcher,
+      toggleCastInclusion: NpcSheet.#toggleCastInclusion,
     },
   };
 
@@ -74,6 +76,7 @@ export class NpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       ...ctx,
       actor: this.actor,
       system,
+      castPin: castPinContext(this.actor),
       portraitUrl,
       portraitInitial,
       displayName,
@@ -261,5 +264,11 @@ export class NpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       },
     });
     return picker.render(true);
+  }
+
+  /** GM pin: toggle cast inclusion for this NPC. */
+  static async #toggleCastInclusion() {
+    await toggleCastInclusion(this.actor);
+    this.render();
   }
 }
