@@ -15,6 +15,7 @@
 @import './components/_card.css';
 @import './components/_section-header.css';
 @import './components/_eyebrow.css';
+@import './components/_upload-drop-target.css';
 @import './components/_empty-state.css';
 @import './components/_hairline.css';
 @import './components/_buttons.css';

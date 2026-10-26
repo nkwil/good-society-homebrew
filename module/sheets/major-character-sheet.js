@@ -19,6 +19,7 @@ import { pronounsFor } from '../helpers/pronouns.js';
 import { openMonologueTrigger } from '../apps/monologue-overlay.js';
 import { ARCHETYPE_CHOICES } from '../data-models/major-character.js';
 import { toggleCastInclusion, castPinContext } from '../apps/cast-of-characters.js';
+import { bindImageUploadOn, setActorPortrait } from '../helpers/upload-image.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -581,6 +582,21 @@ export class MajorCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2
     // (theme select, responsive-name resize).
     if (this._nameSyncAbort) this._nameSyncAbort.abort();
     this._nameSyncAbort = new AbortController();
+
+    // Drag-and-drop + paste upload on the cameo. GMs can drag an image
+    // from their desktop onto the portrait or Cmd+V a copied image to
+    // skip the FilePicker flow entirely. Routes through the shared
+    // persona-aware writer so persona-active drops land on the persona
+    // instead of the true identity.
+    this._cameoUploadCleanup?.();
+    const cameo = this.element?.querySelector('[data-action="pickToken"]');
+    if (cameo) {
+      this._cameoUploadCleanup = bindImageUploadOn({
+        element: cameo,
+        destSubdir: 'portraits',
+        onUploaded: async (path) => { await setActorPortrait(this.actor, path); },
+      });
+    }
 
     // Responsive name sizing — long names shrink so they don't overflow
     // the cameo's body column. Re-runs on every render and on every input

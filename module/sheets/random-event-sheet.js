@@ -1,5 +1,6 @@
 import { ARCHETYPE_CHOICES } from '../data-models/major-character.js';
 import { openFieldEditor } from '../helpers/edit-field-dialog.js';
+import { bindImageUploadOn } from '../helpers/upload-image.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
@@ -112,6 +113,19 @@ export class RandomEventSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       });
     };
     bindList('positive', 'input[data-gs-side="positive"]', 'positiveTagOptions');
+
+    // Drag-and-drop + paste image upload on the flavor image box.
+    this._imageUploadCleanup?.();
+    const imageBox = root.querySelector('[data-action="pickImage"]');
+    if (imageBox) {
+      this._imageUploadCleanup = bindImageUploadOn({
+        element: imageBox,
+        destSubdir: 'event-flavor',
+        onUploaded: async (path) => {
+          await this.document.update({ 'system.imageUrl': path });
+        },
+      });
+    }
     bindList('negative', 'input[data-gs-side="negative"]', 'negativeTagOptions');
   }
 

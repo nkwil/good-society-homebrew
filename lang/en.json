@@ -1104,6 +1104,12 @@
       "edit": "Edit",
       "noDescription": "No description recorded yet."
     },
+    "upload": {
+      "notAnImage": "Only image files can be dropped here.",
+      "failed": "Upload failed. Check the console for details.",
+      "failedWithReason": "Upload failed: {reason}",
+      "done": "Uploaded {name}."
+    },
     "scenePortal": {
       "FIELDS": {
         "sceneId": {

@@ -10,6 +10,7 @@ import { fitDossierNames } from '../helpers/responsive-name.js';
 import { pronounsFor } from '../helpers/pronouns.js';
 import { bindAutogrowTextareas } from '../helpers/textarea-autogrow.js';
 import { toggleCastInclusion, castPinContext } from '../apps/cast-of-characters.js';
+import { bindImageUploadOn, setActorPortrait } from '../helpers/upload-image.js';
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -107,6 +108,17 @@ export class NpcSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (this._nameFitAbort) this._nameFitAbort.abort();
     this._nameFitAbort = new AbortController();
     fitDossierNames(this.element, { signal: this._nameFitAbort.signal });
+
+    // Drag-and-drop + paste image upload on the cameo (shared helper).
+    this._cameoUploadCleanup?.();
+    const cameo = this.element?.querySelector('[data-action="pickToken"]');
+    if (cameo) {
+      this._cameoUploadCleanup = bindImageUploadOn({
+        element: cameo,
+        destSubdir: 'portraits',
+        onUploaded: async (path) => { await setActorPortrait(this.actor, path); },
+      });
+    }
 
     // Cameo name input is a plain `name="name"` text field — Foundry's
     // form serializer handles persistence directly. (See npc/book.hbs for

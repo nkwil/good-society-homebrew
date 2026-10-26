@@ -1,0 +1,26 @@
+/* Drag-and-drop image upload — visual feedback on any element wired via
+ * bindImageUploadOn (helpers/upload-image.js).
+ *
+ * Scope: `.is-drag-target` is applied to the drop target while a file
+ * is being dragged over it; removed on dragleave + drop. Styled as a
+ * glowing gilt-rose ring + slight scale so the GM sees "yes, drop here".
+ *
+ * Works on any element — portrait frames (circular/square), image
+ * thumbs (rounded corners), filepicker buttons. Uses outline so it
+ * doesn't shift layout. */
+
+.is-drag-target {
+  outline: 2px dashed var(--gs-brand);
+  outline-offset: 4px;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--gs-brand) 35%, transparent);
+  transition: outline-offset 120ms ease, box-shadow 120ms ease;
+  cursor: copy;
+}
+
+/* Make focusable drop targets usable with keyboard too — the helper sets
+ * tabindex="0" on each target. Soft focus ring, not the browser's red. */
+.is-drag-target:focus-visible,
+[data-upload-drop]:focus-visible {
+  outline: 2px solid var(--gs-brand);
+  outline-offset: 3px;
+}
