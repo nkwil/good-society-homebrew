@@ -1,7 +1,14 @@
-/* House CSS variables — Inkwell & Wildflower
+/* House CSS variables — Evening Court
  *
- * Canonical color spec: `GS Build Colors (1).pdf` (Natalie's color sheet).
- * Every theme defines the same 10 slots:
+ * House register shifted 2026-10-26 from the Inkwell & Wildflower cream
+ * parchment to a dark-velvet dating-sim register. Character themes stay
+ * as they are (they already live in jewel-toned registers via per-theme
+ * overrides); only the house chrome moves.
+ *
+ * The slot MODEL is unchanged — same 10 semantic slots, same aliases.
+ * Every surface's CSS continues to read `var(--gs-paper)` etc.; the
+ * shift is purely in what those slots resolve to.
+ *
  *   1. Surface          (--gs-paper)
  *   2. Raised Surface   (--gs-paper-warm)
  *   3. Text             (--gs-ink)
@@ -13,61 +20,79 @@
  *   9. Light/Dark Danger   (--gs-danger)        — negative reputation, scandal, destructive
  *  10. Light/Dark Positive (--gs-positive)      — positive reputation, success
  *
- * Legacy aliases (--gs-accent-1/2/3) are kept for back-compat with
- * components that haven't migrated to the semantic names yet. New code
- * should use the semantic names (--gs-headers, --gs-hairlines, etc.).
+ * Legacy aliases (--gs-accent-1/2/3) are kept for back-compat.
+ *
+ * Previous Inkwell & Wildflower values preserved below in a comment block
+ * so a toggle-back is one copy away. Full canonical light-theme spec was
+ * in `GS Build Colors (1).pdf`.
+ *
+ *   // Inkwell & Wildflower (archived 2026-10-26)
+ *   // --gs-paper: #EFE6D2; --gs-paper-warm: #F4ECD8; --gs-ink: #3D2F26;
+ *   // --gs-brand: #2A3A2D; --gs-headers: #8a3e26; --gs-hairlines: #708060;
+ *   // --gs-metallic: #C9A55C; --gs-muted-accent: #D4D9CF;
+ *   // --gs-muted: rgba(112, 128, 96, 0.3);
+ *   // --gs-danger: #8B2A2A; --gs-positive: #4A7A4A;
+ *   // --rep-positive-bg: rgba( 74, 122, 74, 0.08);
+ *   // --rep-negative-bg: rgba(139,  42, 42, 0.08);
+ *   // --rep-empty-fg:    rgba(112, 128, 96, 0.4);
+ *   // --gs-size-window: 22px; --gs-size-section: 18px; --gs-size-label: 12px;
+ *   // --gs-size-body: 14px; --gs-size-ui: 11px; --gs-size-numeric: 16px;
  */
 :root {
-  /* Surfaces + ink */
-  --gs-paper:          #EFE6D2;
-  --gs-paper-warm:     #F4ECD8;
-  --gs-ink:            #3D2F26;
+  /* ── Surfaces + ink — dark velvet house register ───────────────────── */
+  --gs-paper:          #2a1e2b;   /* deep plum chrome */
+  --gs-paper-warm:     #372837;   /* raised plum card surface */
+  --gs-ink:            #f0e1d2;   /* warm ivory text — ~10.4:1 on paper (AAA) */
 
-  /* Brand + semantic accents (canonical names per PDF, accessibility-tuned).
-   * Headers darkened from #B85C3F (3.65:1 — fails AA at 11.5 px eyebrow size)
-   * to #8a3e26 (~7:1, AAA). Same terracotta family, just deeper. Sage hairlines
-   * kept low-contrast intentionally — they're decorative dividers, not text. */
-  --gs-brand:          #2A3A2D;          /* forest green — indicator color */
-  --gs-headers:        #8a3e26;          /* deep terracotta — headers & eyebrows text (AAA on cream paper) */
-  --gs-hairlines:      #708060;          /* sage — dividers + hairline borders */
-  --gs-metallic:       #C9A55C;          /* gilt — action pill borders, "earned" markers */
-  --gs-muted-accent:   #D4D9CF;          /* mist — muted UI surfaces / subtle greys */
+  /* ── Brand + semantic accents ──────────────────────────────────────── */
+  /* All text slots re-tuned for contrast on the new dark paper.
+   * Headers (#e8c6a8) vs paper = ~8.75:1 (AAA at 11.5px eyebrow sizes).
+   * Metallic (#e8c87a) vs paper = ~8.5:1 (used for text + markers).
+   * Brand (#d9a46f) vs paper = ~6.6:1 (AA; indicator + body-size text ok). */
+  --gs-brand:          #d9a46f;          /* warm gilt-rose — indicator color */
+  --gs-headers:        #e8c6a8;          /* soft blush — headers & eyebrows */
+  --gs-hairlines:      #6b4a68;          /* muted plum — dividers */
+  --gs-metallic:       #e8c87a;          /* brighter gilt — glows on dark */
+  --gs-muted-accent:   #4a3550;          /* subtle lifted plum — raised backgrounds */
 
   /* --gs-text-muted — semantic slot for "secondary / muted body text"
    * (subtitle lines, step labels, "future state" indicators, captions).
    * Many surfaces historically used `color: var(--gs-accent-3)` for this
    * purpose, but accent-3 is the metallic/gilt slot — intended for
-   * borders + markers, not text — and at #C9A55C it fails AA contrast
-   * on every theme's paper (~1.6:1 on warm papers, ~2.1:1 on cream).
-   * The 70% ink-mix below passes AA (~5:1+) on every theme paper because
-   * each theme's --gs-ink is tuned for the surrounding surface. Use this
-   * for any TEXT that wants to read as quieter than primary ink; keep
-   * `--gs-accent-3` for borders, dots, ornaments, etc. */
+   * borders + markers, not text — and on the new dark paper the metallic
+   * glows bright enough that it reads as a header, not a muted caption.
+   * The 70% ink-mix below still produces a readable muted ivory on plum
+   * (ivory at ~0.7 alpha ≈ 7:1 against #2a1e2b). Use this for any TEXT
+   * that wants to read as quieter than primary ink; keep `--gs-accent-3`
+   * for borders, dots, ornaments, etc. */
   --gs-text-muted:     color-mix(in srgb, var(--gs-ink) 70%, transparent);
 
   /* Legacy aliases — keep until every consumer migrates to semantic names. */
   --gs-accent-1:       var(--gs-headers);
   --gs-accent-2:       var(--gs-hairlines);
   --gs-accent-3:       var(--gs-metallic);
-  --gs-muted:          rgba(112, 128, 96, 0.3);
+  --gs-muted:          rgba(107, 74, 104, 0.5);
 
-  /* Functional reputation colors (light defaults; dark themes override). */
-  --gs-danger:         #8B2A2A;
-  --gs-positive:       #4A7A4A;
+  /* ── Functional reputation colors ──────────────────────────────────── */
+  /* Light-register defaults (#8B2A2A, #4A7A4A) are muddy and low-contrast
+   * on dark velvet. Promoted the previous dark-theme overrides (bright
+   * mint + clear red) to be the house defaults. The three dark character
+   * themes (Avril, Pearlinda, Secret) can drop their overrides now;
+   * they're redundant with the new base. */
+  --gs-danger:         #dd4242;
+  --gs-positive:       #77c477;
 
   /* Side panel — character themes may override; defaults to raised surface. */
   --gs-side-panel:     var(--gs-paper-warm);
 
-  /* Functional rep-tag fills (post-MVP §6.4). Light defaults; dark themes
-   * (Avril, Pearlinda, Secret) override these to brighter variants for
-   * legibility on dark paper. Reputation tags use these directly — green is
-   * positive on every Major's dossier, red is negative on every Major's
-   * dossier — no theme accent shift. */
-  --rep-positive-bg:   rgba( 74, 122,  74, 0.08);
-  --rep-negative-bg:   rgba(139,  42,  42, 0.08);
-  --rep-empty-fg:      rgba(112, 128,  96, 0.4);
+  /* Functional rep-tag fills — brighter alpha on dark paper. Reputation
+   * tags use these directly; green is positive on every Major's dossier,
+   * red is negative on every Major's dossier — no theme accent shift. */
+  --rep-positive-bg:   rgba(119, 196, 119, 0.14);
+  --rep-negative-bg:   rgba(221,  66,  66, 0.14);
+  --rep-empty-fg:      rgba(240, 225, 210, 0.42);
 
-  /* Type stacks */
+  /* ── Type stacks (unchanged) ───────────────────────────────────────── */
   --gs-display:        'Lora', 'Palatino', 'Book Antiqua', Georgia, serif;
   --gs-body:           'Crimson Text', 'Palatino', Georgia, serif;
   --gs-italic:         'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
@@ -78,11 +103,23 @@
    * display if no script face is available. */
   --gs-ornament:       'Lavishly Yours', 'Tangerine', 'Pinyon Script', 'Snell Roundhand', cursive, var(--gs-display);
 
-  /* Type scale */
-  --gs-size-window:    22px; /* module window header, character names */
-  --gs-size-section:   18px; /* section headers on boards/trackers */
-  --gs-size-label:     12px; /* small-caps labels, eyebrows */
-  --gs-size-body:      14px; /* body text */
-  --gs-size-ui:        11px; /* UI labels, pills, controls */
-  --gs-size-numeric:   16px; /* token counts, ages, numeric stats */
+  /* ── Type scale — bumped for arm's-length legibility ──────────────── */
+  /* Visual-novel register: body reads from a reclining distance, not
+   * from a book held at the chin. Every slot moved up one step on a
+   * ~1.25 scale from the old values; dossier cameo + modal titles bloom. */
+  --gs-size-window:    28px;  /* module window header, character names */
+  --gs-size-section:   22px;  /* section headers on boards/trackers */
+  --gs-size-label:     13px;  /* small-caps labels, eyebrows */
+  --gs-size-body:      16px;  /* body text */
+  --gs-size-ui:        12px;  /* UI labels, pills, controls */
+  --gs-size-numeric:   18px;  /* token counts, ages, numeric stats */
+
+  /* ── Radius scale (new — surfaces migrate as they're touched) ─────── */
+  /* Dating-sim chrome wants rounder, floatier cards. New components
+   * should consume these vars instead of hardcoded px; existing surfaces
+   * will migrate incrementally. Pills already use 100px throughout. */
+  --gs-radius-sm:      6px;
+  --gs-radius-md:      10px;
+  --gs-radius-lg:      14px;
+  --gs-radius-pill:    100px;
 }
