@@ -160,7 +160,11 @@ export function closeGmToolsPopover() {
 function _positionPopover(anchor) {
   if (!_popover) return;
   _popover.style.position = 'fixed';
-  _popover.style.zIndex = '200';
+  // 10001 so the popover stacks above every other GS surface: tooltip
+  // (10000), ApplicationV2 sheet frames (>1000), Cabinet drawer (1000),
+  // My Characters Dock + Speaking-As bar (50 each). A transient menu
+  // should always sit on top of persistent chrome.
+  _popover.style.zIndex = '10001';
 
   // Measure first so the layout is settled before we read offsets.
   _popover.style.visibility = 'hidden';
