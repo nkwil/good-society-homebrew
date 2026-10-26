@@ -30,6 +30,8 @@
     "@fontsource/crimson-text": "^5.2.7",
     "@fontsource/dm-serif-display": "^5.2.8",
     "@fontsource/eb-garamond": "^5.2.7",
-    "@fontsource/lora": "^5.2.8"
+    "@fontsource/fraunces": "^5.2.7",
+    "@fontsource/lora": "^5.2.8",
+    "@fontsource/nunito": "^5.2.7"
   }
 }

@@ -57,6 +57,76 @@
   src: url('./fonts/crimson-text/crimson-text-latin-400-italic.woff2') format('woff2');
 }
 
+/* ── Evening Court house stack (post-palette-shift 2026-10-26) ───────────── */
+/* Fraunces — modern humanist serif, carries display + italic weight.
+ * Replaces Lora as --gs-display and extends to --gs-italic. */
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/fraunces/fraunces-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/fraunces/fraunces-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/fraunces/fraunces-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/fraunces/fraunces-latin-400-italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/fraunces/fraunces-latin-500-italic.woff2') format('woff2');
+}
+
+/* Nunito — rounded humanist sans, carries body + UI.
+ * Replaces Crimson Text as --gs-body. */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/nunito/nunito-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/nunito/nunito-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/nunito/nunito-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/nunito/nunito-latin-400-italic.woff2') format('woff2');
+}
+
 /* Cormorant Garamond — rose and roger display */
 @font-face {
   font-family: 'Cormorant Garamond';

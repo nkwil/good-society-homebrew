@@ -92,11 +92,17 @@
   --rep-negative-bg:   rgba(221,  66,  66, 0.14);
   --rep-empty-fg:      rgba(240, 225, 210, 0.42);
 
-  /* ── Type stacks (unchanged) ───────────────────────────────────────── */
-  --gs-display:        'Lora', 'Palatino', 'Book Antiqua', Georgia, serif;
-  --gs-body:           'Crimson Text', 'Palatino', Georgia, serif;
-  --gs-italic:         'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
-  --gs-ui:             system-ui, 'Helvetica Neue', sans-serif;
+  /* ── Type stacks — Evening Court house stack ──────────────────────── */
+  /* Fraunces (humanist serif) replaces Lora for display + italic.
+   * Nunito (rounded sans) replaces Crimson Text for body + UI. The
+   * serif/sans contrast gives the house an editorial-luxe register that
+   * reads modern on dark surfaces while still carrying period warmth.
+   * Previous (Lora + Crimson Text) kept as fallbacks so stock Palatino
+   * / Georgia aren't the next hop if a client blocks woff2 loading. */
+  --gs-display:        'Fraunces', 'Lora', 'Palatino', Georgia, serif;
+  --gs-body:           'Nunito', 'Crimson Text', 'Helvetica Neue', system-ui, sans-serif;
+  --gs-italic:         'Fraunces', 'Crimson Text Italic', 'Palatino Italic', Georgia, serif;
+  --gs-ui:             'Nunito', system-ui, 'Helvetica Neue', sans-serif;
   /* Post-MVP §7.1 ornament face — used in exactly one place: the dossier
    * cameo's name initial (§4.2). Lavishly Yours is the patch's chosen face;
    * the fallback chain degrades to script-style fonts and finally to italic

@@ -21,6 +21,9 @@ const copies = [
   { pkg: 'eb-garamond',          dir: 'eb-garamond',          files: ['eb-garamond-latin-400-normal.woff2', 'eb-garamond-latin-400-italic.woff2'] },
   { pkg: 'dm-serif-display',     dir: 'dm-serif-display',     files: ['dm-serif-display-latin-400-normal.woff2'] },
   { pkg: 'cinzel',               dir: 'cinzel',               files: ['cinzel-latin-400-normal.woff2', 'cinzel-latin-600-normal.woff2'] },
+  // Evening Court house stack — Fraunces (display + italic) + Nunito (body + ui).
+  { pkg: 'fraunces',             dir: 'fraunces',             files: ['fraunces-latin-400-normal.woff2', 'fraunces-latin-500-normal.woff2', 'fraunces-latin-600-normal.woff2', 'fraunces-latin-400-italic.woff2', 'fraunces-latin-500-italic.woff2'] },
+  { pkg: 'nunito',               dir: 'nunito',               files: ['nunito-latin-400-normal.woff2', 'nunito-latin-500-normal.woff2', 'nunito-latin-600-normal.woff2', 'nunito-latin-400-italic.woff2'] },
 ];
 
 let copied = 0;
