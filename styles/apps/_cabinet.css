@@ -105,10 +105,11 @@
   height: 50px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 50% 30%,
-      color-mix(in srgb, var(--gs-paper-warm) 75%, var(--gs-brand)) 0%,
-      var(--gs-paper-warm) 70%);
-  border: 1px solid var(--gs-accent-2);
+    radial-gradient(circle at 35% 25%,
+      color-mix(in srgb, var(--gs-accent-pink, #e8a4b8) 55%, var(--gs-paper-warm)) 0%,
+      color-mix(in srgb, var(--gs-brand) 30%, var(--gs-paper-warm)) 55%,
+      var(--gs-paper-warm) 100%);
+  border: 1px solid color-mix(in srgb, var(--gs-accent-pink, #e8a4b8) 40%, var(--gs-accent-2));
   font-family: var(--gs-display);
   font-size: 22px;
   font-weight: 600;
@@ -132,14 +133,17 @@
 
 .gs-cabinet-rail-btn:hover {
   background:
-    radial-gradient(circle at 50% 30%,
-      color-mix(in srgb, var(--gs-brand) 25%, var(--gs-paper-warm)) 0%,
-      var(--gs-paper) 70%);
-  border-color: var(--gs-brand);
+    radial-gradient(circle at 35% 25%,
+      var(--gs-accent-pink, #e8a4b8) 0%,
+      color-mix(in srgb, var(--gs-brand) 50%, var(--gs-accent-pink, #e8a4b8)) 50%,
+      var(--gs-brand) 100%);
+  border-color: var(--gs-accent-pink, #e8a4b8);
+  color: var(--gs-paper);
   transform: translateY(-2px) scale(1.08);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 20%, transparent),
-    0 8px 20px color-mix(in srgb, var(--gs-brand) 45%, transparent);
+    inset 0 1px 0 color-mix(in srgb, white 30%, transparent),
+    0 10px 24px color-mix(in srgb, var(--gs-accent-pink, #e8a4b8) 55%, transparent),
+    0 3px 8px color-mix(in srgb, var(--gs-brand) 30%, transparent);
 }
 
 .gs-cabinet-rail-btn:active {

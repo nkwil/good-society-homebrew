@@ -19,7 +19,7 @@
   align-items: center;
   gap: 10px;
   margin: 1.4em 0;
-  color: var(--gs-metallic);
+  color: var(--gs-accent-pink, #e8a4b8);
 }
 .gs-hairline--ornament::before,
 .gs-hairline--ornament::after {
@@ -28,18 +28,18 @@
   height: 0.5px;
   background: linear-gradient(90deg,
     transparent,
-    color-mix(in srgb, var(--gs-metallic) 60%, transparent) 20%,
-    color-mix(in srgb, var(--gs-metallic) 60%, transparent) 80%,
+    color-mix(in srgb, var(--gs-accent-pink, #e8a4b8) 70%, transparent) 20%,
+    color-mix(in srgb, var(--gs-accent-pink, #e8a4b8) 70%, transparent) 80%,
     transparent);
 }
 .gs-hairline--ornament::before {
   background: linear-gradient(90deg,
     transparent 0%,
-    color-mix(in srgb, var(--gs-metallic) 60%, transparent) 100%);
+    color-mix(in srgb, var(--gs-accent-pink, #e8a4b8) 70%, transparent) 100%);
 }
 .gs-hairline--ornament::after {
   background: linear-gradient(90deg,
-    color-mix(in srgb, var(--gs-metallic) 60%, transparent) 0%,
+    color-mix(in srgb, var(--gs-accent-pink, #e8a4b8) 70%, transparent) 0%,
     transparent 100%);
 }
 
@@ -62,7 +62,7 @@
   margin: 1.4em 0;
   font-family: var(--gs-display);
   font-size: var(--gs-size-label, 14px);
-  color: var(--gs-metallic);
+  color: var(--gs-accent-pink, #e8a4b8);
   line-height: 1;
 }
 .gs-hairline--ornament-solo::before { content: '⟡'; }
