@@ -356,6 +356,11 @@ Hooks.once('init', async function () {
   game.settings.register('good-society-homebrew', 'sessionLastEndedAt', {
     scope: 'world', config: false, type: Number, default: 0,
   });
+  // Session Recaps — one entry per session (title + summary + timestamps).
+  // GM writes; everyone reads. See helpers/session-mechanism.js.
+  game.settings.register('good-society-homebrew', 'sessionRecaps', {
+    scope: 'world', config: false, type: Object, default: {},
+  });
 
   // Event Timeline (in-fiction calendar) — per docs/design/31-event-timeline.md.
   // Stage-based bucketing model (rev. 2026-05-08): GM manually moves events

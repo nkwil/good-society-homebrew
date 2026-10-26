@@ -165,6 +165,64 @@ export function getMyDebriefNote(sessionNumber) {
   return flags[String(sessionNumber)] ?? null;
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Session Recaps — the GM's per-session summary, keyed by sessionNumber.
+// One world setting (sessionRecaps). GM edits; everyone reads.
+// ──────────────────────────────────────────────────────────────────────────────
+
+/** Resolve the recaps map, defaulting to {}. */
+export function getAllRecaps() {
+  try {
+    return game.settings.get(NS, 'sessionRecaps') ?? {};
+  } catch { return {}; }
+}
+
+/** Resolve one session's recap (title + summary + timestamps), or null. */
+export function getRecap(sessionNumber) {
+  const all = getAllRecaps();
+  return all[String(sessionNumber)] ?? null;
+}
+
+/** GM-only: write or overwrite one session's recap. Partial — merges
+ *  over the previous entry. `title` + `summary` are the writable fields.
+ *  createdAt is preserved if the entry already existed. */
+export async function saveRecap({ sessionNumber, title, summary }) {
+  if (!game.user?.isGM) return;
+  if (!sessionNumber) return;
+  const all = { ...getAllRecaps() };
+  const existing = all[String(sessionNumber)] ?? {};
+  const now = Date.now();
+  all[String(sessionNumber)] = {
+    sessionNumber: Number(sessionNumber),
+    createdAt: existing.createdAt ?? now,
+    updatedAt: now,
+    title: title !== undefined ? title : (existing.title ?? ''),
+    summary: summary !== undefined ? summary : (existing.summary ?? ''),
+  };
+  await game.settings.set(NS, 'sessionRecaps', all);
+}
+
+/** GM-only: ensure a (possibly empty) recap row exists for the given
+ *  session so the Session Recaps viewer has something to render as a
+ *  stub for the GM to fill in. Called on End Session. */
+export async function ensureRecapStub(sessionNumber) {
+  if (!game.user?.isGM) return;
+  if (!sessionNumber) return;
+  const existing = getRecap(sessionNumber);
+  if (existing) return;
+  await saveRecap({ sessionNumber, title: '', summary: '' });
+}
+
+/** GM-only: delete one session's recap. Rarely used — exposed for a
+ *  "clear this recap" affordance in the viewer. */
+export async function deleteRecap(sessionNumber) {
+  if (!game.user?.isGM) return;
+  const all = { ...getAllRecaps() };
+  if (!(String(sessionNumber) in all)) return;
+  delete all[String(sessionNumber)];
+  await game.settings.set(NS, 'sessionRecaps', all);
+}
+
 /** GM-only: walk every user's flags and gather their debrief notes grouped
  *  by session. Returns `{ [sessionNumber]: [{ userId, userName, text, ts }] }`. */
 export function gatherAllDebriefs() {
