@@ -14,12 +14,12 @@
   align-items: center;
   gap: 6px;
   /* Use min-height + padding instead of fixed height + line-height: 1 —
-     italic Lora descenders (g, p, y on "true identity") get clipped at
+     italic descenders (g, p, y on "true identity") get clipped at
      line-height 1 because the descender extends below the text bottom.
      min-height keeps the pill touch-friendly; line-height 1.4 gives the
      descenders room to render. */
-  min-height: 26px;
-  padding: 3px 10px;
+  min-height: 28px;
+  padding: 4px 14px;
   font-family: var(--gs-italic, var(--gs-display));
   font-style: italic;
   font-size: 16px;
@@ -29,11 +29,24 @@
   border: 1px solid var(--gs-accent-2);
   border-radius: 100px;
   cursor: pointer;
-  transition: background 120ms ease;
+  transition:
+    transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
 .gs-persona-switcher__pill:hover {
-  background: var(--gs-paper);
+  background: color-mix(in srgb, var(--gs-brand) 12%, var(--gs-paper-warm));
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--gs-brand) 30%, transparent);
+}
+
+.gs-persona-switcher__pill:active {
+  transform: translateY(0);
 }
 
 .gs-persona-switcher__pill:focus-visible {

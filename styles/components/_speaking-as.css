@@ -42,24 +42,37 @@
   gap: 6px;
   flex: 1;
   min-width: 0;
-  padding: 4px 10px;
+  padding: 5px 14px;
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
   font-size: 15px;
   color: var(--gs-ink, #f0e1d2);
   background: var(--gs-paper, #2a1e2b);
   border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
-  border-radius: 14px;
+  border-radius: var(--gs-radius-pill, 100px);
   cursor: pointer;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition:
+    transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
 .gs-speaking-as__pill:hover,
 .gs-speaking-as__pill[aria-expanded='true'] {
+  background: color-mix(in srgb, var(--gs-brand, #d9a46f) 12%, var(--gs-paper, #2a1e2b));
   border-color: var(--gs-brand, #d9a46f);
   color: var(--gs-brand, #d9a46f);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--gs-brand, #d9a46f) 30%, transparent);
+}
+
+.gs-speaking-as__pill:active {
+  transform: translateY(0);
 }
 
 .gs-speaking-as__pill-name {

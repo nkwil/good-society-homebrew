@@ -567,20 +567,71 @@ body.gs-chrome-themed select optgroup {
   background: #372837 !important;   /* paper-warm, hardcoded */
 }
 
+/* ── Evening Court button polish for framed-window buttons ──────────────
+ * Everything inside a .window-app / .application (DialogV2 actions, sheet
+ * footers, etc.) that ISN'T a GS primitive, a dossier internal, or a
+ * header control. These are mostly Foundry chrome buttons (DialogV2
+ * ok/cancel, prompt submit, etc.). Pill shape + soft brand-tinted glow
+ * + hover bounce — matches .gs-btn so chrome and primitives read as
+ * one family. */
 body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]) {
   background: transparent;
-  border: 0.5px solid var(--gs-accent-2);
-  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
+  border: 0.5px solid var(--gs-brand);
+  color: var(--gs-brand);
   font-family: var(--gs-display);
   font-size: 15px;
-  padding: 5px 14px;
-  border-radius: 4px;
+  font-weight: 500;
+  padding: 7px 18px;
+  border-radius: var(--gs-radius-pill, 100px);
   letter-spacing: 0.04em;
+  transition:
+    transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+  will-change: transform;
 }
 
 body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]):hover {
-  border-color: var(--gs-brand);
+  background: color-mix(in srgb, var(--gs-brand) 12%, transparent);
+  border-color: color-mix(in srgb, var(--gs-brand) 90%, white);
   color: var(--gs-brand);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--gs-brand) 30%, transparent);
+}
+
+body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]):active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--gs-brand) 20%, transparent);
+}
+
+/* Dialog "primary" / submit button — the ok/submit/confirm action gets
+ * the filled gradient treatment to signal "this is the moment". DialogV2
+ * tags its primary action with `data-button="ok"` and submit buttons
+ * use `type="submit"`. Fill matches .gs-btn--primary. */
+body.gs-chrome-themed :is(.window-app, .application) button:is([data-button="ok"], [data-action="ok"], [type="submit"]):not([class*="gs-"]) {
+  background:
+    radial-gradient(circle at 50% 0%,
+      color-mix(in srgb, var(--gs-brand) 85%, white) 0%,
+      var(--gs-brand) 70%);
+  color: var(--gs-paper);
+  border: 0.5px solid color-mix(in srgb, var(--gs-brand) 70%, white);
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 25%, transparent),
+    0 2px 6px color-mix(in srgb, var(--gs-brand) 25%, transparent);
+}
+
+body.gs-chrome-themed :is(.window-app, .application) button:is([data-button="ok"], [data-action="ok"], [type="submit"]):not([class*="gs-"]):hover {
+  color: var(--gs-paper);
+  background:
+    radial-gradient(circle at 50% 0%,
+      color-mix(in srgb, var(--gs-brand) 90%, white) 0%,
+      color-mix(in srgb, var(--gs-brand) 85%, white) 70%);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 35%, transparent),
+    0 6px 16px color-mix(in srgb, var(--gs-brand) 40%, transparent);
 }
 
 /* Icon-only buttons — restore the glyph font.
