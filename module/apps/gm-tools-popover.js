@@ -126,10 +126,14 @@ export function openGmToolsPopover({ anchor } = {}) {
   _dismissHandler = (ev) => {
     if (!_popover) return;
     if (_popover.contains(ev.target)) return;
-    // Also don't dismiss when clicking the anchor itself — Foundry's
-    // scene control will fire its own onChange, and we handle re-toggle
-    // in `openGmToolsPopover` by closing when _popover already exists.
-    if (anchor && anchor.contains(ev.target)) return;
+    // Don't dismiss when clicking the anchor itself — Foundry's scene
+    // control will fire onChange on click, and openGmToolsPopover's
+    // "already open? close" branch handles the toggle. Live-query the
+    // anchor each time so Foundry's scene-control re-renders (which
+    // replace the DOM node between clicks) don't leave us with a stale
+    // reference that misses the toggle target.
+    const liveAnchor = findGmToolsAnchor() ?? anchor;
+    if (liveAnchor && liveAnchor.contains(ev.target)) return;
     closeGmToolsPopover();
   };
   _keyHandler = (ev) => {
