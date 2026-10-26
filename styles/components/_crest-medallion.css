@@ -52,7 +52,7 @@
   border-radius: 50%;
   background: var(--gs-paper-warm);
   color: var(--gs-ink);
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1;
   cursor: pointer;
   opacity: 0;
@@ -86,7 +86,7 @@
 .gs-crest-medallion__label {
   font-family: var(--gs-body);
   font-variant: small-caps;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   color: var(--gs-brand);
   text-align: center;

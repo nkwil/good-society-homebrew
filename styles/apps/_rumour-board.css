@@ -22,14 +22,14 @@
 
 .gs-rumour-board__title {
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 500;
   color: var(--gs-brand);
   margin: 0;
 }
 
 .gs-rumour-board__subtitle {
-  font-size: 12px;
+  font-size: 15px;
   font-style: italic;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
@@ -74,7 +74,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 17px;
 }
 
 .gs-rumour-board__bullet {
@@ -88,7 +88,7 @@
   width: 22px;
   height: 22px;
   color: var(--gs-accent-1);
-  font-size: 14px;
+  font-size: 17px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -108,7 +108,7 @@
 .gs-rumour-board__text {
   font-family: var(--gs-display);
   font-style: italic;
-  font-size: 14px;
+  font-size: 17px;
   color: var(--gs-ink);
 }
 
@@ -119,7 +119,7 @@
 
 .gs-rumour-board__state-label {
   font-family: var(--gs-ui);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -135,7 +135,7 @@
   border: 0.5px solid transparent;
   border-radius: 3px;
   padding: 2px 6px;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   cursor: pointer;
 }
@@ -159,7 +159,7 @@
 
 .gs-rumour-board__edit-input {
   font-family: var(--gs-body);
-  font-size: 14px;
+  font-size: 17px;
   background: var(--gs-paper);
   border: 0.5px solid var(--gs-brand);
   border-radius: 3px;
@@ -192,7 +192,7 @@
   border-radius: 4px;
   padding: 6px 12px;
   font-family: var(--gs-ui);
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   cursor: pointer;
 }

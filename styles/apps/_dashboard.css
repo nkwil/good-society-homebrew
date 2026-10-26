@@ -52,7 +52,7 @@
 
 .gs-dashboard__title {
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 600;
   color: var(--gs-brand);
   line-height: 1.2;
@@ -61,7 +61,7 @@
 
 .gs-dashboard__subtitle {
   font-family: var(--gs-body);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-ink);
   line-height: 1.4;
   margin: 0;
@@ -75,7 +75,7 @@
 .gs-dashboard__cycle {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   white-space: nowrap;
 }
@@ -94,7 +94,7 @@
 
 .gs-dashboard__bulk-eyebrow {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.16em;
   color: var(--gs-accent-1);
@@ -107,7 +107,7 @@
 
 /* Button overrides for the bulk strip — keep them compact */
 .gs-dashboard__bulk .gs-btn--sm {
-  font-size: 12px;
+  font-size: 15px;
   padding: 4px 10px;
 }
 
@@ -121,7 +121,7 @@
 
 .gs-dashboard__section-eyebrow {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -140,7 +140,7 @@
 .gs-dashboard__empty {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
   padding: 8px 0;
@@ -161,7 +161,7 @@
 .gs-dashboard__footer-time {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 

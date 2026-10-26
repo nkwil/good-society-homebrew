@@ -93,7 +93,7 @@
   background: transparent;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -162,7 +162,7 @@ button.gs-desire-reminder__entry-name {
   border: 0;
   text-align: left;
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--gs-brand);
   cursor: pointer;
@@ -177,7 +177,7 @@ button.gs-desire-reminder__entry-name:hover {
 .gs-desire-reminder__entry-desire {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.45;
   color: var(--gs-ink);
 }
@@ -196,7 +196,7 @@ button.gs-desire-reminder__entry-name:hover {
 .gs-desire-reminder__empty {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   margin: 0;
   text-align: center;

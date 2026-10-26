@@ -5,7 +5,7 @@
   align-items: center;
   gap: 0;
   font-family: var(--gs-body);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-ink);
   background: var(--gs-paper);
   border: 0.5px solid var(--gs-accent-2);
@@ -55,7 +55,7 @@
   background: transparent;
   border: none;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1;
   cursor: pointer;
   transition: width 120ms ease, color 120ms ease;
@@ -84,7 +84,7 @@
   font-family: var(--gs-display);
   font-style: normal;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 16px;
   letter-spacing: 0.03em;
   color: var(--gs-ink);
   background: var(--gs-paper-warm);
@@ -110,7 +110,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--gs-paper) !important;
   background: var(--gs-accent-3);
@@ -138,7 +138,7 @@
   display: inline-flex;
   align-items: center;
   font-family: var(--gs-italic);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-ink);
   background: var(--gs-paper);
   border: 0.5px solid var(--gs-accent-2);

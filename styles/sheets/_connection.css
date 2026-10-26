@@ -94,14 +94,14 @@
 .dossier-cameo__resolve-label {
   font-family: var(--gs-body);
   font-variant: small-caps;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.14em;
   color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
 }
 .dossier-cameo__resolve-count {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
 }
 
@@ -124,7 +124,7 @@
 .dossier-connection-linked-row__label {
   font-family: var(--gs-body);
   font-variant: small-caps;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.14em;
   color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
 }
@@ -145,7 +145,7 @@
  * Major's dossier. Same visual weight as the previous placeholder. */
 .dossier-connection-linked-row__none-hint {
   font-family: var(--gs-italic, var(--gs-body));
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   font-style: italic;
 }
@@ -154,7 +154,7 @@
  * the picker (same target as the pencil), so the empty state has an
  * obvious affordance. Styled as ghost text with a dotted-underline hint. */
 .dossier-connection-linked-row__none {
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   background: transparent;
   border: 0;
@@ -176,7 +176,7 @@
   padding: 2px 4px;
   cursor: pointer;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1;
   border-radius: 3px;
   transition: color 120ms, background 120ms;
@@ -198,7 +198,7 @@
   border-radius: 999px;
   cursor: pointer;
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-brand);
   transition: background 120ms;
 }
@@ -223,7 +223,7 @@
   align-items: center;
   justify-content: center;
   font-family: var(--gs-display);
-  font-size: 10px;
+  font-size: 13px;
   color: var(--gs-brand);
 }
 
@@ -245,7 +245,7 @@
   min-height: 120px;
   max-height: 320px;
   overflow-y: auto;
-  font-size: 13.5px;
+  font-size: 16px;
   line-height: 1.6;
   color: var(--gs-ink);
   white-space: normal;
@@ -288,7 +288,7 @@
 
 .dossier-section__add-btn {
   font-family: var(--gs-body);
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.08em;
   padding: 3px 10px;
@@ -342,7 +342,7 @@
 }
 
 .dossier-scene-info__empty {
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
 }
 
@@ -350,7 +350,7 @@
 .dossier-scene-info__hover-summary {
   width: 100%;
   font-family: var(--gs-body);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-ink);
   background: color-mix(in srgb, var(--gs-paper) 88%, transparent);
   border: 0.5px solid color-mix(in srgb, var(--gs-ink) 18%, transparent);
@@ -400,7 +400,7 @@
 .dossier-state__resolve-count {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
 }
 
@@ -420,7 +420,7 @@
   border: 0.5px solid color-mix(in srgb, var(--gs-brand) 60%, transparent);
   border-radius: 999px;
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-brand);
   cursor: pointer;
   transition: background 120ms;

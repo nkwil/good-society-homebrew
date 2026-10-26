@@ -3,7 +3,7 @@
 .gs-persona-picker__eyebrow {
   display: block;
   font-variant: small-caps;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   color: var(--gs-brand);
   text-align: center;
@@ -17,7 +17,7 @@
   border: none;
   padding: 4px 0;
   font-family: var(--gs-italic);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-brand);
   cursor: pointer;
   text-align: center;

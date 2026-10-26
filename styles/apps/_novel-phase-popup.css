@@ -22,7 +22,7 @@
 .gs-novel-phase-popup__title {
   margin: 4px 0 0;
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 500;
   color: var(--gs-brand);
 }
@@ -30,7 +30,7 @@
 .gs-novel-phase-popup__subhead {
   margin: 6px 0 0;
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
 }
 
@@ -44,7 +44,7 @@
   position: relative;
   padding: 8px 6px 8px 22px;
   border-bottom: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 35%, transparent);
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.55;
 }
 
@@ -58,7 +58,7 @@
   left: 4px;
   top: 8px;
   color: var(--gs-text-muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .gs-novel-phase-popup__bullet strong {

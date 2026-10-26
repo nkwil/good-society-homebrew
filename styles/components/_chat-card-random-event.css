@@ -6,12 +6,12 @@
 .gs-random-event-card__title {
   margin: 6px 0 4px;
   font-family: var(--gs-display);
-  font-size: 16px;
+  font-size: 20px;
   color: var(--gs-brand);
 }
 
 .gs-random-event-card__desc {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.5;
   color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
   margin-bottom: 8px;
@@ -28,7 +28,7 @@
   align-items: baseline;
   gap: 8px;
   padding: 4px 0;
-  font-size: 13px;
+  font-size: 16px;
 }
 .gs-random-event-card__strategy-num {
   display: inline-flex;
@@ -40,14 +40,14 @@
   color: var(--gs-paper);
   border-radius: 50%;
   font-family: var(--gs-display);
-  font-size: 11px;
+  font-size: 14px;
 }
 .gs-random-event-card__strategy-text {
   font-style: italic;
 }
 .gs-random-event-card__strategy-roll {
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-brand);
 }
 
@@ -59,19 +59,19 @@
 }
 .gs-random-event-card__average {
   font-variant: small-caps;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.08em;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
 }
 .gs-random-event-card__outcome {
   font-family: var(--gs-display);
-  font-size: 14px;
+  font-size: 17px;
 }
 .gs-random-event-card--success .gs-random-event-card__outcome { color: var(--gs-positive); }
 .gs-random-event-card--failure .gs-random-event-card__outcome { color: var(--gs-danger); }
 
 .gs-random-event-card__tag-line {
-  font-size: 13px;
+  font-size: 16px;
   margin: 4px 0 0;
   color: var(--gs-ink);
 }
@@ -106,24 +106,24 @@
 .gs-random-event-announce__title {
   margin: 6px 0 4px;
   font-family: var(--gs-display);
-  font-size: 17px;
+  font-size: 20px;
   color: var(--gs-brand);
 }
 
 .gs-random-event-announce__desc {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.55;
   color: color-mix(in srgb, var(--gs-ink) 85%, transparent);
   margin-bottom: 8px;
 }
 
 .gs-random-event-announce__lead {
-  font-size: 13px;
+  font-size: 16px;
   margin: 8px 0 2px;
   color: var(--gs-ink);
 }
 .gs-random-event-announce__waiting {
-  font-size: 12px;
+  font-size: 15px;
   margin: 2px 0 0;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
 }

@@ -9,7 +9,7 @@
   border-radius: 10px;
   font-family: var(--gs-body);
   font-variant: small-caps;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.1em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   cursor: pointer;
@@ -30,7 +30,7 @@
 .gs-item-sheet__helper {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
 }

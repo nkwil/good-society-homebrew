@@ -61,7 +61,7 @@
   border-radius: 4px;
   color: var(--gs-ink);
   font-family: var(--gs-body);
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1;
   cursor: pointer;
   transition: background 100ms, border-color 100ms, color 100ms;
@@ -80,7 +80,7 @@
 /* Width override for the numbered-list button so "1." doesn't crowd. */
 .gs-prose-toolbar button[data-cmd="ordered"] {
   width: 32px;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0;
 }
 
@@ -111,7 +111,7 @@
   flex: 1;
   padding: 14px 18px;
   font-family: var(--gs-body);
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.55;
   color: var(--gs-ink);
   background: var(--gs-paper);
@@ -130,9 +130,9 @@
   margin: 12px 0 6px 0;
   line-height: 1.25;
 }
-.gs-prose-dialog .ProseMirror h1 { font-size: 22px; }
-.gs-prose-dialog .ProseMirror h2 { font-size: 18px; }
-.gs-prose-dialog .ProseMirror h3 { font-size: 15px; }
+.gs-prose-dialog .ProseMirror h1 { font-size: 26px; }
+.gs-prose-dialog .ProseMirror h2 { font-size: 22px; }
+.gs-prose-dialog .ProseMirror h3 { font-size: 18px; }
 
 .gs-prose-dialog .ProseMirror ul,
 .gs-prose-dialog .ProseMirror ol {

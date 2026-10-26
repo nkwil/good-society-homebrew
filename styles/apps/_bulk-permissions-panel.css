@@ -11,7 +11,7 @@
   display: block;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 10.5px;
+  font-size: 13px;
   line-height: 1.25;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
   margin-top: 1px;
@@ -51,7 +51,7 @@
 
 .gs-bulk-permissions__eyebrow {
   font-family: var(--gs-body);
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -59,7 +59,7 @@
 
 .gs-bulk-permissions__counts {
   font-family: var(--gs-italic);
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
@@ -72,7 +72,7 @@
 .gs-bulk-permissions__search {
   flex: 1;
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   padding: 4px 8px;
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-accent-2);
@@ -92,7 +92,7 @@
 
 .gs-bulk-permissions__type-filter {
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   padding: 4px 8px;
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-accent-2);
@@ -128,7 +128,7 @@
 
 .gs-bulk-permissions__col-actor-label {
   font-family: var(--gs-body);
-  font-size: 10px;
+  font-size: 13px;
   font-variant: small-caps;
   letter-spacing: 0.16em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -144,19 +144,19 @@
 
 .gs-bulk-permissions__col-user-name {
   font-family: var(--gs-display);
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gs-ink);
 }
 
 .gs-bulk-permissions__col-gm-label {
   font-family: var(--gs-italic);
-  font-size: 9px;
+  font-size: 11px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-bulk-permissions__col-quickset {
   font-family: var(--gs-body);
-  font-size: 9px;
+  font-size: 11px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   background: none;
   border: none;
@@ -200,7 +200,7 @@
 
 .gs-bulk-permissions__section-label {
   font-family: var(--gs-body);
-  font-size: 10px;
+  font-size: 13px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -208,7 +208,7 @@
 
 .gs-bulk-permissions__section-reset {
   font-family: var(--gs-italic);
-  font-size: 10px;
+  font-size: 13px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   background: none;
   border: none;
@@ -225,14 +225,14 @@
 
 .gs-bulk-permissions__section-empty {
   font-family: var(--gs-italic);
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   padding: 10px 22px;
 }
 
 .gs-bulk-permissions__empty {
   font-family: var(--gs-italic);
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   text-align: center;
   padding: 32px 22px;
@@ -285,7 +285,7 @@
 
 .gs-bulk-permissions__actor-initial {
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-brand);
   line-height: 1;
   user-select: none;
@@ -293,7 +293,7 @@
 
 .gs-bulk-permissions__actor-name {
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-brand);
   white-space: nowrap;
   overflow: hidden;
@@ -361,7 +361,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-family: var(--gs-body);
-  font-size: 9px;
+  font-size: 11px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-accent-2);
@@ -407,13 +407,13 @@
 
 .gs-bulk-permissions__pending-none {
   font-family: var(--gs-italic);
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
 .gs-bulk-permissions__pending-pill {
   font-family: var(--gs-body);
-  font-size: 10px;
+  font-size: 13px;
   font-variant: small-caps;
   letter-spacing: 0.06em;
   background: var(--gs-accent-1);
@@ -425,7 +425,7 @@
 
 .gs-bulk-permissions__pending-summary {
   font-family: var(--gs-italic);
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gs-ink);
   white-space: nowrap;
   overflow: hidden;

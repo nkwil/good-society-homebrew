@@ -22,7 +22,7 @@
   padding: 3px 10px;
   font-family: var(--gs-italic, var(--gs-display));
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.4;
   color: var(--gs-ink);
   background: var(--gs-paper-warm);
@@ -50,7 +50,7 @@
 
 .gs-persona-switcher__chevron {
   font-style: normal;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gs-accent-3); /* gilt; persona chatColor override applied via inline style */
   line-height: 1;
 }
@@ -59,7 +59,7 @@
 .gs-persona-switcher__pill--compact {
   height: 22px;
   padding: 0 8px;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 /* Empty state — actor has zero personas. The pill collapses to a non-interactive

@@ -107,7 +107,7 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
 
 .gs-rule-tooltip__title {
   font-family: var(--gs-display, 'Lora', Georgia, serif);
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--gs-brand, #2A3A2D);
   line-height: 1.25;
@@ -117,7 +117,7 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
 .gs-rule-tooltip__body {
   font-family: var(--gs-italic, 'Crimson Text', Georgia, serif);
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.55;
   color: var(--gs-ink, #3D2F26);
   margin: 0;
@@ -133,7 +133,7 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
   border-top: 0.5px solid var(--gs-accent-2, #708060);
 
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
-  font-size: 10px;
+  font-size: 13px;
   font-style: italic;
   letter-spacing: 0.12em;
   text-transform: uppercase;

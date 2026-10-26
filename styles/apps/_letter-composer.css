@@ -110,7 +110,7 @@
   content: 'EPISTOLARY';
   font-family: var(--gs-display);
   font-weight: 600;
-  font-size: 11.5px;
+  font-size: 14px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--gs-headers, var(--gs-brand));
@@ -119,7 +119,7 @@
 .gs-letter-composer__cycle-label {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11.5px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
   margin: 0;
 }
@@ -141,7 +141,7 @@
 .gs-letter-composer__label {
   font-family: var(--gs-body);
   font-variant: small-caps;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.16em;
   color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
   font-weight: 500;
@@ -159,7 +159,7 @@
 .gs-letter-composer__textarea {
   width: 100%;
   font-family: var(--gs-body);
-  font-size: 13.5px;
+  font-size: 16px;
   color: var(--gs-ink);
   background: color-mix(in srgb, var(--gs-paper) 85%, transparent);
   border: 0.5px solid color-mix(in srgb, var(--gs-ink) 18%, transparent);
@@ -269,7 +269,7 @@
 .gs-letter-composer__seal-label {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   /* In the grid layout the label always sits on its own row below the seals. */
   grid-column: 1 / -1;
@@ -381,7 +381,7 @@
   font-family: var(--gs-display);
   font-style: italic;
   font-weight: 500;
-  font-size: 22px;
+  font-size: 26px;
   letter-spacing: 0.01em;
   color: var(--gs-brand);
 }
@@ -391,7 +391,7 @@
   margin: 4px 0 8px;
   text-align: left;
   font-style: italic;
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.4;
 }
 
@@ -426,7 +426,7 @@
   font-family: var(--gs-display);
   font-style: italic;
   font-weight: 500;
-  font-size: 30px;
+  font-size: 36px;
   letter-spacing: 0.01em;
   color: var(--gs-brand);
 }
@@ -585,7 +585,7 @@
 .gs-letter-composer__status {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11.5px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-paper-warm) 70%, transparent);
 }
 
@@ -601,7 +601,7 @@
   padding: 6px 16px;
   border-radius: 4px;
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   font-variant: small-caps;
   letter-spacing: 0.08em;
   cursor: pointer;

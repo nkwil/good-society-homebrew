@@ -33,7 +33,7 @@
 
 .gs-reveal-control__title {
   font-family: var(--gs-ui);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.18em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   font-variant: small-caps;
@@ -45,7 +45,7 @@
  * The rest of the popover stays house — no theming bleed. */
 .gs-reveal-control__actor-name {
   font-family: var(--gs-display);
-  font-size: 18px;
+  font-size: 22px;
   color: var(--gs-brand);
   line-height: 1.2;
 }
@@ -69,7 +69,7 @@
 
 .gs-reveal-control__grid-label {
   font-family: var(--gs-ui);
-  font-size: 10px;
+  font-size: 13px;
   font-variant: small-caps;
   letter-spacing: 0.12em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -77,7 +77,7 @@
 }
 
 .gs-reveal-control__grid-value {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-ink);
 }
 
@@ -85,7 +85,7 @@
 .gs-reveal-control__state--secret {
   font-style: italic;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .gs-reveal-control__state--public {
@@ -96,12 +96,12 @@
 .gs-reveal-control__state--redacted {
   color: var(--gs-danger);
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 /* "(irreversible feel)" tag next to the FLIP TO value */
 .gs-reveal-control__irreversible {
-  font-size: 11px;
+  font-size: 14px;
   font-style: italic;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   opacity: 0.75;
@@ -114,7 +114,7 @@
   border-left: 2.5px solid var(--gs-accent-1);
   padding: 10px 12px;
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.55;
   color: var(--gs-ink);
   border-radius: 0 3px 3px 0;
@@ -136,7 +136,7 @@
 .gs-reveal-control__btn-cancel,
 .gs-reveal-control__btn-confirm {
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   padding: 5px 14px;
   border-radius: 4px;
   cursor: pointer;

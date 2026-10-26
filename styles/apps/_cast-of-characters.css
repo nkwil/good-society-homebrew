@@ -25,7 +25,7 @@
 
 .gs-cast__eyebrow {
   font-family: var(--gs-display);
-  font-size: 10.5px;
+  font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--gs-accent-1);
@@ -33,7 +33,7 @@
 
 .gs-cast__title {
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 500;
   color: var(--gs-brand);
   margin: 0;
@@ -43,7 +43,7 @@
 .gs-cast__subtitle {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12.5px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
   margin: 2px 0 0;
 }
@@ -69,7 +69,7 @@
 }
 .gs-cast__group-label {
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -78,14 +78,14 @@
 .gs-cast__group-count {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
 }
 
 .gs-cast__empty-group {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
   margin: 0;
   padding: 4px 0 8px;
@@ -94,7 +94,7 @@
 .gs-cast__empty {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   text-align: center;
   padding: 24px 0;
@@ -136,7 +136,7 @@
 }
 .gs-cast__initial {
   font-family: var(--gs-display);
-  font-size: 18px;
+  font-size: 22px;
   color: var(--gs-brand);
   line-height: 1;
 }
@@ -227,7 +227,7 @@ button.gs-cast__card-btn:focus-visible { outline: 1.5px solid var(--gs-brand); o
 }
 .gs-cast__portrait-box > .gs-cast__initial {
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   color: var(--gs-brand);
   line-height: 1;
 }
@@ -241,7 +241,7 @@ button.gs-cast__card-btn:focus-visible { outline: 1.5px solid var(--gs-brand); o
 }
 .gs-cast__card-name {
   font-family: var(--gs-display);
-  font-size: 15px;
+  font-size: 18px;
   color: var(--gs-brand);
   font-weight: 500;
   line-height: 1.2;
@@ -252,7 +252,7 @@ button.gs-cast__card-btn:focus-visible { outline: 1.5px solid var(--gs-brand); o
 .gs-cast__card-subtitle {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
   line-height: 1.3;
   overflow: hidden;
@@ -292,7 +292,7 @@ button.gs-cast__card-btn:focus-visible { outline: 1.5px solid var(--gs-brand); o
 }
 .gs-cast__row-name {
   font-family: var(--gs-display);
-  font-size: 14px;
+  font-size: 17px;
   color: var(--gs-brand);
   font-weight: 500;
   line-height: 1.2;
@@ -303,13 +303,13 @@ button.gs-cast__card-btn:focus-visible { outline: 1.5px solid var(--gs-brand); o
 .gs-cast__row-persona-hint {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gs-accent-1);
 }
 .gs-cast__row-subtitle {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11.5px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   line-height: 1.3;
 }
@@ -330,7 +330,7 @@ button.gs-cast__reset-btn {
   border-radius: 100px;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   cursor: pointer;
   min-height: 0;
   transition: background 120ms, color 120ms, border-color 120ms;
@@ -354,7 +354,7 @@ button.gs-cast__toggle {
   cursor: pointer;
   min-height: 0;
   font-family: var(--gs-display);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
@@ -411,7 +411,7 @@ button.gs-cast-pin {
   border: 0.5px dashed color-mix(in srgb, var(--gs-accent-2) 70%, transparent);
   border-radius: 100px;
   font-family: var(--gs-display);
-  font-size: 10.5px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
@@ -434,11 +434,11 @@ button.gs-cast-pin.is-on:hover {
   background: color-mix(in srgb, var(--gs-brand) 88%, black);
 }
 .gs-cast-pin__glyph {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1;
 }
 .gs-cast-pin__label {
-  font-size: 10px;
+  font-size: 13px;
 }
 button.gs-cast-pin:focus:not(:focus-visible) { outline: none; box-shadow: none; }
 button.gs-cast-pin:focus-visible { outline: 1.5px solid var(--gs-brand); outline-offset: 2px; }

@@ -107,12 +107,12 @@
   /* Visual-novel register: body reads from a reclining distance, not
    * from a book held at the chin. Every slot moved up one step on a
    * ~1.25 scale from the old values; dossier cameo + modal titles bloom. */
-  --gs-size-window:    28px;  /* module window header, character names */
-  --gs-size-section:   22px;  /* section headers on boards/trackers */
-  --gs-size-label:     13px;  /* small-caps labels, eyebrows */
-  --gs-size-body:      16px;  /* body text */
-  --gs-size-ui:        12px;  /* UI labels, pills, controls */
-  --gs-size-numeric:   18px;  /* token counts, ages, numeric stats */
+  --gs-size-window:    34px;  /* module window header, character names */
+  --gs-size-section:   26px;  /* section headers on boards/trackers */
+  --gs-size-label:     15px;  /* small-caps labels, eyebrows */
+  --gs-size-body:      18px;  /* body text */
+  --gs-size-ui:        14px;  /* UI labels, pills, controls */
+  --gs-size-numeric:   22px;  /* token counts, ages, numeric stats */
 
   /* ── Radius scale (new — surfaces migrate as they're touched) ─────── */
   /* Dating-sim chrome wants rounder, floatier cards. New components

@@ -73,7 +73,7 @@
 .dossier-npc-eyebrow__label {
   font-family: var(--gs-body);
   font-variant: small-caps;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.18em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
@@ -92,7 +92,7 @@
 
 .dossier-npc-tools__btn {
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   font-variant: small-caps;
   letter-spacing: 0.06em;
   padding: 4px 12px;

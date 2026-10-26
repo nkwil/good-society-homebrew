@@ -24,14 +24,14 @@
 .gs-ecc__title {
   margin: 0 0 4px;
   font-family: var(--gs-display);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 500;
   color: var(--gs-ink);
 }
 .gs-ecc__hint {
   margin: 0;
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
 }
 
@@ -83,7 +83,7 @@
   border: 0.5px solid transparent;
   border-radius: 4px;
   font: inherit !important;
-  font-size: 13px !important;
+  font-size: 16px !important;
   line-height: 1.3 !important;
   color: inherit;
   text-align: left;
@@ -127,7 +127,7 @@
   align-items: center;
   justify-content: center;
   font-family: var(--gs-display);
-  font-size: 14px !important;
+  font-size: 17px !important;
   color: var(--gs-ink);
 }
 
@@ -139,7 +139,7 @@
 }
 .gs-ecc__roster-name {
   font-family: var(--gs-display) !important;
-  font-size: 14px !important;
+  font-size: 17px !important;
   font-weight: 500 !important;
   line-height: 1.25 !important;
   color: var(--gs-ink);
@@ -150,7 +150,7 @@
 .gs-ecc__roster-meta {
   font-family: var(--gs-body) !important;
   font-style: italic !important;
-  font-size: 12px !important;
+  font-size: 15px !important;
   font-weight: 400 !important;
   line-height: 1.3 !important;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
@@ -160,7 +160,7 @@
 }
 .gs-ecc__roster-offline {
   color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
-  font-size: 10px !important;
+  font-size: 13px !important;
   line-height: 1;
 }
 
@@ -181,7 +181,7 @@
 .gs-ecc__detail-title {
   margin: 0;
   font-family: var(--gs-display);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 500;
 }
 .gs-ecc__detail-archetype {
@@ -193,7 +193,7 @@
   color: var(--gs-danger);
 }
 .gs-ecc__detail-offline {
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.08em;
   color: var(--gs-danger);
@@ -217,20 +217,20 @@
 }
 .gs-ecc__event-name {
   font-family: var(--gs-display);
-  font-size: 15px;
+  font-size: 18px;
   color: var(--gs-ink);
 }
 .gs-ecc__event-counts {
   display: inline-flex;
   gap: 6px;
-  font-size: 12px;
+  font-size: 15px;
   font-family: var(--gs-body);
 }
 .gs-ecc__event-count--positive { color: var(--gs-positive); }
 .gs-ecc__event-count--negative { color: var(--gs-danger); }
 
 .gs-ecc__event-desc {
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
   margin-bottom: 8px;
 }
@@ -249,7 +249,7 @@
   border-top: 0.5px solid var(--gs-accent-2);
   background: var(--gs-paper-warm);
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
 }
 .gs-ecc__footer-meta {
   font-style: italic;

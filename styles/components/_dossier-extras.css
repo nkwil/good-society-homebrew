@@ -100,7 +100,7 @@
   gap: 4px;
   padding: 4px 12px;
   font-family: var(--gs-body);
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.08em;
   background: var(--gs-paper-warm);
@@ -133,7 +133,7 @@
 
 .dossier-conn-spread__pager-marker {
   font-family: var(--gs-body);
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.08em;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
@@ -158,14 +158,14 @@
 }
 .dossier-page--blank__ornament {
   font-family: var(--gs-display);
-  font-size: 36px;
+  font-size: 42px;
   color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
   line-height: 1;
 }
 .dossier-page--blank__hint {
   margin: 0;
   font-family: var(--gs-italic, var(--gs-body));
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 50%, transparent);
   max-width: 22ch;
   line-height: 1.5;
@@ -180,7 +180,7 @@
 
 .gs-dossier-extras__back {
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--gs-brand);
@@ -210,7 +210,7 @@
 .gs-dossier-extras__page-marker {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   flex-shrink: 0;
 }
@@ -259,7 +259,7 @@
 .dossier-backstory-page__marker {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11.5px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
 }
 
@@ -278,7 +278,7 @@
   flex: 1;
   min-height: 0;            /* let flex shrink the body inside the fixed-height card */
   font-family: var(--gs-body);
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.7;
   color: var(--gs-ink);
   overflow-wrap: anywhere;
@@ -341,7 +341,7 @@
   margin: 0;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
 }
 
@@ -360,7 +360,7 @@
   display: inline-block;
   padding: 1px 4px;
   font-family: var(--gs-body);
-  font-size: 12.5px;
+  font-size: 15px;
   color: var(--gs-ink);
 }
 
@@ -394,7 +394,7 @@
 
 .dossier-conn-spread-controls__back {
   font-family: var(--gs-body);
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.06em;
   padding: 3px 12px;

@@ -29,7 +29,7 @@
 
 .gs-epistolary-wizard__actor-select {
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   padding: 4px 10px;
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-accent-2);
@@ -39,7 +39,7 @@
 
 .gs-epistolary-wizard__actor-name {
   font-family: var(--gs-display);
-  font-size: 14px;
+  font-size: 17px;
   color: var(--gs-brand);
 }
 
@@ -55,7 +55,7 @@
 
 .gs-epistolary-wizard__tab {
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.06em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -89,7 +89,7 @@
   background: var(--gs-brand);
   color: var(--gs-paper);
   font-family: var(--gs-ui);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -119,7 +119,7 @@
   border-radius: 100px;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-ink);
   cursor: pointer;
 }
@@ -224,7 +224,7 @@ button.gs-epistolary-wizard__row-btn {
 }
 .gs-epistolary-wizard__reader-meta {
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
 }
 .gs-epistolary-wizard__back {
@@ -410,7 +410,7 @@ button.gs-letter-envelope__packet:focus-visible {
   white-space: nowrap;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
   transition: opacity 200ms ease;
 }
@@ -467,7 +467,7 @@ button.gs-letter-envelope__packet:focus-visible {
 .gs-letter-sheet__subject {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 17px;
+  font-size: 20px;
   /* Subject in the sender's theme accent — a permitted tint. */
   color: var(--gs-headers, var(--gs-brand));
   margin: 0 0 14px;
@@ -476,7 +476,7 @@ button.gs-letter-envelope__packet:focus-visible {
 }
 .gs-letter-sheet__body {
   font-family: var(--gs-body);
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.7;
   color: var(--gs-letter-ink);
 }
@@ -496,7 +496,7 @@ button.gs-letter-envelope__packet:focus-visible {
   text-align: right;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 15px;
+  font-size: 18px;
   color: var(--gs-headers, var(--gs-brand));
 }
 
@@ -510,7 +510,7 @@ button.gs-letter-envelope__packet:focus-visible {
   border: 2px solid var(--gs-accent-3);
   background: var(--gs-paper);
   color: var(--gs-text-muted);
-  font-size: 14px;
+  font-size: 17px;
   flex-shrink: 0;
 }
 
@@ -551,7 +551,7 @@ button.gs-letter-envelope__packet:focus-visible {
 
 .gs-epistolary-wizard__portrait-initial {
   font-family: var(--gs-display);
-  font-size: 16px;
+  font-size: 20px;
   color: var(--gs-brand);
 }
 
@@ -564,7 +564,7 @@ button.gs-letter-envelope__packet:focus-visible {
 
 .gs-epistolary-wizard__row-meta {
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
@@ -575,7 +575,7 @@ button.gs-letter-envelope__packet:focus-visible {
 .gs-epistolary-wizard__row-subject {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -585,7 +585,7 @@ button.gs-letter-envelope__packet:focus-visible {
 .gs-epistolary-wizard__row-snippet {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11.5px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -612,7 +612,7 @@ button.gs-letter-envelope__packet:focus-visible {
 .gs-epistolary-wizard__done-marker {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-positive);
   letter-spacing: 0.06em;
 }
@@ -686,18 +686,18 @@ button.gs-letter-envelope__packet:focus-visible {
 
 .gs-epistolary-roster__portrait-initial {
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-brand);
 }
 
 .gs-epistolary-roster__name {
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-ink);
 }
 
 .gs-epistolary-roster__status {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .gs-epistolary-roster__status.is-done {
@@ -751,6 +751,6 @@ button.gs-epistolary-roster__status--undoable:focus-visible {
   border-top: 0.5px solid var(--gs-accent-2);
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }

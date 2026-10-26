@@ -37,7 +37,7 @@
 
 .gs-cycle-hud__counter-label {
   font-family: var(--gs-ui);
-  font-size: 11px;
+  font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.16em;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -46,7 +46,7 @@
 
 .gs-cycle-hud__counter-number {
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   color: var(--gs-brand);
   line-height: 1;
 }
@@ -99,7 +99,7 @@
   border: 0.5px solid var(--gs-brand);
   color: var(--gs-brand);
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.04em;
   padding: 5px 14px;
   border-radius: 4px;
@@ -130,7 +130,7 @@
   background: var(--gs-accent-3);
   color: var(--gs-ink);
   font-family: var(--gs-ui);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -146,7 +146,7 @@
   border: 0.5px solid var(--gs-accent-2);
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   font-family: var(--gs-ui);
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 4px 8px;

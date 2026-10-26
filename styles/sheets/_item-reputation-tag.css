@@ -3,12 +3,12 @@
 
 .gs-item-sheet--reputation-tag .gs-item-sheet__meta--polarity-positive {
   color: var(--gs-positive);
-  font-size: 14px;
+  font-size: 17px;
 }
 
 .gs-item-sheet--reputation-tag .gs-item-sheet__meta--polarity-negative {
   color: var(--gs-danger);
-  font-size: 14px;
+  font-size: 17px;
 }
 
 /* Polarity toggle row */
@@ -31,7 +31,7 @@
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
   font-family: var(--gs-body);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-ink);
   cursor: pointer;
   opacity: 0.55;

@@ -49,7 +49,7 @@ button.gs-gm-tools-popover__btn {
   cursor: pointer;
   min-height: 0;
   font-family: var(--gs-display);
-  font-size: 12.5px;
+  font-size: 15px;
   letter-spacing: 0.04em;
   text-align: left;
   transition: background 120ms, color 120ms;
@@ -66,7 +66,7 @@ button.gs-gm-tools-popover__btn:focus-visible { outline: 1.5px solid var(--gs-br
   width: 18px;
   text-align: center;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
-  font-size: 13px;
+  font-size: 16px;
 }
 button.gs-gm-tools-popover__btn:hover .gs-gm-tools-popover__icon {
   color: var(--gs-brand);

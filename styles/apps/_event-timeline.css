@@ -26,7 +26,7 @@
 
 .gs-event-timeline__title {
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 500;
   color: var(--gs-brand);
   margin: 0;
@@ -34,7 +34,7 @@
 }
 
 .gs-event-timeline__subtitle {
-  font-size: 12px;
+  font-size: 15px;
   font-style: italic;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
@@ -60,7 +60,7 @@
 
 .gs-event-timeline__group-eyebrow {
   font-family: var(--gs-ui);
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -82,7 +82,7 @@
   border-radius: 4px;
   padding: 6px 12px;
   font-family: var(--gs-ui);
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   cursor: pointer;
   align-self: flex-start;
@@ -139,12 +139,12 @@
   align-items: baseline;
   gap: 6px;
   margin-top: 6px;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .gs-event-timeline__row-scene-label {
   font-family: var(--gs-ui);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -156,7 +156,7 @@
   padding: 0;
   font-family: var(--gs-display);
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-accent-1);
   cursor: pointer;
   text-decoration: underline;
@@ -171,7 +171,7 @@
 .gs-event-timeline__row-scene-missing {
   font-style: italic;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .gs-event-timeline__row--hidden {
@@ -192,7 +192,7 @@
 
 .gs-event-timeline__row-date {
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   font-style: italic;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   letter-spacing: 0.02em;
@@ -200,7 +200,7 @@
 
 .gs-event-timeline__row-vis-badge {
   font-family: var(--gs-ui);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--gs-accent-1);
@@ -220,7 +220,7 @@
   border: 0.5px solid transparent;
   border-radius: 3px;
   padding: 2px 6px;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   cursor: pointer;
   line-height: 1;
@@ -238,13 +238,13 @@
 
 .gs-event-timeline__row-title {
   font-family: var(--gs-display);
-  font-size: 16px;
+  font-size: 20px;
   color: var(--gs-ink);
   font-weight: 500;
 }
 
 .gs-event-timeline__row-description {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-ink);
   margin: 4px 0 0 0;
   line-height: 1.5;
@@ -278,7 +278,7 @@
 
 .gs-event-timeline__label {
   font-family: var(--gs-ui);
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -287,7 +287,7 @@
 .gs-event-timeline__input,
 .gs-event-timeline__textarea {
   font-family: var(--gs-body);
-  font-size: 14px;
+  font-size: 17px;
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-muted);
   border-radius: 3px;
@@ -312,7 +312,7 @@
 
 .gs-event-timeline__num {
   font-family: var(--gs-body);
-  font-size: 14px;
+  font-size: 17px;
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-muted);
   border-radius: 3px;
@@ -330,7 +330,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 15px;
   cursor: pointer;
 }
 

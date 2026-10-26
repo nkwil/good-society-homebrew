@@ -16,7 +16,7 @@
   border-radius: 10px;
   font-family: var(--gs-body);
   font-variant: small-caps;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.1em;
   color: var(--gs-accent-1);
   cursor: pointer;
@@ -44,7 +44,7 @@
 /* Monospace inputs for VFX/sound paths */
 .gs-item-sheet__input--mono {
   font-family: var(--gs-ui);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.01em;
 }
 
@@ -73,7 +73,7 @@
   border: 0.5px solid color-mix(in srgb, var(--gs-ink) 22%, transparent);
   border-radius: 4px;
   color: var(--gs-ink);
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1;
   cursor: pointer;
   transition: background 120ms, border-color 120ms, transform 80ms;

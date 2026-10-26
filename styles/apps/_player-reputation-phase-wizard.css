@@ -29,7 +29,7 @@
 
 .gs-player-rep-wizard__eyebrow {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -38,7 +38,7 @@
 
 .gs-player-rep-wizard__step-of {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gs-accent-2, #708060);
 }
 
@@ -78,7 +78,7 @@
 
 .gs-player-rep-wizard__marker-label {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 10px;
+  font-size: 13px;
   color: var(--gs-accent-2, #708060);
   white-space: nowrap;
 }
@@ -112,14 +112,14 @@
 
 .gs-player-rep-wizard__step-title {
   font-family: var(--gs-display, 'Lora', Georgia, serif);
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--gs-brand, #2A3A2D);
   margin: 0;
 }
 
 .gs-player-rep-wizard__step-prompt {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.55;
   color: var(--gs-ink, #3D2F26);
   margin: 0;
@@ -129,7 +129,7 @@
 .gs-player-rep-wizard__no-family {
   font-style: italic;
   color: var(--gs-accent-2, #708060);
-  font-size: 13px;
+  font-size: 16px;
   margin: 0;
 }
 
@@ -149,7 +149,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .gs-player-rep-wizard__summary-label {
@@ -167,7 +167,7 @@
 
 .gs-player-rep-wizard__overview-heading {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -184,7 +184,7 @@
 }
 
 .gs-player-rep-wizard__overview-list li {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--gs-ink, #3D2F26);
 }
@@ -214,7 +214,7 @@
 
 .gs-player-rep-wizard__criteria-heading {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -238,7 +238,7 @@
 }
 
 .gs-player-rep-wizard__criteria-list li {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.45;
   color: var(--gs-ink, #3D2F26);
 }
@@ -257,7 +257,7 @@
 }
 
 .gs-player-rep-wizard__tag-chips--small .gs-player-rep-wizard__tag-chip {
-  font-size: 11px;
+  font-size: 14px;
   padding: 2px 8px;
 }
 
@@ -268,7 +268,7 @@
   padding: 3px 10px;
   border-radius: 100px;
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
-  font-size: 12px;
+  font-size: 15px;
   font-variant: small-caps;
 }
 
@@ -289,7 +289,7 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1;
   opacity: 0.6;
   color: inherit;
@@ -304,7 +304,7 @@
 
 .gs-player-rep-wizard__add-tag-heading {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -323,7 +323,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 15px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -333,7 +333,7 @@
   min-width: 120px;
   padding: 5px 8px;
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
-  font-size: 13px;
+  font-size: 16px;
   background: var(--gs-paper, #EFE6D2);
   border: 0.5px solid var(--gs-accent-2, #708060);
   border-radius: 4px;
@@ -353,7 +353,7 @@
 
 .gs-player-rep-wizard__conditions-heading {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -389,20 +389,20 @@
 
 .gs-player-rep-wizard__condition-name {
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 600;
   margin: 0 0 2px;
   color: var(--gs-ink, #3D2F26);
 }
 
 .gs-player-rep-wizard__condition-count {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gs-accent-2, #708060);
   margin: 0;
 }
 
 .gs-player-rep-wizard__sub-status {
-  font-size: 13px;
+  font-size: 16px;
   margin: 0;
 }
 
@@ -421,7 +421,7 @@
 }
 
 .gs-player-rep-wizard__summary-list li {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--gs-ink, #3D2F26);
 }

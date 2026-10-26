@@ -27,7 +27,7 @@
 
 .gs-speaking-as__label {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -44,7 +44,7 @@
   min-width: 0;
   padding: 4px 10px;
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-ink, #3D2F26);
   background: var(--gs-paper, #EFE6D2);
   border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
@@ -70,7 +70,7 @@
 }
 
 .gs-speaking-as__pill-chevron {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--gs-accent-2, #708060);
   flex-shrink: 0;
 }
@@ -105,7 +105,7 @@
   background: transparent;
   border: 0;
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-ink, #3D2F26);
   cursor: pointer;
   white-space: nowrap;
@@ -142,7 +142,7 @@
   align-items: center;
   justify-content: center;
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--gs-accent-2, #708060);
   background: transparent;

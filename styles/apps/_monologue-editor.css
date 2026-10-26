@@ -19,14 +19,14 @@
 
 .gs-monologue-editor__speaker-name {
   font-family: var(--gs-display, 'Lora', Georgia, serif);
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--gs-brand, #2A3A2D);
 }
 
 .gs-monologue-editor__cycle {
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--gs-accent-2, #708060);
@@ -42,7 +42,7 @@
 .gs-monologue-editor__textarea {
   font-family: var(--gs-italic, var(--gs-body, 'Crimson Text', Georgia, serif));
   font-style: italic;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.7;
   color: var(--gs-ink, #3D2F26);
   background: var(--gs-paper-warm, #F4ECD8);
@@ -69,7 +69,7 @@
   align-items: center;
   gap: 8px;
   font-family: var(--gs-ui, system-ui, sans-serif);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-ink, #3D2F26);
   cursor: pointer;
 }
@@ -92,7 +92,7 @@
 .gs-monologue-archive__body {
   font-family: var(--gs-italic, var(--gs-body, 'Crimson Text', Georgia, serif));
   font-style: italic;
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.7;
   color: var(--gs-ink, #3D2F26);
 }

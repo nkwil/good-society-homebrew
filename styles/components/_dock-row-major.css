@@ -3,7 +3,7 @@
 .gs-dock__row-title {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.3;
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
   margin: 0;
@@ -70,7 +70,7 @@
 
 .gs-dock__portrait-initial {
   font-family: var(--gs-display);
-  font-size: 24px;
+  font-size: 28px;
   color: var(--gs-brand);
 }
 
@@ -85,7 +85,7 @@
 
 .gs-dock__row-name {
   font-family: var(--gs-display);
-  font-size: 14px;
+  font-size: 17px;
   color: var(--gs-brand);
   line-height: 1.2;
   white-space: nowrap;
@@ -99,7 +99,7 @@
 .gs-dock__row-title {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
   line-height: 1.2;
   white-space: nowrap;
@@ -113,7 +113,7 @@
 .gs-dock__row-persona {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 10px;
+  font-size: 13px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   line-height: 1.2;
   white-space: nowrap;
@@ -151,7 +151,7 @@
 
 .gs-dock__mt {
   font-family: var(--gs-display);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--gs-brand);
@@ -214,7 +214,7 @@
   font-family: var(--gs-display);
   font-style: normal;
   font-weight: 600;
-  font-size: 11.5px;
+  font-size: 14px;
   letter-spacing: 0.02em;
   line-height: 1;
   color: var(--gs-ink);
@@ -240,7 +240,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   background: var(--gs-accent-3);
   color: var(--gs-paper);

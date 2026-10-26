@@ -107,7 +107,7 @@
   background: var(--gs-paper-warm);
   border: 1px solid var(--gs-accent-2);
   font-family: var(--gs-display);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: 0;
   color: var(--gs-brand);
@@ -172,7 +172,7 @@
   color: var(--gs-paper);
   border: 1px solid var(--gs-brand);
   font-family: var(--gs-display);
-  font-size: 23px;
+  font-size: 27px;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -229,7 +229,7 @@
 
 .gs-cabinet-drawer__head h3 {
   font-family: var(--gs-display);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 600;
   color: var(--gs-brand);
   margin: 0;
@@ -238,7 +238,7 @@
 .gs-cabinet-drawer__head small {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
@@ -279,7 +279,7 @@
 
 .gs-cabinet-row__name {
   font-family: var(--gs-body);
-  font-size: 15px;
+  font-size: 18px;
   color: var(--gs-ink);
   flex: 1;
   min-width: 0;
@@ -366,7 +366,7 @@
 
 .gs-cabinet-drawer__btn {
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--gs-brand);
@@ -385,7 +385,7 @@
   margin-left: auto;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 

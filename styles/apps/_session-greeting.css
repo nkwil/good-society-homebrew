@@ -40,7 +40,7 @@
 
 .gs-session-greeting__eyebrow {
   font-family: var(--gs-display);
-  font-size: 10.5px;
+  font-size: 13px;
   letter-spacing: 0.36em;
   text-transform: uppercase;
   color: var(--gs-accent-1);
@@ -50,7 +50,7 @@
 
 .gs-session-greeting__title {
   font-family: var(--gs-display);
-  font-size: 34px;
+  font-size: 40px;
   font-weight: 500;
   color: var(--gs-brand);
   margin: 0;
@@ -58,7 +58,7 @@
 }
 .gs-session-greeting__title--default {
   font-style: italic;
-  font-size: 28px;
+  font-size: 34px;
 }
 
 .gs-session-greeting__rule {
@@ -89,7 +89,7 @@
 
 .gs-session-greeting__section-head {
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -100,7 +100,7 @@
 
 .gs-session-greeting__section-body {
   font-family: var(--gs-body);
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.55;
   color: var(--gs-ink);
 }
@@ -121,7 +121,7 @@
 .gs-session-greeting__empty {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-text-muted);
   text-align: center;
   margin: 0;
@@ -143,7 +143,7 @@ button.gs-session-greeting__dismiss {
   border: 0;
   border-radius: 100px;
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
@@ -178,7 +178,7 @@ button.gs-session-greeting__dismiss:focus-visible { outline: 1.5px solid var(--g
 
 .gs-session-greeting-composer__title {
   font-family: var(--gs-display);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
   color: var(--gs-brand);
   margin: 0;
@@ -187,14 +187,14 @@ button.gs-session-greeting__dismiss:focus-visible { outline: 1.5px solid var(--g
 .gs-session-greeting-composer__subtitle {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-text-muted);
   margin: 0;
 }
 
 .gs-session-greeting-composer__label {
   font-family: var(--gs-display);
-  font-size: 11.5px;
+  font-size: 14px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--gs-text-muted);
@@ -213,7 +213,7 @@ button.gs-session-greeting__dismiss:focus-visible { outline: 1.5px solid var(--g
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
   font-family: var(--gs-display);
-  font-size: 17px;
+  font-size: 20px;
   color: var(--gs-brand);
 }
 
@@ -246,7 +246,7 @@ button.gs-session-greeting-composer__add-quick {
   border: 0.5px solid var(--gs-brand);
   border-radius: 100px;
   font-family: var(--gs-display);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
@@ -291,7 +291,7 @@ button.gs-session-greeting-composer__add-quick:hover {
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--gs-brand);
 }
@@ -312,7 +312,7 @@ button.gs-session-greeting-composer__icon-btn {
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1;
   cursor: pointer;
   min-height: 0;
@@ -339,7 +339,7 @@ button.gs-session-greeting-composer__icon-btn--danger:hover:not(:disabled) {
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
   font-family: var(--gs-body);
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--gs-ink);
   resize: vertical;
@@ -348,7 +348,7 @@ button.gs-session-greeting-composer__icon-btn--danger:hover:not(:disabled) {
 .gs-session-greeting-composer__empty {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-text-muted);
   margin: 0;
   text-align: center;
@@ -369,7 +369,7 @@ button.gs-session-greeting-composer__icon-btn--danger:hover:not(:disabled) {
  * flex space-between; wraps below on narrow widths. */
 .gs-session-greeting-composer__last-published {
   font-family: var(--gs-body);
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gs-text-muted);
 }
 
@@ -389,7 +389,7 @@ button.gs-session-greeting-composer__unpublish-btn {
   margin: 0;
   border-radius: 100px;
   font-family: var(--gs-display);
-  font-size: 11.5px;
+  font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;

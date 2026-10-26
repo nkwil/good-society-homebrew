@@ -46,7 +46,7 @@
 .gs-novel-reader__byline {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 16px;
+  font-size: 20px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   margin: 0;
 }
@@ -65,7 +65,7 @@
 
 .gs-novel-reader__primary,
 .gs-novel-reader__title-button {
-  font-size: 14px;
+  font-size: 17px;
   padding: 8px 18px;
 }
 
@@ -78,7 +78,7 @@
 .gs-novel-reader__empty {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 14px;
+  font-size: 17px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   max-width: 360px;
   text-align: center;
@@ -94,7 +94,7 @@
 
 .gs-novel-reader__title-input {
   font-family: var(--gs-display);
-  font-size: 32px;
+  font-size: 38px;
   text-align: center;
   width: 540px;
   max-width: 80vw;
@@ -132,7 +132,7 @@
 
 .gs-novel-reader__rail-cover {
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.06em;
   color: var(--gs-brand);
   background: transparent;
@@ -179,7 +179,7 @@
 .gs-novel-reader__rail-meta {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
 }
 
@@ -210,7 +210,7 @@
 .gs-novel-reader__cycle-divider h2 {
   font-family: var(--gs-display);
   font-weight: 500;
-  font-size: 32px;
+  font-size: 38px;
   color: var(--gs-brand);
   margin: 0;
   letter-spacing: 0.04em;
@@ -270,7 +270,7 @@
 
 .gs-novel-reader__entry-body {
   font-family: var(--gs-body);
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.55;
   color: var(--gs-ink);
 }
@@ -288,7 +288,7 @@
 .gs-novel-reader__entry-body h2 {
   font-family: var(--gs-display);
   font-weight: 500;
-  font-size: 22px;
+  font-size: 26px;
   color: var(--gs-brand);
   margin: 0 0 12px;
   letter-spacing: 0.01em;
@@ -297,7 +297,7 @@
 .gs-novel-reader__entry-body h3 {
   font-family: var(--gs-display);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 16px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--gs-ink) 78%, transparent);
@@ -308,7 +308,7 @@
 .gs-novel-reader__entry-body h3:first-child { margin-top: 0; }
 .gs-novel-reader__entry-body h4 {
   font-family: var(--gs-display);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--gs-brand);
   margin: 10px 0 4px;
@@ -355,7 +355,7 @@
   margin-top: 8px;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   text-decoration: none;
 }

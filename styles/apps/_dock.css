@@ -83,7 +83,7 @@
 .gs-dock__title {
   flex: 1;
   font-family: var(--gs-display);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -93,7 +93,7 @@
 .gs-dock__count {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
@@ -107,7 +107,7 @@
   background: transparent;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -150,7 +150,7 @@
 
 .gs-dock__eyebrow {
   font-family: var(--gs-display);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
@@ -165,7 +165,7 @@
   padding: 8px 0 4px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   font-family: var(--gs-display);
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -180,7 +180,7 @@
 
 .gs-dock__empty {
   font-style: italic;
-  font-size: 12px;
+  font-size: 15px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   text-align: center;
   margin: 16px 8px;
@@ -201,7 +201,7 @@
 .gs-dock__hint {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 10px;
+  font-size: 13px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
 }
 
@@ -219,7 +219,7 @@
 }
 
 .gs-dock__footer .gs-speaking-as__pill {
-  font-size: 11px;
+  font-size: 14px;
   padding: 3px 8px;
   max-width: 130px;
 }

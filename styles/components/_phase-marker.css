@@ -57,7 +57,7 @@
 
 .gs-phase-marker__label {
   font-family: var(--gs-ui);
-  font-size: 11px;
+  font-size: 14px;
   font-style: italic;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   line-height: 1;
@@ -88,7 +88,7 @@
 
 .gs-phase-marker--current .gs-phase-marker__label {
   font-style: normal;
-  font-size: 12px;
+  font-size: 15px;
   font-family: var(--gs-display);
   color: var(--gs-paper);
   font-weight: 600;
@@ -142,7 +142,7 @@
 
 .gs-phase-marker--ended .gs-phase-marker__label {
   font-style: normal;
-  font-size: 12px;
+  font-size: 15px;
   font-family: var(--gs-display);
   color: var(--gs-ink);
   font-weight: 600;

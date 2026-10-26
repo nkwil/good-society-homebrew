@@ -33,7 +33,7 @@
   margin: 0;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.45;
   /* §6 dropped --gs-ink-soft as a slot. Derive muted text via color-mix. */
   color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
@@ -41,7 +41,7 @@
 
 .gs-empty-state__action {
   font-family: var(--gs-display);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.08em;
   color: var(--gs-brand);

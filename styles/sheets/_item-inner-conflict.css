@@ -4,7 +4,7 @@
 .gs-item-sheet--inner-conflict .gs-item-sheet__meta--completed {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gs-positive);
 }
 

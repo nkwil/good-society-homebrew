@@ -80,7 +80,7 @@
 .gs-letter-card__meta-left {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.04em;
   color: var(--gs-letter-muted);
   white-space: nowrap;
@@ -89,7 +89,7 @@
 /* Subject — script display, brand-tinted so it reads as the sender's hand. */
 .gs-letter-card__subject {
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   font-style: italic;
   font-weight: 500;
   color: var(--gs-brand);
@@ -105,7 +105,7 @@
 .gs-letter-card__greeting {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 15px;
+  font-size: 18px;
   color: var(--gs-letter-ink);
   padding: 14px 28px 0;
   margin: 0 12px 0;
@@ -157,7 +157,7 @@
 .gs-letter-card__signature {
   font-family: var(--gs-display);
   font-style: italic;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 500;
   color: var(--gs-brand);
   padding: 2px 28px 14px;
@@ -188,7 +188,7 @@
   align-items: center;
   gap: 6px;
   font-family: var(--gs-italic, var(--gs-body));
-  font-size: 10.5px;
+  font-size: 13px;
   letter-spacing: 0.04em;
   color: var(--gs-brand);
   font-style: italic;
@@ -247,7 +247,7 @@
   background: transparent;
   color: var(--gs-brand);
   font-family: var(--gs-ui);
-  font-size: 10.5px;
+  font-size: 13px;
   letter-spacing: 0.06em;
   cursor: pointer;
   line-height: 1.3;
@@ -267,7 +267,7 @@
 .gs-letter-reveal__public {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 10.5px;
+  font-size: 13px;
   letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--gs-brand) 70%, transparent);
 }
@@ -290,7 +290,7 @@
   border-top: 0.5px dashed color-mix(in srgb, var(--gs-letter-rule) 60%, transparent);
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  font-size: 10.5px;
+  font-size: 13px;
   letter-spacing: 0.04em;
   color: var(--gs-letter-muted);
   text-align: right;

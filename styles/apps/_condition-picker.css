@@ -32,7 +32,7 @@
 
 .gs-condition-picker__eyebrow {
   font-variant: small-caps;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.18em;
   color: var(--gs-brand);
   text-transform: lowercase;
@@ -42,7 +42,7 @@
 
 .gs-condition-picker__polarity-pill {
   font-family: var(--gs-italic);
-  font-size: 11px;
+  font-size: 14px;
   padding: 3px 10px;
   border-radius: 100px;
   border: 0.5px solid;
@@ -65,7 +65,7 @@
 
 .gs-condition-picker__title {
   font-family: var(--gs-display);
-  font-size: 22px;
+  font-size: 26px;
   color: var(--gs-brand);
   margin: 0 0 6px;
   font-weight: 400;
@@ -74,7 +74,7 @@
 
 .gs-condition-picker__prompt {
   font-family: var(--gs-italic);
-  font-size: 13px;
+  font-size: 16px;
   color: var(--gs-ink);
   margin: 0;
   line-height: 1.55;
@@ -94,7 +94,7 @@
 
 .gs-condition-picker__empty {
   font-family: var(--gs-italic);
-  font-size: 13px;
+  font-size: 16px;
   color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
   text-align: center;
   padding: 24px 0;
@@ -147,7 +147,7 @@
 }
 
 .gs-condition-picker__card-arrow {
-  font-size: 13px;
+  font-size: 16px;
   flex-shrink: 0;
 }
 
@@ -156,13 +156,13 @@
 
 .gs-condition-picker__card-name {
   font-family: var(--gs-display);
-  font-size: 17px;
+  font-size: 20px;
   color: var(--gs-ink);
 }
 
 .gs-condition-picker__card-provenance {
   font-family: var(--gs-italic);
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.06em;
 }
 
@@ -176,7 +176,7 @@
 
 .gs-condition-picker__card-desc {
   font-family: var(--gs-italic);
-  font-size: 12px;
+  font-size: 15px;
   color: var(--gs-ink);
   opacity: 0.75;
   margin: 0;
@@ -191,7 +191,7 @@
 
 .gs-condition-picker__pick-btn {
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
@@ -218,7 +218,7 @@
 
 .gs-condition-picker__source-label {
   font-variant: small-caps;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: var(--gs-text-muted);
   text-transform: lowercase;
@@ -232,7 +232,7 @@
 
 .gs-condition-picker__source-pill {
   font-family: var(--gs-body);
-  font-size: 10px;
+  font-size: 13px;
   color: var(--gs-ink);
   background: var(--gs-paper);
   border: 0.5px solid var(--gs-accent-2);
