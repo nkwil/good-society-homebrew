@@ -12,7 +12,8 @@
  * Rule 7: no shadow, no blur. Letterpress precision.
  */
 
-/* Shared base */
+/* Shared base — Evening Court pill. Rounded pill, soft shadow lifted on
+ * hover, micro-bounce. The transition is wide so hover feels alive. */
 .gs-btn {
   display: inline-flex;
   align-items: center;
@@ -20,90 +21,129 @@
   font-family: var(--gs-body);
   font-size: var(--gs-size-body);
   line-height: 1;
-  padding: 7px 16px;
-  border-radius: 6px;
+  padding: 8px 18px;
+  border-radius: var(--gs-radius-pill, 100px);
   cursor: pointer;
-  transition: opacity 0.15s ease, background 0.15s ease;
+  transition:
+    transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    opacity 180ms ease;
   white-space: nowrap;
+  will-change: transform;
 }
 
 .gs-btn:disabled,
 .gs-btn[disabled] {
   opacity: 0.45;
   cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* #40 — Primary: solid brand fill, paper text. Moments that matter
- * (Take Monologue, Cast, Advance Phase, wizard "Next/Begin"). */
+/* #40 — Primary: soft gilt-rose fill, inner glow, paper text. Lifts and
+ * glows brighter on hover. */
 .gs-btn--primary {
-  background: var(--gs-brand);
+  background:
+    radial-gradient(circle at 50% 0%,
+      color-mix(in srgb, var(--gs-brand) 85%, white) 0%,
+      var(--gs-brand) 70%);
   color: var(--gs-paper);
-  border: none;
+  border: 0.5px solid color-mix(in srgb, var(--gs-brand) 70%, white);
   font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 25%, transparent),
+    0 2px 6px color-mix(in srgb, var(--gs-brand) 25%, transparent);
 }
 
-.gs-btn--primary:hover:not(:disabled) { opacity: 0.88; }
-.gs-btn--primary:active:not(:disabled) { opacity: 0.75; }
+.gs-btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 35%, transparent),
+    0 6px 14px color-mix(in srgb, var(--gs-brand) 40%, transparent);
+}
 
-/* #41 — Secondary: 0.5px brand outline, transparent fill, brand text.
- * Cancel, save-draft, wizard "Back". */
+.gs-btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, black 20%, transparent),
+    0 2px 4px color-mix(in srgb, var(--gs-brand) 20%, transparent);
+}
+
+/* #41 — Secondary: 0.5px brand outline, soft paper-warm fill on hover,
+ * same lift. "Cancel", "save-draft", wizard "Back". */
 .gs-btn--secondary,
 .gs-btn--outline {
   background: transparent;
   color: var(--gs-brand);
   border: 0.5px solid var(--gs-brand);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .gs-btn--secondary:hover:not(:disabled),
 .gs-btn--outline:hover:not(:disabled) {
-  background: var(--gs-paper-warm);
+  background: color-mix(in srgb, var(--gs-brand) 10%, transparent);
+  border-color: color-mix(in srgb, var(--gs-brand) 90%, white);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--gs-brand) 15%, transparent);
 }
 
 .gs-btn--secondary:active:not(:disabled),
 .gs-btn--outline:active:not(:disabled) {
-  background: var(--gs-muted);
+  transform: translateY(0);
+  background: color-mix(in srgb, var(--gs-brand) 15%, transparent);
 }
 
-/* Ghost: text-only, no border, no background until hover. For inline
- * "+ add" actions, dismissable affordances, anywhere a full button
- * would feel too heavy. */
+/* Ghost: text-only until hover, then subtle rose wash + lift. Inline
+ * "+ add" actions, dismissable affordances. */
 .gs-btn--ghost {
   background: transparent;
   color: var(--gs-brand);
   border: none;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .gs-btn--ghost:hover:not(:disabled) {
-  background: var(--gs-paper-warm);
+  background: color-mix(in srgb, var(--gs-brand) 12%, transparent);
+  transform: translateY(-1px);
+}
+
+.gs-btn--ghost:active:not(:disabled) {
+  transform: translateY(0);
+  background: color-mix(in srgb, var(--gs-brand) 18%, transparent);
 }
 
 /* Danger-outline: same shape as secondary but in danger color. Delete
- * actions that need confirmation (persona delete). */
+ * actions that need confirmation. */
 .gs-btn--danger-outline {
   background: transparent;
   color: var(--gs-danger);
   border: 0.5px solid var(--gs-danger);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .gs-btn--danger-outline:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--gs-danger) 8%, transparent);
+  background: color-mix(in srgb, var(--gs-danger) 12%, transparent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--gs-danger) 20%, transparent);
 }
 
-/* Small variant — composes with any of the above for inline actions. */
+.gs-btn--danger-outline:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Small variant — composes with any of the above for inline actions.
+ * Keeps the pill shape; shrinks padding + font. */
 .gs-btn--sm {
-  padding: 3px 10px;
+  padding: 4px 12px;
   font-size: var(--gs-size-ui);
 }
 
-/* #42 — GM-only button: house-styled, distinct from character-themed buttons.
- * Class is `gs-btn--gm` for BEM consistency. Caller's ::before may set an
- * icon; the base ::before below is the default key glyph. */
+/* #42 — GM-only button: house-styled, distinct from character-themed buttons. */
 .gs-btn--gm {
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
   border: 0.5px solid var(--gs-accent-2);
   font-size: var(--gs-size-ui);
   font-family: var(--gs-ui);
@@ -113,23 +153,36 @@
 .gs-btn--gm::before {
   content: '⚷';
   font-size: 13px;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .gs-btn--gm:hover:not(:disabled) {
-  background: var(--gs-muted);
+  background: color-mix(in srgb, var(--gs-brand) 10%, transparent);
+  border-color: var(--gs-brand);
+  color: var(--gs-brand);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--gs-brand) 15%, transparent);
 }
 
-/* Icon-only button (#54 icon button preview) */
+.gs-btn--gm:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Icon-only button — small round target that lifts on hover. */
 .gs-btn--icon {
-  padding: 5px 6px;
+  padding: 6px 8px;
   background: transparent;
   border: none;
   color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
-  border-radius: 4px;
+  border-radius: var(--gs-radius-pill, 100px);
 }
 
 .gs-btn--icon:hover:not(:disabled) {
-  background: var(--gs-paper-warm);
+  background: color-mix(in srgb, var(--gs-brand) 12%, transparent);
   color: var(--gs-brand);
+  transform: translateY(-1px);
+}
+
+.gs-btn--icon:active:not(:disabled) {
+  transform: translateY(0);
 }

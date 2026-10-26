@@ -1,9 +1,68 @@
-/* Hairline divider primitive — inventory #35 (docs/design/03-component-inventory.md)
- * Rule 2 (antique-but-clean): hairlines (0.5px), not heavy borders.
- * Color is --gs-accent-2 (sage) — the house divider color.
- */
+/* Hairline divider primitive — inventory #35.
+ *
+ * Antique-but-clean: 0.5px hairline. Evening Court extends with an
+ * optional centerpoint ornament ⟡ for places where the divider wants
+ * a little decoration without becoming heavy. */
+
 .gs-hairline {
   border: none;
   border-top: 0.5px solid var(--gs-accent-2);
   margin: 1em 0;
 }
+
+/* --ornament variant — adds a tiny ⟡ (diamond) centerpoint, gilt-rose.
+ * Rendered as a pseudo-element over the line via a thin flex row so the
+ * hairline fades to transparent either side of the ornament. */
+.gs-hairline--ornament {
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 1.4em 0;
+  color: var(--gs-metallic);
+}
+.gs-hairline--ornament::before,
+.gs-hairline--ornament::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in srgb, var(--gs-metallic) 60%, transparent) 20%,
+    color-mix(in srgb, var(--gs-metallic) 60%, transparent) 80%,
+    transparent);
+}
+.gs-hairline--ornament::before {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--gs-metallic) 60%, transparent) 100%);
+}
+.gs-hairline--ornament::after {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--gs-metallic) 60%, transparent) 0%,
+    transparent 100%);
+}
+
+/* The ornament glyph itself — the ⟡ is a quiet diamond; swap for ✦ or
+ * ❀ by overriding `content` on a page-specific selector if you want a
+ * different mood. */
+.gs-hairline--ornament > .gs-hairline__glyph,
+.gs-hairline--ornament::marker {
+  font-family: var(--gs-display);
+  font-size: var(--gs-size-label, 14px);
+  line-height: 1;
+}
+
+/* Convenience: if the HBS can't inject a child span, this ::before-only
+ * variant draws the glyph via content. (Flex grouping only works when a
+ * real child exists, so this is a fallback.) */
+.gs-hairline--ornament-solo {
+  border: none;
+  text-align: center;
+  margin: 1.4em 0;
+  font-family: var(--gs-display);
+  font-size: var(--gs-size-label, 14px);
+  color: var(--gs-metallic);
+  line-height: 1;
+}
+.gs-hairline--ornament-solo::before { content: '⟡'; }
