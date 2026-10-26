@@ -45,6 +45,10 @@ import { refreshEventCommandCenter } from './apps/event-command-center.js';
 import { openPregameChecklist, maybeAutoOpenPregameChecklist } from './apps/pregame-checklist.js';
 import { openSessionNotes, registerSessionNotesHooks } from './apps/session-notes.js';
 import { openCastOfCharacters, openCastManager, registerCastHooks } from './apps/cast-of-characters.js';
+import {
+  startSession, endSession, isSessionActive, registerSessionMechanismSocket,
+} from './helpers/session-mechanism.js';
+import { openSessionDebriefViewer, registerSessionDebriefHooks } from './apps/session-debrief-viewer.js';
 import { openSessionGreetingComposer } from './apps/session-greeting-composer.js';
 import { openSessionGreeting } from './apps/session-greeting.js';
 import { maybeAutoOpenSessionSurface } from './hooks/session-greeting-auto.js';
@@ -336,6 +340,21 @@ Hooks.once('init', async function () {
         .then(m => m.refreshSessionGreetingComposer?.())
         .catch(() => {});
     },
+  });
+
+  // Session mechanism — see module/helpers/session-mechanism.js.
+  // "Session" is a single sitting; multiple sessions can span one cycle.
+  game.settings.register('good-society-homebrew', 'sessionNumber', {
+    scope: 'world', config: false, type: Number, default: 0,
+  });
+  game.settings.register('good-society-homebrew', 'sessionState', {
+    scope: 'world', config: false, type: String, default: 'between',
+  });
+  game.settings.register('good-society-homebrew', 'sessionStartedAt', {
+    scope: 'world', config: false, type: Number, default: 0,
+  });
+  game.settings.register('good-society-homebrew', 'sessionLastEndedAt', {
+    scope: 'world', config: false, type: Number, default: 0,
   });
 
   // Event Timeline (in-fiction calendar) — per docs/design/31-event-timeline.md.
@@ -1053,3 +1072,5 @@ safeRegister('novelReaderHooks', registerNovelReaderHooks);
 // externally (rename in sidebar, delete from directory, etc).
 safeRegister('sessionNotesHooks', registerSessionNotesHooks);
 safeRegister('castHooks',         registerCastHooks);
+safeRegister('sessionSocket',     registerSessionMechanismSocket);
+safeRegister('sessionDebriefHooks', registerSessionDebriefHooks);

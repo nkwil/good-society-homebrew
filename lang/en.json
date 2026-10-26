@@ -2137,7 +2137,42 @@
       "organizer": "NPC Organizer",
       "permissions": "Bulk Permissions",
       "sessionLog": "Session Log",
-      "splash": "Return to the splash"
+      "splash": "Return to the splash",
+      "startSession": "Start Session {n}",
+      "endSession": "End Session {n}",
+      "sessionDebriefs": "Session Debriefs…"
+    },
+    "session": {
+      "gmOnly": "Only the GM can start or end a session.",
+      "noActiveSession": "No session is currently active.",
+      "startedToast": "Session {n} started. The welcome has been sent to the table.",
+      "endedToast": "Session {n} ended. Debrief prompts sent to the players.",
+      "chatSpeaker": "The Table",
+      "startCard": "✦ Session {n} begins ✦",
+      "endCard": "✦ Session {n} ends ✦"
+    },
+    "sessionDebrief": {
+      "windowTitle": "Session Debrief",
+      "eyebrow": "A moment to look back",
+      "title": "Session {n} just ended.",
+      "prompt": "What stood out to you from this session? Anything you want the GM to know for next time.",
+      "placeholder": "A moment I'll remember, a line I loved, something I'd like more of…",
+      "submit": "Save the note",
+      "skip": "Skip for now",
+      "saved": "Note saved. Thanks for sharing.",
+      "emptyWarn": "Write something before saving, or Skip for now.",
+      "alreadySaved": "Overwriting your previous note for this session."
+    },
+    "sessionDebriefViewer": {
+      "windowTitle": "Session Debriefs",
+      "eyebrow": "What the players said",
+      "title": "Session Debriefs",
+      "subtitle": "Each player's reflections at the end of each session.",
+      "sessionLabel": "Session {n}",
+      "current": "current",
+      "noteCount": "{n} note(s)",
+      "empty": "No debriefs recorded yet. End a session with players at the table to collect notes.",
+      "gmOnly": "Only the GM can view the debriefs."
     },
     "castOfCharacters": {
       "windowTitle": "Cast of Characters",

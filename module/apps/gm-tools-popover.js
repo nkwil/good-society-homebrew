@@ -19,6 +19,8 @@ import { openSessionLogPreview } from './session-log-preview.js';
 import { openEventCommandCenter } from './event-command-center.js';
 import { openCastManager } from './cast-of-characters.js';
 import { returnToSplash } from '../hooks/scene-controls.js';
+import { startSession, endSession, isSessionActive, currentSessionNumber } from '../helpers/session-mechanism.js';
+import { openSessionDebriefViewer } from './session-debrief-viewer.js';
 
 const NS = 'good-society-homebrew';
 
@@ -29,7 +31,26 @@ let _keyHandler = null;
 /** The ordered GM tool entries. Each is a plain descriptor; the popover
  *  renders one row per entry and dispatches to `action` on click. */
 function _tools() {
+  const sessionActive = isSessionActive();
+  const sessionN = currentSessionNumber();
+  const sessionLabel = sessionActive
+    ? game.i18n.format('GOODSOCIETY.gmToolsPopover.endSession', { n: sessionN })
+    : game.i18n.format('GOODSOCIETY.gmToolsPopover.startSession', { n: sessionN + 1 });
   return [
+    // Session mechanism — top of the list, because it's the GM's bookend
+    // for a sitting. Label flips between start/end based on world state.
+    {
+      key: 'session-toggle',
+      label: sessionLabel,
+      icon: sessionActive ? 'fa-solid fa-circle-stop' : 'fa-solid fa-circle-play',
+      action: () => sessionActive ? endSession() : startSession(),
+    },
+    {
+      key: 'session-debriefs',
+      label: game.i18n.localize('GOODSOCIETY.gmToolsPopover.sessionDebriefs'),
+      icon: 'fa-solid fa-pen-to-square',
+      action: () => openSessionDebriefViewer(),
+    },
     {
       key: 'events',
       label: game.i18n.localize('GOODSOCIETY.gmToolsPopover.events'),

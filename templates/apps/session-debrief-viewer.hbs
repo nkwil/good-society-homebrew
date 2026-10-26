@@ -1,0 +1,51 @@
+<section class="gs-session-debrief-viewer">
+
+  <header class="gs-session-debrief-viewer__header">
+    <span class="gs-session-debrief-viewer__eyebrow">
+      {{localize "GOODSOCIETY.sessionDebriefViewer.eyebrow"}}
+    </span>
+    <h2 class="gs-session-debrief-viewer__title">
+      {{localize "GOODSOCIETY.sessionDebriefViewer.title"}}
+    </h2>
+    <p class="gs-session-debrief-viewer__subtitle">
+      {{localize "GOODSOCIETY.sessionDebriefViewer.subtitle"}}
+    </p>
+  </header>
+
+  {{#if hasAny}}
+    {{#each sessions}}
+      <section class="gs-session-debrief-viewer__session {{#if isCurrent}}is-current{{/if}}">
+        <header class="gs-session-debrief-viewer__session-head">
+          <span class="gs-session-debrief-viewer__session-label">
+            {{localize "GOODSOCIETY.sessionDebriefViewer.sessionLabel" n=number}}
+            {{#if isCurrent}}
+              <span class="gs-session-debrief-viewer__current-tag">
+                {{localize "GOODSOCIETY.sessionDebriefViewer.current"}}
+              </span>
+            {{/if}}
+          </span>
+          <span class="gs-session-debrief-viewer__count">
+            {{localize "GOODSOCIETY.sessionDebriefViewer.noteCount" n=noteCount}}
+          </span>
+        </header>
+
+        <ul class="gs-session-debrief-viewer__note-list">
+          {{#each notes}}
+            <li class="gs-session-debrief-viewer__note">
+              <header class="gs-session-debrief-viewer__note-head">
+                <span class="gs-session-debrief-viewer__note-author">{{userName}}</span>
+                <span class="gs-session-debrief-viewer__note-date">{{dateLabel}}</span>
+              </header>
+              <p class="gs-session-debrief-viewer__note-text">{{text}}</p>
+            </li>
+          {{/each}}
+        </ul>
+      </section>
+    {{/each}}
+  {{else}}
+    <p class="gs-session-debrief-viewer__empty">
+      <em>{{localize "GOODSOCIETY.sessionDebriefViewer.empty"}}</em>
+    </p>
+  {{/if}}
+
+</section>

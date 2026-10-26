@@ -21,7 +21,10 @@
       var(--gs-paper-warm) 40%,
       var(--gs-paper) 80%,
       color-mix(in srgb, var(--gs-brand) 30%, var(--gs-paper)) 100%);
-  border: 1px solid color-mix(in srgb, var(--gs-accent-pink, #e8a4b8) 55%, var(--gs-hairlines));
+  /* No outer border — the gradient fades edges and the outer shadow
+   * gives depth. A hardline border was reading as a cheap outline
+   * against the dark velvet. */
+  border: 0;
   border-radius: var(--gs-radius-pill, 100px);
   margin: 6px 8px 2px;
   min-height: 44px;

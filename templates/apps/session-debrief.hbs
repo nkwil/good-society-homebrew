@@ -1,0 +1,35 @@
+<section class="gs-session-debrief">
+
+  <header class="gs-session-debrief__header">
+    <span class="gs-session-debrief__eyebrow">
+      {{localize "GOODSOCIETY.sessionDebrief.eyebrow"}}
+    </span>
+    <h2 class="gs-session-debrief__title">
+      {{localize "GOODSOCIETY.sessionDebrief.title" n=sessionNumber}}
+    </h2>
+    <p class="gs-session-debrief__prompt">
+      {{localize "GOODSOCIETY.sessionDebrief.prompt"}}
+    </p>
+  </header>
+
+  <textarea class="gs-session-debrief__textarea"
+            name="debriefText"
+            rows="7"
+            placeholder="{{localize 'GOODSOCIETY.sessionDebrief.placeholder'}}">{{existingText}}</textarea>
+
+  {{#if alreadySubmitted}}
+    <p class="gs-session-debrief__note">
+      <em>{{localize "GOODSOCIETY.sessionDebrief.alreadySaved"}}</em>
+    </p>
+  {{/if}}
+
+  <footer class="gs-session-debrief__footer">
+    <button type="button" class="gs-btn gs-btn--ghost" data-action="skipDebrief">
+      {{localize "GOODSOCIETY.sessionDebrief.skip"}}
+    </button>
+    <button type="button" class="gs-btn gs-btn--primary" data-action="submitNote">
+      {{localize "GOODSOCIETY.sessionDebrief.submit"}}
+    </button>
+  </footer>
+
+</section>
