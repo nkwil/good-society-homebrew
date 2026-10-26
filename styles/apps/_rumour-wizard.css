@@ -32,7 +32,7 @@
 .gs-rumour-wizard__subtitle {
   font-size: 15px;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 0;
 }
 
@@ -76,7 +76,7 @@
 
 .gs-rumour-wizard__empty {
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   text-align: center;
   margin: 8px 0;
 }
@@ -88,7 +88,7 @@
   font-size: 13px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-rumour-wizard__setup-help {
@@ -155,7 +155,7 @@
   border-radius: 3px;
   padding: 2px 6px;
   font-size: 13px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   cursor: pointer;
 }
 
@@ -191,7 +191,7 @@
   padding: 8px 12px;
   background: var(--gs-paper-warm);
   border-radius: 4px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-rumour-wizard__turn-indicator--mine {
@@ -216,12 +216,12 @@
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-rumour-wizard__action-help {
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-style: italic;
   margin: 0;
 }
@@ -286,7 +286,7 @@
 
 .gs-rumour-wizard__must-create {
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 0;
   font-size: 15px;
 }
@@ -315,6 +315,6 @@
 .gs-rumour-wizard__player-toast {
   text-align: center;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 12px 0;
 }

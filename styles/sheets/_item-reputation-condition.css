@@ -11,7 +11,7 @@
   font-variant: small-caps;
   font-size: 14px;
   letter-spacing: 0.1em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   cursor: pointer;
   transition: border-color 0.12s, color 0.12s;
 }
@@ -31,6 +31,6 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 0;
 }

@@ -120,7 +120,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   margin: 0;
 }
 
@@ -143,7 +143,7 @@
   font-variant: small-caps;
   font-size: 14px;
   letter-spacing: 0.16em;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
   font-weight: 500;
 }
 
@@ -172,7 +172,7 @@
 .gs-letter-composer__actor-select:hover,
 .gs-letter-composer__input:hover,
 .gs-letter-composer__textarea:hover {
-  border-color: color-mix(in srgb, var(--gs-ink) 28%, transparent);
+  border-color: color-mix(in srgb, var(--gs-ink) 28%, var(--gs-paper));
 }
 
 .gs-letter-composer__actor-select:focus,
@@ -270,7 +270,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   /* In the grid layout the label always sits on its own row below the seals. */
   grid-column: 1 / -1;
   margin-top: 2px;
@@ -350,7 +350,7 @@
   /* Letter ink — warm brown-black, readable on parchment. Independent of
    * the theme cascade (theme `--gs-ink` can be light on dark themes and
    * would be invisible against the parchment cream). */
-  color: #3D2F26;
+  color: #f0e1d2;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14.5px;

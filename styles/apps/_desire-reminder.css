@@ -91,7 +91,7 @@
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-family: var(--gs-display);
   font-size: 15px;
   line-height: 1;
@@ -197,7 +197,7 @@ button.gs-desire-reminder__entry-name:hover {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
   margin: 0;
   text-align: center;
 }

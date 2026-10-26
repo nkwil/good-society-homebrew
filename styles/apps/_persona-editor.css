@@ -44,7 +44,7 @@
 
 .gs-persona-editor__name-input::placeholder {
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-persona-editor__header-right {
@@ -154,7 +154,7 @@
 .gs-persona-editor__color-hint {
   font-family: var(--gs-italic);
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   line-height: 1.3;
 }
 

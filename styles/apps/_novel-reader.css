@@ -47,7 +47,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 20px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 0;
 }
 
@@ -79,7 +79,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 17px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   max-width: 360px;
   text-align: center;
   margin: 0;
@@ -180,7 +180,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 
 /* ── Reader pane ─────────────────────────────────────────────────────────── */
@@ -300,7 +300,7 @@
   font-size: 16px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 78%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 78%, var(--gs-paper));
   margin: 14px 0 6px;
   border-bottom: 0.5px solid var(--gs-accent-2);
   padding-bottom: 4px;
@@ -356,7 +356,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   text-decoration: none;
 }
 

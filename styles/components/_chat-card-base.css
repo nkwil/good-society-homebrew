@@ -41,8 +41,8 @@ header.message-header img.gs-chat-portrait {
   flex: 0 0 28px;
   align-self: center;
   border-radius: 50%;
-  border: 0.5px solid var(--gs-accent-2, #708060);
-  background: var(--gs-paper-warm, #F4ECD8);
+  border: 0.5px solid var(--gs-accent-2, #6b4a68);
+  background: var(--gs-paper-warm, #372837);
   object-fit: cover;
   object-position: center;
   vertical-align: middle;
@@ -175,14 +175,14 @@ header.message-header img.gs-chat-portrait {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   line-height: 1.2;
 }
 
 .gs-chat-card__subtitle {
   font-family: var(--gs-body);
   font-size: 14px;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   line-height: 1.3;
 }
 
@@ -228,7 +228,7 @@ header.message-header img.gs-chat-portrait {
   font-family: var(--gs-ui);
   font-size: 13px;
   letter-spacing: 0.04em;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
 }
 
 .gs-chat-card__archive-link {
@@ -253,7 +253,7 @@ header.message-header img.gs-chat-portrait {
 .gs-chat-card__timestamp {
   font-family: var(--gs-ui);
   font-size: 13px;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   white-space: nowrap;
   flex-shrink: 0;
 }

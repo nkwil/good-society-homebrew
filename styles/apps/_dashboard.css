@@ -76,7 +76,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   white-space: nowrap;
 }
 
@@ -124,7 +124,7 @@
   font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin-bottom: 12px;
 }
 
@@ -141,7 +141,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 16px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 0;
   padding: 8px 0;
 }
@@ -162,7 +162,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-dashboard__footer-time {

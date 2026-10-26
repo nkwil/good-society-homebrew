@@ -96,13 +96,13 @@
   font-variant: small-caps;
   font-size: 14px;
   letter-spacing: 0.14em;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 .dossier-cameo__resolve-count {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 
 /* Single-column variant of the scene-info section (used after the cut of
@@ -126,7 +126,7 @@
   font-variant: small-caps;
   font-size: 14px;
   letter-spacing: 0.14em;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 
 /* Multi-chip wrapper — when a Connection is linked from more than one
@@ -146,7 +146,7 @@
 .dossier-connection-linked-row__none-hint {
   font-family: var(--gs-italic, var(--gs-body));
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
   font-style: italic;
 }
 
@@ -155,7 +155,7 @@
  * obvious affordance. Styled as ghost text with a dotted-underline hint. */
 .dossier-connection-linked-row__none {
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
   background: transparent;
   border: 0;
   padding: 2px 4px;
@@ -175,7 +175,7 @@
   border: 0;
   padding: 2px 4px;
   cursor: pointer;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
   font-size: 15px;
   line-height: 1;
   border-radius: 3px;
@@ -274,7 +274,7 @@
 }
 
 .dossier-description__placeholder {
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 
 /* ── Section head (eyebrow + add button) ─────────────────────────────────── */
@@ -294,7 +294,7 @@
   padding: 3px 10px;
   border: 0.5px solid color-mix(in srgb, var(--gs-ink) 30%, transparent);
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
   border-radius: 999px;
   cursor: pointer;
   transition: border-color 120ms, color 120ms, background 120ms;
@@ -343,7 +343,7 @@
 
 .dossier-scene-info__empty {
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 
 .dossier-scene-info__subtitle,
@@ -401,7 +401,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 
 /* Persona pill list */

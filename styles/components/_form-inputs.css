@@ -34,7 +34,7 @@ textarea.gs-input {
 }
 
 .gs-input::placeholder {
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-style: italic;
 }
 

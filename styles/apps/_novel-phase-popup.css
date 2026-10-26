@@ -31,7 +31,7 @@
   margin: 6px 0 0;
   font-style: italic;
   font-size: 16px;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
 }
 
 .gs-novel-phase-popup__bullets {

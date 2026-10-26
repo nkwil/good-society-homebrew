@@ -5,7 +5,7 @@
   font-style: italic;
   font-size: 14px;
   line-height: 1.3;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   margin: 0;
 }
 
@@ -100,7 +100,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -114,7 +114,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 13px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;

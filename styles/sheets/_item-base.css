@@ -33,14 +33,14 @@
   font-variant: small-caps;
   font-size: 14px;
   letter-spacing: 0.18em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-item-sheet__meta {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 13px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 /* Name — full-width, display type, bottom-border-only edit affordance */
@@ -82,7 +82,7 @@
   font-variant: small-caps;
   font-size: 14px;
   letter-spacing: 0.14em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 /* Label row — when a field's label needs an inline action (e.g. ✎ edit
@@ -139,7 +139,7 @@
 .gs-item-sheet__description-body p { margin: 0 0 8px 0; }
 .gs-item-sheet__description-body p:last-child { margin-bottom: 0; }
 .gs-item-sheet__description-placeholder {
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 
 /* Hint line under an input — small italic text explaining what the field
@@ -148,7 +148,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   margin-top: 2px;
 }
 
@@ -188,7 +188,7 @@
   justify-content: center;
   font-family: var(--gs-display);
   font-size: 22px;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
   transition: border-color 120ms, background 120ms;
 }
 .gs-item-sheet__icon-thumb:hover {
@@ -216,7 +216,7 @@
   border-radius: 50%;
   border: 0.5px solid color-mix(in srgb, var(--gs-ink) 30%, transparent);
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   cursor: pointer;
   font-size: 15px;
   line-height: 1;
@@ -261,7 +261,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   flex: 1;
   margin-right: 12px;
 }

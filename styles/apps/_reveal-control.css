@@ -35,7 +35,7 @@
   font-family: var(--gs-ui);
   font-size: 14px;
   letter-spacing: 0.18em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-variant: small-caps;
   text-transform: uppercase;
 }
@@ -72,7 +72,7 @@
   font-size: 13px;
   font-variant: small-caps;
   letter-spacing: 0.12em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   text-transform: uppercase;
 }
 
@@ -84,7 +84,7 @@
 /* State-specific value styling */
 .gs-reveal-control__state--secret {
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-size: 15px;
 }
 
@@ -103,7 +103,7 @@
 .gs-reveal-control__irreversible {
   font-size: 14px;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   opacity: 0.75;
   margin-left: 6px;
 }
@@ -147,7 +147,7 @@
 
 .gs-reveal-control__btn-cancel {
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   border: 0.5px solid var(--gs-accent-2);
 }
 

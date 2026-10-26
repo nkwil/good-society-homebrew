@@ -62,7 +62,7 @@ body.gs-world-identity:not(.paused) #pause {
   font-size: 14px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gs-accent-3, #C9A55C);
+  color: var(--gs-accent-3, #e8c87a);
   margin: 0;
 }
 
@@ -72,8 +72,8 @@ body.gs-world-identity:not(.paused) #pause {
   border-radius: 50%;
   background:
     var(--gs-pause-cameo-asset, none) center/cover no-repeat,
-    var(--gs-danger, #8B2A2A);
-  border: 3px solid var(--gs-accent-3, #C9A55C);
+    var(--gs-danger, #dd4242);
+  border: 3px solid var(--gs-accent-3, #e8c87a);
   outline: 1px solid #14100c;
   outline-offset: 2px;
   display: flex;
@@ -81,7 +81,7 @@ body.gs-world-identity:not(.paused) #pause {
   justify-content: center;
   font-family: var(--gs-display);
   font-size: 38px;
-  color: var(--gs-accent-3, #C9A55C);
+  color: var(--gs-accent-3, #e8c87a);
   line-height: 1;
 }
 

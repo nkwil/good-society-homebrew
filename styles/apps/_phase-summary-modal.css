@@ -32,7 +32,7 @@
   margin: 0;
   font-size: 16px;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
 }
 
 .gs-phase-summary-modal__editor-wrap {
@@ -43,7 +43,7 @@
   margin: 0 0 8px;
   font-size: 14px;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 
 /* Editable preview — looks like a chat-card surface inside the modal so

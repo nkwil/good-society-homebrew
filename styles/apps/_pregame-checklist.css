@@ -38,7 +38,7 @@
   font-style: italic;
   font-size: 16px;
   line-height: 1.6;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 
 .gs-pregame__body {
@@ -114,7 +114,7 @@
 
 .gs-pregame__section-body em {
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
 }
 
 /* Sticky footer so "got it" is always reachable without scrolling to the
@@ -136,5 +136,5 @@
   margin: 0;
   font-size: 14px;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }

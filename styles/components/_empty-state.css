@@ -36,7 +36,7 @@
   font-size: 17px;
   line-height: 1.45;
   /* §6 dropped --gs-ink-soft as a slot. Derive muted text via color-mix. */
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
 }
 
 .gs-empty-state__action {

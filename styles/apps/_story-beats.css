@@ -23,7 +23,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
   margin: 0;
 }
 .gs-story-beats-cc__grid {
@@ -50,7 +50,7 @@
   font-size: 13px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 .gs-story-beats-cc__saved-list {
   list-style: none;
@@ -100,7 +100,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 /* Per-row buttons — small, restrained. Beat Foundry's default chrome down
  * with explicit min/max-height + height. */
@@ -132,7 +132,7 @@ button.gs-story-beats-cc__saved-btn--delete {
   padding: 0;
   font-size: 20px;
   letter-spacing: 0;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 button.gs-story-beats-cc__saved-btn--delete:hover {
   background: var(--gs-danger);
@@ -148,7 +148,7 @@ button.gs-story-beats-cc__saved-btn--preview {
   padding: 0;
   font-size: 17px;
   letter-spacing: 0;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 button.gs-story-beats-cc__saved-btn--preview:hover {
   background: var(--gs-brand);
@@ -172,8 +172,8 @@ button.gs-story-beats-cc__saved-btn--preview:hover {
   gap: 8px;
   padding: 4px 12px 5px;
   border-radius: 100px;
-  border: 0.5px solid var(--gs-accent-3, #C9A55C);
-  background: color-mix(in srgb, var(--gs-paper, #efe6d2) 90%, transparent);
+  border: 0.5px solid var(--gs-accent-3, #e8c87a);
+  background: color-mix(in srgb, var(--gs-paper, #2a1e2b) 90%, transparent);
   color: var(--gs-ink, #2a1f17);
   font-family: var(--gs-display);
   font-size: 14px;
@@ -187,7 +187,7 @@ button.gs-story-beats-cc__saved-btn--preview:hover {
 .gs-story-beat__preview-dot {
   font-size: 8px;
   line-height: 1;
-  color: var(--gs-accent-3, #C9A55C);
+  color: var(--gs-accent-3, #e8c87a);
 }
 
 /* The `button.` prefix beats Foundry's default button chrome without
@@ -256,7 +256,7 @@ button.gs-story-beats-cc__card:hover {
   font-size: 14px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
 }
 .gs-story-beat-form__required { color: var(--gs-danger); }
 .gs-story-beat-form__input {
@@ -335,7 +335,7 @@ button.gs-story-beats-cc__card:hover {
   font-family: var(--gs-display);
   font-size: 8.5px;
   letter-spacing: 0.02em;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   text-align: center;
   line-height: 1.15;
   /* Cap to one line — names fit; longer ones get ellipsis (full label is
@@ -562,13 +562,13 @@ button.gs-story-beats-cc__card:hover {
   font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 .gs-beat-invitation__addressee-name {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 20px;
-  color: color-mix(in srgb, var(--gs-ink) 85%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 85%, var(--gs-paper));
   line-height: 1.2;
 }
 /* Double thin rule — two stacked hairlines, the classic engraved-stationery
@@ -591,7 +591,7 @@ button.gs-story-beats-cc__card:hover {
   line-height: 1.55;
   margin: 0 auto 22px;
   max-width: 88%;
-  color: color-mix(in srgb, var(--gs-ink) 88%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 88%, var(--gs-paper));
 }
 /* WHEN/WHERE — 2-column grid, labels right-aligned, values left-aligned,
  * both anchored around a common center seam. Per-row flex centering (the
@@ -614,7 +614,7 @@ button.gs-story-beats-cc__card:hover {
   font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
   text-align: right;
   margin: 0;
 }

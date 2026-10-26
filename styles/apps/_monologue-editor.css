@@ -21,7 +21,7 @@
   font-family: var(--gs-display, 'Lora', Georgia, serif);
   font-size: 20px;
   font-weight: 600;
-  color: var(--gs-brand, #2A3A2D);
+  color: var(--gs-brand, #d9a46f);
 }
 
 .gs-monologue-editor__cycle {
@@ -29,7 +29,7 @@
   font-size: 13px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
 }
 
 .gs-monologue-editor__form {
@@ -44,8 +44,8 @@
   font-style: italic;
   font-size: 17px;
   line-height: 1.7;
-  color: var(--gs-ink, #3D2F26);
-  background: var(--gs-paper-warm, #F4ECD8);
+  color: var(--gs-ink, #f0e1d2);
+  background: var(--gs-paper-warm, #372837);
   border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
   border-radius: 6px;
   padding: 10px 14px;
@@ -55,12 +55,12 @@
 }
 
 .gs-monologue-editor__textarea:focus {
-  outline: 1px solid var(--gs-brand, #2A3A2D);
+  outline: 1px solid var(--gs-brand, #d9a46f);
   outline-offset: 1px;
 }
 
 .gs-monologue-editor__textarea::placeholder {
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   font-style: italic;
 }
 
@@ -70,7 +70,7 @@
   gap: 8px;
   font-family: var(--gs-ui, system-ui, sans-serif);
   font-size: 15px;
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
   cursor: pointer;
 }
 
@@ -94,7 +94,7 @@
   font-style: italic;
   font-size: 18px;
   line-height: 1.7;
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 .gs-monologue-archive__body p {

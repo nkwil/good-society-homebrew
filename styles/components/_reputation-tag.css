@@ -54,7 +54,7 @@
   padding: 0;
   background: transparent;
   border: none;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-size: 17px;
   line-height: 1;
   cursor: pointer;

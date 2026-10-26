@@ -59,7 +59,7 @@
   font-family: var(--gs-ui);
   font-size: 14px;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   line-height: 1;
 }
 
@@ -120,7 +120,7 @@
 
 .gs-phase-marker--skipped .gs-phase-marker__label {
   text-decoration: line-through;
-  text-decoration-color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   opacity: 0.55;
 }
 

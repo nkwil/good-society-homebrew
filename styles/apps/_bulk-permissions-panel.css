@@ -13,7 +13,7 @@
   font-style: italic;
   font-size: 13px;
   line-height: 1.25;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   margin-top: 1px;
 }
 
@@ -54,13 +54,13 @@
   font-size: 14px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-bulk-permissions__counts {
   font-family: var(--gs-italic);
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 /* Filter row */
@@ -81,7 +81,7 @@
 }
 
 .gs-bulk-permissions__search::placeholder {
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   opacity: 0.7;
 }
 
@@ -131,7 +131,7 @@
   font-size: 13px;
   font-variant: small-caps;
   letter-spacing: 0.16em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-bulk-permissions__col-user {
@@ -151,13 +151,13 @@
 .gs-bulk-permissions__col-gm-label {
   font-family: var(--gs-italic);
   font-size: 11px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-bulk-permissions__col-quickset {
   font-family: var(--gs-body);
   font-size: 11px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   background: none;
   border: none;
   padding: 1px 4px;
@@ -203,13 +203,13 @@
   font-size: 13px;
   font-variant: small-caps;
   letter-spacing: 0.18em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-bulk-permissions__section-reset {
   font-family: var(--gs-italic);
   font-size: 13px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   background: none;
   border: none;
   padding: 0;
@@ -226,14 +226,14 @@
 .gs-bulk-permissions__section-empty {
   font-family: var(--gs-italic);
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   padding: 10px 22px;
 }
 
 .gs-bulk-permissions__empty {
   font-family: var(--gs-italic);
   font-size: 16px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   text-align: center;
   padding: 32px 22px;
 }
@@ -362,7 +362,7 @@
   transform: translateY(-50%);
   font-family: var(--gs-body);
   font-size: 11px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   background: var(--gs-paper-warm);
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 2px;
@@ -408,7 +408,7 @@
 .gs-bulk-permissions__pending-none {
   font-family: var(--gs-italic);
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-bulk-permissions__pending-pill {

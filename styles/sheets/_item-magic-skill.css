@@ -37,7 +37,7 @@
 .gs-btn-flag--spent {
   opacity: 1;
   background: var(--gs-accent-2);
-  border-color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  border-color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   color: var(--gs-paper);
 }
 
@@ -81,7 +81,7 @@
 
 .gs-item-sheet__picker-btn:hover {
   background: var(--gs-paper);
-  border-color: color-mix(in srgb, var(--gs-ink) 40%, transparent);
+  border-color: color-mix(in srgb, var(--gs-ink) 40%, var(--gs-paper));
 }
 
 .gs-item-sheet__picker-btn:active {

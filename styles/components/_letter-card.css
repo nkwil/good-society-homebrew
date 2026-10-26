@@ -23,7 +23,7 @@
 .gs-letter-card {
   --gs-letter-paper:        #f5ecd6;  /* warm cream */
   --gs-letter-paper-edge:   #e8dec0;  /* slightly deeper cream at edges */
-  --gs-letter-ink:          #3D2F26;  /* warm brown-black, readable on cream */
+  --gs-letter-ink:          #f0e1d2;  /* warm brown-black, readable on cream */
   --gs-letter-rule:         #c9b88f;  /* dusty taupe hairline */
   --gs-letter-muted:        #8b7d5b;  /* faded sepia for meta lines */
 
@@ -274,7 +274,7 @@
 
 .gs-letter-reveal__public::before {
   content: '● ';
-  color: var(--gs-positive, #4A7A4A);
+  color: var(--gs-positive, #77c477);
   font-style: normal;
 }
 

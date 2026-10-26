@@ -67,7 +67,7 @@
 .gs-cheat-sheet__toc-list a::before {
   content: counter(toc-counter) ". ";
   font-size: 13px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   opacity: 0.8;
 }
 

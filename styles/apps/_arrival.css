@@ -90,7 +90,7 @@ body:not(.gs-world-identity) .application.gs-arrival {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--gs-accent-3, #C9A55C) 50%,
+    var(--gs-accent-3, #e8c87a) 50%,
     transparent 100%
   );
   z-index: 2;

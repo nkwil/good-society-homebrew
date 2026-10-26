@@ -13,7 +13,7 @@
 .gs-random-event-card__desc {
   font-size: 16px;
   line-height: 1.5;
-  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
   margin-bottom: 8px;
 }
 
@@ -61,7 +61,7 @@
   font-variant: small-caps;
   font-size: 14px;
   letter-spacing: 0.08em;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 .gs-random-event-card__outcome {
   font-family: var(--gs-display);
@@ -113,7 +113,7 @@
 .gs-random-event-announce__desc {
   font-size: 16px;
   line-height: 1.55;
-  color: color-mix(in srgb, var(--gs-ink) 85%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 85%, var(--gs-paper));
   margin-bottom: 8px;
 }
 
@@ -125,5 +125,5 @@
 .gs-random-event-announce__waiting {
   font-size: 15px;
   margin: 2px 0 0;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }

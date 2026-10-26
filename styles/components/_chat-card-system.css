@@ -6,7 +6,7 @@
  */
 
 .gs-chat-card--system {
-  background: var(--gs-paper-warm, #F4ECD8);
+  background: var(--gs-paper-warm, #372837);
   border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
   border-radius: 8px;
   padding: 10px 14px;
@@ -23,7 +23,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--gs-accent-2, #708060);
+  background: var(--gs-accent-2, #6b4a68);
   flex-shrink: 0;
 }
 
@@ -33,7 +33,7 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   flex: 1;
 }
 
@@ -48,10 +48,10 @@
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
   font-size: 16px;
   line-height: 1.5;
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 /* Triple-brace content may contain Foundry enriched HTML */
 .gs-chat-card__system-body a {
-  color: var(--gs-brand, #2A3A2D);
+  color: var(--gs-brand, #d9a46f);
 }

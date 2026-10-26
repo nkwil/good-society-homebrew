@@ -39,19 +39,19 @@
  * per CLAUDE.md §16 anti-pattern. */
 body.gs-chrome-themed :is(.window-app, .application) > .window-header,
 body.gs-chrome-themed :is(.window-app, .application) > header.window-header {
-  background: #EFE6D2 !important;          /* --gs-paper, hardcoded */
-  color: #2A3A2D !important;               /* --gs-brand, hardcoded */
+  background: #2a1e2b !important;          /* --gs-paper, hardcoded */
+  color: #d9a46f !important;               /* --gs-brand, hardcoded */
   font-family: var(--gs-display);
   font-size: 17px;
   font-style: italic;
   padding: 10px 18px;
-  border-bottom: 0.5px solid #708060;      /* --gs-accent-2, hardcoded */
+  border-bottom: 0.5px solid #6b4a68;      /* --gs-accent-2, hardcoded */
   border-radius: 8px 8px 0 0;
 }
 
 body.gs-chrome-themed :is(.window-app, .application) > .window-header .window-title,
 body.gs-chrome-themed :is(.window-app, .application) > header.window-header .window-title {
-  color: #2A3A2D !important;               /* --gs-brand, hardcoded */
+  color: #d9a46f !important;               /* --gs-brand, hardcoded */
   font-style: italic;
 }
 
@@ -72,7 +72,7 @@ body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(
   height: 22px !important;
   padding: 0 !important;
   background: transparent !important;
-  color: #708060 !important;          /* --gs-accent-2, hardcoded house value */
+  color: #6b4a68 !important;          /* --gs-accent-2, hardcoded house value */
   border: 0 !important;
   border-radius: 50% !important;
   display: inline-flex;
@@ -188,8 +188,8 @@ body.gs-chrome-themed :is(.window-app, .application) > header.window-header [dat
 
 body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action]):hover,
 body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action]):hover {
-  color: #EFE6D2 !important;          /* --gs-paper, hardcoded */
-  background: #2A3A2D !important;     /* --gs-brand, hardcoded */
+  color: #2a1e2b !important;          /* --gs-paper, hardcoded */
+  background: #d9a46f !important;     /* --gs-brand, hardcoded */
 }
 
 /* Suppress the browser's `:focus` outline (the red ring) that sticks
@@ -203,7 +203,7 @@ body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(
 }
 body.gs-chrome-themed :is(.window-app, .application) > .window-header :is(.header-button, .header-control, button[data-action]):focus-visible,
 body.gs-chrome-themed :is(.window-app, .application) > header.window-header :is(.header-button, .header-control, button[data-action]):focus-visible {
-  outline: 1.5px solid #2A3A2D !important;  /* --gs-brand */
+  outline: 1.5px solid #d9a46f !important;  /* --gs-brand */
   outline-offset: 1px;
 }
 
@@ -240,8 +240,8 @@ body.gs-chrome-themed .context-menu,
 body.gs-chrome-themed nav.context-menu,
 body.gs-chrome-themed menu.context-menu,
 body.gs-chrome-themed #context-menu {
-  background: #F4ECD8 !important;          /* --gs-paper-warm, hardcoded */
-  border: 0.5px solid #708060 !important;  /* --gs-accent-2, hardcoded */
+  background: #372837 !important;          /* --gs-paper-warm, hardcoded */
+  border: 0.5px solid #6b4a68 !important;  /* --gs-accent-2, hardcoded */
   border-radius: 4px !important;
   padding: 4px !important;
   box-shadow: 0 4px 16px rgba(42, 24, 18, 0.18) !important;
@@ -301,7 +301,7 @@ body.gs-chrome-themed .context-menu li a {
   background: transparent !important;
   border: 0 !important;
   border-radius: 3px !important;
-  color: #2A1812 !important;          /* dark ink, hardcoded */
+  color: var(--gs-ink);          /* dark ink, hardcoded */
   font-family: var(--gs-body);
   font-size: 16px !important;
   font-style: normal !important;
@@ -319,8 +319,8 @@ body.gs-chrome-themed nav.context-menu li:hover,
 body.gs-chrome-themed menu.context-menu li:hover,
 body.gs-chrome-themed #context-menu li:hover,
 body.gs-chrome-themed .context-menu .context-item:hover {
-  background: color-mix(in srgb, #2A3A2D 12%, transparent) !important;
-  color: #2A3A2D !important;          /* brand on hover */
+  background: color-mix(in srgb, #d9a46f 12%, transparent) !important;
+  color: #d9a46f !important;          /* brand on hover */
 }
 
 body.gs-chrome-themed .controls-dropdown button > i,
@@ -329,7 +329,7 @@ body.gs-chrome-themed menu.controls-dropdown button > i,
 body.gs-chrome-themed menu.controls-dropdown a > i,
 body.gs-chrome-themed .application-list button > i,
 body.gs-chrome-themed .application-list a > i {
-  color: #5C4A3E !important;          /* muted ink, hardcoded */
+  color: var(--gs-text-muted);          /* muted ink, hardcoded */
   width: 14px;
   font-size: 15px;
   text-align: center;
@@ -345,8 +345,8 @@ body.gs-chrome-themed .application-list button:hover,
 body.gs-chrome-themed .application-list a:hover,
 body.gs-chrome-themed [role="menu"].controls-dropdown button:hover,
 body.gs-chrome-themed [role="menu"].controls-dropdown a:hover {
-  background: #2A3A2D !important;     /* --gs-brand, hardcoded */
-  color: #F4ECD8 !important;          /* --gs-paper-warm, hardcoded */
+  background: #d9a46f !important;     /* --gs-brand, hardcoded */
+  color: #372837 !important;          /* --gs-paper-warm, hardcoded */
 }
 
 body.gs-chrome-themed .controls-dropdown button:hover > i,
@@ -355,7 +355,7 @@ body.gs-chrome-themed menu.controls-dropdown button:hover > i,
 body.gs-chrome-themed menu.controls-dropdown a:hover > i,
 body.gs-chrome-themed .application-list button:hover > i,
 body.gs-chrome-themed .application-list a:hover > i {
-  color: #F4ECD8 !important;          /* --gs-paper-warm, hardcoded */
+  color: #372837 !important;          /* --gs-paper-warm, hardcoded */
 }
 
 /* Separator/divider between menu groups */
@@ -391,12 +391,12 @@ body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .windo
  * styling via theme cascade variables and shouldn't get repainted in
  * hardcoded ink. Same exclusion pattern the chrome's button rule uses. */
 body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content :is(label, legend, .form-group > label, .hint, p.notes, .notes, .form-fields > label):not([class*="gs-"]):not([class*="dossier-"]) {
-  color: #2A1812 !important;          /* dark ink, hardcoded */
+  color: var(--gs-ink) !important;    /* readable on current paper (light OR dark) */
   font-family: var(--gs-body);
 }
 
 body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content :is(.hint, p.notes, .notes) {
-  color: #5C4A3E !important;          /* muted ink for secondary text */
+  color: var(--gs-text-muted) !important;
   font-style: italic;
   font-size: 15px;
 }
@@ -405,15 +405,15 @@ body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .windo
  * Appearance, Vision, Light, Resources, etc.) */
 body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content nav.tabs a.item,
 body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content nav.sheet-tabs a.item {
-  color: color-mix(in srgb, #2A1812 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
   font-family: var(--gs-display);
   font-style: italic;
 }
 
 body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content nav.tabs a.item.active,
 body.gs-chrome-themed :is(.window-app, .application):not(.gs-no-chrome) > .window-content nav.sheet-tabs a.item.active {
-  color: #2A3A2D;                     /* brand for active tab */
-  border-bottom: 1.5px solid #2A3A2D;
+  color: #d9a46f;                     /* brand for active tab */
+  border-bottom: 1.5px solid #d9a46f;
 }
 
 /* === 2. Sidebar === */
@@ -446,7 +446,7 @@ body.gs-chrome-themed .sidebar-tab {
   background: var(--gs-paper);
   font-family: var(--gs-display);
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   letter-spacing: 0.04em;
   border: 0;
   padding: 6px 14px 8px;
@@ -503,7 +503,7 @@ body.gs-chrome-themed #navigation .scene-tab {
   font-family: var(--gs-body);
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   padding: 6px 14px 8px;
 }
 
@@ -563,14 +563,14 @@ body.gs-chrome-themed select optgroup {
   font-family: var(--gs-body);
   font-style: normal;
   font-size: 16px;
-  color: #2A1812 !important;        /* dark ink, hardcoded */
-  background: #F4ECD8 !important;   /* paper-warm, hardcoded */
+  color: var(--gs-ink);        /* dark ink, hardcoded */
+  background: #372837 !important;   /* paper-warm, hardcoded */
 }
 
 body.gs-chrome-themed :is(.window-app, .application):has(> .window-header) button:not([class*="gs-"]):not([class*="dossier-"]):not(.header-button):not(.header-control):not([data-action="close"]) {
   background: transparent;
   border: 0.5px solid var(--gs-accent-2);
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-family: var(--gs-display);
   font-size: 15px;
   padding: 5px 14px;
@@ -951,7 +951,7 @@ body.gs-chrome-themed [class*="sequencer-manager"],
 body.gs-chrome-themed .application.sequencer-manager .window-content,
 body.gs-chrome-themed [id^="sequencer-manager"] .window-content,
 body.gs-chrome-themed [class*="sequencer-manager"] .window-content {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 /* Tab strip — Player / Manager / Sequences / How-to */
@@ -961,7 +961,7 @@ body.gs-chrome-themed [id^="sequencer-manager"] nav.tabs a,
 body.gs-chrome-themed [id^="sequencer-manager"] nav.tabs [data-tab],
 body.gs-chrome-themed [class*="sequencer-manager"] .tabs a,
 body.gs-chrome-themed [class*="sequencer-manager"] .tabs [data-tab] {
-  color: color-mix(in srgb, var(--gs-ink, #3D2F26) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink, #f0e1d2) 70%, transparent);
   text-shadow: none;
   font-weight: 500;
 }
@@ -969,7 +969,7 @@ body.gs-chrome-themed [class*="sequencer-manager"] .tabs [data-tab] {
 body.gs-chrome-themed .application.sequencer-manager nav.tabs a:hover,
 body.gs-chrome-themed [id^="sequencer-manager"] nav.tabs a:hover,
 body.gs-chrome-themed [class*="sequencer-manager"] .tabs a:hover {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
   text-shadow: none;
 }
 
@@ -977,7 +977,7 @@ body.gs-chrome-themed .application.sequencer-manager nav.tabs a.active,
 body.gs-chrome-themed .application.sequencer-manager nav.tabs [data-tab].active,
 body.gs-chrome-themed [id^="sequencer-manager"] nav.tabs a.active,
 body.gs-chrome-themed [class*="sequencer-manager"] .tabs a.active {
-  color: var(--gs-accent-1, #B85C3F);
+  color: var(--gs-accent-1, #e8c6a8);
   text-shadow: none;
   font-weight: 600;
 }
@@ -996,7 +996,7 @@ body.gs-chrome-themed [class*="sequencer-manager"] .tab,
 body.gs-chrome-themed [class*="sequencer-manager"] p,
 body.gs-chrome-themed [class*="sequencer-manager"] span,
 body.gs-chrome-themed [class*="sequencer-manager"] li {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
   text-shadow: none;
 }
 
@@ -1013,7 +1013,7 @@ body.gs-chrome-themed [id^="sequencer-manager"] h3,
 body.gs-chrome-themed [class*="sequencer-manager"] h1,
 body.gs-chrome-themed [class*="sequencer-manager"] h2,
 body.gs-chrome-themed [class*="sequencer-manager"] h3 {
-  color: color-mix(in srgb, var(--gs-ink, #3D2F26) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink, #f0e1d2) 80%, transparent);
   text-shadow: none;
   font-family: var(--gs-display, 'Lora', serif);
   font-weight: 600;
@@ -1031,16 +1031,16 @@ body.gs-chrome-themed [id^="sequencer-manager"] select,
 body.gs-chrome-themed [class*="sequencer-manager"] input[type="text"],
 body.gs-chrome-themed [class*="sequencer-manager"] input[type="search"],
 body.gs-chrome-themed [class*="sequencer-manager"] select {
-  color: var(--gs-ink, #3D2F26);
-  background: color-mix(in srgb, var(--gs-paper, #EFE6D2) 92%, transparent);
-  border: 0.5px solid color-mix(in srgb, var(--gs-ink, #3D2F26) 22%, transparent);
+  color: var(--gs-ink, #f0e1d2);
+  background: color-mix(in srgb, var(--gs-paper, #2a1e2b) 92%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink, #f0e1d2) 22%, transparent);
 }
 
 /* Buttons inside Sequencer — readable on cream. */
 body.gs-chrome-themed .application.sequencer-manager button,
 body.gs-chrome-themed [id^="sequencer-manager"] button,
 body.gs-chrome-themed [class*="sequencer-manager"] button {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 /* ── FilePicker / Audio Browser readability ───────────────────────────────
@@ -1054,7 +1054,7 @@ body.gs-chrome-themed [class*="sequencer-manager"] button {
 body.gs-chrome-themed .application.filepicker,
 body.gs-chrome-themed [id^="filepicker"],
 body.gs-chrome-themed [class*="filepicker"] {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 /* Row containers — the file/directory list. Foundry uses several flavours
@@ -1065,7 +1065,7 @@ body.gs-chrome-themed .application.filepicker .files-list,
 body.gs-chrome-themed .application.filepicker .directory-list,
 body.gs-chrome-themed [class*="filepicker"] .files-list,
 body.gs-chrome-themed [class*="filepicker"] .directory-list {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 body.gs-chrome-themed .application.filepicker .file,
@@ -1074,7 +1074,7 @@ body.gs-chrome-themed .application.filepicker li,
 body.gs-chrome-themed [class*="filepicker"] .file,
 body.gs-chrome-themed [class*="filepicker"] .directory,
 body.gs-chrome-themed [class*="filepicker"] li {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
   text-shadow: none;
 }
 
@@ -1084,8 +1084,8 @@ body.gs-chrome-themed .application.filepicker li:hover,
 body.gs-chrome-themed [class*="filepicker"] .file:hover,
 body.gs-chrome-themed [class*="filepicker"] .directory:hover,
 body.gs-chrome-themed [class*="filepicker"] li:hover {
-  background: color-mix(in srgb, var(--gs-accent-3, #C9A55C) 14%, transparent);
-  color: var(--gs-ink, #3D2F26);
+  background: color-mix(in srgb, var(--gs-accent-3, #e8c87a) 14%, transparent);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 /* Selected/picked row — the highlighted row at "selection time" before the
@@ -1096,8 +1096,8 @@ body.gs-chrome-themed .application.filepicker .directory.picked,
 body.gs-chrome-themed [class*="filepicker"] .file.picked,
 body.gs-chrome-themed [class*="filepicker"] .file.selected,
 body.gs-chrome-themed [class*="filepicker"] .directory.picked {
-  background: color-mix(in srgb, var(--gs-accent-1, #B85C3F) 22%, transparent);
-  color: var(--gs-ink, #3D2F26);
+  background: color-mix(in srgb, var(--gs-accent-1, #e8c6a8) 22%, transparent);
+  color: var(--gs-ink, #f0e1d2);
   font-weight: 500;
 }
 
@@ -1119,9 +1119,9 @@ body.gs-chrome-themed .application.filepicker select,
 body.gs-chrome-themed [class*="filepicker"] input[type="text"],
 body.gs-chrome-themed [class*="filepicker"] input[type="search"],
 body.gs-chrome-themed [class*="filepicker"] select {
-  color: var(--gs-ink, #3D2F26);
-  background: color-mix(in srgb, var(--gs-paper, #EFE6D2) 92%, transparent);
-  border: 0.5px solid color-mix(in srgb, var(--gs-ink, #3D2F26) 22%, transparent);
+  color: var(--gs-ink, #f0e1d2);
+  background: color-mix(in srgb, var(--gs-paper, #2a1e2b) 92%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--gs-ink, #f0e1d2) 22%, transparent);
 }
 
 /* Section labels (Favorites / Filter Results / Display Mode / Selected /
@@ -1129,7 +1129,7 @@ body.gs-chrome-themed [class*="filepicker"] select {
 body.gs-chrome-themed .application.filepicker label,
 body.gs-chrome-themed .application.filepicker .form-group > label,
 body.gs-chrome-themed [class*="filepicker"] label {
-  color: color-mix(in srgb, var(--gs-ink, #3D2F26) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink, #f0e1d2) 80%, transparent);
   text-shadow: none;
 }
 
@@ -1138,7 +1138,7 @@ body.gs-chrome-themed .application.filepicker nav a,
 body.gs-chrome-themed .application.filepicker .tabs a,
 body.gs-chrome-themed [class*="filepicker"] nav a,
 body.gs-chrome-themed [class*="filepicker"] .tabs a {
-  color: color-mix(in srgb, var(--gs-ink, #3D2F26) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink, #f0e1d2) 70%, transparent);
   text-shadow: none;
 }
 
@@ -1146,7 +1146,7 @@ body.gs-chrome-themed .application.filepicker nav a.active,
 body.gs-chrome-themed .application.filepicker .tabs a.active,
 body.gs-chrome-themed [class*="filepicker"] nav a.active,
 body.gs-chrome-themed [class*="filepicker"] .tabs a.active {
-  color: var(--gs-accent-1, #B85C3F);
+  color: var(--gs-accent-1, #e8c6a8);
   font-weight: 600;
 }
 
@@ -1154,7 +1154,7 @@ body.gs-chrome-themed [class*="filepicker"] .tabs a.active {
  * display-mode toggles) — readable on cream. */
 body.gs-chrome-themed .application.filepicker button,
 body.gs-chrome-themed [class*="filepicker"] button {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 /* ── Aggressive fallback — broad-scope contrast pin ───────────────────────
@@ -1177,21 +1177,21 @@ body.gs-chrome-themed .application .directory,
 body.gs-chrome-themed .application .directory-name,
 body.gs-chrome-themed .application ol li,
 body.gs-chrome-themed .application ul li {
-  color: var(--gs-ink, #3D2F26) !important;
+  color: var(--gs-ink, #f0e1d2) !important;
   text-shadow: none !important;
 }
 
 body.gs-chrome-themed .application li:hover,
 body.gs-chrome-themed .application .file:hover,
 body.gs-chrome-themed .application .directory:hover {
-  background: color-mix(in srgb, var(--gs-accent-3, #C9A55C) 18%, transparent) !important;
+  background: color-mix(in srgb, var(--gs-accent-3, #e8c87a) 18%, transparent) !important;
 }
 
 body.gs-chrome-themed .application li.picked,
 body.gs-chrome-themed .application li.selected,
 body.gs-chrome-themed .application .file.picked,
 body.gs-chrome-themed .application .file.selected {
-  background: color-mix(in srgb, var(--gs-accent-1, #B85C3F) 26%, transparent) !important;
+  background: color-mix(in srgb, var(--gs-accent-1, #e8c6a8) 26%, transparent) !important;
   font-weight: 500;
 }
 
@@ -1203,7 +1203,7 @@ body.gs-chrome-themed [id*="file-picker"],
 body.gs-chrome-themed [id*="filePicker"],
 body.gs-chrome-themed [class*="file-picker"],
 body.gs-chrome-themed [class*="filePicker"] {
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
 }
 
 body.gs-chrome-themed .application.file-picker *,
@@ -1224,7 +1224,7 @@ body.gs-chrome-themed [class*="filePicker"] * {
  * parchment under `.mixin-theme-light-application`. The §1 window-body rule
  * sets `color: var(--gs-ink)` on `.window-content` but can't reach that
  * background, because Foundry re-paints it on a descendant. Net result:
- * dark-brown ink (#3D2F26) on a near-black panel — journal entries were
+ * dark-brown ink (#f0e1d2) on a near-black panel — journal entries were
  * effectively invisible.
  *
  * The same mismatch hit the journal sidebar, which Foundry colours for its
@@ -1246,12 +1246,12 @@ body.gs-chrome-themed [class*="filePicker"] * {
 
 /* Sheet shell + reading surface */
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) {
-  background: #EFE6D2;                     /* --gs-paper */
+  background: #2a1e2b;                     /* --gs-paper */
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-content {
-  background: #EFE6D2 !important;          /* beats Foundry's var(--background) */
-  color: #3D2F26;                          /* --gs-ink */
+  background: #2a1e2b !important;          /* beats Foundry's var(--background) */
+  color: #f0e1d2;                          /* --gs-ink */
 }
 
 /* Page prose. Headings are set explicitly rather than left to inherit so the
@@ -1263,83 +1263,83 @@ body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-con
  * inside the page, so `:not(.gs-themed *)` does not exclude it) and leak house
  * ink into archived themed content. */
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page :is(p, li, td, th, dd, dt):not(.gs-themed *) {
-  color: #3D2F26;
+  color: #f0e1d2;
   font-family: var(--gs-body);
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page :is(h1, h2, h3, h4, h5, h6):not(.gs-themed *) {
-  color: #2A3A2D;                          /* --gs-brand (forest) */
+  color: #d9a46f;                          /* --gs-brand (forest) */
   font-family: var(--gs-display);
-  border-bottom-color: #708060;            /* --gs-hairlines (sage) */
+  border-bottom-color: #6b4a68;            /* --gs-hairlines (sage) */
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page blockquote:not(.gs-themed *) {
-  color: #5C4A3E;
-  border-left: 2px solid #708060;
+  color: var(--gs-text-muted);
+  border-left: 2px solid #6b4a68;
   font-style: italic;
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page hr:not(.gs-themed *) {
   border: 0;
-  border-top: 0.5px solid #708060;
+  border-top: 0.5px solid #6b4a68;
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-entry-page :is(a, a.content-link, a.entity-link):not(.gs-themed *) {
-  color: #8a3e26;                          /* --gs-headers (deep terracotta) */
-  background: color-mix(in srgb, #C9A55C 16%, transparent);
-  border: 0.5px solid color-mix(in srgb, #8a3e26 35%, transparent);
+  color: #e8c6a8;                          /* --gs-headers (deep terracotta) */
+  background: color-mix(in srgb, #e8c87a 16%, transparent);
+  border: 0.5px solid color-mix(in srgb, #e8c6a8 35%, transparent);
 }
 
 /* Journal + page title inputs along the top of the content pane */
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-header input,
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-header .title {
-  color: #2A3A2D;
+  color: #d9a46f;
   font-family: var(--gs-display);
   font-style: italic;
 }
 
 /* --- Sidebar (table of contents) --- */
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar {
-  color: #3D2F26;
+  color: #f0e1d2;
 }
 
 /* Foundry hands these buttons near-white icons for its dark chrome, which
  * vanish on cream — that's why the sidebar controls rendered as empty boxes. */
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar button {
-  --button-text-color: #3D2F26;
-  --button-border-color: #708060;
-  --button-hover-border-color: #8a3e26;
-  --button-hover-text-color: #8a3e26;
+  --button-text-color: #f0e1d2;
+  --button-border-color: #6b4a68;
+  --button-hover-border-color: #e8c6a8;
+  --button-hover-text-color: #e8c6a8;
   font-family: var(--gs-ui);
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar input {
-  --input-background-color: #F4ECD8;       /* --gs-paper-warm */
-  --input-text-color: #3D2F26;
-  --input-border-color: #708060;
-  --input-placeholder-color: color-mix(in srgb, #3D2F26 55%, transparent);
-  --input-focus-outline-color: #8a3e26;
+  --input-background-color: #372837;       /* --gs-paper-warm */
+  --input-text-color: #f0e1d2;
+  --input-border-color: #6b4a68;
+  --input-placeholder-color: color-mix(in srgb, #f0e1d2 55%, transparent);
+  --input-focus-outline-color: #e8c6a8;
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc li.page,
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc li.category {
-  border-top-color: color-mix(in srgb, #708060 45%, transparent);
-  border-bottom-color: color-mix(in srgb, #708060 45%, transparent);
+  border-top-color: color-mix(in srgb, #6b4a68 45%, transparent);
+  border-bottom-color: color-mix(in srgb, #6b4a68 45%, transparent);
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc .page-heading .page-title {
-  color: #3D2F26;
+  color: #f0e1d2;
   font-family: var(--gs-body);
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc .page-heading :is(.page-number, .page-index) {
-  color: color-mix(in srgb, #3D2F26 55%, transparent);
+  color: color-mix(in srgb, #f0e1d2 55%, transparent);
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc li.page.active {
-  background: color-mix(in srgb, #C9A55C 18%, transparent);
+  background: color-mix(in srgb, #e8c87a 18%, transparent);
 }
 
 body.gs-chrome-themed .sheet.journal-entry:not(.gs-no-chrome) .journal-sidebar .toc li.page.active :is(.page-title, strong) {
-  color: #8a3e26;
+  color: #e8c6a8;
 }

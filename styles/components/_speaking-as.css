@@ -11,7 +11,7 @@
   gap: 8px;
   padding: 6px 10px;
   border-bottom: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
-  background: var(--gs-paper-warm, #F4ECD8);
+  background: var(--gs-paper-warm, #372837);
   /* Foundry v13's #sidebar/.chat-sidebar chain sets pointer-events: none so
    * the canvas underneath stays interactive in UI gaps. We must explicitly
    * re-enable pointer events on the bar AND its interactive descendants,
@@ -31,7 +31,7 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -45,8 +45,8 @@
   padding: 4px 10px;
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
   font-size: 15px;
-  color: var(--gs-ink, #3D2F26);
-  background: var(--gs-paper, #EFE6D2);
+  color: var(--gs-ink, #f0e1d2);
+  background: var(--gs-paper, #2a1e2b);
   border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
   border-radius: 14px;
   cursor: pointer;
@@ -58,8 +58,8 @@
 
 .gs-speaking-as__pill:hover,
 .gs-speaking-as__pill[aria-expanded='true'] {
-  border-color: var(--gs-brand, #2A3A2D);
-  color: var(--gs-brand, #2A3A2D);
+  border-color: var(--gs-brand, #d9a46f);
+  color: var(--gs-brand, #d9a46f);
 }
 
 .gs-speaking-as__pill-name {
@@ -71,7 +71,7 @@
 
 .gs-speaking-as__pill-chevron {
   font-size: 13px;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   flex-shrink: 0;
 }
 
@@ -84,8 +84,8 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: var(--gs-paper, #EFE6D2);
-  border: 0.5px solid var(--gs-accent-2, #708060);
+  background: var(--gs-paper, #2a1e2b);
+  border: 0.5px solid var(--gs-accent-2, #6b4a68);
   border-radius: 8px;
   padding: 4px 0;
   box-shadow: 0 4px 14px rgba(20, 12, 14, 0.18);
@@ -106,7 +106,7 @@
   border: 0;
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
   font-size: 15px;
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
@@ -114,23 +114,23 @@
 }
 
 .gs-speaking-as__option:hover {
-  background: var(--gs-paper-warm, #F4ECD8);
-  color: var(--gs-brand, #2A3A2D);
+  background: var(--gs-paper-warm, #372837);
+  color: var(--gs-brand, #d9a46f);
 }
 
 .gs-speaking-as__option.is-active {
   font-weight: 600;
-  color: var(--gs-brand, #2A3A2D);
+  color: var(--gs-brand, #d9a46f);
 }
 
 .gs-speaking-as__option--persona {
   padding-left: 26px;
   font-style: italic;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
 }
 
 .gs-speaking-as__option--persona.is-active {
-  color: var(--gs-brand, #2A3A2D);
+  color: var(--gs-brand, #d9a46f);
 }
 
 .gs-speaking-as__help-btn {
@@ -144,7 +144,7 @@
   font-family: var(--gs-ui, system-ui, sans-serif);
   font-size: 14px;
   font-weight: 600;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   background: transparent;
   border: 0.5px solid var(--gs-muted, rgba(112, 128, 96, 0.3));
   border-radius: 50%;
@@ -154,6 +154,6 @@
 }
 
 .gs-speaking-as__help-btn:hover {
-  color: var(--gs-brand, #2A3A2D);
-  border-color: var(--gs-brand, #2A3A2D);
+  color: var(--gs-brand, #d9a46f);
+  border-color: var(--gs-brand, #d9a46f);
 }

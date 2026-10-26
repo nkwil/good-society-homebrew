@@ -97,7 +97,7 @@
   line-height: 1.2;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 0 0 6px 0;
   padding: 0;
   border: none;

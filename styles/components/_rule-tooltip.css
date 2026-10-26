@@ -28,7 +28,7 @@
   letter-spacing: 0;
   text-transform: none;
   font-feature-settings: normal;
-  color: var(--gs-accent-3, #C9A55C);
+  color: var(--gs-accent-3, #e8c87a);
   line-height: 1;
 
   /* Don't intercept hover — the header element is the target, not the glyph. */
@@ -51,8 +51,8 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
   overflow-y: auto;
 
   padding: 12px 14px;
-  background: var(--gs-paper, #EFE6D2);
-  border: 0.5px solid var(--gs-accent-2, #708060);
+  background: var(--gs-paper, #2a1e2b);
+  border: 0.5px solid var(--gs-accent-2, #6b4a68);
   border-radius: 8px;
   /* Subtle lift against the busy sheet background.
    * WCAG: shadow doesn't affect text contrast — safe. */
@@ -72,7 +72,7 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
   width: 12px;
   height: 7px;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  background: var(--gs-paper, #EFE6D2);
+  background: var(--gs-paper, #2a1e2b);
   /* Border on the two slanted sides — clip-path clips the border too, so we
    * simulate it with a slightly larger outlined pseudo (below). */
 }
@@ -87,7 +87,7 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
   width: 14px;
   height: 8px;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  background: var(--gs-accent-2, #708060);
+  background: var(--gs-accent-2, #6b4a68);
 }
 
 /* Flip arrow to top when tooltip renders below the header. */
@@ -109,7 +109,7 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
   font-family: var(--gs-display, 'Lora', Georgia, serif);
   font-size: 17px;
   font-weight: 600;
-  color: var(--gs-brand, #2A3A2D);
+  color: var(--gs-brand, #d9a46f);
   line-height: 1.25;
   margin: 0 0 5px;
 }
@@ -119,7 +119,7 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
   font-style: italic;
   font-size: 15px;
   line-height: 1.55;
-  color: var(--gs-ink, #3D2F26);
+  color: var(--gs-ink, #f0e1d2);
   margin: 0;
 }
 
@@ -130,13 +130,13 @@ body.gs-tooltips-disabled .gs-section-header[data-tooltip-key]::after {
 
 .gs-rule-tooltip__pageref {
   padding-top: 6px;
-  border-top: 0.5px solid var(--gs-accent-2, #708060);
+  border-top: 0.5px solid var(--gs-accent-2, #6b4a68);
 
   font-family: var(--gs-body, 'Crimson Text', Georgia, serif);
   font-size: 13px;
   font-style: italic;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   margin: 0;
 }

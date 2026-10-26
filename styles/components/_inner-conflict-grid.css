@@ -145,7 +145,7 @@
 }
 
 /* Completion glow — added by JS when conflict resolves, removed after 800ms.
-   Hardcoded RGB for --gs-accent-3 (#C9A55C = 201, 165, 92) because CSS rgba()
+   Hardcoded RGB for --gs-accent-3 (#e8c87a = 201, 165, 92) because CSS rgba()
    cannot take a custom property as its color argument. */
 @keyframes gs-conflict-resolve-glow {
   0%   { box-shadow: 0 0 0 0   rgba(201, 165, 92, 0.7); }

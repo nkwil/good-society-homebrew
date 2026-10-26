@@ -32,7 +32,7 @@
   margin: 0;
   font-style: italic;
   font-size: 16px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 
 /* ── Body — two-column layout ───────────────────────────────────────────── */
@@ -60,7 +60,7 @@
 .gs-ecc__count {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 .gs-ecc__roster-list { list-style: none; padding: 0; margin: 0; }
 
@@ -153,13 +153,13 @@
   font-size: 15px !important;
   font-weight: 400 !important;
   line-height: 1.3 !important;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .gs-ecc__roster-offline {
-  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 35%, var(--gs-paper));
   font-size: 13px !important;
   line-height: 1;
 }
@@ -231,7 +231,7 @@
 
 .gs-ecc__event-desc {
   font-size: 16px;
-  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
   margin-bottom: 8px;
 }
 .gs-ecc__event-foot {
@@ -253,5 +253,5 @@
 }
 .gs-ecc__footer-meta {
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }

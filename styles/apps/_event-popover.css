@@ -30,7 +30,7 @@
   margin: 4px 0 0;
   font-style: italic;
   font-size: 16px;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 
 .gs-event-popover__desc {
@@ -52,7 +52,7 @@
   margin: 0 0 10px;
   font-size: 15px;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 
 /* ── Strategies ──────────────────────────────────────────────────────────── */
@@ -96,7 +96,7 @@
   font-variant: small-caps;
   font-size: 14px;
   letter-spacing: 0.08em;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 .gs-event-popover__die {
   flex: 0 0 auto;
@@ -163,7 +163,7 @@
   font-variant: small-caps;
   font-size: 13px;
   letter-spacing: 0.08em;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 .gs-event-popover__average-value {
   font-family: var(--gs-display);
@@ -172,7 +172,7 @@
 }
 .gs-event-popover__threshold {
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 50%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 50%, var(--gs-paper));
 }
 
 .gs-event-popover__verdict {
@@ -221,7 +221,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 
 .gs-event-popover__tag-input {

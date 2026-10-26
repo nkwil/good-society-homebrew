@@ -37,7 +37,7 @@
 .gs-persona-switcher-popover__count {
   font-family: var(--gs-italic);
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 /* Persona list */
@@ -140,7 +140,7 @@
 .gs-persona-switcher-popover__sub {
   font-family: var(--gs-italic);
   font-size: 13px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   white-space: nowrap;
 }
 
@@ -160,7 +160,7 @@
   border: none;
   padding: 2px 4px;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.1s;
@@ -192,7 +192,7 @@
 .gs-persona-switcher-popover__switch {
   font-family: var(--gs-italic);
   font-size: 13px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -214,7 +214,7 @@
   padding: 6px 2px;
   font-family: var(--gs-italic);
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   cursor: pointer;
   text-align: left;
   pointer-events: auto;

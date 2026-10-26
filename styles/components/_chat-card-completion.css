@@ -5,7 +5,7 @@
  */
 
 .gs-chat-card--completion {
-  border: 1px solid var(--gs-accent-3, #C9A55C);
+  border: 1px solid var(--gs-accent-3, #e8c87a);
   border-radius: 8px;
   padding: 20px 24px;
   text-align: center;
@@ -29,7 +29,7 @@
 
 .gs-chat-card__star {
   font-size: 26px;
-  color: var(--gs-accent-3, #C9A55C);
+  color: var(--gs-accent-3, #e8c87a);
   line-height: 1;
   flex-shrink: 0;
 }
@@ -57,14 +57,14 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
 }
 
 .gs-chat-card__resolved-on {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 16px;
-  color: var(--gs-accent-2, #708060);
+  color: var(--gs-accent-2, #6b4a68);
   margin: 0;
 }
 
@@ -81,7 +81,7 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gs-accent-3, #C9A55C);
+  color: var(--gs-accent-3, #e8c87a);
   margin: 0;
 }
 

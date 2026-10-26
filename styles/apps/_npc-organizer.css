@@ -75,7 +75,7 @@
   font-size: 0.68rem;
   font-variant: small-caps;
   letter-spacing: 0.18em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   flex: 1;
 }
 
@@ -135,7 +135,7 @@
   border: 0.5px solid var(--gs-accent-2);
   border-radius: 4px;
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-family: var(--gs-display);
   font-size: 15px;
   line-height: 1;
@@ -233,7 +233,7 @@
 .gs-npc-organizer__row-onscene {
   font-size: 0.7rem;
   line-height: 1;
-  color: var(--gs-positive, #4A7A4A);
+  color: var(--gs-positive, #77c477);
   opacity: 0.85;
 }
 
@@ -255,7 +255,7 @@
   border: 0.5px solid transparent;
   border-radius: 4px;
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 45%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 45%, var(--gs-paper));
   font-family: var(--gs-body);
   font-size: 0.72rem;
   line-height: 1;
@@ -279,7 +279,7 @@
 
 .gs-npc-organizer__note-btn.has-note {
   opacity: 1;
-  color: var(--gs-accent-3, #C9A55C);
+  color: var(--gs-accent-3, #e8c87a);
 }
 
 /* Truncated note preview, sits below the title line. */
@@ -288,7 +288,7 @@
   font-style: italic;
   font-size: 0.62rem;
   line-height: 1.25;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -359,7 +359,7 @@
   font-style: italic;
   font-size: 0.65rem;
   line-height: 1.25;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

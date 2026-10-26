@@ -89,7 +89,7 @@
 }
 
 .gs-impression-card__text--empty {
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
   display: flex;
   align-items: center;
   gap: 8px;
@@ -98,7 +98,7 @@
 .gs-impression-card__edit {
   font-size: 13px;
   font-style: italic;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
   background: transparent;
   border: none;
   cursor: pointer;

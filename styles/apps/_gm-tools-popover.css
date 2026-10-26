@@ -65,7 +65,7 @@ button.gs-gm-tools-popover__btn:focus-visible { outline: 1.5px solid var(--gs-br
   flex: 0 0 auto;
   width: 18px;
   text-align: center;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   font-size: 16px;
 }
 button.gs-gm-tools-popover__btn:hover .gs-gm-tools-popover__icon {

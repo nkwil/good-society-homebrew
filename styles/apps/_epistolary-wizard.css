@@ -58,7 +58,7 @@
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.06em;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   background: transparent;
   border: 0;
   border-bottom: 2px solid transparent;
@@ -225,7 +225,7 @@ button.gs-epistolary-wizard__row-btn {
 .gs-epistolary-wizard__reader-meta {
   font-family: var(--gs-body);
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 .gs-epistolary-wizard__back {
   min-height: 0;
@@ -411,7 +411,7 @@ button.gs-letter-envelope__packet:focus-visible {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
   transition: opacity 200ms ease;
 }
 .gs-letter-envelope.is-open .gs-letter-envelope__open-hint {
@@ -565,7 +565,7 @@ button.gs-letter-envelope__packet:focus-visible {
 .gs-epistolary-wizard__row-meta {
   font-family: var(--gs-body);
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .gs-epistolary-wizard__row-meta strong {
@@ -586,7 +586,7 @@ button.gs-letter-envelope__packet:focus-visible {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -595,7 +595,7 @@ button.gs-letter-envelope__packet:focus-visible {
 /* Placeholder shown in place of the preview while a letter is still sealed —
  * the contents stay private until the seal is broken. */
 .gs-epistolary-wizard__row-snippet--sealed {
-  color: color-mix(in srgb, var(--gs-ink) 52%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 52%, var(--gs-paper));
 }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
@@ -705,7 +705,7 @@ button.gs-letter-envelope__packet:focus-visible {
 }
 
 .gs-epistolary-roster__status.is-pending {
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 /* GM-only undoable ✓ — when the row is done, the status renders as a button
@@ -724,8 +724,8 @@ button.gs-epistolary-roster__status--undoable {
 }
 
 button.gs-epistolary-roster__status--undoable:hover {
-  background: color-mix(in srgb, var(--gs-danger, #8B2A2A) 14%, transparent);
-  color: var(--gs-danger, #8B2A2A);
+  background: color-mix(in srgb, var(--gs-danger, #dd4242) 14%, transparent);
+  color: var(--gs-danger, #dd4242);
   transform: scale(1.05);
 }
 
@@ -752,5 +752,5 @@ button.gs-epistolary-roster__status--undoable:focus-visible {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }

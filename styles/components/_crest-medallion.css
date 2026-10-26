@@ -63,8 +63,8 @@
   opacity: 1;
 }
 .gs-crest-medallion__clear:hover {
-  color: var(--gs-danger, #8B2A2A);
-  border-color: var(--gs-danger, #8B2A2A);
+  color: var(--gs-danger, #dd4242);
+  border-color: var(--gs-danger, #dd4242);
 }
 
 .gs-crest-medallion__monogram {

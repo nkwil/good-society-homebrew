@@ -17,7 +17,7 @@
   font-style: italic;
   font-size: 15px;
   margin: 4px 0 6px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 
 .gs-item-sheet__label--positive { color: var(--gs-positive); }
@@ -79,7 +79,7 @@
   display: block;
 }
 .gs-random-event-image__thumb--empty {
-  color: color-mix(in srgb, var(--gs-ink) 40%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 40%, var(--gs-paper));
   font-family: var(--gs-display);
   font-size: 34px;
   line-height: 1;

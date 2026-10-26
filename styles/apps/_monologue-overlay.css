@@ -65,7 +65,7 @@
   font-size: 14px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gs-accent-3, #C9A55C);
+  color: var(--gs-accent-3, #e8c87a);
   margin: 0;
 }
 
@@ -108,7 +108,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 0;
 }
 
@@ -140,7 +140,7 @@
 
 .gs-monologue-overlay__textarea[readonly] {
   background: rgba(244, 236, 216, 0.85);
-  border-color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  border-color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   cursor: default;
 }
 

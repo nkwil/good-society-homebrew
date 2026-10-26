@@ -103,7 +103,7 @@
  * icon; the base ::before below is the default key glyph. */
 .gs-btn--gm {
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   border: 0.5px solid var(--gs-accent-2);
   font-size: var(--gs-size-ui);
   font-family: var(--gs-ui);
@@ -125,7 +125,7 @@
   padding: 5px 6px;
   background: transparent;
   border: none;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   border-radius: 4px;
 }
 

@@ -76,7 +76,7 @@
 .gs-major-sheet .gs-eyebrow--subdued {
   font-weight: 500;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin-bottom: 8px;
   padding-bottom: 0;
   border-bottom: 0;
@@ -370,14 +370,14 @@
   font-style: italic;
   font-size: 17px;
   line-height: 1.35;
-  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
   background: transparent;
   border: 0;
   border-bottom: 0.5px solid transparent;
   outline: none;
 }
 .dossier-cameo__title::placeholder {
-  color: color-mix(in srgb, var(--gs-ink) 40%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 40%, var(--gs-paper));
   font-style: italic;
 }
 .dossier-cameo__title:focus {
@@ -397,7 +397,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 
 .dossier-cameo__bio-chips span {
@@ -448,7 +448,7 @@
   font-family: var(--gs-italic, var(--gs-body)); /* re-assert; browser default for textarea is monospace */
 }
 .dossier-cameo__subhead::placeholder {
-  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 35%, var(--gs-paper));
   font-style: italic;
 }
 .dossier-cameo__subhead:focus {
@@ -464,7 +464,7 @@
   font-style: italic;
   font-size: 14px;
   line-height: 1.2;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 
 .dossier-cameo__pronouns-select {
@@ -509,7 +509,7 @@
   font-style: italic;
   font-size: 16px;
   line-height: 1.2;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .dossier-cameo__age-input {
@@ -583,7 +583,7 @@
 }
 
 .dossier-cameo__bio-line-sep {
-  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 35%, var(--gs-paper));
   padding: 0 4px;
 }
 
@@ -640,7 +640,7 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 .dossier-cameo__archetype-select {
   display: inline-block;
@@ -713,7 +713,7 @@
   min-height: 0;
 }
 .dossier-cameo__descriptor-input::placeholder {
-  color: color-mix(in srgb, var(--gs-ink) 30%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 30%, var(--gs-paper));
 }
 .dossier-cameo__descriptor-input:focus {
   border-bottom-color: var(--gs-headers) !important;
@@ -750,7 +750,7 @@
 }
 
 .dossier-cameo__sep {
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 /* Theme dropdown — styled native <select> matching the persona pill.
@@ -810,8 +810,8 @@
   font-family: var(--gs-body);
   font-style: normal;
   font-size: 16px;
-  color: #2A1812;
-  background: #F4ECD8;
+  color: var(--gs-ink);
+  background: var(--gs-paper-warm);
 }
 
 .dossier-cameo__theme-chevron {
@@ -889,7 +889,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 
 /* ── Reputation criteria card (with crest) ──────────────────────────────── */
@@ -971,7 +971,7 @@
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .dossier-rep-row__list {
@@ -1012,7 +1012,7 @@
   background: transparent;
   border: 0;
   cursor: pointer;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-size: 16px;
   transition: width 120ms ease, padding 120ms ease;
   padding: 0;
@@ -1037,7 +1037,7 @@
 
 .dossier-tag-pill--empty {
   border: 1px dashed color-mix(in srgb, var(--gs-accent-2) 50%, transparent);
-  color: color-mix(in srgb, var(--gs-ink) 35%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 35%, var(--gs-paper));
   background: transparent;
 }
 
@@ -1052,7 +1052,7 @@
 }
 
 .dossier-tag-pill--add:hover {
-  border-color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  border-color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   color: var(--gs-headers);
   background: color-mix(in srgb, var(--gs-headers) 6%, transparent);
 }
@@ -1073,7 +1073,7 @@
   border-radius: 50%;
   border: 1px dashed color-mix(in srgb, var(--gs-accent-2) 60%, transparent);
   background: transparent;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-family: var(--gs-display);
   font-size: 17px;
   line-height: 1;
@@ -1152,7 +1152,7 @@
 
 .dossier-active-rep__earned {
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin-left: 4px;
 }
 
@@ -1185,7 +1185,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
   margin: 4px 0 0;
 }
 
@@ -1193,17 +1193,17 @@
  * pill's border subtly. The pill body stays parchment-toned for legibility
  * of the name text. */
 .dossier-active-rep__chip--positive {
-  border-color: color-mix(in srgb, var(--gs-positive, #4A7A4A) 40%, var(--gs-accent-2));
+  border-color: color-mix(in srgb, var(--gs-positive, #77c477) 40%, var(--gs-accent-2));
 }
 .dossier-active-rep__chip--positive .dossier-active-rep__laurel {
-  background: var(--gs-positive, #4A7A4A);
+  background: var(--gs-positive, #77c477);
   color: var(--gs-paper);
 }
 .dossier-active-rep__chip--negative {
-  border-color: color-mix(in srgb, var(--gs-danger, #8B2A2A) 40%, var(--gs-accent-2));
+  border-color: color-mix(in srgb, var(--gs-danger, #dd4242) 40%, var(--gs-accent-2));
 }
 .dossier-active-rep__chip--negative .dossier-active-rep__laurel {
-  background: var(--gs-danger, #8B2A2A);
+  background: var(--gs-danger, #dd4242);
   color: var(--gs-paper);
 }
 
@@ -1233,7 +1233,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
 }
 .dossier-pending__list {
   list-style: none;
@@ -1252,7 +1252,7 @@
   padding: 5px 10px;
   font-family: var(--gs-body);
   font-size: 16px;
-  color: color-mix(in srgb, var(--gs-ink) 80%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 80%, var(--gs-paper));
   background: color-mix(in srgb, var(--gs-paper) 75%, transparent);
   border-radius: 4px;
   border: 0.5px solid color-mix(in srgb, var(--gs-accent-2) 35%, transparent);
@@ -1288,12 +1288,12 @@
 .dossier-pending__entry--gained-positive .dossier-pending__icon {
   background:
     radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.24) 0%, transparent 55%),
-    var(--gs-positive, #4A7A4A);
+    var(--gs-positive, #77c477);
 }
 .dossier-pending__entry--gained-negative .dossier-pending__icon {
   background:
     radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.22) 0%, transparent 55%),
-    var(--gs-danger, #8B2A2A);
+    var(--gs-danger, #dd4242);
 }
 .dossier-pending__entry--removed .dossier-pending__icon {
   background:
@@ -1304,7 +1304,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 .dossier-pending__value {
   font-family: var(--gs-display);
@@ -1314,14 +1314,14 @@
 }
 .dossier-pending__entry--removed .dossier-pending__value {
   text-decoration: line-through;
-  text-decoration-color: color-mix(in srgb, var(--gs-danger, #8B2A2A) 55%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--gs-danger, #dd4242) 55%, transparent);
   text-decoration-thickness: 1.5px;
 }
 .dossier-pending__scene {
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 55%, var(--gs-paper));
   white-space: nowrap;
 }
 .dossier-pending__undo {
@@ -1355,7 +1355,7 @@
   background: transparent;
   border: 0;
   cursor: pointer;
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   font-size: 18px;
   line-height: 1;
   padding: 0;
@@ -1367,7 +1367,7 @@
   padding: 0 4px;
 }
 .dossier-pending__delete:hover {
-  color: var(--gs-danger, #8B2A2A);
+  color: var(--gs-danger, #dd4242);
 }
 
 /* GM remove "x" — small ghost button inside the chip. */
@@ -1381,14 +1381,14 @@
   font-family: var(--gs-ui);
   font-size: 15px;
   font-style: normal;
-  color: color-mix(in srgb, var(--gs-ink) 50%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 50%, var(--gs-paper));
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
   margin-left: 4px;
 }
 .dossier-active-rep__remove:hover {
-  background: var(--gs-danger, #8B2A2A);
-  color: var(--gs-paper, #EFE6D2);
+  background: var(--gs-danger, #dd4242);
+  color: var(--gs-paper, #2a1e2b);
 }
 
 /* ── Inner conflict ledger ─────────────────────────────────────────────── */
@@ -1404,7 +1404,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 60%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 60%, var(--gs-paper));
 }
 
 .dossier-inner-conflict__box {
@@ -1477,12 +1477,12 @@
 }
 
 .dossier-bio-chip__sep {
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   margin: 0 2px;
 }
 
 .dossier-bio-chip__label {
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-style: italic;
 }
 
@@ -1533,7 +1533,7 @@
 }
 
 .dossier-bio-chip__input::placeholder {
-  color: color-mix(in srgb, var(--gs-ink) 65%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 65%, var(--gs-paper));
   font-style: italic;
 }
 
@@ -1541,7 +1541,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 15px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 /* Edit affordance — opens the inner-conflict item sheet for things the
@@ -1573,7 +1573,7 @@
   font-style: italic;
   font-size: 14px;
   line-height: 1;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   cursor: pointer;
   opacity: 0.85;
   transition: color 120ms ease, border-color 120ms ease, opacity 120ms ease, background 120ms ease;
@@ -1596,7 +1596,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .dossier-inner-conflict__row--boxes {
@@ -1636,7 +1636,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .dossier-inner-conflict__empty {
@@ -1653,7 +1653,7 @@
 .dossier-inner-conflict__empty p {
   margin: 0;
   font-size: 16px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 /* ── Tokens card ───────────────────────────────────────────────────────── */
@@ -1697,7 +1697,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .dossier-resolve {
@@ -1797,7 +1797,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   border: 0.5px solid var(--gs-muted-accent);
   border-radius: 100px;
   padding: 2px 10px;
@@ -1811,7 +1811,7 @@
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 13px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   cursor: pointer;
   padding: 0;
   text-transform: lowercase;
@@ -1954,7 +1954,7 @@
 }
 
 .dossier-notes__body li::marker {
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
 }
 
 .dossier-notes__body .editor { background: transparent; border: 0; }
@@ -2000,7 +2000,7 @@
 
 .dossier-magic-card__icon {
   font-size: 24px;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   text-align: center;
 }
 
@@ -2032,7 +2032,7 @@
 .dossier-magic-card__desc {
   margin: 2px 0 0;
   font-size: 14px;
-  color: color-mix(in srgb, var(--gs-ink) 70%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 70%, var(--gs-paper));
 }
 
 .dossier-magic-card__cast {
@@ -2079,7 +2079,7 @@
   background: transparent;
   border: 0;
   cursor: pointer;
-  color: color-mix(in srgb, var(--gs-ink) 75%, transparent);
+  color: color-mix(in srgb, var(--gs-ink) 75%, var(--gs-paper));
   font-size: 17px;
   line-height: 1;
   transition: width 120ms ease, padding 120ms ease, color 120ms ease;
