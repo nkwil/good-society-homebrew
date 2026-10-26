@@ -170,18 +170,29 @@ function _positionPopover(anchor) {
   requestAnimationFrame(() => {
     if (!_popover) return;
     const rect = _popover.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
     let left = 68;    // just right of the Foundry scene control bar
     let top  = 120;   // roughly aligned with first tool entry
     if (anchor && anchor.getBoundingClientRect) {
       const a = anchor.getBoundingClientRect();
-      left = a.right + 6;
-      top  = a.top;
+      top = a.top;
+      // Smart edge: anchor on the LEFT half → open to the right of it
+      // (scene control bar case). Anchor on the RIGHT half → open to the
+      // left (Cabinet rail / drawer case). Either way we never overlap
+      // the anchor itself.
+      const anchorMidX = (a.left + a.right) / 2;
+      if (anchorMidX < vw / 2) {
+        left = a.right + 6;
+      } else {
+        left = a.left - rect.width - 6;
+      }
     }
-    // Clamp so we never render off-screen.
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    if (left + rect.width > vw - 12)  left = Math.max(12, vw - rect.width - 12);
-    if (top  + rect.height > vh - 12) top  = Math.max(12, vh - rect.height - 12);
+    // Clamp inside the viewport.
+    if (left < 12)                     left = 12;
+    if (left + rect.width > vw - 12)   left = Math.max(12, vw - rect.width - 12);
+    if (top  < 12)                     top  = 12;
+    if (top  + rect.height > vh - 12)  top  = Math.max(12, vh - rect.height - 12);
     _popover.style.left = `${left}px`;
     _popover.style.top  = `${top}px`;
     _popover.style.visibility = 'visible';

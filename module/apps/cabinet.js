@@ -28,6 +28,7 @@ import { openResetCampaign } from '../helpers/reset-campaign.js';
 import { openStoryBeatsCommandCenter } from './story-beats-command-center.js';
 import { openSessionNotes } from './session-notes.js';
 import { openCastOfCharacters, openCastManager } from './cast-of-characters.js';
+import { openGmToolsPopover } from './gm-tools-popover.js';
 import { openSessionGreetingComposer } from './session-greeting-composer.js';
 import { openSessionGreeting } from './session-greeting.js';
 
@@ -75,6 +76,16 @@ const LAUNCHERS = {
   // Cast of Characters — viewer (all users) + manager (GM only).
   cast:            () => openCastOfCharacters(),
   castManage:      () => openCastManager(),
+  // GM Tools — opens the same popover as the scene-control gears button.
+  // Anchor on the Cabinet row the user just clicked so the popover
+  // floats to its left (the Cabinet lives on the right edge of the
+  // viewport); falls back to the scene-bar default when the row isn't
+  // in the DOM for some reason.
+  gmTools:         () => {
+    const anchor = document.querySelector('[data-surface-id="tool-gm-tools"]')
+      ?? document.querySelector('.gs-cabinet-rail') ?? null;
+    openGmToolsPopover({ anchor });
+  },
   // Session Greeting composer (GM): authors the auto-pop welcome modal.
   sessionGreeting: () => openSessionGreetingComposer(),
   // Player reopen of the auto-pop greeting — bypasses the dismiss check.
@@ -112,6 +123,9 @@ const LAUNCHER_APP_IDS = {
   greetingReopen:  'gs-session-greeting',
   cast:            'gs-cast-viewer',
   castManage:      'gs-cast-manager',
+  // GM Tools has no ApplicationV2 window — it's a vanilla DOM popover.
+  // Leave it out of this map; the drawer row renders without live
+  // open/closed tracking, which is fine for a transient menu.
 };
 
 export class CabinetApp extends HandlebarsApplicationMixin(ApplicationV2) {

@@ -234,6 +234,10 @@ export const COWORK_SURFACES = [
   // Cast of Characters — player viewer. GM uses the "Manage Cast" entry
   // in GM tools; everyone (GM included) can also open the viewer here.
   { id: 'tool-cast',             group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.cast',          railGlyph: 'CA', kind: 'launcher', launcherKey: 'cast' },
+  // GM Tools — opens the same popover as the scene-control gears button.
+  // Rail-visible for GMs so there's a one-click path even if the scene
+  // control column overflows the viewport.
+  { id: 'tool-gm-tools',         group: 'gmTools', label: 'GOODSOCIETY.cabinet.surface.gmTools',       railGlyph: 'GM', kind: 'launcher', gmOnly: true, launcherKey: 'gmTools' },
   // Informational popups — drawer-only (no railGlyph) so they don't clutter
   // the rail, but always accessible from the drawer for re-reading.
   { id: 'tool-pregame',          group: 'tools',   label: 'GOODSOCIETY.cabinet.surface.pregame',       kind: 'launcher', launcherKey: 'pregame'    },
