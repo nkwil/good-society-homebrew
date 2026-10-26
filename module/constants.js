@@ -278,7 +278,9 @@ export const COWORK_SURFACES = [
   // Foundry chrome (toggleable, drawer-only)
   { id: 'foundry-players-list',  group: 'foundry', label: 'GOODSOCIETY.cabinet.surface.playersList',   hideBodyClass: 'gs-hide-players',     defaultVisible: true  },
   { id: 'foundry-sidebar',       group: 'foundry', label: 'GOODSOCIETY.cabinet.surface.sidebar',       hideBodyClass: 'gs-hide-sidebar',     defaultVisible: true  },
-  { id: 'foundry-hotbar',        group: 'foundry', label: 'GOODSOCIETY.cabinet.surface.hotbar',        hideBodyClass: 'gs-hide-hotbar',      defaultVisible: false },
+  // Hotbar entry removed 2026-10-26 — hidden unconditionally in
+  // foundry-chrome.css (`#hotbar { display: none !important }`). A
+  // Cabinet toggle would be dead UI; strip it.
 ];
 
 /**

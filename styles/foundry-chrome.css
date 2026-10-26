@@ -694,6 +694,16 @@ body.gs-chrome-themed #players .player-name {
  * back to Foundry's default styling.
  */
 
+/* Hotbar is hidden by default — Good Society doesn't lean on macros for
+ * play, and the row of empty number slots adds noise to the canvas.
+ * The Cabinet's "Hotbar" toggle in the Foundry Chrome group can still
+ * bring it back for a session that needs it (adds a visibility flag to
+ * the user; Cabinet skips its `gs-hide-hotbar` body-class toggle because
+ * this rule wins). */
+#hotbar {
+  display: none !important;
+}
+
 body.gs-chrome-themed #hotbar {
   background: var(--gs-paper);
   border: 0.5px solid var(--gs-accent-2);
