@@ -347,10 +347,11 @@
   box-shadow: none;
   overflow: visible;
 
-  /* Letter ink — warm brown-black, readable on parchment. Independent of
-   * the theme cascade (theme `--gs-ink` can be light on dark themes and
-   * would be invisible against the parchment cream). */
-  color: #f0e1d2;
+  /* Letter ink — warm brown-black, readable on parchment. HARDCODED,
+   * independent of the theme cascade: the parchment PNG is cream so the
+   * ink must be dark. --gs-ink on the current dark theme resolves to
+   * ivory, which rendered the letter text invisible until this fix. */
+  color: #3D2F26;
   font-family: var(--gs-italic, var(--gs-body));
   font-style: italic;
   font-size: 14.5px;
@@ -383,7 +384,8 @@
   font-weight: 500;
   font-size: 26px;
   letter-spacing: 0.01em;
-  color: var(--gs-brand);
+  /* HARDCODED sepia for parchment context — see body comment. */
+  color: #5C2E2E;
 }
 
 /* Greeting — "Dear Avril," — flush-left, opening salutation. */
@@ -428,7 +430,8 @@
   font-weight: 500;
   font-size: 36px;
   letter-spacing: 0.01em;
-  color: var(--gs-brand);
+  /* HARDCODED sepia for parchment context — see body comment. */
+  color: #5C2E2E;
 }
 
 /* Ghost placeholders — visible in all empty fields so the preview always
