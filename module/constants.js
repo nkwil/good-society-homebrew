@@ -381,6 +381,15 @@ export function chromeIcon(category, key) {
 }
 
 /**
+ * CHARACTER_THEMES_ENABLED — master switch for per-character color.
+ * Disabled 2026-10-26: character themes broke contrast on the dark house
+ * register. While false, persona chatColor overrides are skipped and the
+ * theme CSS imports in styles/good-society.css are commented out, so every
+ * surface renders in the house palette. Stored actor themes are untouched.
+ */
+export const CHARACTER_THEMES_ENABLED = false;
+
+/**
  * THEME_REGISTRY — Major character themes with display labels + cream-surface
  * swatch colors for the dossier's inline theme switcher (post-MVP §4.5b /
  * patch-dossier-refactor §3.7). Entries match `MAJOR_THEMES` enum in

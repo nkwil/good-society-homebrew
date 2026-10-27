@@ -87,23 +87,30 @@
 @import './sheets/_item-backstory-action.css';
 @import './sheets/_item-random-event.css';
 
+/* Character theme presets — DISABLED 2026-10-26 (accessibility).
+ * Per-character themes clashed with the dark Evening Court house register
+ * and broke contrast for players, so everything falls back to the house
+ * :root palette. Actors keep their stored system.theme values; to re-enable,
+ * uncomment these imports, the eyebrow ornament rule in
+ * components/_eyebrow.css, and set CHARACTER_THEMES_ENABLED in
+ * module/constants.js back to true. */
 /* Character theme presets — Major themes (post-MVP §6.5: 7 themes) */
-@import './themes/_theme-clayton.css';
-@import './themes/_theme-rose.css';
-@import './themes/_theme-roger.css';
-@import './themes/_theme-dixon.css';
-@import './themes/_theme-avril.css';
-@import './themes/_theme-pearlinda.css';
-@import './themes/_theme-secret.css';
+/* @import './themes/_theme-clayton.css'; */
+/* @import './themes/_theme-rose.css'; */
+/* @import './themes/_theme-roger.css'; */
+/* @import './themes/_theme-dixon.css'; */
+/* @import './themes/_theme-avril.css'; */
+/* @import './themes/_theme-pearlinda.css'; */
+/* @import './themes/_theme-secret.css'; */
 
 /* Character theme presets — Connection variants */
-@import './themes/_theme-connection-green.css';
-@import './themes/_theme-connection-purple.css';
-@import './themes/_theme-connection-blue.css';
-@import './themes/_theme-connection-yellow.css';
-@import './themes/_theme-connection-orange.css';
-@import './themes/_theme-connection-red.css';
-@import './themes/_theme-connection-grey.css';
+/* @import './themes/_theme-connection-green.css'; */
+/* @import './themes/_theme-connection-purple.css'; */
+/* @import './themes/_theme-connection-blue.css'; */
+/* @import './themes/_theme-connection-yellow.css'; */
+/* @import './themes/_theme-connection-orange.css'; */
+/* @import './themes/_theme-connection-red.css'; */
+/* @import './themes/_theme-connection-grey.css'; */
 
 /* Character theme presets — NPC (inherits house; file exists for consistency) */
 @import './themes/_theme-npc.css';

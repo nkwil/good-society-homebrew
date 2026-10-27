@@ -1,3 +1,4 @@
+import { CHARACTER_THEMES_ENABLED } from '../constants.js';
 /**
  * chat-portraits.js — render a speaker portrait (token-based, persona-aware)
  * next to the sender name on every Good Society chat message.
@@ -65,7 +66,7 @@ function _applyPortrait(message, root) {
     const persona = actor.system?.activePersonaId
       ? (actor.system.personas ?? []).find(p => p.id === actor.system.activePersonaId)
       : null;
-    if (persona?.chatColor) {
+    if (CHARACTER_THEMES_ENABLED && persona?.chatColor) {
       root.style.setProperty('--gs-brand', persona.chatColor);
     } else {
       root.style.removeProperty('--gs-brand');

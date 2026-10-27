@@ -67,6 +67,7 @@
  * no backing disc. The eyebrow's bottom border ends at right: 0; we offset
  * the ornament past that so it reads as a finial / terminator rather than
  * sitting on the rule. Vertically centered on the line. */
+/* DISABLED 2026-10-26 with character themes — see styles/good-society.css.
 :is(.gs-actor, .gs-themed):is(
   [data-theme='rose'],
   [data-theme='roger'],
@@ -87,6 +88,7 @@
   -webkit-mask: var(--gs-accent-svg) center / contain no-repeat;
           mask: var(--gs-accent-svg) center / contain no-repeat;
 }
+*/
 
 /* Subdued variant — nested inside contained blocks (rep-criteria, conflict-title,
  * tokens cell, item-sheet field group). No divider, no diamond — avoids

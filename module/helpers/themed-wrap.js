@@ -1,3 +1,4 @@
+import { CHARACTER_THEMES_ENABLED } from '../constants.js';
 /**
  * Wrap content in a .gs-themed div using the given actor's theme.
  * If the actor's active persona has a chatColor override, applies it
@@ -17,7 +18,7 @@ export function themedWrap(actor, content, extraClasses = []) {
   const persona = actor?.system?.activePersonaId
     ? actor.system.personas?.find(p => p.id === actor.system.activePersonaId)
     : null;
-  const overrideColor = persona?.chatColor;
+  const overrideColor = CHARACTER_THEMES_ENABLED ? persona?.chatColor : '';
   const styleAttr = overrideColor ? ` style="--gs-brand: ${overrideColor};"` : '';
   const classList = ['gs-themed', ...extraClasses].join(' ');
   return `<div class="${classList}" data-theme="${themeId}"${styleAttr}>${content}</div>`;
