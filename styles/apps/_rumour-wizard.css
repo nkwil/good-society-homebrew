@@ -11,6 +11,11 @@
   color: var(--gs-ink);
   background: var(--gs-paper);
   min-width: 0;
+  /* Cap at viewport + scroll internally so the Spread Rumour options
+   * at the bottom stay reachable when the active list is long. Same
+   * pattern as the greeting / random event sheet / cast viewer. */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .gs-rumour-wizard__header {
