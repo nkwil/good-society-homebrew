@@ -69,7 +69,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  /* No `overflow: hidden` here — it was clipping the left side of the
+   * current-phase pill when its label was longer than its slot
+   * ("Novel Chapter (1st)" is wider than "novel"). The HUD root is
+   * what visually bounds the content; the track just lays it out. */
   gap: 0;
 }
 
